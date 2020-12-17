@@ -87,6 +87,7 @@ function [] = initConstants()
         'prime_traj', 'prime_ans_left', 'prime_correct', 'prime_rt',...
         'pas_traj', 'pas', 'pas_rt',...
         'trial_start_time', 'trial_end_time', 'trial', 'block_num', 'cat_block'};
+    %%NatNet, motion capture.
     
     %% Text params
     

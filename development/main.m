@@ -12,7 +12,7 @@ function [ ] = main(subNumber)
     global NO_FULLSCREEN WINDOW_RESOLUTION TIME_SLOW
     global compKbDevice
     global WELCOME_SCREEN LOADING_SCREEN
-    global TOUCH_PLAIN_INFO NATNETCLIENT
+    global TOUCH_PLANE_INFO NATNETCLIENT
 
     TIME_SLOW = 1; % default = 1; time slower for debugging
     NO_FULLSCREEN = false; % default = false
@@ -24,20 +24,20 @@ function [ ] = main(subNumber)
     if nargin < 1; error('Missing subject number!'); end
 
     try
+        
+        % Calibration and connection to natnetclient.
+        [TOUCH_PLANE_INFO, NATNETCLIENT] = touch_plane_setup();
+        
         initPsychtoolbox();
         initConstants();
 
-        saveCode();
-        
-        % Calibration and connection to natnetclient.
-        [TOUCH_PLAIN_INFO, NATNETCLIENT] = touch_plane_setup();
-        
+        saveCode();        
         
         % Experiment
-        showTexture(WELCOME_SCREEN);
-        KbWait(compKbDevice,3);
         showTexture(LOADING_SCREEN);
         trials = newTrials();
+        showTexture(WELCOME_SCREEN);
+        KbWait(compKbDevice,3);
         experiment(trials);      
         saveTable(trials,'trials'); % @@@@@@@@@@@ do we need this? we save inside runTrials.
         
@@ -60,24 +60,24 @@ function [] = experiment(trials)
     
     % instructions.
     showTexture(INSTRUCTIONS_SCREEN);
-    KbWait(compKbDevice,3);
+    getInput('instruction');
     
     % practice.
     showTexture(PRACTICE_SCREEN);
-    KbWait(compKbDevice,3);
+    getInput('instruction');
     runPractice();
     
     % test.
     showTexture(TEST_SCREEN);
-    KbWait(compKbDevice,3);
+    getInput('instruction');
     runTrials(trials);
     
     showTexture(END_SCREEN);
-    KbWait(compKbDevice,3);                
+    getInput('instruction');
 end
 
 % Waits for response to question displayed to participant.
-% type: 'categor', 'recog', 'pas'.
+% type: 'instruction','categor', 'recog', 'pas'.
 function [ key, Resp_Time ] = getInput(type)
 
     global compKbDevice abortKey rightKey leftKey WRONG_KEY One Two Three Four
@@ -88,6 +88,11 @@ function [ key, Resp_Time ] = getInput(type)
     
     [Resp_Time, Resp] = KbWait(compKbDevice, 2); % Waits for keypress.
     switch type
+        case ('instruction')
+            if Resp(abortKey)
+                key = abortKey;
+                cleanExit();
+            end
         case ('categor')
             if Resp(abortKey)
                 key = abortKey;
@@ -129,7 +134,7 @@ function [ key, Resp_Time ] = getInput(type)
 end
 
 function [] = runPractice()
-    global refRate;
+    global refRateSec;
     global FIX_TIME MASK1_TIME MASK2_TIME PRIME_TIME MASK3_TIME TARGET_TIME; % in sec.
     global NUM_PRACTICE_TRIALS SUB_NUM;
     global PRACTICE_MASKS;
@@ -152,27 +157,27 @@ function [] = runPractice()
 
         % Fixation
         showFixation();
-        WaitSecs(FIX_TIME - refRate / 2); % "- refRate / 2" so that it will flip exactly at the end of TIME_FIXATION.
+        WaitSecs(FIX_TIME - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of TIME_FIXATION.
 
         % Mask 1
         showMask(practice_masks, 'mask1');
-        WaitSecs(MASK1_TIME - refRate / 2);
+        WaitSecs(MASK1_TIME - refRateSec / 2);
 
         % Mask 2
         showMask(practice_masks, 'mask2');
-        WaitSecs(MASK2_TIME - refRate / 2);
+        WaitSecs(MASK2_TIME - refRateSec / 2);
 
         % Prime
         showWord(pratice_trials(tr,:), 'prime');
-        WaitSecs(PRIME_TIME - refRate / 2);
+        WaitSecs(PRIME_TIME - refRateSec / 2);
 
         % Mask 3
         showMask(practice_masks, 'mask3');
-        WaitSecs(MASK3_TIME - refRate / 2);
+        WaitSecs(MASK3_TIME - refRateSec / 2);
 
         % Target
         showWord(pratice_trials(tr,:), 'target');
-        WaitSecs(TARGET_TIME - refRate / 2);
+        WaitSecs(TARGET_TIME - refRateSec / 2);
 
         % Target categorization.
         showCategor(pratice_trials(tr,:));
@@ -189,7 +194,7 @@ function [] = runPractice()
 end
 
 function [trials] = runTrials(trials)
-    global compKbDevice refRate;
+    global compKbDevice refRateSec;
     global FIX_TIME MASK1_TIME MASK2_TIME PRIME_TIME MASK3_TIME TARGET_TIME; % in sec.
     global END_BLOCK;
     
@@ -212,27 +217,27 @@ function [trials] = runTrials(trials)
             % Fixation
             time(1) = showFixation();
             trials.trial_start_time{tr} = time(1);
-            WaitSecs(FIX_TIME - refRate / 2); % "- refRate / 2" so that it will flip exactly at the end of TIME_FIXATION.
+            WaitSecs(FIX_TIME - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of TIME_FIXATION.
 
             % Mask 1
             time(2) = showMask(trials(tr,:), 'mask1');
-            WaitSecs(MASK1_TIME - refRate / 2);
+            WaitSecs(MASK1_TIME - refRateSec / 2);
             
             % Mask 2
             time(3) = showMask(trials(tr,:), 'mask2');
-            WaitSecs(MASK2_TIME - refRate / 2);
+            WaitSecs(MASK2_TIME - refRateSec / 2);
 
             % Prime
             time(4) = showWord(trials(tr,:), 'prime');
-            WaitSecs(PRIME_TIME - refRate / 2);
+            WaitSecs(PRIME_TIME - refRateSec / 2);
 
             % Mask 3
             time(5) = showMask(trials(tr,:), 'mask3');
-            WaitSecs(MASK3_TIME - refRate / 2);
+            WaitSecs(MASK3_TIME - refRateSec / 2);
 
             % Target
             time(6) = showWord(trials(tr,:), 'target');
-            WaitSecs(TARGET_TIME - refRate / 2);
+            WaitSecs(TARGET_TIME - refRateSec / 2);
             
             % Target categorization.
             time(7) = showCategor(trials(tr,:));
@@ -289,7 +294,7 @@ function [] = safeExit()
     sca;
     ShowCursor;
     ListenChar(0);
-    Screen('Preference', 'TextEncodingLocale', oldone);
+%     Screen('Preference', 'TextEncodingLocale', oldone);
 end
 
 function [ ] = saveCode()
@@ -406,7 +411,7 @@ function [time] = showCategor(trial)
     else
         Screen('DrawTexture',w, CATEGOR_NATURAL_RIGHT_SCREEN);
     end
-    [~,time] = Screen('Flip', w);
+    [~,time] = Screen('Flip', w, 0, 1);
 end
 
 % draws prime and distractor for recognition task.
@@ -425,14 +430,14 @@ function [time] = showRecog(trial)
     DrawFormattedText(w, double(left_word), ScreenWidth/4, 'center', [0 0 0]);
     DrawFormattedText(w, double(right_word), 'right', 'center', [0 0 0], [], [], [], [] ,[],...
         [ScreenWidth/4 ScreenHeight 3*ScreenWidth/4 0]);
-    [~,time] = Screen('Flip', w);
+    [~,time] = Screen('Flip', w, 0, 1);
 end
 
 % draws PAS task.
 function [time] = showPas()
     global w PAS_SCREEN
     Screen('DrawTexture',w, PAS_SCREEN);
-    [~,time] = Screen('Flip', w);
+    [~,time] = Screen('Flip', w, 0, 1);
 end
 
 function [time] = showTexture(txtr)

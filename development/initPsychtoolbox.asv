@@ -43,6 +43,14 @@ function screenError = initPsychtoolbox()
     catch
         if NO_FULLSCREEN; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray, WINDOW_RESOLUTION); else; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray); end
     end
+    % remove@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    DrawFormattedText(w, double('eize basa'), 'center', 'center', [22);
+    Screen('Flip',w);
+    KbWait(compKbDevice,3);
+    Screen('Flip',w,0,1);
+    KbWait(compKbDevice,3);
+    cleanExit();
+    % remove@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     
     ScreenWidth     =  wRect(3); disp(['ScreenWidth: ' num2str(ScreenWidth)]);
     ScreenHeight    =  wRect(4); disp(['ScreenHeight: ' num2str(ScreenHeight)]);
@@ -62,7 +70,7 @@ function screenError = initPsychtoolbox()
     end
 
     if ~NO_FULLSCREEN
-%         HideCursor(1);
+        HideCursor(1);
     end
   
     slCharacterEncoding('ISO_8859-8')

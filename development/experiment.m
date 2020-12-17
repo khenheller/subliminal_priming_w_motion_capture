@@ -2,6 +2,7 @@ warning('off','MATLAB:table:PreallocateCharWarning'); % prevents display of one 
 warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 clc;
 clear all;
+addpath('.\NatNetSDK')
 
 % Parameter definition.
 subNumber = 123123;

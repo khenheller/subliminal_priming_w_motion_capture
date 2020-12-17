@@ -1,9 +1,14 @@
 % Gets question type ('recog','categor','pas')
 % returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
 function [answer, traj, timecourse] = getAns(type)
-
+    
+    global ScreenWidth w;
+    
     answer = NaN;
 
+    % Add code that waits for finger toreurn to start point.
+    pause(0.5);
+    
     [touch_point, traj, timecourse] = getTraj();
     
     switch type
@@ -25,4 +30,7 @@ function [answer, traj, timecourse] = getAns(type)
                 answer = 4;
             end
     end
+    
+    % Clears screen.
+    Screen('Flip',w);
 end

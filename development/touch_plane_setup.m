@@ -1,6 +1,7 @@
 % Sets up the limits of the screen in space.
-function [touch_plane_info, natnetclient] = touch_plane_setp(varargin)
+function [touch_plane_info, natnetclient] = touch_plane_setup(varargin)
 
+calibrations_path = 'D:\khen_heller\calibrations\';
 %This gives an error (freezes) if the NET assembly is already loaded.  In
 %that case you need to quit Matlab and start over
 
@@ -16,15 +17,16 @@ else
     ip = '127.0.0.1';
 end
 
-%ask whether to collect new touch_plane_info or use saved
-ButtonName = questdlg('Use custom projector setup?', ...
-                     'Use custom projector setup?', ...
+% ask whether to collect new touch_plane_info or use saved
+ButtonName = questdlg('Use old touch plane calibration?', ...
+                     'Use old touch plane calibration?', ...
                      'Yes', 'No', 'Quit', 'Yes');
+                 
 switch ButtonName
  case 'Yes'
     customFlag = 1;
-    tableRectInfo = load('lastTableRectInfo.mat');
-    tableRectInfo = tableRectInfo.tableRectInfo; 
+    touch_plane_info = load([calibrations_path 'lastTouchInfo.mat']);
+    touch_plane_info = touch_plane_info.touch_plane_info;
  case 'No'
     customFlag = 0;
  case 'Quit'
@@ -45,6 +47,11 @@ if ( natnetclient.IsConnected == 0 )
     return
 end
 
+% Used old calibration, so the rest is unnecessary.
+if customFlag
+    return;
+end
+
 reply = 'N';
 while ~strcmpi(reply,'Y')
     
@@ -56,7 +63,7 @@ while ~strcmpi(reply,'Y')
         if customFlag
             defaultanswer={['[' int2str(tableRectInfo.fullRect(1)) ' ' int2str(tableRectInfo.fullRect(4)) ']']};
         else
-            defaultanswer={'[0 768]'};
+            defaultanswer={'[0 1080]'};
         end
         %defaultanswer={'[0 1080]'};
         answer=inputdlg(prompt,name,numlines,defaultanswer);
@@ -109,7 +116,7 @@ while ~strcmpi(reply,'Y')
         if customFlag
             defaultanswer={['[' int2str(tableRectInfo.fullRect(3)) ' ' int2str(tableRectInfo.fullRect(4)) ']']};
         else
-            defaultanswer={'[1024 768]'};
+            defaultanswer={'[1920 1080]'};
         end
         answer=inputdlg(prompt,name,numlines,defaultanswer);
 
@@ -207,7 +214,7 @@ while ~strcmpi(reply,'Y')
         if customFlag
             defaultanswer={['[' int2str(tableRectInfo.fullRect(3)) ' ' int2str(tableRectInfo.fullRect(2)) ']']};
         else
-            defaultanswer={'[1024 0]'};
+            defaultanswer={'[1920 0]'};
         end
         %defaultanswer={'[1920 0]'};
         answer=inputdlg(prompt,name,numlines,defaultanswer);
@@ -262,15 +269,15 @@ touch_plane_info.pixel_rect = double([OriginPixelCoords; XAxisPixelCoords; YAxis
 touch_plane_info.old_opto_rect = double([orig_pos; x_axis; y_axis; opp_corner]);
 
 %calculate the pixel to opto conversion
-mm1 = double((new_x_axis(1) - new_orig(1))/(XAxisPixelCoords(1) - OriginPixelCoords(1)) * 1000);
-mm2 = double((new_opp_corner(1) - new_y_axis(1))/(OppCornerPixelCoords(1) - YAxisPixelCoords(1)) * 1000);
-mm3 = double(-(new_orig(2) - new_y_axis(2))/(OriginPixelCoords(2) - YAxisPixelCoords(2)) * 1000);
-mm4 = double(-(new_x_axis(2) - new_opp_corner(2))/(XAxisPixelCoords(2) - OppCornerPixelCoords(2)) * 1000);
-touch_plane_info.mmPerPixel = mean ([mm1 mm2 mm3 mm4]);
+m1 = double((new_x_axis(1) - new_orig(1))/(XAxisPixelCoords(1) - OriginPixelCoords(1)) * 1000);
+m2 = double((new_opp_corner(1) - new_y_axis(1))/(OppCornerPixelCoords(1) - YAxisPixelCoords(1)) * 1000);
+m3 = double(-(new_orig(2) - new_y_axis(2))/(OriginPixelCoords(2) - YAxisPixelCoords(2)) * 1000);
+m4 = double(-(new_x_axis(2) - new_opp_corner(2))/(XAxisPixelCoords(2) - OppCornerPixelCoords(2)) * 1000);
+touch_plane_info.mPerPixel = mean ([m1 m2 m3 m4]);
 
 %save to file in main Matlab folder
 curDir = cd;
-cd('C:\Users\cooplab\Documents\MATLAB');
-save lastTouchInfo.mat touch_plane_info 
+cd(calibrations_path);
+save('lastTouchInfo.mat', 'touch_plane_info');
 cd(curDir);
 
