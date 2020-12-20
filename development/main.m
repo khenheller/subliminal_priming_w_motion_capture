@@ -57,7 +57,7 @@ end
 
 function [] = experiment(trials)
 
-    global compKbDevice INSTRUCTIONS_SCREEN PRACTICE_SCREEN TEST_SCREEN END_SCREEN
+    global INSTRUCTIONS_SCREEN PRACTICE_SCREEN TEST_SCREEN END_SCREEN
     
     % instructions.
     showTexture(INSTRUCTIONS_SCREEN);
@@ -66,7 +66,7 @@ function [] = experiment(trials)
     % practice.
     showTexture(PRACTICE_SCREEN);
     getInput('instruction');
-    runPractice();
+    runPractice(trials);
     
     % test.
     showTexture(TEST_SCREEN);
@@ -134,10 +134,9 @@ function [ key, Resp_Time ] = getInput(type)
     end
 end
 
-function [] = runPractice()
+function [] = runPractice(trials)
     global refRateSec;
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % in sec.
-    global FIX_FRAME MASK1_FRAME MASK2_FRAME PRIME_FRAME MASK3_FRAME TARGET_FRAME; % in frames.
     global NUM_PRACTICE_TRIALS SUB_NUM;
     global PRACTICE_MASKS;
     
@@ -157,10 +156,6 @@ function [] = runPractice()
     % Iterates over trials.
     for tr = 1 : NUM_PRACTICE_TRIALS
 
-        events = struct('frame',[FIX_FRAME MASK1_FRAME MASK2_FRAME PRIME_FRAME MASK3_FRAME TARGET_FRAME],...
-            'type', {'texture', 'texture', 'texture', 'text', 'texture', 'text'});
-        % Samples finger location.
-        markers = NATNETCLIENT.getFrame.LabeledMarker;
         % Fixation
         showFixation();
         WaitSecs(FIX_DURATION - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of TIME_FIXATION.
@@ -186,8 +181,7 @@ function [] = runPractice()
         WaitSecs(TARGET_DURATION - refRateSec / 2);
 
         % Target categorization.
-        showCategor(pratice_trials(tr,:));
-        getAns('categor');
+        getAns('categor', trials.natural_left{1});
 
         % Prime recognition.
         showRecog(pratice_trials(tr,:));
@@ -202,83 +196,86 @@ end
 function [trials] = runTrials(trials)
     global compKbDevice refRateSec;
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
-    global END_BLOCK;
+    global BLOCK_END_SCREEN BLOCK_SIZE;
     
     mistakesCounter = 0;
     
     try
         % Iterates over trials.
-        for tr = 1 : height(trials)
-            time = nan(11,1); % time of each event, taken from system's clock.
+        while ~isempty(trials)
+            time = nan(9,1); % time of each event, taken from system's clock.
             
             % block change
-            if tr ~= 1 
-                if trials.block_num{tr-1} ~= trials.block_num{tr} 
-                    time = showTexture(END_BLOCK);
+            if trials.trial{1} ~= 1 
+                if mod(trials.trial{1}, BLOCK_SIZE) == 1
+                    time = showTexture(BLOCK_END_SCREEN);
                     KbWait(compKbDevice,3);
-                    saveTable(trials,'trialsExperiment'); % @@@@@@@@@@@@@@@@@@@@@@@ Why not save table at end?
                 end               
             end
             
             % Fixation
             time(1) = showFixation();
-            trials.trial_start_time{tr} = time(1);
+            trials.trial_start_time{1} = time(1);
             WaitSecs(FIX_DURATION - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of TIME_FIXATION.
 
             % Mask 1
-            time(2) = showMask(trials(tr,:), 'mask1');
+            time(2) = showMask(trials(1,:), 'mask1');
             WaitSecs(MASK1_DURATION - refRateSec / 2);
             
             % Mask 2
-            time(3) = showMask(trials(tr,:), 'mask2');
+            time(3) = showMask(trials(1,:), 'mask2');
             WaitSecs(MASK2_DURATION - refRateSec / 2);
 
             % Prime
-            time(4) = showWord(trials(tr,:), 'prime');
+            time(4) = showWord(trials(1,:), 'prime');
             WaitSecs(PRIME_DURATION - refRateSec / 2);
 
             % Mask 3
-            time(5) = showMask(trials(tr,:), 'mask3');
+            time(5) = showMask(trials(1,:), 'mask3');
             WaitSecs(MASK3_DURATION - refRateSec / 2);
 
             % Target
-            time(6) = showWord(trials(tr,:), 'target');
+            time(6) = showWord(trials(1,:), 'target');
             
             % Target categorization.
-            [trials.target_ans_left{tr}, trials.target_traj{tr},...
-                trials.target_timecourse{tr}, time(7)] = getAns('categor', trials.natural_left(tr));
-            trials.target_rt{tr} = max(trials.target_timecourse{tr}) - min(trials.target_timecourse{tr});
-            trials(tr,:) = checkAns(trials(tr,:), 'categor');
+            [trials.target_ans_left{1}, trials.target_traj{1},...
+                trials.target_timecourse{1}, time(7)] = getAns('categor', trials.natural_left(1));
+            trials.target_rt{1} = max(trials.target_timecourse{1}) - min(trials.target_timecourse{1});
+            trials(1,:) = checkAns(trials(1,:), 'categor');
             
             % Prime recognition.
-            time(8) = showRecog(trials(tr,:));
-            [trials.prime_ans_left{tr}, trials.prime_traj{tr}, trials.prime_timecourse{tr}, ~] = getAns('recog');
-            trials.prime_rt{tr} = max(trials.prime_timecourse{tr}) - min(trials.prime_timecourse{tr});
-            trials(tr,:) = checkAns(trials(tr,:), 'recog');
+            time(8) = showRecog(trials(1,:));
+            [trials.prime_ans_left{1}, trials.prime_traj{1}, trials.prime_timecourse{1}, ~] = getAns('recog');
+            trials.prime_rt{1} = max(trials.prime_timecourse{1}) - min(trials.prime_timecourse{1});
+            trials(1,:) = checkAns(trials(1,:), 'recog');
             
             % PAS
             time(9) = showPas();
-            [trials.pas{tr}, trials.pas_traj{tr}, trials.pas_timecourse{tr}] = getAns('pas');
-            trials.pas_rt{tr} = max(trials.pas_timecourse{tr}) - min(trials.pas_timecourse{tr});
+            [trials.pas{1}, trials.pas_traj{1}, trials.pas_timecourse{1}] = getAns('pas');
+            trials.pas_rt{1} = max(trials.pas_timecourse{1}) - min(trials.pas_timecourse{1});
             
-            trials.trial_end_time{tr} = max(trials.pas_timecourse{tr});
+            trials.trial_end_time{1} = max(trials.pas_timecourse{1});
             
             % Assigns event times.
-            trials.fixation_time{tr} = time(1);
-            trials.mask1_time{tr} = time(2);
-            trials.mask2_time{tr} = time(3);
-            trials.prime_time{tr} = time(4);
-            trials.mask3_time{tr} = time(5);
-            trials.target_time{tr} = time(6);
-            trials.categor_time{tr} = time(7);
-            trials.recog_time{tr} = time(8);
-            trials.pas_time{tr} = time(9);
+            trials.fixation_time{1} = time(1);
+            trials.mask1_time{1} = time(2);
+            trials.mask2_time{1} = time(3);
+            trials.prime_time{1} = time(4);
+            trials.mask3_time{1} = time(5);
+            trials.target_time{1} = time(6);
+            trials.categor_time{1} = time(7);
+            trials.recog_time{1} = time(8);
+            trials.pas_time{1} = time(9);
             
             % Save trial to file.
+            current_trial = trials(1,:);
+            file_path = [DATA_FOLDER '/sub' num2str(current_trial.sub_num) '.csv'];
+            dlmwrite(file_path, current_trial, '-append');
+            trials(1,:) = [];
             
 
 %             % wrong key catch
-%             if trials.answer{tr} == WRONG_KEY
+%             if trials.answer{1} == WRONG_KEY
 %                 mistakesCounter = mistakesCounter + 1;
 %                 if mistakesCounter == NUMBER_OF_ERRORS_PROMPT
 %                     mistakesCounter = 0;

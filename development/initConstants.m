@@ -4,14 +4,13 @@ function [] = initConstants()
     global STIM_FOLDER DATA_FOLDER % paths
     global VARIABLE_NAMES
     global WELCOME_SCREEN LOADING_SCREEN INSTRUCTIONS_SCREEN PRACTICE_SCREEN PAS_SCREEN...
-        TEST_SCREEN END_SCREEN CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN...
+        TEST_SCREEN END_SCREEN BLOCK_END_SCREEN CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN...
         FIXATION_SCREEN MASKS PRACTICE_MASKS% experiment slides (images).
     global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
     global ERROR_CLICK_SLIDE TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
     global RIGHT LEFT; % number assigned to left/right response.
     global NUM_BLOCKS BLOCK_SIZE NUM_PRACTICE_TRIALS; % Block params.
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % timing (seconds).
-    global FIX_FRAME MASK1_FRAME MASK2_FRAME PRIME_FRAME MASK3_FRAME TARGET_FRAME; % timing (frames).
     global CODE_OUTPUT_EXPLANATION WORD_FREQ_LIST ART_NOT_COMMON NAT_NOT_COMMON...
         ART_DISTRACTORS NAT_DISTRACTORS % word lists.
     
@@ -56,6 +55,7 @@ function [] = initConstants()
     PRACTICE_SCREEN = getTextureFromHD('practice_screen.jpg');
     TEST_SCREEN = getTextureFromHD('test_screen.jpg');
     END_SCREEN = getTextureFromHD('end_screen.jpg');
+    BLOCK_END_SCREEN = getTextureFromHD('block_end_screen.jpg');
     PAS_SCREEN = getTextureFromHD('pas_screen.jpg');
     CATEGOR_NATURAL_LEFT_SCREEN = getTextureFromHD('categor_natural_left_screen.jpg');
     CATEGOR_NATURAL_RIGHT_SCREEN = getTextureFromHD('categor_natural_right_screen.jpg');
