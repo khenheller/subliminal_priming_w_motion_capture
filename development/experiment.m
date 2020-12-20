@@ -1,5 +1,7 @@
-warning('off','MATLAB:table:PreallocateCharWarning'); % prevents display of one of the warnings.
+% prevents display of some warnings.
+warning('off','MATLAB:table:PreallocateCharWarning');
 warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
+
 clc;
 clear all;
 addpath('.\NatNetSDK')

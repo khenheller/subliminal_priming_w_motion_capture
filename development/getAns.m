@@ -1,6 +1,7 @@
-% Gets question type ('recog','categor','pas')
+% Gets question type ('recog','categor','pas').
+% natural_left relevant only for type='categor'
 % returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
-function [answer, traj, timecourse] = getAns(type)
+function [answer, traj, timecourse, categor_time] = getAns(type, natural_left)
     
     global ScreenWidth w;
     
@@ -9,7 +10,7 @@ function [answer, traj, timecourse] = getAns(type)
     % Add code that waits for finger toreurn to start point.
     pause(0.5);
     
-    [touch_point, traj, timecourse] = getTraj();
+    [touch_point, traj, timecourse, categor_time] = getTraj(natural_left);
     
     switch type
         case {'recog','categor'}

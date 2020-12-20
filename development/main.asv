@@ -201,8 +201,9 @@ end
 
 function [trials] = runTrials(trials)
     global compKbDevice refRateSec;
-    global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
+    global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % in sec.
     global END_BLOCK;
+    global FIXATION;
     
     mistakesCounter = 0;
     
@@ -219,6 +220,12 @@ function [trials] = runTrials(trials)
                     saveTable(trials,'trialsExperiment'); % @@@@@@@@@@@@@@@@@@@@@@@ Why not save table at end?
                 end               
             end
+
+            % @@@@@@@@@@@@@@@@@@@@@@@@@@@@ remove @@@@@@@@@@@@@@@@@@@@@@@@
+%             events = struct('frame',[FIX_FRAME MASK1_FRAME MASK2_FRAME PRIME_FRAME MASK3_FRAME TARGET_FRAME],...
+%             'type', {'texture', 'texture', 'texture', 'text', 'texture', 'text'},...
+%             'event',{FIXATION, trials(tr,:).mask1{:}, trials(tr,:).mask2{:}, });
+            % @@@@@@@@@@@@@@@@@@@@@@@@@@@@ remove @@@@@@@@@@@@@@@@@@@@@@@@
             
             % Fixation
             time(1) = showFixation();
@@ -264,18 +271,12 @@ function [trials] = runTrials(trials)
             trials.trial_end_time{tr} = max(trials.pas_timecourse{tr});
             
             % Assigns event times.
-            trials.fixation_time{tr} = time(1);
-            trials.mask1_time{tr} = time(2);
-            trials.mask2_time{tr} = time(3);
-            trials.prime_time{tr} = time(4);
-            trials.mask3_time{tr} = time(5);
-            trials.target_time{tr} = time(6);
-            trials.categor_time{tr} = time(7);
-            trials.recog_time{tr} = time(8);
-            trials.pas_time{tr} = time(9);
-            
-            % Save trial to file.
-            
+            trials.fixation_time = time(1);
+            trials.mask1_time = time(2);
+            trials.mask2_time = time(1);
+            trials.prime_time = time(1);
+            trials.mask1_time = time(1);
+            trials.mask1_time = time(1);
 
 %             % wrong key catch
 %             if trials.answer{tr} == WRONG_KEY
@@ -288,6 +289,14 @@ function [trials] = runTrials(trials)
 %                     KbWait(compKbDevice,3);                                
 %                 end
 %             end
+            
+            if ~isnan(time(10))
+                trials.trial_end_time{tr} = time(10);
+            elseif ~isnan(time(8))
+                trials.trial_end_time{tr} = time(8);
+            else
+                trials.trial_end_time{tr} = GetSecs();                
+            end
         end
     catch e % if error occured, saves data before exit.
         saveTable(trials,'trialsExperiment');
@@ -369,10 +378,17 @@ end
 
 function [time] = showFixation()
 
-    global w % window experiment runs on. initialized in initPsychtoolbox();
-    global FIXATION_SCREEN
-    Screen('DrawTexture',w, FIXATION_SCREEN);
+    global w
+    drawFixation()
     [~,time] = Screen('Flip', w);
+    
+end
+
+function [] = drawFixation()
+
+    global w % window experiment runs on. initialized in initPsychtoolbox();
+    global FIXATION text
+    DrawFormattedText(w, FIXATION, 'center', 'center', text.Color);
     
 end
 

@@ -1,7 +1,7 @@
 function trials = newTrials() % Generates trials list.
     global CODE_OUTPUT_EXPLANATION; %path to data structure file.
     global BLOCK_SIZE NUM_BLOCKS;
-    global FIX_TIME MASK1_TIME MASK2_TIME PRIME_TIME MASK3_TIME TARGET_TIME;
+    global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION;
     global SUB_NUM;
     
     trials = CODE_OUTPUT_EXPLANATION;

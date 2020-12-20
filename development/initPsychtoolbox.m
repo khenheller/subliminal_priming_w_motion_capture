@@ -47,9 +47,8 @@ function screenError = initPsychtoolbox()
     ScreenWidth     =  wRect(3); disp(['ScreenWidth: ' num2str(ScreenWidth)]);
     ScreenHeight    =  wRect(4); disp(['ScreenHeight: ' num2str(ScreenHeight)]);
     center          =  [ScreenWidth/2; ScreenHeight/2];
-    refRateHz = Screen('NominalFrameRate', w);
-    disp(refRateHz);
-    refRateSec = refRateHz.^(-1); % in seconds.
+    refRateHz = Screen('NominalFrameRate', w); disp(['refRateHz: ' num2str(refRateHz)]);
+    refRateSec = refRateHz.^(-1); disp(['refRateSec: ' num2str(refRateSec)]); % in seconds. 
     if DEBUG == 2; refRateSec = refRateSec / debugFactor; end
     sca;
 
