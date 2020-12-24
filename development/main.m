@@ -1,10 +1,4 @@
-function [ ] = main(subNumber) 
-    %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    % @@@@@@@@@@@@@@@@@DELETE@@@@@@@@@@@@@@@@@@@@@@
-    %type: 1=rating; 2=calibration; 3=experiment; 4= objective
-    %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    
+function [ ] = main(subNumber)     
     % Subliminal priming experiment by Liad and Khen.
     % Coded by Khen (khenheller@mail.tau.ac.il)
     % Prof. Liad Mudrik's Lab, Tel-Aviv University
@@ -27,7 +21,7 @@ function [ ] = main(subNumber)
         
         % Calibration and connection to natnetclient.
         [TOUCH_PLANE_INFO, NATNETCLIENT] = touch_plane_setup();
-        START_POINT = set_start_point();
+        START_POINT = setStartPoint();
         
         initPsychtoolbox();
         initConstants();
@@ -178,10 +172,9 @@ function [] = runPractice(trials)
 
         % Target
         showWord(pratice_trials(tr,:), 'target');
-        WaitSecs(TARGET_DURATION - refRateSec / 2);
 
         % Target categorization.
-        getAns('categor', trials.natural_left{1});
+        getAns('categor', trials.natural_left(1));
 
         % Prime recognition.
         showRecog(pratice_trials(tr,:));
@@ -197,17 +190,19 @@ function [trials] = runTrials(trials)
     global compKbDevice refRateSec;
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
     global BLOCK_END_SCREEN BLOCK_SIZE;
+    global DATA_FOLDER;
+    global w;
     
     mistakesCounter = 0;
     
-    try
+    try        
         % Iterates over trials.
         while ~isempty(trials)
             time = nan(9,1); % time of each event, taken from system's clock.
             
             % block change
-            if trials.trial{1} ~= 1 
-                if mod(trials.trial{1}, BLOCK_SIZE) == 1
+            if trials.trial(1) ~= 1 
+                if mod(trials.trial(1), BLOCK_SIZE) == 1
                     time = showTexture(BLOCK_END_SCREEN);
                     KbWait(compKbDevice,3);
                 end               
@@ -238,26 +233,25 @@ function [trials] = runTrials(trials)
             time(6) = showWord(trials(1,:), 'target');
             
             % Target categorization.
-            [trials.target_ans_left{1}, trials.target_traj{1},...
-                trials.target_timecourse{1}, time(7)] = getAns('categor', trials.natural_left(1));
+            [trials.target_ans_left{1}, trials.target_x{1}, trials.target_y{1}, trials.target_z{1}, trials.target_timecourse{1},time(7)] = getAns('categor', trials.natural_left(1));
             trials.target_rt{1} = max(trials.target_timecourse{1}) - min(trials.target_timecourse{1});
             trials(1,:) = checkAns(trials(1,:), 'categor');
             
             % Prime recognition.
             time(8) = showRecog(trials(1,:));
-            [trials.prime_ans_left{1}, trials.prime_traj{1}, trials.prime_timecourse{1}, ~] = getAns('recog');
+            [trials.prime_ans_left{1}, trials.prime_x{1},trials.prime_y{1},trials.prime_z{1}, trials.prime_timecourse{1}, ~] = getAns('recog');
             trials.prime_rt{1} = max(trials.prime_timecourse{1}) - min(trials.prime_timecourse{1});
             trials(1,:) = checkAns(trials(1,:), 'recog');
             
             % PAS
             time(9) = showPas();
-            [trials.pas{1}, trials.pas_traj{1}, trials.pas_timecourse{1}] = getAns('pas');
+            [trials.pas{1}, trials.pas_x{1},trials.pas_y{1},trials.pas_z{1}, trials.pas_timecourse{1}, ~] = getAns('pas');
             trials.pas_rt{1} = max(trials.pas_timecourse{1}) - min(trials.pas_timecourse{1});
             
             trials.trial_end_time{1} = max(trials.pas_timecourse{1});
             
             % Assigns event times.
-            trials.fixation_time{1} = time(1);
+            trials.fix_time{1} = time(1);
             trials.mask1_time{1} = time(2);
             trials.mask2_time{1} = time(3);
             trials.prime_time{1} = time(4);
@@ -267,12 +261,9 @@ function [trials] = runTrials(trials)
             trials.recog_time{1} = time(8);
             trials.pas_time{1} = time(9);
             
-            % Save trial to file.
-            current_trial = trials(1,:);
-            file_path = [DATA_FOLDER '/sub' num2str(current_trial.sub_num) '.csv'];
-            dlmwrite(file_path, current_trial, '-append');
+            % Save trial to file and removes it from list.
+            saveToFile(trials(1,:));
             trials(1,:) = [];
-            
 
 %             % wrong key catch
 %             if trials.answer{1} == WRONG_KEY
@@ -366,6 +357,9 @@ end
 
 function [time] = showFixation()
 
+    % waits until finger in start point.
+    finInStartPoint();
+    
     global w % window experiment runs on. initialized in initPsychtoolbox();
     global FIXATION_SCREEN
     Screen('DrawTexture',w, FIXATION_SCREEN);
@@ -398,15 +392,15 @@ function [time] = showWord(trial, prime_or_target)
     else
         Screen('TextFont',w, fontType);
     end
-        
-    word = trial.(prime_or_target){:}; % selects prime or target.
-    DrawFormattedText(w, double(word), 'center', 'center', [0 0 0]);
-    [~,time] = Screen('Flip', w);
+
+    DrawFormattedText(w, double(trial.(prime_or_target){:}), 'center', 'center', [0 0 0]);
+    [~,time] = Screen('Flip',w,0,1);
 end
 
 % draws prime and distractor for recognition task.
 function [time] = showRecog(trial)
     global w ScreenWidth ScreenHeight
+    global RECOG_SCREEN;
     
     % waits until finger in start point.
     finInStartPoint();
@@ -419,10 +413,10 @@ function [time] = showRecog(trial)
         right_word = trial.prime{:};
     end
     
-    DrawFormattedText(w, double('איזו מבין המילים הבאות הינה המילה הממוסכת?'), 'center', 100, [0 0 0]);
-    DrawFormattedText(w, double(left_word), ScreenWidth/4, 'center', [0 0 0]);
-    DrawFormattedText(w, double(right_word), 'right', 'center', [0 0 0], [], [], [], [] ,[],...
-        [ScreenWidth/4 ScreenHeight 3*ScreenWidth/4 0]);
+    Screen('DrawTexture',w, RECOG_SCREEN);
+    DrawFormattedText(w, double(left_word), ScreenWidth*2/10, ScreenHeight*3/8, [0 0 0]);
+    DrawFormattedText(w, double(right_word), 'right', ScreenHeight*3/8, [0 0 0], [], [], [], [] ,[],...
+        [ScreenWidth/4 ScreenHeight ScreenWidth*8/10 0]);
     [~,time] = Screen('Flip', w, 0, 1);
 end
 
@@ -438,7 +432,8 @@ function [time] = showPas()
 end
 
 function [] = finInStartPoint()
-    global NATNETCLIENT TOUCH_PLANE_INFO START_POINT
+    global NATNETCLIENT TOUCH_PLANE_INFO START_POINT;
+    global abortKey;
     
     inRange = 0.02; %3D distance range finger needs to be in. in meter.
     inRangeFlag = 0;
@@ -446,15 +441,25 @@ function [] = finInStartPoint()
     % Waits until finger returns to start pos.
     while ~inRangeFlag
 
+        % User can exit in this time.
+        [~, ~, key, ~] = KbCheck();
+        if key(abortKey)
+            cleanExit();
+        end
+        
         % samples location and time.
         markers = NATNETCLIENT.getFrame.LabeledMarker;
-        cur_location = double([markers(1).x, markers(1).y, markers(1).z]);
-        cur_location = transform4(TOUCH_PLANE_INFO.T_opto_plane, cur_location); % transform to screen related space.
         
-        curRange = sqrt(sum((curLocation-START_POINT).^2));
+        % checks if there is a marker.
+        if ~isempty(markers(1))
+            cur_location = double([markers(1).x, markers(1).y, markers(1).z]);
+            cur_location = transform4(TOUCH_PLANE_INFO.T_opto_plane, cur_location); % transform to screen related space.
 
-        if curRange < inRange
-            inRangeFlag = 1;
+            curRange = sqrt(sum((cur_location-START_POINT).^2));
+
+            if curRange < inRange
+                inRangeFlag = 1;
+            end
         end
     end
 end

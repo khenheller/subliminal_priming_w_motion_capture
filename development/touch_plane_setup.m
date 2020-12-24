@@ -273,7 +273,8 @@ m1 = double((new_x_axis(1) - new_orig(1))/(XAxisPixelCoords(1) - OriginPixelCoor
 m2 = double((new_opp_corner(1) - new_y_axis(1))/(OppCornerPixelCoords(1) - YAxisPixelCoords(1)) * 1000);
 m3 = double(-(new_orig(2) - new_y_axis(2))/(OriginPixelCoords(2) - YAxisPixelCoords(2)) * 1000);
 m4 = double(-(new_x_axis(2) - new_opp_corner(2))/(XAxisPixelCoords(2) - OppCornerPixelCoords(2)) * 1000);
-touch_plane_info.mPerPixel = mean ([m1 m2 m3 m4]);
+mmPerPixel = mean ([m1 m2 m3 m4]); % this is mm per pixel.
+touch_plane_info.mPerPixel = mmPerPixel / 1000; % now meter per pixel.
 
 %save to file in main Matlab folder
 curDir = cd;

@@ -1,11 +1,11 @@
 function [] = initConstants()
 
     global fontType handFontType fontSize fontColor  % text params.
-    global STIM_FOLDER DATA_FOLDER % paths
+    global STIM_FOLDER DATA_FOLDER DATA_FOLDER_WIN % paths
     global VARIABLE_NAMES
     global WELCOME_SCREEN LOADING_SCREEN INSTRUCTIONS_SCREEN PRACTICE_SCREEN PAS_SCREEN...
         TEST_SCREEN END_SCREEN BLOCK_END_SCREEN CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN...
-        FIXATION_SCREEN MASKS PRACTICE_MASKS% experiment slides (images).
+        RECOG_SCREEN FIXATION_SCREEN RESPOND_FASTER_SCREEN MASKS PRACTICE_MASKS% experiment slides (images).
     global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
     global ERROR_CLICK_SLIDE TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
     global RIGHT LEFT; % number assigned to left/right response.
@@ -13,12 +13,13 @@ function [] = initConstants()
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % timing (seconds).
     global CODE_OUTPUT_EXPLANATION WORD_FREQ_LIST ART_NOT_COMMON NAT_NOT_COMMON...
         ART_DISTRACTORS NAT_DISTRACTORS % word lists.
+    global ONE_ROW_DATA MULTI_ROW_DATA ONE_ROW_VARS MULTI_ROW_VARS;
     
     NUMBER_OF_ERRORS_PROMPT = 3;
     TIME_SHOW_PROMPT = 1; % seconds
     
     NUM_BLOCKS = 4;
-    BLOCK_SIZE = 120;
+    BLOCK_SIZE = 12;%120; % has to be a multiple of 4.
     NUM_PRACTICE_TRIALS = 4;
     
     % duration in sec
@@ -32,6 +33,7 @@ function [] = initConstants()
     % stimuli folders addresses
     STIM_FOLDER = './stimuli';
     DATA_FOLDER = './data';
+    DATA_FOLDER_WIN = replace(DATA_FOLDER, '/', '\');
 %     CODE_FOLDER = 'code';
     
     WRONG_KEY = 997;
@@ -56,10 +58,12 @@ function [] = initConstants()
     TEST_SCREEN = getTextureFromHD('test_screen.jpg');
     END_SCREEN = getTextureFromHD('end_screen.jpg');
     BLOCK_END_SCREEN = getTextureFromHD('block_end_screen.jpg');
-    PAS_SCREEN = getTextureFromHD('pas_screen.jpg');
     CATEGOR_NATURAL_LEFT_SCREEN = getTextureFromHD('categor_natural_left_screen.jpg');
     CATEGOR_NATURAL_RIGHT_SCREEN = getTextureFromHD('categor_natural_right_screen.jpg');
+    RECOG_SCREEN = getTextureFromHD('recog_screen.jpg');
+    PAS_SCREEN = getTextureFromHD('pas_screen.jpg');
     FIXATION_SCREEN = getTextureFromHD('fixation_screen.jpg');
+    RESPOND_FASTER_SCREEN = getTextureFromHD('respond_faster_screen.jpg');
     ERROR_CLICK_SLIDE = getTextureFromHD('errorClickMessage.jpg');
     
     NUM_MASKS = 60;
@@ -79,6 +83,21 @@ function [] = initConstants()
     NAT_NOT_COMMON = readtable([STIM_FOLDER '/word_lists/nat_not_common.xlsx']);
     ART_DISTRACTORS = readtable([STIM_FOLDER '/word_lists/art_distractors.xlsx']);
     NAT_DISTRACTORS = readtable([STIM_FOLDER '/word_lists/nat_distractors.xlsx']);
+    
+    % output data that has 1 row per trial. used in saveToFile.m.
+    ONE_ROW_VARS = {'prime','prime_natural','target','target_natural','distractor',...
+        'prime_left','same_w','natural_left','mask1','mask2','mask3','fix_duration',...
+        'mask1_duration','mask2_duration','prime_duration','mask3_duration','target_duration',...
+        'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time',...
+        'recog_time','pas_time','target_ans_left','target_ans_nat','target_correct','target_rt',...
+        'prime_ans_left','prime_correct','prime_rt','pas','pas_rt','trial_start_time','trial_end_time',...
+        'trial','block_num','cat_block','sub_num'};
+    [~,ONE_ROW_DATA] = ismember(ONE_ROW_VARS, CODE_OUTPUT_EXPLANATION.Properties.VariableNames);
+    % output that has many rows per trial.
+    MULTI_ROW_VARS = {'target_x','target_y','target_z','target_timecourse',...
+        'prime_x','prime_y','prime_z','prime_timecourse',...
+        'pas_x','pas_y','pas_z','pas_timecourse'};
+    [~,MULTI_ROW_DATA] = ismember(MULTI_ROW_VARS, CODE_OUTPUT_EXPLANATION.Properties.VariableNames);
     
     % WARNING! ANY CHANGE WILL BREAK THE CODE! Use cntrl+h only! 
     VARIABLE_NAMES = {'prime', 'prime_natural', 'target', 'target_natural', 'distractor',...

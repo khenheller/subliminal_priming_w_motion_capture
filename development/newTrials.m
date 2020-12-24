@@ -34,12 +34,12 @@ function trials = newTrials() % Generates trials list.
     % In categorization task, "natural" is on the left for odd sub numbers.
     trials.natural_left = ones(height(trials),1) * rem(SUB_NUM, 2);
     % assign time.
-    trials.fix_time = ones(height(trials),1) * FIX_TIME;
-    trials.mask1_time = ones(height(trials),1) * MASK1_TIME;
-    trials.mask2_time = ones(height(trials),1) * MASK2_TIME;
-    trials.prime_time = ones(height(trials),1) * PRIME_TIME;
-    trials.mask3_time = ones(height(trials),1) * MASK3_TIME;
-    trials.target_time = ones(height(trials),1) * TARGET_TIME;
+    trials.fix_duration = ones(height(trials),1) * FIX_DURATION;
+    trials.mask1_duration = ones(height(trials),1) * MASK1_DURATION;
+    trials.mask2_duration = ones(height(trials),1) * MASK2_DURATION;
+    trials.prime_duration = ones(height(trials),1) * PRIME_DURATION;
+    trials.mask3_duration = ones(height(trials),1) * MASK3_DURATION;
+    trials.target_duration = ones(height(trials),1) * TARGET_DURATION;
 end
 
 function trials = setDefault(trials)

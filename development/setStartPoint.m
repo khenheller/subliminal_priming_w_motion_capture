@@ -1,26 +1,24 @@
 function [start_point] = setStartPoint()
-    global NATNETCLIENT
+    global NATNETCLIENT TOUCH_PLANE_INFO
 
     reply='N';
     while ~strcmpi(reply,'Y')
 
-        answer = {};
-        while isempty(answer)        
-            prompt={'Pixel Coords: '};
-            name='Finger starting point';
-            numlines=[1,35]; %this width allows for title to be seen
-            defaultanswer={'[1920 1080]'};
-            
-            answer=inputdlg(prompt,name,numlines,defaultanswer);
+        % Asks if finger is at start point.
+        Question = {'Place finger at starting point and then press ok'};
+        ButtonName = questdlg(Question, 'Wait for finger positioning', 'Ok', 'Quit', 'Ok');
 
-            %convert from string to number data for output variables
-            if ~isempty(answer)
-                XAxisPixelCoords = str2num(answer{1});
-            end
+        switch ButtonName
+            case 'Ok'
+            case 'Quit'
+                clear all; close all; Screen('CloseAll'); 
+                disp('*** Exiting Program ***');
+                return
         end
 
         markers = NATNETCLIENT.getFrame.LabeledMarker;
         cur_location = [markers(1).x markers(1).y markers(1).z];
+        cur_location = transform4(TOUCH_PLANE_INFO.T_opto_plane, cur_location); % transform to screen related space.
 
         Question = {'STARTING POINT pre coordinate transform:'...
             ''...
