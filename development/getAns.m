@@ -2,12 +2,10 @@
 % varargin relevant only for type='categor', indicates on which side natural
 % is dispayed.
 % returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
-function [answer, traj_x,traj_y,traj_z, timecourse, categor_time] = getAns(type, varargin)
+function [output] = getAns(type, varargin)
     
-    [touch_point, traj, timecourse, categor_time] = getTraj(varargin);
-    traj_x = traj(:,1);
-    traj_y = traj(:,2);
-    traj_z = traj(:,3);
+    [touch_point, traj_to, timecourse_to, categor_time] = getTraj('to_screen',varargin);
+    [~, traj_from, timecourse_from, ~]                  = getTraj('from_screen');
     
     global ScreenWidth w;
     
@@ -33,7 +31,6 @@ function [answer, traj_x,traj_y,traj_z, timecourse, categor_time] = getAns(type,
             end
     end
     
-    % Clears screen.
-    Screen('Flip',w);
-    Screen('Flip',w);
+    output = struct('answer',answer, 'traj_to',traj_to, 'timecourse_to',timecourse_to,...
+        'traj_from',traj_from, 'timecourse_from',timecourse_from, 'categor_time',categor_time);
 end

@@ -1,12 +1,15 @@
-% Records reaching trajectory (in m), time course (sec) and touch point (in pixels).
+% Records reaching trajectory (in m), time course (sec) to OR from screen.
+% when reaching to screen also records touch point (in pixels).
 % For categorization question:
 %   waits until target display time passes and then shows categor screen.
-%   varargin: natural displayed left(1)/right(0) side on categor screen.
-function [touch_point, traj, timecourse, categor_time] = getTraj(varargin)
+% traj_type - 'to_screen', 'from_screen'
+% varargin - natural displayed left(1)/right(0) side on categor screen.
+function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, varargin)
     global TOUCH_PLANE_INFO NATNETCLIENT; % generated with touch_plane_setup.m
     global refRateHz refRateSec w;
     global TARGET_DURATION;
     global RESPOND_FASTER_SCREEN;
+    global START_POINT;
     
     finger_size = 0.02; % marker distance (m) from screen when touching it.
     
@@ -16,12 +19,17 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(varargin)
     traj = NaN(sample_length, 3); % 3 cordinates (x,y,z).
     timecourse = NaN(sample_length,1);
     categor_time = NaN;
+    curRange = NaN;
+    
+    keep_screen = (traj_type == 'to_screen');
+    
+    start_point_range = 0.02; %3D distance from start point which finger needs to be in (in meter).
     
     % records trajectory upto screen.
     for frame_i = 1:sample_length
 
         % syncs trajectory sampling to screen refRate.
-        [~,timecourse(frame_i)] = Screen('Flip',w,0,1);
+        [~,timecourse(frame_i)] = Screen('Flip',w,0,keep_screen);
         
         % samples location.
         markers = NATNETCLIENT.getFrame.LabeledMarker;
@@ -31,14 +39,22 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(varargin)
             cur_location = double([markers(1).x, markers(1).y, markers(1).z]);
             traj(frame_i,:) = transform4(TOUCH_PLANE_INFO.T_opto_plane, cur_location); % transform to screen related space.
             
-            % identify screen touch
-            if traj(frame_i,3)-finger_size < 0
-                touch_point = traj(frame_i,:) / TOUCH_PLANE_INFO.mPerPixel;
-                return;
+            % REACHING TO SCREEN: identify screen touch.
+            if traj_type=='to_screen'
+                if traj(frame_i,3)-finger_size < 0
+                    touch_point = traj(frame_i,:) / TOUCH_PLANE_INFO.mPerPixel;
+                    return;
+                end
+            % RETURNING FROM SCREEN: identify start point touch.
+            else
+                curRange = sqrt(sum((traj(frame_i,:)-START_POINT).^2));
+                if curRange < start_point_range
+                    return;
+                end
             end
         end
 
-        % disp categor screen after target.
+        % disp categorization screen after target.
         if (~isempty(varargin{:}) && (frame_i+1 == TARGET_DURATION*refRateHz))
             showCategor(varargin{:}{:});
             categor_time = timecourse(frame_i) + refRateSec;

@@ -210,7 +210,6 @@ function [trials] = runTrials(trials)
             
             % Fixation
             time(1) = showFixation();
-            trials.trial_start_time{1} = time(1);
             WaitSecs(FIX_DURATION - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of TIME_FIXATION.
 
             % Mask 1
@@ -233,32 +232,18 @@ function [trials] = runTrials(trials)
             time(6) = showWord(trials(1,:), 'target');
             
             % Target categorization.
-            [trials.target_ans_left{1}, trials.target_x{1}, trials.target_y{1}, trials.target_z{1}, trials.target_timecourse{1},time(7)] = getAns('categor', trials.natural_left(1));
-            trials.target_rt{1} = max(trials.target_timecourse{1}) - min(trials.target_timecourse{1});
-            trials(1,:) = checkAns(trials(1,:), 'categor');
+            target_ans = getAns('categor', trials.natural_left(1));
             
             % Prime recognition.
             time(8) = showRecog(trials(1,:));
-            [trials.prime_ans_left{1}, trials.prime_x{1},trials.prime_y{1},trials.prime_z{1}, trials.prime_timecourse{1}, ~] = getAns('recog');
-            trials.prime_rt{1} = max(trials.prime_timecourse{1}) - min(trials.prime_timecourse{1});
-            trials(1,:) = checkAns(trials(1,:), 'recog');
+            prime_ans = getAns('recog');
             
             % PAS
             time(9) = showPas();
-            [trials.pas{1}, trials.pas_rt{1}] = getInput('pas');
+            [pas, pas_rt] = getInput('pas');
             
-            trials.trial_end_time{1} = max(trials.pas_timecourse{1});
-            
-            % Assigns event times.
-            trials.fix_time{1} = time(1);
-            trials.mask1_time{1} = time(2);
-            trials.mask2_time{1} = time(3);
-            trials.prime_time{1} = time(4);
-            trials.mask3_time{1} = time(5);
-            trials.target_time{1} = time(6);
-            trials.categor_time{1} = time(7);
-            trials.recog_time{1} = time(8);
-            trials.pas_time{1} = time(9);
+            % Assigns collected data to trials.
+            trials = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_rt);
             
             % Save trial to file and removes it from list.
             saveToFile(trials(1,:));
@@ -401,9 +386,6 @@ function [time] = showRecog(trial)
     global w ScreenWidth ScreenHeight
     global RECOG_SCREEN;
     
-    % waits until finger in start point.
-    finInStartPoint();
-    
     if trial.prime_left
         left_word = trial.prime{:};
         right_word = trial.distractor{:};
@@ -422,9 +404,6 @@ end
 % draws PAS task.
 function [time] = showPas()
     global w PAS_SCREEN
-    
-    % waits until finger in start point.
-    finInStartPoint();
     
     Screen('DrawTexture',w, PAS_SCREEN);
     [~,time] = Screen('Flip', w, 0, 1);
@@ -472,4 +451,48 @@ end
 function [ txt ] = textProcess( txt )
     txt = double(txt);
 %     txt = flip(txt);
+end
+
+function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_rt)
+    trials.trial_end_time{1} = max(trials.pas_timecourse{1});
+    trials.trial_start_time{1} = time(1);
+
+    % Assigns event times.
+    trials.fix_time{1} = time(1);
+    trials.mask1_time{1} = time(2);
+    trials.mask2_time{1} = time(3);
+    trials.prime_time{1} = time(4);
+    trials.mask3_time{1} = time(5);
+    trials.target_time{1} = time(6);
+    trials.categor_time{1} = target_ans.categor_time;
+    trials.recog_time{1} = time(8);
+    trials.pas_time{1} = time(9);
+
+    % Save responses.
+    trials.target_ans_left{1} = target_ans.answer;
+    trials.target_x_to{1} = target_ans.traj_to(:,1);
+    trials.target_y_to{1} = target_ans.traj_to(:,2);
+    trials.target_z_to{1} = target_ans.traj_to(:,3);
+    trials.target_x_from{1} = target_ans.traj_from(:,1);
+    trials.target_y_from{1} = target_ans.traj_from(:,2);
+    trials.target_z_from{1} = target_ans.traj_from(:,3);
+    trials.target_timecourse_to{1} = target_ans.timcourse_to;
+    trials.target_timecourse_from{1} = target_ans.timcourse_from;
+    trials.target_rt{1} = max(target_ans.timcourse_to) - min(target_ans.timcourse_to);
+    trials(1,:) = checkAns(trials(1,:), 'categor');
+
+    trials.prime_ans_left{1} = prime_ans.answer;
+    trials.prime_x_to{1} = prime_ans.traj_to(:,1);
+    trials.prime_y_to{1} = prime_ans.traj_to(:,2);
+    trials.prime_z_to{1} = prime_ans.traj_to(:,3);
+    trials.prime_x_from{1} = prime_ans.traj_from(:,1);
+    trials.prime_y_from{1} = prime_ans.traj_from(:,2);
+    trials.prime_z_from{1} = prime_ans.traj_from(:,3);
+    trials.prime_timecourse_to{1} = prime_ans.timcourse_to;
+    trials.prime_timecourse_from{1} = prime_ans.timcourse_from;
+    trials.prime_rt{1} = max(prime_ans.timcourse_to) - min(prime_ans.timcourse_to);
+    trials(1,:) = checkAns(trials(1,:), 'recog');
+
+    trials.pas{1} = pas;
+    trials.pas_rt{1} = pas_rt;
 end
