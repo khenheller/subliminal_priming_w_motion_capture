@@ -33,8 +33,7 @@ function [ ] = main(subNumber)
         trials = newTrials();
         showTexture(WELCOME_SCREEN);
         KbWait(compKbDevice,3);
-        experiment(trials);      
-        saveTable(trials,'trials'); % @@@@@@@@@@@ do we need this? we save inside runTrials.
+        experiment(trials);
         
         NATNETCLIENT.disconnect;
         
@@ -69,63 +68,6 @@ function [] = experiment(trials)
     
     showTexture(END_SCREEN);
     getInput('instruction');
-end
-
-% Waits for response to question displayed to participant.
-% type: 'instruction','categor', 'recog', 'pas'.
-function [ key, Resp_Time ] = getInput(type)
-
-    global compKbDevice abortKey rightKey leftKey WRONG_KEY One Two Three Four
-    global RIGHT LEFT
-
-    key = [];
-    Resp_Time = [];
-    
-    [Resp_Time, Resp] = KbWait(compKbDevice, 2); % Waits for keypress.
-    switch type
-        case ('instruction')
-            if Resp(abortKey)
-                key = abortKey;
-                cleanExit();
-            end
-        case ('categor')
-            if Resp(abortKey)
-                key = abortKey;
-                cleanExit();
-            elseif Resp(rightKey)
-                key = RIGHT;
-            elseif Resp(leftKey)
-                key = LEFT; 
-            else
-                key = WRONG_KEY;
-            end
-        case ('recog')
-            if Resp(abortKey)
-                key = abortKey;
-                cleanExit();
-            elseif Resp(rightKey)
-                key = RIGHT;
-            elseif Resp(leftKey)
-                key = LEFT; 
-            else
-                key = WRONG_KEY;
-            end
-        case ('pas')
-            if Resp(abortKey)
-                key = abortKey;
-                cleanExit();
-            elseif Resp(One)
-                key = 1;
-            elseif Resp(Two)
-                key = 2;
-            elseif Resp(Three)
-                key = 3;
-            elseif Resp(Four)
-                key = 4;
-            else
-                key = WRONG_KEY;
-            end
-    end
 end
 
 function [] = runPractice(trials)
@@ -190,8 +132,6 @@ function [trials] = runTrials(trials)
     global compKbDevice refRateSec;
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
     global BLOCK_END_SCREEN BLOCK_SIZE;
-    global DATA_FOLDER;
-    global w;
     
     mistakesCounter = 0;
     
@@ -280,48 +220,6 @@ function [] = safeExit()
 %     Screen('Preference', 'TextEncodingLocale', oldone);
 end
 
-function [ ] = saveCode()
-    % SAVECODE saves the code into the code folder
-    % output:
-    % -------
-    % This code file is saved into the code folder ("/data/code/").
-
-    global SUB_NUM CODE_FOLDER DATA_FOLDER %subject number
-    try
-        fileStruct = dir('*.m');
-
-        mkdir(fullfile(pwd,DATA_FOLDER,num2str(SUB_NUM),CODE_FOLDER));
-
-        prf1 = sprintf('%d',SUB_NUM);
-        for i = 1 : length(fileStruct)
-            k = 0;
-            k = strfind(fileStruct(i).name,'.m');
-            if (k ~= 0)
-                fileName = fileStruct(i).name;
-                source = fullfile(pwd,fileName);
-                destination = fullfile(pwd,DATA_FOLDER,num2str(SUB_NUM),CODE_FOLDER,strcat(fileName,'_',prf1,'.m'));
-                copyfile(source,destination);
-            end
-        end
-    catch
-        fileStruct = dir('*.m');
-
-        mkdir(fullfile(pwd,DATA_FOLDER,num2str(SUB_NUM),CODE_FOLDER));
-
-        prf1 = sprintf('%d',SUB_NUM);
-        for i = 1 : length(fileStruct)
-            k = 0;
-            k = strfind(fileStruct(i).name,'.m');
-            if (k ~= 0)
-                fileName = fileStruct(i).name;
-                source = fullfile(pwd,fileName);
-                destination = fullfile(pwd,DATA_FOLDER,num2str(SUB_NUM),CODE_FOLDER,strcat(fileName,'_',prf1,'.m'));
-                copyfile(source,destination);
-            end
-        end
-    end
-end
-
 function [] = saveTable(tbl,type)
 
     global DATA_FOLDER SUB_NUM %subject number
@@ -340,7 +238,6 @@ function [] = saveTable(tbl,type)
 end
 
 function [time] = showFixation()
-
     % waits until finger in start point.
     finInStartPoint();
     
@@ -348,7 +245,6 @@ function [time] = showFixation()
     global FIXATION_SCREEN
     Screen('DrawTexture',w, FIXATION_SCREEN);
     [~,time] = Screen('Flip', w);
-    
 end
 
 function [time] = showMask(trial, mask) % 'mask' - which mask to show (1st / 2nd / 3rd).
@@ -358,13 +254,9 @@ function [time] = showMask(trial, mask) % 'mask' - which mask to show (1st / 2nd
 end
 
 function [ time ] = showMessage( message )
-
     global w text
-
-%     Screen('DrawText', w, textProcess(message), CENTER(1), CENTER(2),0);
     DrawFormattedText(w, textProcess(message), 'center', 'center', text.Color);
     [~, time] = Screen('Flip', w);
-
 end
 
 function [time] = showWord(trial, prime_or_target)
@@ -409,39 +301,6 @@ function [time] = showPas()
     [~,time] = Screen('Flip', w, 0, 1);
 end
 
-function [] = finInStartPoint()
-    global NATNETCLIENT TOUCH_PLANE_INFO START_POINT;
-    global abortKey;
-    
-    inRange = 0.02; %3D distance range finger needs to be in. in meter.
-    inRangeFlag = 0;
-    
-    % Waits until finger returns to start pos.
-    while ~inRangeFlag
-
-        % User can exit in this time.
-        [~, ~, key, ~] = KbCheck();
-        if key(abortKey)
-            cleanExit();
-        end
-        
-        % samples location and time.
-        markers = NATNETCLIENT.getFrame.LabeledMarker;
-        
-        % checks if there is a marker.
-        if ~isempty(markers(1))
-            cur_location = double([markers(1).x, markers(1).y, markers(1).z]);
-            cur_location = transform4(TOUCH_PLANE_INFO.T_opto_plane, cur_location); % transform to screen related space.
-
-            curRange = sqrt(sum((cur_location-START_POINT).^2));
-
-            if curRange < inRange
-                inRangeFlag = 1;
-            end
-        end
-    end
-end
-
 function [time] = showTexture(txtr)
     global w
     Screen('DrawTexture',w, txtr);
@@ -453,6 +312,7 @@ function [ txt ] = textProcess( txt )
 %     txt = flip(txt);
 end
 
+% Assigns data captured in this trial to 'trials'.
 function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_rt)
     trials.trial_end_time{1} = max(trials.pas_timecourse{1});
     trials.trial_start_time{1} = time(1);
