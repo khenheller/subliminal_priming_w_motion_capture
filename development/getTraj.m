@@ -33,7 +33,7 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(varargin)
             
             % identify screen touch
             if traj(frame_i,3)-finger_size < 0
-                touch_point = traj(frame_i,:) / TOUCH_PLANE_INFO.mPerPixel;% You may need Y to be: ScreenHeight - cur_location/mm_per_pixel
+                touch_point = traj(frame_i,:) / TOUCH_PLANE_INFO.mPerPixel;
                 return;
             end
         end

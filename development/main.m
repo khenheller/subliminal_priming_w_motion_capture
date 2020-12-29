@@ -182,7 +182,7 @@ function [] = runPractice(trials)
 
         % PAS
         showPas();
-        getAns('pas');
+        getInput('pas');
     end
 end
 
@@ -245,8 +245,7 @@ function [trials] = runTrials(trials)
             
             % PAS
             time(9) = showPas();
-            [trials.pas{1}, trials.pas_x{1},trials.pas_y{1},trials.pas_z{1}, trials.pas_timecourse{1}, ~] = getAns('pas');
-            trials.pas_rt{1} = max(trials.pas_timecourse{1}) - min(trials.pas_timecourse{1});
+            [trials.pas{1}, trials.pas_rt{1}] = getInput('pas');
             
             trials.trial_end_time{1} = max(trials.pas_timecourse{1});
             
