@@ -19,9 +19,13 @@ function trials = newTrials() % Generates trials list.
         block_range = BLOCK_SIZE*(i-1) +1 : BLOCK_SIZE*i; % block's trials numbers.
         
         success = 0;
-        while ~success % Tries to create block until succeeds.
+        iAttempt = 1;
+        while ~success && iAttempt<1000 % Tries to create block until succeeds.
             [trials(block_range, :), success] = newBlock();
+            iAttempt = iAttempt + 1;
         end
+        
+        if ~success; error(['Failed to generate block number ' num2str(iBlock)]); end
         
         % Assigns block number.
         trials.block_num(block_range) = table2cell(table(repmat(i,BLOCK_SIZE,1)));

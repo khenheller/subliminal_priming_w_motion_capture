@@ -2,7 +2,7 @@
 % Trials are shuffled: no consequetive target/prime word.
 function [block, success] = newBlock()
     global BLOCK_SIZE;
-    global CODE_OUTPUT_EXPLANATION WORD_FREQ_LIST ART_NOT_COMMON NAT_NOT_COMMON ART_DISTRACTORS NAT_DISTRACTORS;
+    global CODE_OUTPUT_EXPLANATION WORD_LIST ART_NOT_COMMON NAT_NOT_COMMON ART_DISTRACTORS NAT_DISTRACTORS;
     global MASKS;
     
     block = CODE_OUTPUT_EXPLANATION;
@@ -13,13 +13,13 @@ function [block, success] = newBlock()
     block = empty_table;
     
     % stimuli words.
-    words = WORD_FREQ_LIST;
+    words = WORD_LIST;
     % the words that don't share common letters with each stimuli word.
     art_not_common = ART_NOT_COMMON;
     nat_not_common = NAT_NOT_COMMON;
     nat_distractors = NAT_DISTRACTORS;
     art_distractors = ART_DISTRACTORS;
-    nat_distractors = [nat_distractors; nat_distractors];
+    nat_distractors = [nat_distractors; nat_distractors]; % on 2 condition out of 4, the prime is nat, so we duplicate the list.
     art_distractors = [art_distractors; art_distractors];
     
     % words structure:
@@ -50,8 +50,10 @@ function [block, success] = newBlock()
     block.prime_correct = zeros(height(block),1);
     
     % assigns target word to each trial.
-    block.target(block.target_natural==1) = repmat(words.natural, 2,1);
-    block.target(block.target_natural==0) = repmat(words.artificial, 2,1);
+    nat_target_words_in_block = datasample(words.natural, BLOCK_SIZE/4); % 4 conditions in each block.
+    art_target_words_in_block = datasample(words.artificial, BLOCK_SIZE/4);
+    block.target(block.target_natural==1) = repmat(nat_target_words_in_block, 2,1); % 2 out of 4 conditions have natural targets.
+    block.target(block.target_natural==0) = repmat(art_target_words_in_block, 2,1);
     
     % Adds prime, distractor and masks to each trial.
     for i = 1:height(block)
@@ -62,22 +64,18 @@ function [block, success] = newBlock()
             success_p = 1;  
         else                % prime!=target.
             if block.target_natural(i)  % Target is natural, prime isn't.
-                target_index = find(ismember(words.natural, block.target{i}));
-                [nat_not_common, block.prime(i), success_p] = getWord(nat_not_common, target_index, block.target{i}, words.artificial(1));
+                [nat_not_common, block.prime(i), success_p] = getWord(nat_not_common, block.target{i});
                 
             else                        % Target is artficial, prime isn't.
-                target_index = find(ismember(words.artificial, block.target{i}));
-                [art_not_common, block.prime(i), success_p] = getWord(art_not_common, target_index, block.target{i}, words.natural(1));
+                [art_not_common, block.prime(i), success_p] = getWord(art_not_common, block.target{i});
             end
         end
         
         % Adds a distractor.
         if block.prime_natural(i)   % Target is natural, distractor is too.
-            prime_index = find(ismember(words.natural, block.prime{i}));
-            [nat_distractors, block.distractor(i), success_d] = getWord(nat_distractors, prime_index, block.prime{i}, words.natural(1));
+            [nat_distractors, block.distractor(i), success_d] = getWord(nat_distractors, block.prime{i});
         else                        % Target is artficial, thus distractor is too.
-            prime_index = find(ismember(words.artificial, block.prime{i}));
-            [art_distractors, block.distractor(i), success_d] = getWord(art_distractors, prime_index, block.prime{i}, words.artificial(1));
+            [art_distractors, block.distractor(i), success_d] = getWord(art_distractors, block.prime{i});
         end
         
         % Adds Masks.
@@ -93,23 +91,30 @@ function [block, success] = newBlock()
     block = shuffle(block);
 end
 
-% Gets lists of words (not_common.xlsx / distractors.xlsx).
+% recieves lists of words (not_common.xlsx / distractors.xlsx).
 % samples randomly a word from list number word_index.
 % erases that word from the list.
-function [word_list, rand_word, success] = getWord(word_list, word_index, word, default_value)
-    % Checks if list empty.
-    if isequal(word_list.(word_index), cell(height(word_list),1))
-        disp(['no words left in list for: ' word]);
-        rand_word = {default_value}; % assign existing word to prevent code crash.
+function [word_list, rand_word, success] = getWord(word_list, word)
+
+    global WORD_LIST;
+    
+    [word_index, word_type] = find(ismember(WORD_LIST{:,:},word));
+    
+    % If list empty, fail.
+    empty_column = cell(height(word_list),1);
+    if isequal(word_list.(word_index), empty_column)
+        disp(['no words left in list for: ' WORD_LIST(word_index,word_type)]);
+        rand_word = {'@@failed@@'}; % assign word to prevent code crash.
         success = 0;
         return;
     end
     success = 1;
-    % samples randomly, exits loop after gets real value.
-    while true 
-        [rand_word, erase] = datasample(word_list.(word_index), 1);
+    
+    % Samples randomly, exits loop when sample isn't empty.
+    while true
+        [rand_word, erase_i] = datasample(word_list.(word_index), 1);
         if ~isequal(rand_word, cell(1,1)); break; end
     end
     % erases prime from list so it won't repeat.
-    word_list(erase, :) = table('Size',[1 1],'VariableTypes',{'char'});
+    word_list(erase_i, :) = table('Size',[1 1],'VariableTypes',{'char'});
 end
