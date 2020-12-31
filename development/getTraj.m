@@ -21,7 +21,7 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
     categor_time = NaN;
     curRange = NaN;
     
-    keep_screen = (traj_type == 'to_screen');
+    keep_screen = strcmp(traj_type, 'to_screen') * 1;
     
     start_point_range = 0.02; %3D distance from start point which finger needs to be in (in meter).
     
@@ -40,7 +40,7 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
             traj(frame_i,:) = transform4(TOUCH_PLANE_INFO.T_opto_plane, cur_location); % transform to screen related space.
             
             % REACHING TO SCREEN: identify screen touch.
-            if traj_type=='to_screen'
+            if strcmp(traj_type, 'to_screen')
                 if traj(frame_i,3)-finger_size < 0
                     touch_point = traj(frame_i,:) / TOUCH_PLANE_INFO.mPerPixel;
                     return;

@@ -1,8 +1,8 @@
-% Appends trial to subject's trials file.
+% Appends a trial to subject's trials file.
 % If file doesn't exist, creates it.
 function [] = saveToFile(trial)
     global DATA_FOLDER_WIN;
-    global ONE_ROW_DATA MULTI_ROW_DATA MULTI_ROW_VARS;
+    global ONE_ROW_VARS_I MULTI_ROW_VARS_I MULTI_ROW_VARS;
     
     temp_data_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data_temp.csv'];
     temp_traj_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj_temp.csv'];
@@ -12,12 +12,13 @@ function [] = saveToFile(trial)
     both_traj_files = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj*.csv'];
     
     % seperates data (1 row) from trajectories (many rows).
-    trial_data = trial(1,ONE_ROW_DATA);
-    trial_traj = trial(:,MULTI_ROW_DATA);
+    trial_data = trial(1,ONE_ROW_VARS_I);
+    trial_traj = trial(:,MULTI_ROW_VARS_I);
     trial_traj_matrix = cell2mat(trial_traj{:,:}(:,:)); % convert to matrix to unpack x,y and z cells.
     trial_num_vec = ones(length(trial_traj_matrix),1) * trial.trial;
-    trial_traj_matrix = [trial_num_vec, trial_traj_matrix]; % add trial num column.
-    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['trial' MULTI_ROW_VARS]);
+    block_num_vec = ones(length(trial_traj_matrix),1) * trial.block_num{1};
+    trial_traj_matrix = [trial_num_vec, block_num_vec, trial_traj_matrix]; % add trial and block num column.
+    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['trial' 'block_num' MULTI_ROW_VARS]);
     
     % on first trial there isn't a file yet.
     file_doesnt_exist = trial.trial==1;

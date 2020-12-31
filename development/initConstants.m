@@ -13,13 +13,13 @@ function [] = initConstants()
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % timing (seconds).
     global CODE_OUTPUT_EXPLANATION WORD_LIST ART_NOT_COMMON NAT_NOT_COMMON...
         ART_DISTRACTORS NAT_DISTRACTORS % word lists.
-    global ONE_ROW_DATA MULTI_ROW_DATA ONE_ROW_VARS MULTI_ROW_VARS;
+    global ONE_ROW_VARS ONE_ROW_VARS_I MULTI_ROW_VARS MULTI_ROW_VARS_I;
     
     NUMBER_OF_ERRORS_PROMPT = 3;
     TIME_SHOW_PROMPT = 1; % seconds
     
-    NUM_BLOCKS = 4;
-    BLOCK_SIZE = 40;%120; % has to be a multiple of 4.
+    NUM_BLOCKS = 4; % 8;
+    BLOCK_SIZE = 12; % 60; % has to be a multiple of 4.
     NUM_PRACTICE_TRIALS = 4;
     
     % duration in sec
@@ -85,30 +85,19 @@ function [] = initConstants()
     WORD_LIST = readtable([STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
     WORD_LIST = WORD_LIST(:,[1,3]); % Remove word frequencies.
     
-    % output data that has 1 row per trial. used in saveToFile.m.
-    ONE_ROW_VARS = {'prime','prime_natural','target','target_natural','distractor',...
-        'prime_left','same_w','natural_left','mask1','mask2','mask3','fix_duration',...
-        'mask1_duration','mask2_duration','prime_duration','mask3_duration','target_duration',...
-        'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time',...
-        'recog_time','pas_time','target_ans_left','target_ans_nat','target_correct','target_rt',...
-        'prime_ans_left','prime_correct','prime_rt','pas','pas_rt','trial_start_time','trial_end_time',...
-        'trial','block_num','cat_block','sub_num'};
-    [~,ONE_ROW_DATA] = ismember(ONE_ROW_VARS, CODE_OUTPUT_EXPLANATION.Properties.VariableNames);
+    % Output data structure.
+    VARIABLE_NAMES = CODE_OUTPUT_EXPLANATION.Properties.VariableNames;
     % output that has many rows per trial.
-    MULTI_ROW_VARS = {'target_x','target_y','target_z','target_timecourse',...
-        'prime_x','prime_y','prime_z','prime_timecourse',...
-        'pas_x','pas_y','pas_z','pas_timecourse'};
-    [~,MULTI_ROW_DATA] = ismember(MULTI_ROW_VARS, CODE_OUTPUT_EXPLANATION.Properties.VariableNames);
-    
-    % WARNING! ANY CHANGE WILL BREAK THE CODE! Use cntrl+h only! 
-    VARIABLE_NAMES = {'prime', 'prime_natural', 'target', 'target_natural', 'distractor',...
-        'prime_left', 'same_w', 'natural', 'left', 'mask1', 'mask2', 'mask3',...
-        'fix_time', 'mask1_time', 'mask2_time', 'prime_time', 'mask3_time', 'target_time',...
-        'target_traj', 'target_ans_left', 'target_ans_nat', 'target_correct', 'target_rt',...
-        'prime_traj', 'prime_ans_left', 'prime_correct', 'prime_rt',...
-        'pas_traj', 'pas', 'pas_rt',...
-        'trial_start_time', 'trial_end_time', 'trial', 'block_num', 'cat_block'};
-    %%NatNet, motion capture.
+    MULTI_ROW_VARS = {'target_x_to','target_y_to','target_z_to','target_timecourse_to',...
+        'target_x_from','target_y_from','target_z_from','target_timecourse_from',...
+        'prime_x_to','prime_y_to','prime_z_to','prime_timecourse_to',...
+        'prime_x_from','prime_y_from','prime_z_from','prime_timecourse_from'};
+    [~,MULTI_ROW_VARS_I] = ismember(MULTI_ROW_VARS, VARIABLE_NAMES);
+    multi_row_logical_index = zeros(1,length(VARIABLE_NAMES));
+    multi_row_logical_index(MULTI_ROW_VARS_I) = 1;
+    % output data that has 1 row per trial. used in saveToFile.m.
+    ONE_ROW_VARS = VARIABLE_NAMES(~multi_row_logical_index);
+    [~,ONE_ROW_VARS_I] = ismember(ONE_ROW_VARS, VARIABLE_NAMES);
     
     %% Text params
     

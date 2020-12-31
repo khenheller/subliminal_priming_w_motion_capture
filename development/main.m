@@ -314,7 +314,6 @@ end
 
 % Assigns data captured in this trial to 'trials'.
 function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_rt)
-    trials.trial_end_time{1} = max(trials.pas_timecourse{1});
     trials.trial_start_time{1} = time(1);
 
     % Assigns event times.
@@ -336,9 +335,9 @@ function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, p
     trials.target_x_from{1} = target_ans.traj_from(:,1);
     trials.target_y_from{1} = target_ans.traj_from(:,2);
     trials.target_z_from{1} = target_ans.traj_from(:,3);
-    trials.target_timecourse_to{1} = target_ans.timcourse_to;
-    trials.target_timecourse_from{1} = target_ans.timcourse_from;
-    trials.target_rt{1} = max(target_ans.timcourse_to) - min(target_ans.timcourse_to);
+    trials.target_timecourse_to{1} = target_ans.timecourse_to;
+    trials.target_timecourse_from{1} = target_ans.timecourse_from;
+    trials.target_rt{1} = max(target_ans.timecourse_to) - min(target_ans.timecourse_to);
     trials(1,:) = checkAns(trials(1,:), 'categor');
 
     trials.prime_ans_left{1} = prime_ans.answer;
@@ -348,11 +347,13 @@ function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, p
     trials.prime_x_from{1} = prime_ans.traj_from(:,1);
     trials.prime_y_from{1} = prime_ans.traj_from(:,2);
     trials.prime_z_from{1} = prime_ans.traj_from(:,3);
-    trials.prime_timecourse_to{1} = prime_ans.timcourse_to;
-    trials.prime_timecourse_from{1} = prime_ans.timcourse_from;
-    trials.prime_rt{1} = max(prime_ans.timcourse_to) - min(prime_ans.timcourse_to);
+    trials.prime_timecourse_to{1} = prime_ans.timecourse_to;
+    trials.prime_timecourse_from{1} = prime_ans.timecourse_from;
+    trials.prime_rt{1} = max(prime_ans.timecourse_to) - min(prime_ans.timecourse_to);
     trials(1,:) = checkAns(trials(1,:), 'recog');
 
     trials.pas{1} = pas;
     trials.pas_rt{1} = pas_rt;
+    
+    trials.trial_end_time{1} = trials.pas_time{1} + pas_rt;
 end
