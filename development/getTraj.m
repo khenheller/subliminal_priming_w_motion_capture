@@ -8,7 +8,7 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
     global TOUCH_PLANE_INFO NATNETCLIENT; % generated with touch_plane_setup.m
     global refRateHz refRateSec w;
     global TARGET_DURATION;
-    global RESPOND_FASTER_SCREEN;
+    global RESPOND_FASTER_SCREEN RETURN_START_POINT_SCREEN;
     global START_POINT;
     
     finger_size = 0.02; % marker distance (m) from screen when touching it.
@@ -21,7 +21,7 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
     categor_time = NaN;
     curRange = NaN;
     
-    keep_screen = strcmp(traj_type, 'to_screen') * 1;
+    to_screen = strcmp(traj_type, 'to_screen') * 1;
     
     start_point_range = 0.02; %3D distance from start point which finger needs to be in (in meter).
     
@@ -29,7 +29,7 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
     for frame_i = 1:sample_length
 
         % syncs trajectory sampling to screen refRate.
-        [~,timecourse(frame_i)] = Screen('Flip',w,0,keep_screen);
+        [~,timecourse(frame_i)] = Screen('Flip',w,0,to_screen); % when retracting, clear screen.
         
         % samples location.
         markers = NATNETCLIENT.getFrame.LabeledMarker;
@@ -40,7 +40,7 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
             traj(frame_i,:) = transform4(TOUCH_PLANE_INFO.T_opto_plane, cur_location); % transform to screen related space.
             
             % REACHING TO SCREEN: identify screen touch.
-            if strcmp(traj_type, 'to_screen')
+            if to_screen
                 if traj(frame_i,3)-finger_size < 0
                     touch_point = traj(frame_i,:) / TOUCH_PLANE_INFO.mPerPixel;
                     return;
@@ -61,8 +61,9 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
         end
     end
     
-    % User didn't respond in time.
-    Screen('DrawTexture',w, RESPOND_FASTER_SCREEN);
+    % Responded too late, or didn't return to start point.
+    message_screen = to_screen*RESPOND_FASTER_SCREEN + ~to_screen*RETURN_START_POINT_SCREEN;    
+    Screen('DrawTexture',w, message_screen);
     Screen('Flip',w);
     WaitSecs(1);
 end

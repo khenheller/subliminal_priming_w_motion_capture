@@ -5,7 +5,8 @@ function [] = initConstants()
     global VARIABLE_NAMES
     global WELCOME_SCREEN LOADING_SCREEN INSTRUCTIONS_SCREEN PRACTICE_SCREEN PAS_SCREEN...
         TEST_SCREEN END_SCREEN BLOCK_END_SCREEN CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN...
-        RECOG_SCREEN FIXATION_SCREEN RESPOND_FASTER_SCREEN MASKS PRACTICE_MASKS% experiment slides (images).
+        RECOG_SCREEN FIXATION_SCREEN RESPOND_FASTER_SCREEN RETURN_START_POINT_SCREEN...
+        MASKS PRACTICE_MASKS% experiment slides (images).
     global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
     global ERROR_CLICK_SLIDE TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
     global RIGHT LEFT; % number assigned to left/right response.
@@ -64,6 +65,7 @@ function [] = initConstants()
     PAS_SCREEN = getTextureFromHD('pas_screen.jpg');
     FIXATION_SCREEN = getTextureFromHD('fixation_screen.jpg');
     RESPOND_FASTER_SCREEN = getTextureFromHD('respond_faster_screen.jpg');
+    RETURN_START_POINT_SCREEN = getTextureFromHD('return_start_point_screen.jpg');
     ERROR_CLICK_SLIDE = getTextureFromHD('errorClickMessage.jpg');
     
     NUM_MASKS = 60;
