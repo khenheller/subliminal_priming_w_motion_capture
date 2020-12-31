@@ -141,8 +141,8 @@ function [trials] = runTrials(trials)
             time = nan(9,1); % time of each event, taken from system's clock.
             
             % block change
-            if trials.trial(1) ~= 1 
-                if mod(trials.trial(1), BLOCK_SIZE) == 1
+            if trials.iTrial(1) ~= 1 
+                if mod(trials.iTrial(1), BLOCK_SIZE) == 1
                     time = showTexture(BLOCK_END_SCREEN);
                     KbWait(compKbDevice,3);
                 end               

@@ -28,13 +28,13 @@ function trials = newTrials() % Generates trials list.
         if ~success; error(['Failed to generate block number ' num2str(iBlock)]); end
         
         % Assigns block number.
-        trials.block_num(block_range) = table2cell(table(repmat(i,BLOCK_SIZE,1)));
+        trials.iBlock(block_range) = table2cell(table(repmat(i,BLOCK_SIZE,1)));
     end
     
     % Assign subject's number.
     trials.sub_num = ones(height(trials),1) * SUB_NUM;
     % Assign trial numbers.
-    trials.trial = [1:height(trials)]';
+    trials.iTrial = [1:height(trials)]';
     % In categorization task, "natural" is on the left for odd sub numbers.
     trials.natural_left = ones(height(trials),1) * rem(SUB_NUM, 2);
     % assign time.

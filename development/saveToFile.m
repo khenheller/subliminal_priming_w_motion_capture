@@ -15,13 +15,13 @@ function [] = saveToFile(trial)
     trial_data = trial(1,ONE_ROW_VARS_I);
     trial_traj = trial(:,MULTI_ROW_VARS_I);
     trial_traj_matrix = cell2mat(trial_traj{:,:}(:,:)); % convert to matrix to unpack x,y and z cells.
-    trial_num_vec = ones(length(trial_traj_matrix),1) * trial.trial;
-    block_num_vec = ones(length(trial_traj_matrix),1) * trial.block_num{1};
+    trial_num_vec = ones(length(trial_traj_matrix),1) * trial.iTrial;
+    block_num_vec = ones(length(trial_traj_matrix),1) * trial.iBlock{1};
     trial_traj_matrix = [trial_num_vec, block_num_vec, trial_traj_matrix]; % add trial and block num column.
-    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['trial' 'block_num' MULTI_ROW_VARS]);
+    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['iTrial' 'iBlock' MULTI_ROW_VARS]);
     
     % on first trial there isn't a file yet.
-    file_doesnt_exist = trial.trial==1;
+    file_doesnt_exist = trial.iTrial==1;
     
     % saves to temporary file.
     writetable(trial_data, temp_data_file, 'WriteVariableNames', file_doesnt_exist);
