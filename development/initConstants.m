@@ -19,8 +19,8 @@ function [] = initConstants()
     NUMBER_OF_ERRORS_PROMPT = 3;
     TIME_SHOW_PROMPT = 1; % seconds
     
-    NUM_BLOCKS = 4; % 8;
-    BLOCK_SIZE = 12; % 60; % has to be a multiple of 4.
+    NUM_BLOCKS = 8;
+    BLOCK_SIZE = 60; % has to be a multiple of 4.
     NUM_PRACTICE_TRIALS = 4;
     
     % duration in sec
@@ -76,7 +76,6 @@ function [] = initConstants()
     for mask_i = 1:NUM_PRACTICE_MASKS
         PRACTICE_MASKS(mask_i) = getTextureFromHD(['practice_mask' num2str(mask_i) '.jpg']);
     end
-    
     
     % trial structure and word lists.
     CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
