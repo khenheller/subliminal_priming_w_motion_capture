@@ -110,11 +110,10 @@ function [word_list, rand_word, success] = getWord(word_list, word)
     end
     success = 1;
     
-    % Samples randomly, exits loop when sample isn't empty.
-    while true
-        [rand_word, erase_i] = datasample(word_list.(word_index), 1);
-        if ~isequal(rand_word, cell(1,1)); break; end
-    end
+    % Samples randomly
+    non_empty_indices = ~cellfun(@isempty,word_list.(word_index));
+    [rand_word, erase_i] = datasample(word_list{non_empty_indices,word_index}, 1);
+    
     % erases prime from list so it won't repeat.
     word_list(erase_i, :) = table('Size',[1 1],'VariableTypes',{'char'});
 end
