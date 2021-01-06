@@ -1,6 +1,6 @@
 function [] = initConstants()
 
-    global fontType handFontType fontSize fontColor  % text params.
+    global fontType handFontType fontSize handFontsize recogFontSize fontColor  % text params.
     global STIM_FOLDER DATA_FOLDER DATA_FOLDER_WIN % paths
     global VARIABLE_NAMES
     global WELCOME_SCREEN LOADING_SCREEN INSTRUCTIONS_SCREEN PRACTICE_SCREEN PAS_SCREEN...
@@ -103,18 +103,19 @@ function [] = initConstants()
     %% Text params
     
     % TEXT
-    fontType = 'Arial'; %font name e.g. 'David';
+    fontType = 'Arial Bold'; %font name e.g. 'David';
     handFontType = 'HebHand';%'HebHand';
     fontColor = 0; % 0=black;
     
-    global sittingDistance viewAngleX viewAngleY wordWidth wordHeight
-    wordWidth = 2 * (sittingDistance*tand(viewAngleX)); % in cm. this is viewangle.
-    wordHeight = 2 * (sittingDistance*tand(viewAngleY)); % in cm.
-    fontSize = wordWidth * 100 / 8.5; % when font=100, word_width=8.5, measured by hand.
-    
-    global w screenScaler text
+    global sittingDistance viewAngleX viewAngleY wordWidth wordHeight screenScaler
+    wordWidth = 2 * (sittingDistance*tand(viewAngleX/2)); % in cm. this is viewangle.
+    wordHeight = 2 * (sittingDistance*tand(viewAngleY/2)); % in cm.
+    handFontsize = ceil((wordWidth * 100 / 12)*screenScaler);
+    fontSize = ceil((wordWidth * 100 / 10)*screenScaler); % typescript font size.
+    recogFontSize = ceil((wordWidth * 100 / 4)*screenScaler); % font size oin recog question.
+
+    global w text
     Screen('TextFont',w, char(fontType));
     Screen('TextStyle', w, 0);
-    Screen('TextSize', w, ceil(fontSize*screenScaler));
     text.Color = fontColor; %black
 end

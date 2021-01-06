@@ -13,9 +13,9 @@ sittingDistance = 65; % in cm.
 viewAngleX = 2.5; % in deg.
 viewAngleY = 1;
 
- main(subNumber) 
+main(subNumber) 
 % @@@@@@@@@ Make new masks if sitting distance changes @@@@@@@@@@@@@@
-% makeMasks(3)
+% makeMasks(60)
 
 % close all
 % clc

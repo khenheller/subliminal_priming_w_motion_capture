@@ -260,13 +260,16 @@ function [ time ] = showMessage( message )
 end
 
 function [time] = showWord(trial, prime_or_target)
-    global w fontType handFontType
+    global fontType fontSize handFontType handFontsize;
+    global w;
     
     % prime=handwriting, target=typescript
     if strcmp(prime_or_target, 'prime')
         Screen('TextFont',w, handFontType);
+        Screen('TextSize', w, handFontsize);
     else
         Screen('TextFont',w, fontType);
+        Screen('TextSize', w, fontSize);
     end
 
     DrawFormattedText(w, double(trial.(prime_or_target){:}), 'center', 'center', [0 0 0]);
@@ -275,7 +278,8 @@ end
 
 % draws prime and distractor for recognition task.
 function [time] = showRecog(trial)
-    global w ScreenWidth ScreenHeight
+    global w ScreenWidth ScreenHeight;
+    global recogFontSize;
     global RECOG_SCREEN;
     
     if trial.prime_left
@@ -287,6 +291,7 @@ function [time] = showRecog(trial)
     end
     
     Screen('DrawTexture',w, RECOG_SCREEN);
+    Screen('TextSize', w, recogFontSize);
     DrawFormattedText(w, double(left_word), ScreenWidth*2/10, ScreenHeight*3/8, [0 0 0]);
     DrawFormattedText(w, double(right_word), 'right', ScreenHeight*3/8, [0 0 0], [], [], [], [] ,[],...
         [ScreenWidth/4 ScreenHeight ScreenWidth*8/10 0]);
@@ -356,4 +361,19 @@ function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, p
     trials.pas_rt{1} = pas_rt;
     
     trials.trial_end_time{1} = trials.pas_time{1} + pas_rt;
+end
+
+% Prints word on screen to measure thier actual size (by hand).
+function [] = testWordSize()
+    global fontType fontSize handFontType handFontsize;
+    global w ScreenHeight;
+    
+    Screen('TextFont',w, handFontType);
+    Screen('TextSize', w, handFontsize);
+    DrawFormattedText(w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'center', ScreenHeight/4, [0 0 0]);
+    
+    Screen('TextFont',w, fontType);
+    Screen('TextSize', w, fontSize);
+    DrawFormattedText(w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'center', ScreenHeight*3/4, [0 0 0]);
+    [~,time] = Screen('Flip',w);
 end
