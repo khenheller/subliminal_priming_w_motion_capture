@@ -17,8 +17,9 @@ function [] = saveToFile(trial)
     trial_traj_matrix = cell2mat(trial_traj{:,:}(:,:)); % convert to matrix to unpack x,y and z cells.
     trial_num_vec = ones(length(trial_traj_matrix),1) * trial.iTrial;
     block_num_vec = ones(length(trial_traj_matrix),1) * trial.iBlock{1};
-    trial_traj_matrix = [trial_num_vec, block_num_vec, trial_traj_matrix]; % add trial and block num column.
-    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['iTrial' 'iBlock' MULTI_ROW_VARS]);
+    sub_num_vec = ones(length(trial_traj_matrix),1) * trial.sub_num;
+    trial_traj_matrix = [sub_num_vec, block_num_vec, trial_num_vec, trial_traj_matrix]; % add trial and block num column.
+    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['sub_num' 'iBlock' 'iTrial' MULTI_ROW_VARS]);
     
     % on first trial there isn't a file yet.
     file_doesnt_exist = trial.iTrial==1;
