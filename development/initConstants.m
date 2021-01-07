@@ -12,15 +12,15 @@ function [] = initConstants()
     global RIGHT LEFT; % number assigned to left/right response.
     global NUM_BLOCKS BLOCK_SIZE NUM_PRACTICE_TRIALS; % Block params.
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % timing (seconds).
-    global CODE_OUTPUT_EXPLANATION WORD_LIST ART_NOT_COMMON NAT_NOT_COMMON...
+    global CODE_OUTPUT_EXPLANATION WORD_LIST NAT_PRIMES ART_PRIMES...
         ART_DISTRACTORS NAT_DISTRACTORS % word lists.
     global ONE_ROW_VARS ONE_ROW_VARS_I MULTI_ROW_VARS MULTI_ROW_VARS_I;
     
     NUMBER_OF_ERRORS_PROMPT = 3;
     TIME_SHOW_PROMPT = 1; % seconds
     
-    NUM_BLOCKS = 8;
-    BLOCK_SIZE = 60; % has to be a multiple of 4.
+    NUM_BLOCKS = 12;
+    BLOCK_SIZE = 40; % has to be a multiple of 4.
     NUM_PRACTICE_TRIALS = 4;
     
     % duration in sec
@@ -79,10 +79,10 @@ function [] = initConstants()
     
     % trial structure and word lists.
     CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
-    ART_NOT_COMMON = readtable([STIM_FOLDER '/word_lists/art_not_common.xlsx']);
-    NAT_NOT_COMMON = readtable([STIM_FOLDER '/word_lists/nat_not_common.xlsx']);
-    ART_DISTRACTORS = readtable([STIM_FOLDER '/word_lists/art_distractors.xlsx']);
-    NAT_DISTRACTORS = readtable([STIM_FOLDER '/word_lists/nat_distractors.xlsx']);
+    NAT_PRIMES = readtable([STIM_FOLDER '/word_lists/nat_primes.csv']);
+    ART_PRIMES = readtable([STIM_FOLDER '/word_lists/art_primes.csv']);
+    ART_DISTRACTORS = readtable([STIM_FOLDER '/word_lists/art_distractors.csv']);
+    NAT_DISTRACTORS = readtable([STIM_FOLDER '/word_lists/nat_distractors.csv']);
     WORD_LIST = readtable([STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
     WORD_LIST = WORD_LIST(:,[1,3]); % Remove word frequencies.
     

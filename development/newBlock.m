@@ -2,7 +2,7 @@
 % Trials are shuffled: no consequetive target/prime word.
 function [block, success] = newBlock()
     global BLOCK_SIZE;
-    global CODE_OUTPUT_EXPLANATION WORD_LIST ART_NOT_COMMON NAT_NOT_COMMON ART_DISTRACTORS NAT_DISTRACTORS;
+    global CODE_OUTPUT_EXPLANATION WORD_LIST NAT_PRIMES ART_PRIMES ART_DISTRACTORS NAT_DISTRACTORS;
     global MASKS;
     
     block = CODE_OUTPUT_EXPLANATION;
@@ -15,8 +15,8 @@ function [block, success] = newBlock()
     % stimuli words.
     words = WORD_LIST;
     % the words that don't share common letters with each stimuli word.
-    art_not_common = ART_NOT_COMMON;
-    nat_not_common = NAT_NOT_COMMON;
+    art_not_common = NAT_PRIMES;
+    nat_not_common = ART_PRIMES;
     nat_distractors = NAT_DISTRACTORS;
     art_distractors = ART_DISTRACTORS;
     nat_distractors = [nat_distractors; nat_distractors]; % on 2 condition out of 4, the prime is nat, so we duplicate the list.

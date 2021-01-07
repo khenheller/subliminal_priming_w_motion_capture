@@ -25,8 +25,8 @@ function [ ] = main(subNumber)
         
         initPsychtoolbox();
         initConstants();
-
-        saveCode();        
+        
+        saveCode();
         
         % Experiment
         showTexture(LOADING_SCREEN);
@@ -72,7 +72,7 @@ end
 
 function [] = runPractice(trials)
     global refRateSec;
-    global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % in sec.
+    global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
     global NUM_PRACTICE_TRIALS SUB_NUM;
     global PRACTICE_MASKS;
     
@@ -180,10 +180,10 @@ function [trials] = runTrials(trials)
             
             % PAS
             time(9) = showPas();
-            [pas, pas_rt] = getInput('pas');
+            [pas, pas_time] = getInput('pas');
             
             % Assigns collected data to trials.
-            trials = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_rt);
+            trials = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_time);
             
             % Save trial to file and removes it from list.
             saveToFile(trials(1,:));
@@ -261,7 +261,7 @@ end
 
 function [time] = showWord(trial, prime_or_target)
     global fontType fontSize handFontType handFontsize;
-    global w;
+    global w ScreenHeight;
     
     % prime=handwriting, target=typescript
     if strcmp(prime_or_target, 'prime')
@@ -272,7 +272,7 @@ function [time] = showWord(trial, prime_or_target)
         Screen('TextSize', w, fontSize);
     end
 
-    DrawFormattedText(w, double(trial.(prime_or_target){:}), 'center', 'center', [0 0 0]);
+    DrawFormattedText(w, double(trial.(prime_or_target){:}), 'center', (ScreenHeight/2+3), [0 0 0]);
     [~,time] = Screen('Flip',w,0,1);
 end
 
@@ -318,7 +318,7 @@ function [ txt ] = textProcess( txt )
 end
 
 % Assigns data captured in this trial to 'trials'.
-function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_rt)
+function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_time)
     trials.trial_start_time{1} = time(1);
 
     % Assigns event times.
@@ -358,9 +358,9 @@ function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, p
     trials(1,:) = checkAns(trials(1,:), 'recog');
 
     trials.pas{1} = pas;
-    trials.pas_rt{1} = pas_rt;
+    trials.pas_rt{1} = pas_time - time(9);
     
-    trials.trial_end_time{1} = trials.pas_time{1} + pas_rt;
+    trials.trial_end_time{1} = trials.pas_time{1} + pas_time;
 end
 
 % Prints word on screen to measure thier actual size (by hand).

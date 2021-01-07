@@ -23,7 +23,7 @@ function screenError = initPsychtoolbox()
     
     % Set sync tests:
  
-    %Screen('Preference', 'SkipSyncTests', 0)
+    Screen('Preference', 'SkipSyncTests', 0)
     Screen('Preference', 'VisualDebugLevel', 4);
     try
         if DEBUG; Screen('Preference', 'SkipSyncTests', 1); else; Screen('Preference', 'SkipSyncTests', 0); end
@@ -61,6 +61,7 @@ function screenError = initPsychtoolbox()
         if NO_FULLSCREEN; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray, WINDOW_RESOLUTION); else; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray); end
     end
 
+    HideCursor(w);
     if ~NO_FULLSCREEN
 %         HideCursor(1);
     end
