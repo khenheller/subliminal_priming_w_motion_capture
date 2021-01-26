@@ -12,9 +12,14 @@ global sittingDistance viewAngleX viewAngleY
 sittingDistance = 65; % in cm.
 viewAngleX = 2.5; % in deg.
 viewAngleY = 1;
+% -------------------------- Run Experiment -------------------------------
+main(subNumber);
 
-main(subNumber) 
-% @@@@@@@@@ Make new masks if sitting distance changes @@@@@@@@@@@@@@
+% -------------------------- Generate trial sets --------------------------
+% num_trial_lists = 10;
+% genTrialLists(num_trial_lists);
+% -------------------------- Generate Masks -------------------------------
+% @@@@@@@@ Make new masks if sitting distance changes @@@@@@@@@@@@@@
 % makeMasks(60)
 
 % close all
