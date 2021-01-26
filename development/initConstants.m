@@ -1,7 +1,7 @@
 function [] = initConstants()
 
     global fontType handFontType fontSize handFontsize recogFontSize fontColor  % text params.
-    global STIM_FOLDER DATA_FOLDER DATA_FOLDER_WIN % paths
+    global STIM_FOLDER TRIALS_FOLDER DATA_FOLDER DATA_FOLDER_WIN % paths
     global VARIABLE_NAMES
     global WELCOME_SCREEN LOADING_SCREEN INSTRUCTIONS_SCREEN PRACTICE_SCREEN PAS_SCREEN...
         TEST_SCREEN END_SCREEN BLOCK_END_SCREEN CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN...
@@ -10,18 +10,22 @@ function [] = initConstants()
     global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
     global ERROR_CLICK_SLIDE TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
     global RIGHT LEFT; % number assigned to left/right response.
-    global NUM_BLOCKS BLOCK_SIZE NUM_PRACTICE_TRIALS; % Block params.
+    global NUM_BLOCKS BLOCK_SIZE NUM_TRIALS NUM_PRACTICE_TRIALS; % Block params.
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % timing (seconds).
-    global CODE_OUTPUT_EXPLANATION WORD_LIST NAT_PRIMES ART_PRIMES...
-        ART_DISTRACTORS NAT_DISTRACTORS % word lists.
+    global CODE_OUTPUT_EXPLANATION WORD_LIST NAT_TARGETS ART_TARGETS...
+        ART_PRIMES NAT_PRIMES % word lists.
     global ONE_ROW_VARS ONE_ROW_VARS_I MULTI_ROW_VARS MULTI_ROW_VARS_I;
+    global RECORD_LENGTH;
     
     NUMBER_OF_ERRORS_PROMPT = 3;
     TIME_SHOW_PROMPT = 1; % seconds
     
     NUM_BLOCKS = 12;
     BLOCK_SIZE = 40; % has to be a multiple of 4.
+    NUM_TRIALS = NUM_BLOCKS*BLOCK_SIZE;
     NUM_PRACTICE_TRIALS = 4;
+    
+    RECORD_LENGTH = 10; % Trajectory recording length in sec.
     
     % duration in sec
     FIX_DURATION = 1;
@@ -34,8 +38,8 @@ function [] = initConstants()
     % stimuli folders addresses
     STIM_FOLDER = './stimuli';
     DATA_FOLDER = './data';
+    TRIALS_FOLDER = [STIM_FOLDER '/trial_lists'];
     DATA_FOLDER_WIN = replace(DATA_FOLDER, '/', '\');
-%     CODE_FOLDER = 'code';
     
     WRONG_KEY = 997;
     RIGHT = 0;
@@ -79,12 +83,16 @@ function [] = initConstants()
     
     % trial structure and word lists.
     CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
-    NAT_PRIMES = readtable([STIM_FOLDER '/word_lists/nat_primes.csv']);
-    ART_PRIMES = readtable([STIM_FOLDER '/word_lists/art_primes.csv']);
-    ART_DISTRACTORS = readtable([STIM_FOLDER '/word_lists/art_distractors.csv']);
-    NAT_DISTRACTORS = readtable([STIM_FOLDER '/word_lists/nat_distractors.csv']);
+    NAT_TARGETS = readtable([STIM_FOLDER '/word_lists/nat_targets.xlsx']);
+    ART_TARGETS = readtable([STIM_FOLDER '/word_lists/art_targets.xlsx']);
+    ART_PRIMES = readtable([STIM_FOLDER '/word_lists/art_primes.xlsx']);
+    NAT_PRIMES = readtable([STIM_FOLDER '/word_lists/nat_primes.xlsx']);
     WORD_LIST = readtable([STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
     WORD_LIST = WORD_LIST(:,[1,3]); % Remove word frequencies.
+    
+    if height(WORD_LIST) > BLOCK_SIZE
+        error('Word list must be at least as big as block size to prevent words from repeting in the same block');
+    end    
     
     % Output data structure.
     VARIABLE_NAMES = CODE_OUTPUT_EXPLANATION.Properties.VariableNames;
