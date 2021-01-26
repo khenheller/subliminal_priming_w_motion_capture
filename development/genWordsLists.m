@@ -1,12 +1,12 @@
-% For each stimuli word it generates a list of words that don't share common letters in same
+% For each stimuli word, generates a list of words that don't share common letters in same
 % location with it.
-% distractors are from same category as prime and can't share letters with it.
-% primes are from different category from target and can't share letters with it.
+% primes are from same category as distractors and can't share letters with it.
+% targets are from different category from primes and can't share letters with it.
 % Generates 4 lists:
-%   art_distractors - possible distractors for each artificial prime.
-%   nat_distractors - possible distractors for each natural prime.
-%   art_primes - possible primes for each natural target.
-%   nat_primes - possible primes for each artificial target.
+%   art_primes - possible primes for each artificial distractor.
+%   nat_primes - possible primes for each natural prime.
+%   art_targets - possible targets for each natural prime.
+%   nat_targets - possible targets for each artificial prime.
 % Saves results to file.
 function [] = genWordsLists()
     
@@ -14,28 +14,35 @@ function [] = genWordsLists()
     words = words(:,[1,3]); % Remove word frequencies.
     nWords = height(words);
     % List all words. Later we eliminate bad words.
-    nat_distractors = cell2table(repmat(words.natural,1,nWords));
-    art_distractors = cell2table(repmat(words.artificial,1,nWords));
-    art_primes = cell2table(repmat(words.artificial,1,nWords));
     nat_primes = cell2table(repmat(words.natural,1,nWords));
+    art_primes = cell2table(repmat(words.artificial,1,nWords));
+    art_targets = cell2table(repmat(words.artificial,1,nWords));
+    nat_targets = cell2table(repmat(words.natural,1,nWords));
     
     for iWord = 1:height(words)
-        % natural dists for each natural prime.
+        % natural primes for each natural dist.
         share_letters = any(words.natural{iWord} == cell2mat(words.natural), 2);
-        nat_distractors(share_letters, iWord) = table('Size',[1 1],'VariableTypes',{'char'});
-        % artificial dists for each artificial prime.
-        share_letters = any(words.artificial{iWord} == cell2mat(words.artificial), 2);
-        art_distractors(share_letters, iWord) = table('Size',[1 1],'VariableTypes',{'char'});
-        % artificial primes for each natural target.
-        share_letters = any(words.natural{iWord} == cell2mat(words.artificial), 2);
-        art_primes(share_letters, iWord) = table('Size',[1 1],'VariableTypes',{'char'});
-        % natural primes for each artificial target.
-        share_letters = any(words.artificial{iWord} == cell2mat(words.natural), 2);
         nat_primes(share_letters, iWord) = table('Size',[1 1],'VariableTypes',{'char'});
+        % artificial primes for each artificial dist.
+        share_letters = any(words.artificial{iWord} == cell2mat(words.artificial), 2);
+        art_primes(share_letters, iWord) = table('Size',[1 1],'VariableTypes',{'char'});
+        % artificial targets for each natural prime.
+        share_letters = any(words.natural{iWord} == cell2mat(words.artificial), 2);
+        art_targets(share_letters, iWord) = table('Size',[1 1],'VariableTypes',{'char'});
+        % natural targets for each artificial prime.
+        share_letters = any(words.artificial{iWord} == cell2mat(words.natural), 2);
+        nat_targets(share_letters, iWord) = table('Size',[1 1],'VariableTypes',{'char'});
     end
     
-    writetable(nat_distractors,'./stimuli/word_lists/nat_distractors.csv');
-    writetable(art_distractors,'./stimuli/word_lists/art_distractors.csv');
-    writetable(art_primes,'./stimuli/word_lists/art_primes.csv');
-    writetable(nat_primes,'./stimuli/word_lists/nat_primes.csv');
+    % Add Column headers.
+    nat_primes = [words.natural' ; nat_primes];
+    art_primes = [words.artificial' ; art_primes];
+    art_targets = [words.natural' ; art_targets];
+    nat_targets = [words.artificial' ; nat_targets];
+    
+    % Writes column headers and then fills columns.
+    writetable(nat_primes,'./stimuli/word_lists/nat_primes.xlsx', 'WriteVariableNames',0);
+    writetable(art_primes,'./stimuli/word_lists/art_primes.xlsx', 'WriteVariableNames',0);
+    writetable(art_targets,'./stimuli/word_lists/art_targets.xlsx', 'WriteVariableNames',0);
+    writetable(nat_targets,'./stimuli/word_lists/nat_targets.xlsx', 'WriteVariableNames',0);
 end
