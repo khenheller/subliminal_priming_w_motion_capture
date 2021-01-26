@@ -7,6 +7,7 @@ function [ ] = main(subNumber)
     global compKbDevice
     global WELCOME_SCREEN LOADING_SCREEN
     global TOUCH_PLANE_INFO NATNETCLIENT START_POINT
+    global STIM_FOLDER TRIALS_FOLDER
 
     TIME_SLOW = 1; % default = 1; time slower for debugging
     NO_FULLSCREEN = false; % default = false
@@ -23,14 +24,17 @@ function [ ] = main(subNumber)
         [TOUCH_PLANE_INFO, NATNETCLIENT] = touch_plane_setup();
         START_POINT = setStartPoint();
         
+        % Initialize params.
         initPsychtoolbox();
         initConstants();
         
         saveCode();
         
-        % Experiment
+        % Generates trials.
         showTexture(LOADING_SCREEN);
-        trials = newTrials();
+        trials = getTrials();
+        
+        % Experiment
         showTexture(WELCOME_SCREEN);
         KbWait(compKbDevice,3);
         experiment(trials);
@@ -50,7 +54,8 @@ end
 
 function [] = experiment(trials)
 
-    global INSTRUCTIONS_SCREEN PRACTICE_SCREEN TEST_SCREEN END_SCREEN
+    global INSTRUCTIONS_SCREEN PRACTICE_SCREEN TEST_SCREEN END_SCREEN;
+    global SUB_NUM;
     
     % instructions.
     showTexture(INSTRUCTIONS_SCREEN);
@@ -65,6 +70,8 @@ function [] = experiment(trials)
     showTexture(TEST_SCREEN);
     getInput('instruction');
     runTrials(trials);
+    
+    fixOutput(SUB_NUM);
     
     showTexture(END_SCREEN);
     getInput('instruction');
@@ -188,25 +195,10 @@ function [trials] = runTrials(trials)
             % Save trial to file and removes it from list.
             saveToFile(trials(1,:));
             trials(1,:) = [];
-
-%             % wrong key catch
-%             if trials.answer{1} == WRONG_KEY
-%                 mistakesCounter = mistakesCounter + 1;
-%                 if mistakesCounter == NUMBER_OF_ERRORS_PROMPT
-%                     mistakesCounter = 0;
-%                     showTexture(ERROR_CLICK_SLIDE);
-%                     WaitSecs(TIME_SHOW_PROMPT); 
-%                     KbReleaseWait(compKbDevice);
-%                     KbWait(compKbDevice,3);                                
-%                 end
-%             end
         end
     catch e % if error occured, saves data before exit.
-        saveTable(trials,'trialsExperiment');
         rethrow(e);
     end
-    
-    saveTable(trials,'trialsExperiment');
 end
 
 function [] = safeExit()
@@ -317,6 +309,41 @@ function [ txt ] = textProcess( txt )
 %     txt = flip(txt);
 end
 
+% Randomly selects a trial list from unused_lists.
+% When unused_lists empties, refills it.
+% This makes sure that one list doesn't repeat more than others.
+function [trials] = getTrials()
+    global TRIALS_FOLDER SUB_NUM;
+    unused_lists_path = [TRIALS_FOLDER '/unused_lists.mat'];
+    unused_lists = [];
+    
+    % If file exists, loads it.
+    if isfile(unused_lists_path)
+        unused_lists = load(unused_lists_path);
+        unused_lists = unused_lists.unused_lists;
+    end
+    
+    % If used all trials, refills.
+    if isempty(unused_lists)
+        unused_lists = cellstr(ls(TRIALS_FOLDER));
+        % Remove '.', '..', 'unused_lists.mat'
+        unused_lists(strcmp(unused_lists, '.')) = [];
+        unused_lists(strcmp(unused_lists, '..')) = [];
+        unused_lists(strcmp(unused_lists, 'unused_lists.mat')) = [];
+    end
+    
+    % Samples a list randomly.
+    [list, list_index] = datasample(unused_lists,1);
+    trials = readtable([TRIALS_FOLDER '/' list{:}]);
+    % Assign subject's number.
+    trials.sub_num = ones(height(trials),1) * SUB_NUM;
+    % In categorization task, "natural" is on the left for odd sub numbers.
+    trials.natural_left = ones(height(trials),1) * rem(SUB_NUM, 2);
+    
+    unused_lists(list_index) = [];
+    save(unused_lists_path, 'unused_lists');
+end
+
 % Assigns data captured in this trial to 'trials'.
 function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_time)
     trials.trial_start_time{1} = time(1);
@@ -376,4 +403,26 @@ function [] = testWordSize()
     Screen('TextSize', w, fontSize);
     DrawFormattedText(w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'center', ScreenHeight*3/4, [0 0 0]);
     [~,time] = Screen('Flip',w);
+end
+
+% Removes bad char('') from output files.
+function [] = fixOutput(sub_num)
+    global DATA_FOLDER;
+    global RECORD_LENGTH NUM_TRIALS refRateHz;
+    
+    sub_traj_file = [DATA_FOLDER '/sub' num2str(sub_num) 'traj.csv'];
+    sub_data_file = [DATA_FOLDER '/sub' num2str(sub_num) 'data.csv'];
+    
+    % Fix traj file.
+    num_traj_records = NUM_TRIALS * RECORD_LENGTH * refRateHz;
+    read_range = ['1:' num2str(num_traj_records + 1)]; % Lines to read from results file.
+    results = readtable(sub_traj_file, 'FileType','spreadsheet', 'Range',read_range);
+    results{:,1} = replace(results{:,1}, '',''); % Removes bad char.
+    writetable(results, sub_traj_file);
+    
+    % Fix data file.
+    results = readtable(sub_data_file);
+    results(end,:) = [];
+    results{:,1} = replace(results{:,1}, '',''); % Removes bad char.
+    writetable(results, sub_data_file);
 end
