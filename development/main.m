@@ -409,8 +409,8 @@ function [] = fixOutput(sub_num)
     global DATA_FOLDER;
     global RECORD_LENGTH NUM_TRIALS refRateHz;
     
-    sub_traj_file = [DATA_FOLDER '/sub' num2str(sub_num) 'traj.csv'];
-    sub_data_file = [DATA_FOLDER '/sub' num2str(sub_num) 'data.csv'];
+    sub_traj_file = [DATA_FOLDER '/sub' num2str(sub_num) 'traj.xlsx'];
+    sub_data_file = [DATA_FOLDER '/sub' num2str(sub_num) 'data.xlsx'];
     
     % Fix traj file.
     num_traj_records = NUM_TRIALS * RECORD_LENGTH * refRateHz;
