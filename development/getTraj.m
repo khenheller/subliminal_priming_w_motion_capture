@@ -54,7 +54,7 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
             end
         end
 
-        % disp categorization screen after target.
+        % Target duration passed, remove it and show only categorization screen.
         if (~isempty(varargin{:}) && (frame_i+1 == TARGET_DURATION*refRateHz))
             showCategor(varargin{:}{:});
             categor_time = timecourse(frame_i) + refRateSec;

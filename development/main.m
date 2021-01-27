@@ -240,7 +240,7 @@ end
 
 function [time] = showMask(trial, mask) % 'mask' - which mask to show (1st / 2nd / 3rd).
     global w
-    Screen('DrawTexture',w, trial.(mask){:});
+    Screen('DrawTexture',w, trial.(mask));
     [~,time] = Screen('Flip', w);
 end
 
@@ -252,7 +252,7 @@ end
 
 function [time] = showWord(trial, prime_or_target)
     global fontType fontSize handFontType handFontsize;
-    global w ScreenHeight;
+    global w ScreenHeight CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN;
     
     % prime=handwriting, target=typescript
     if strcmp(prime_or_target, 'prime')
@@ -261,6 +261,12 @@ function [time] = showWord(trial, prime_or_target)
     else
         Screen('TextFont',w, fontType);
         Screen('TextSize', w, fontSize);
+        % Shows categor answers with target.
+        if trial.natural_left
+            Screen('DrawTexture',w, CATEGOR_NATURAL_LEFT_SCREEN);
+        else
+            Screen('DrawTexture',w, CATEGOR_NATURAL_RIGHT_SCREEN);
+        end
     end
 
     DrawFormattedText(w, double(trial.(prime_or_target){:}), 'center', (ScreenHeight/2+3), [0 0 0]);
