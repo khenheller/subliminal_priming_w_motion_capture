@@ -7,7 +7,6 @@ function [ ] = main(subNumber)
     global compKbDevice
     global WELCOME_SCREEN LOADING_SCREEN
     global TOUCH_PLANE_INFO NATNETCLIENT START_POINT
-    global STIM_FOLDER TRIALS_FOLDER
 
     TIME_SLOW = 1; % default = 1; time slower for debugging
     NO_FULLSCREEN = false; % default = false

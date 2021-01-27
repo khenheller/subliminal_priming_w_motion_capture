@@ -4,12 +4,12 @@ function [] = saveToFile(trial)
     global DATA_FOLDER_WIN;
     global ONE_ROW_VARS_I MULTI_ROW_VARS_I MULTI_ROW_VARS;
     
-    temp_data_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data_temp.csv'];
-    temp_traj_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj_temp.csv'];
-    data_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data.csv'];
-    traj_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj.csv'];
-    both_data_files = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data*.csv'];
-    both_traj_files = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj*.csv'];
+    temp_data_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data_temp.xlsx'];
+    temp_traj_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj_temp.xlsx'];
+    data_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data.xlsx'];
+    traj_file = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj.xlsx'];
+    both_data_files = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data*.xlsx'];
+    both_traj_files = [DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj*.xlsx'];
     
     % seperates data (1 row) from trajectories (many rows).
     trial_data = trial(1,ONE_ROW_VARS_I);
