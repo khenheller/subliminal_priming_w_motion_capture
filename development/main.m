@@ -139,8 +139,6 @@ function [trials] = runTrials(trials)
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
     global BLOCK_END_SCREEN BLOCK_SIZE;
     
-    mistakesCounter = 0;
-    
     try        
         % Iterates over trials.
         while ~isempty(trials)
@@ -201,7 +199,7 @@ function [trials] = runTrials(trials)
 end
 
 function [] = safeExit()
-    global oldone
+%     global oldone
     global NATNETCLIENT
     NATNETCLIENT.disconnect;
     Priority(0);
@@ -209,23 +207,6 @@ function [] = safeExit()
     ShowCursor;
     ListenChar(0);
 %     Screen('Preference', 'TextEncodingLocale', oldone);
-end
-
-function [] = saveTable(tbl,type)
-
-    global DATA_FOLDER SUB_NUM %subject number
-    dir = fullfile(pwd,DATA_FOLDER,num2str(SUB_NUM));
-    mkdir(dir);
-
-    prf1 = sprintf('%s_%d',type,SUB_NUM);
-    fileName = fullfile(dir,prf1);
-
-    try
-        writetable(tbl,[fileName,'.xlsx']);
-        save([fileName,'.mat'],'tbl');        
-    catch
-        save([fileName,'.mat'],'tbl');
-    end
 end
 
 function [time] = showFixation()
@@ -242,12 +223,6 @@ function [time] = showMask(trial, mask) % 'mask' - which mask to show (1st / 2nd
     global w
     Screen('DrawTexture',w, trial.(mask));
     [~,time] = Screen('Flip', w);
-end
-
-function [ time ] = showMessage( message )
-    global w text
-    DrawFormattedText(w, textProcess(message), 'center', 'center', text.Color);
-    [~, time] = Screen('Flip', w);
 end
 
 function [time] = showWord(trial, prime_or_target)
@@ -307,11 +282,6 @@ function [time] = showTexture(txtr)
     global w
     Screen('DrawTexture',w, txtr);
     [~,time] = Screen('Flip', w);    
-end
-
-function [ txt ] = textProcess( txt )
-    txt = double(txt);
-%     txt = flip(txt);
 end
 
 % Randomly selects a trial list from unused_lists.
