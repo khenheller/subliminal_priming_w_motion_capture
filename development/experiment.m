@@ -15,7 +15,7 @@ viewAngleY = 1;
 % -------------------------- Run Experiment -------------------------------
 main(subNumber);
 
-% -------------------------- Generate trial sets --------------------------
+% -------------------------- Generate trial lists --------------------------
 % num_trial_lists = 10;
 % genTrialLists(num_trial_lists);
 % -------------------------- Generate Masks -------------------------------

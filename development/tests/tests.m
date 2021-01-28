@@ -1,5 +1,10 @@
 % Receives single sub's data and runs various tests on it.
 function [pass_test] = tests (trials, trials_traj)
+    initPsychtoolbox();
+    initConstants();
+    % Closes psychtoolbox.
+    Priority(0); sca; ShowCursor; ListenChar(0);    
+    
     global NUM_TRIALS;
     pass_test.prime_alter = 1;
     pass_test.deviations = 1;
@@ -44,7 +49,7 @@ function [pass_test] = tests (trials, trials_traj)
     disp('------------------------------- Target Repeatitions -------------------------------');
     pass_test.word_dont_repeat = wordInBlockTest(trials);
     
-    % Test prime alternates between left and right equally.
+    % Test prime alternates between left and right in recog equally.
     disp('------------------------------- Prime right/left alternations -------------------------------');
     if sum(trials.prime_left) ~= NUM_TRIALS / 2
         disp(['Prime is on left side in categor question: ' num2str(sum(trials.prime_left))...
@@ -60,7 +65,6 @@ function [pass_test] = tests (trials, trials_traj)
     
     % Test all trial lists apear equally (between subs).
     disp('------------------------------- Trial Lists -------------------------------');
-    @@@@@@@
     disp('------------------------------------------------------------------------------------------------');
     disp('------------------------------- Test results (0=didnt pass test) -------------------------------');
     disp('------------------------------------------------------------------------------------------------');
