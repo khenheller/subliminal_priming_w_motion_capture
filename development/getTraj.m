@@ -70,7 +70,7 @@ end
 
 % Draws 'natural' and 'artificial' categories for categorization task.
 function [] = showCategor(natural_left)
-    global w CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN 
+    global w CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN WHITE_SCREEN
     if natural_left
         Screen('DrawTexture',w, CATEGOR_NATURAL_LEFT_SCREEN);
     else

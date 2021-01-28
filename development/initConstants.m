@@ -6,6 +6,7 @@ function [] = initConstants()
     global WELCOME_SCREEN LOADING_SCREEN INSTRUCTIONS_SCREEN PRACTICE_SCREEN PAS_SCREEN...
         TEST_SCREEN END_SCREEN BLOCK_END_SCREEN CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN...
         RECOG_SCREEN FIXATION_SCREEN RESPOND_FASTER_SCREEN RETURN_START_POINT_SCREEN...
+        BLACK_SCREEN WHITE_SCREEN...
         MASKS PRACTICE_MASKS% experiment slides (images).
     global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
     global ERROR_CLICK_SLIDE TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
@@ -23,7 +24,6 @@ function [] = initConstants()
     NUM_BLOCKS = 12;
     BLOCK_SIZE = 40; % has to be a multiple of 4.
     NUM_TRIALS = NUM_BLOCKS*BLOCK_SIZE;
-    NUM_PRACTICE_TRIALS = 4;
     
     RECORD_LENGTH = 10; % Trajectory recording length in sec.
     
@@ -70,6 +70,8 @@ function [] = initConstants()
     FIXATION_SCREEN = getTextureFromHD('fixation_screen.jpg');
     RESPOND_FASTER_SCREEN = getTextureFromHD('respond_faster_screen.jpg');
     RETURN_START_POINT_SCREEN = getTextureFromHD('return_start_point_screen.jpg');
+    BLACK_SCREEN = getTextureFromHD('black_screen.jpg');
+    WHITE_SCREEN = getTextureFromHD('white_screen.jpg');
     ERROR_CLICK_SLIDE = getTextureFromHD('errorClickMessage.jpg');
     
     NUM_MASKS = 60;

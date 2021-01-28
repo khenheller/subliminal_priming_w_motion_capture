@@ -18,11 +18,12 @@ function [] = saveToFile(trial)
     trial_num_vec = ones(length(trial_traj_matrix),1) * trial.iTrial;
     block_num_vec = ones(length(trial_traj_matrix),1) * trial.iBlock{1};
     sub_num_vec = ones(length(trial_traj_matrix),1) * trial.sub_num;
-    trial_traj_matrix = [sub_num_vec, block_num_vec, trial_num_vec, trial_traj_matrix]; % add trial and block num column.
-    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['sub_num' 'iBlock' 'iTrial' MULTI_ROW_VARS]);
+    practice_vec = ones(length(trial_traj_matrix),1) * trial.practice;
+    trial_traj_matrix = [sub_num_vec, block_num_vec, trial_num_vec, practice_vec, trial_traj_matrix]; % add trial and block num column.
+    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['sub_num' 'iBlock' 'iTrial' 'practice' MULTI_ROW_VARS]);
     
-    % on first trial there isn't a file yet.
-    file_doesnt_exist = trial.iTrial==1;
+    % on first trial there isn't a file yet. So we add headers.
+    file_doesnt_exist = trial.iTrial==1 & trial.practice==1;
     
     % saves to temporary file.
     writetable(trial_data, temp_data_file, 'WriteVariableNames', file_doesnt_exist);

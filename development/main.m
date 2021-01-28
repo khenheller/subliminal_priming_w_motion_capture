@@ -31,12 +31,13 @@ function [ ] = main(subNumber)
         
         % Generates trials.
         showTexture(LOADING_SCREEN);
-        trials = getTrials();
+        trials = getTrials('test');
+        practice_trials = getTrials('practice');
         
         % Experiment
         showTexture(WELCOME_SCREEN);
         KbWait(compKbDevice,3);
-        experiment(trials);
+        experiment(trials, practice_trials);
         
         NATNETCLIENT.disconnect;
         
@@ -51,7 +52,7 @@ function [] = cleanExit( )
     error('Exit by user!');
 end
 
-function [] = experiment(trials)
+function [] = experiment(trials, practice_trials)
 
     global INSTRUCTIONS_SCREEN PRACTICE_SCREEN TEST_SCREEN END_SCREEN;
     global SUB_NUM;
@@ -63,7 +64,7 @@ function [] = experiment(trials)
     % practice.
     showTexture(PRACTICE_SCREEN);
     getInput('instruction');
-    runPractice(trials);
+    runTrials(practice_trials);
     
     % test.
     showTexture(TEST_SCREEN);
@@ -214,7 +215,7 @@ function [time] = showFixation()
     finInStartPoint();
     
     global w % window experiment runs on. initialized in initPsychtoolbox();
-    global FIXATION_SCREEN
+    global FIXATION_SCREEN WHITE_SCREEN
     Screen('DrawTexture',w, FIXATION_SCREEN);
     [~,time] = Screen('Flip', w);
 end
@@ -227,7 +228,7 @@ end
 
 function [time] = showWord(trial, prime_or_target)
     global fontType fontSize handFontType handFontsize;
-    global w ScreenHeight CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN;
+    global w ScreenHeight CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN BLACK_SCREEN;
     
     % prime=handwriting, target=typescript
     if strcmp(prime_or_target, 'prime')
@@ -284,39 +285,49 @@ function [time] = showTexture(txtr)
     [~,time] = Screen('Flip', w);    
 end
 
-% Randomly selects a trial list from unused_lists.
-% When unused_lists empties, refills it.
-% This makes sure that one list doesn't repeat more than others.
-function [trials] = getTrials()
+% for practice: loads practice_trials list.
+% for test: Randomly selects a trial list from unused_lists.
+%           When unused_lists empties, refills it.
+%           This makes sure that one list doesn't repeat more than others.
+% type: 'practice' / 'test'
+function [trials] = getTrials(type)
     global TRIALS_FOLDER SUB_NUM;
-    unused_lists_path = [TRIALS_FOLDER '/unused_lists.mat'];
-    unused_lists = [];
     
-    % If file exists, loads it.
-    if isfile(unused_lists_path)
-        unused_lists = load(unused_lists_path);
-        unused_lists = unused_lists.unused_lists;
+    if isequal(type, 'test')
+        unused_lists_path = [TRIALS_FOLDER '/unused_lists.mat'];
+        unused_lists = [];
+
+        % If file exists, loads it.
+        if isfile(unused_lists_path)
+            unused_lists = load(unused_lists_path);
+            unused_lists = unused_lists.unused_lists;
+        end
+
+        % If used all trials, refills.
+        if isempty(unused_lists)
+            unused_lists = cellstr(ls(TRIALS_FOLDER));
+            % Remove '.', '..', 'unused_lists.mat'
+            unused_lists(strcmp(unused_lists, '.')) = [];
+            unused_lists(strcmp(unused_lists, '..')) = [];
+            unused_lists(strcmp(unused_lists, 'unused_lists.mat')) = [];
+        end
+
+        % Samples a list randomly.
+        [list, list_index] = datasample(unused_lists,1);
+        
+        unused_lists(list_index) = [];
+        save(unused_lists_path, 'unused_lists');
+    else
+        list = {'practice_trials.xlsx'};
     end
     
-    % If used all trials, refills.
-    if isempty(unused_lists)
-        unused_lists = cellstr(ls(TRIALS_FOLDER));
-        % Remove '.', '..', 'unused_lists.mat'
-        unused_lists(strcmp(unused_lists, '.')) = [];
-        unused_lists(strcmp(unused_lists, '..')) = [];
-        unused_lists(strcmp(unused_lists, 'unused_lists.mat')) = [];
-    end
-    
-    % Samples a list randomly.
-    [list, list_index] = datasample(unused_lists,1);
     trials = readtable([TRIALS_FOLDER '/' list{:}]);
+    % List ID.
+    trials.list_id = repmat(list, height(trials), 1);
     % Assign subject's number.
     trials.sub_num = ones(height(trials),1) * SUB_NUM;
     % In categorization task, "natural" is on the left for odd sub numbers.
     trials.natural_left = ones(height(trials),1) * rem(SUB_NUM, 2);
-    
-    unused_lists(list_index) = [];
-    save(unused_lists_path, 'unused_lists');
 end
 
 % Assigns data captured in this trial to 'trials'.

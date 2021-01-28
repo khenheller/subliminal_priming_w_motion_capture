@@ -1,4 +1,7 @@
-function trials = newTrials(draw_stats) % Generates trials list.
+% Generates trials list.
+% practice: 1 for practice trials, 0 for test.
+% draw_stats: 1=yes, 0=nope.
+function trials = newTrials(draw_stats, practice)
 
     global BLOCK_SIZE NUM_BLOCKS NUM_TRIALS;
     global CODE_OUTPUT_EXPLANATION; %path to data structure file.
@@ -20,6 +23,8 @@ function trials = newTrials(draw_stats) % Generates trials list.
     block_nums = repmat(1:NUM_BLOCKS, BLOCK_SIZE, 1);
     block_nums = reshape(block_nums, NUM_BLOCKS*BLOCK_SIZE, 1);
     trials.iBlock = block_nums;
+    % Assign trails type (practice/ test).
+    trials.practice = ones(height(trials),1) * practice;
     % Assign time.
     trials.fix_duration = ones(height(trials),1) * FIX_DURATION;
     trials.mask1_duration = ones(height(trials),1) * MASK1_DURATION;

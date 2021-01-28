@@ -7,7 +7,7 @@ function [output] = getAns(type, varargin)
     [touch_point, traj_to, timecourse_to, categor_time] = getTraj('to_screen',varargin);
     [~, traj_from, timecourse_from, ~]                  = getTraj('from_screen', cell(1,0));
     
-    global ScreenWidth w;
+    global ScreenWidth;
     
     answer = NaN;
     
