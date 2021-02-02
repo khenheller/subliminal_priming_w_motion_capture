@@ -11,7 +11,7 @@ function [] = initConstants()
     global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
     global ERROR_CLICK_SLIDE TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
     global RIGHT LEFT; % number assigned to left/right response.
-    global NUM_BLOCKS BLOCK_SIZE NUM_TRIALS NUM_PRACTICE_TRIALS; % Block params.
+    global NUM_BLOCKS BLOCK_SIZE NUM_TRIALS; % Block params.
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % timing (seconds).
     global CODE_OUTPUT_EXPLANATION WORD_LIST NAT_TARGETS ART_TARGETS...
         ART_PRIMES NAT_PRIMES % word lists.
@@ -25,7 +25,7 @@ function [] = initConstants()
     BLOCK_SIZE = 40; % has to be a multiple of 4.
     NUM_TRIALS = NUM_BLOCKS*BLOCK_SIZE;
     
-    RECORD_LENGTH = 10; % Trajectory recording length in sec.
+    RECORD_LENGTH = 2; % Trajectory recording length in sec.
     
     % duration in sec
     FIX_DURATION = 1;
@@ -122,7 +122,7 @@ function [] = initConstants()
     wordHeight = 2 * (sittingDistance*tand(viewAngleY/2)); % in cm.
     handFontsize = ceil((wordWidth * 100 / 12)*screenScaler);
     fontSize = ceil((wordWidth * 100 / 10)*screenScaler); % typescript font size.
-    recogFontSize = ceil((wordWidth * 100 / 4)*screenScaler); % font size oin recog question.
+    recogFontSize = ceil((wordWidth * 100 / 10)*screenScaler); % font size oin recog question.
 
     global w text
     Screen('TextFont',w, char(fontType));

@@ -4,7 +4,7 @@ warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 
 clc; 
 clear all;
-addpath('.\NatNetSDK')
+addpath('.\NatNetSDK');
 
 % Parameter definition.
 subNumber = 123123;

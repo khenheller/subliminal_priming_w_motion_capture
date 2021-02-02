@@ -13,12 +13,12 @@ function [ key, Resp_Time ] = getInput(type)
         case ('instruction')
             if Resp(abortKey)
                 key = abortKey;
-                cleanExit();
+                error('Exit by user!');
             end
         case ('categor')
             if Resp(abortKey)
                 key = abortKey;
-                cleanExit();
+                error('Exit by user!');
             elseif Resp(rightKey)
                 key = RIGHT;
             elseif Resp(leftKey)
@@ -29,7 +29,7 @@ function [ key, Resp_Time ] = getInput(type)
         case ('recog')
             if Resp(abortKey)
                 key = abortKey;
-                cleanExit();
+                error('Exit by user!');
             elseif Resp(rightKey)
                 key = RIGHT;
             elseif Resp(leftKey)
@@ -40,7 +40,7 @@ function [ key, Resp_Time ] = getInput(type)
         case ('pas')
             if Resp(abortKey)
                 key = abortKey;
-                cleanExit();
+                error('Exit by user!');
             elseif Resp(One)
                 key = 1;
             elseif Resp(Two)
