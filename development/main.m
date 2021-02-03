@@ -139,6 +139,7 @@ function [trials] = runTrials(trials)
     global compKbDevice refRateSec;
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
     global BLOCK_END_SCREEN BLOCK_SIZE;
+    global SUB_NUM;
     
     try        
         % Iterates over trials.
@@ -195,6 +196,7 @@ function [trials] = runTrials(trials)
             trials(1,:) = [];
         end
     catch e % if error occured, saves data before exit.
+        fixOutput(SUB_NUM);
         rethrow(e);
     end
 end
@@ -401,21 +403,29 @@ end
 % Removes bad char('') from output files.
 function [] = fixOutput(sub_num)
     global DATA_FOLDER;
-    global RECORD_LENGTH NUM_TRIALS refRateHz;
     
     sub_traj_file = [DATA_FOLDER '/sub' num2str(sub_num) 'traj.xlsx'];
     sub_data_file = [DATA_FOLDER '/sub' num2str(sub_num) 'data.xlsx'];
-    
+
     % Fix traj file.
-    num_traj_records = NUM_TRIALS * RECORD_LENGTH * refRateHz;
-    read_range = ['1:' num2str(num_traj_records + 1)]; % Lines to read from results file.
+    file_length = num2str(getFileLen(sub_traj_file) - 1); % Removes last line (has bad char).
+    read_range = ['1:' file_length];
     results = readtable(sub_traj_file, 'FileType','spreadsheet', 'Range',read_range);
     results{:,1} = replace(results{:,1}, '',''); % Removes bad char.
     writetable(results, sub_traj_file);
     
     % Fix data file.
-    results = readtable(sub_data_file);
-    results(end,:) = [];
-    results{:,1} = replace(results{:,1}, '',''); % Removes bad char.
+    file_length = num2str(getFileLen(sub_data_file) - 1);
+    read_range = ['1:' file_length];
+    results = readtable(sub_data_file, 'FileType','spreadsheet', 'Range',read_range);
+    results{:,1} = replace(results{:,1}, '','');
     writetable(results, sub_data_file);
+end
+
+% Returns num of lines in file.
+function num_lines = getFileLen(file_path)
+    file_id = fopen(file_path, 'r');
+    file = fread(file_id);
+    num_lines = sum(file == newline()) + 1; % Counts lines.
+    fclose(file_id);
 end
