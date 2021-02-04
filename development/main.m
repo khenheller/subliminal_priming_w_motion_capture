@@ -77,64 +77,6 @@ function [] = experiment(trials, practice_trials)
     getInput('instruction');
 end
 
-function [] = runPractice(trials)
-    global refRateSec;
-    global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
-    global NUM_PRACTICE_TRIALS SUB_NUM;
-    global PRACTICE_MASKS;
-    
-    % natural category on left side for odd sub numbers.
-    natural_left = rem(SUB_NUM, 2);
-    % table containing practice masks.
-    practice_masks = table({PRACTICE_MASKS(1)}, {PRACTICE_MASKS(2)}, {PRACTICE_MASKS(3)},...
-        'VariableNames',{'mask1','mask2','mask3'});
-    % table containing practice words.
-    pratice_trials = table({'גזר';'טלויזיה';'מחשב';'עלה'},...
-        {'גזר';'טלויזיה';'תפוז';'ספל'},...
-        [natural_left; natural_left; natural_left; natural_left],...
-        [1; 0; 1; 0],...
-        {'עגבניה';'שלט';'גלשן';'ענף'},...
-        'VariableNames',{'prime','target','natural_left','prime_left','distractor'});
-    
-    % Iterates over trials.
-    for tr = 1 : NUM_PRACTICE_TRIALS
-
-        % Fixation
-        showFixation();
-        WaitSecs(FIX_DURATION - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of TIME_FIXATION.
-
-        % Mask 1
-        showMask(practice_masks, 'mask1');
-        WaitSecs(MASK1_DURATION - refRateSec / 2);
-
-        % Mask 2
-        showMask(practice_masks, 'mask2');
-        WaitSecs(MASK2_DURATION - refRateSec / 2);
-
-        % Prime
-        showWord(pratice_trials(tr,:), 'prime');
-        WaitSecs(PRIME_DURATION - refRateSec / 2);
-
-        % Mask 3
-        showMask(practice_masks, 'mask3');
-        WaitSecs(MASK3_DURATION - refRateSec / 2);
-
-        % Target
-        showWord(pratice_trials(tr,:), 'target');
-
-        % Target categorization.
-        getAns('categor', trials.natural_left(1));
-
-        % Prime recognition.
-        showRecog(pratice_trials(tr,:));
-        getAns('recog');
-
-        % PAS
-        showPas();
-        getInput('pas');
-    end
-end
-
 function [trials] = runTrials(trials)
     global compKbDevice refRateSec;
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
