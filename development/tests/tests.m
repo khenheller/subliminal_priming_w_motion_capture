@@ -12,21 +12,24 @@ function [pass_test] = tests (trials, trials_traj)
     pass_test.std = 1;
     pass_test.prime_alter = 1;
     
+    % Remove practice trials.
+    trials(trials.practice==1, :) = [];
+    
     
     % Test event durations.
-%     disp('------------------------------- Event Durations -------------------------------');
-%     events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
-%     timestamps = trials(:,events);
-%     desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
-%     pass_timings = timingsTest(events, timestamps, desired_durations);
-%     pass_test.deviations = pass_timings.deviations;
-%     pass_test.deviation_of_mean = pass_timings.deviation_of_mean;
-%     pass_test.std = pass_timings.std;
+    disp('------------------------------- Event Durations -------------------------------');
+    events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
+    timestamps = trials(:,events);
+    desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
+    pass_timings = timingsTest(events, timestamps, desired_durations);
+    pass_test.deviations = pass_timings.deviations;
+    pass_test.deviation_of_mean = pass_timings.deviation_of_mean;
+    pass_test.std = pass_timings.std;
     
     % Test output has values for all fields.
-%     disp('------------------------------- Has Values -------------------------------');
-%     pass_test.data_values = hasValuesTest(trials, 'iTrial');
-%     pass_test.traj_values = hasValuesTest(trials_traj, 'iTrial');
+    disp('------------------------------- Has Values -------------------------------');
+    pass_test.data_values = hasValuesTest(trials, 'iTrial');
+    pass_test.traj_values = hasValuesTest(trials_traj, 'iTrial');
     
     % Test prime-target-distractor relations (don't share letters, are from same/diff categor).
     disp('------------------------------- Relations -------------------------------');

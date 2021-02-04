@@ -15,15 +15,16 @@ function pass_test = timingsTest(events, timestamps, desired_durations)
 
     max_dev = 2; % max deviation in ms.
     desired_std = 2;
-
+    
     % Calc deviations.
     durations = timestamps{:, 2:end} - timestamps{:, 1:end-1};
     durations = durations * 1000; % convert to ms.
     desired_durations = desired_durations * 1000;
-    durations_mean = mean(durations,1);
-    durations_std = std(durations,1);
+    durations_mean = mean(durations,1, 'omitnan');
+    durations_std = std(durations,1, 'omitnan');
     deviations = abs(durations - desired_durations);
     bad_deviations_index = find(deviations > max_dev);
+    [bad_deviations_trial,~] = ind2sub(size(deviations), bad_deviations_index);
     bad_deviations = deviations(bad_deviations_index);
     
     % Checks if passed tests.
@@ -35,15 +36,15 @@ function pass_test = timingsTest(events, timestamps, desired_durations)
     % replicates names for later printing.
     events = repmat(events,height(timestamps),1);
     
-    % Print deviations calc output.
+    % Print deviations from desired duration.
     disp('Number of trials devaiting from desired duration:');
-    disp(num2str(size(bad_deviations_index, 1)));
-    fprintf('Deviating trials and their deviation: \nTrialNum\tdeviation\tdesired\n');
-    deviations_as_text = [num2str([bad_deviations_index bad_deviations])...
-        repmat('      ',length(bad_deviations),1)...
-        cell2mat(events(bad_deviations_index))];
-    disp(deviations_as_text);
+    disp(num2str(length(bad_deviations)));
+    disp('Deviating trials and their deviation (in ms):');
+    deviations_table = table(bad_deviations_trial, bad_deviations, events(bad_deviations_index),...
+        'VariableNames',{'TrialNum','Deviation','Event'});
+    disp(deviations_table);
     
+    % Print deviations of mean from desired duration.
     deviation_of_mean_from_desired = durations_mean - desired_durations;
     timings_table = table(desired_durations', durations_mean', durations_std',...
         deviation_of_mean_from_desired',...
