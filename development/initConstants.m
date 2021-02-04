@@ -9,7 +9,7 @@ function [] = initConstants()
         BLACK_SCREEN WHITE_SCREEN...
         MASKS PRACTICE_MASKS% experiment slides (images).
     global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
-    global ERROR_CLICK_SLIDE TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
+    global TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
     global RIGHT LEFT; % number assigned to left/right response.
     global NUM_BLOCKS BLOCK_SIZE NUM_TRIALS; % Block params.
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION TARGET_DURATION; % timing (seconds).
@@ -72,7 +72,6 @@ function [] = initConstants()
     RETURN_START_POINT_SCREEN = getTextureFromHD('return_start_point_screen.jpg');
     BLACK_SCREEN = getTextureFromHD('black_screen.jpg');
     WHITE_SCREEN = getTextureFromHD('white_screen.jpg');
-    ERROR_CLICK_SLIDE = getTextureFromHD('errorClickMessage.jpg');
     
     NUM_MASKS = 60;
     NUM_PRACTICE_MASKS = 3;
@@ -92,7 +91,7 @@ function [] = initConstants()
     WORD_LIST = readtable([STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
     WORD_LIST = WORD_LIST(:,[1,3]); % Remove word frequencies.
     
-    if height(WORD_LIST) > BLOCK_SIZE
+    if height(WORD_LIST)*2 < BLOCK_SIZE % *2 because we have 2 comulns.
         error('Word list must be at least as big as block size to prevent words from repeting in the same block');
     end    
     
@@ -120,7 +119,7 @@ function [] = initConstants()
     global sittingDistance viewAngleX viewAngleY wordWidth wordHeight screenScaler
     wordWidth = 2 * (sittingDistance*tand(viewAngleX/2)); % in cm. this is viewangle.
     wordHeight = 2 * (sittingDistance*tand(viewAngleY/2)); % in cm.
-    handFontsize = ceil((wordWidth * 100 / 12)*screenScaler);
+    handFontsize = ceil((wordWidth * 100 / 11)*screenScaler);
     fontSize = ceil((wordWidth * 100 / 10)*screenScaler); % typescript font size.
     recogFontSize = ceil((wordWidth * 100 / 10)*screenScaler); % font size oin recog question.
 

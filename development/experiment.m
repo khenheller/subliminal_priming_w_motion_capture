@@ -7,9 +7,9 @@ clear all;
 addpath('.\NatNetSDK');
 
 % Parameter definition.
-subNumber = 123123;
+subNumber = 9993 ;
 global sittingDistance viewAngleX viewAngleY
-sittingDistance = 65; % in cm.
+sittingDistance = 60; % in cm.
 viewAngleX = 2.5; % in deg.
 viewAngleY = 1;
 % -------------------------- Run Experiment -------------------------------
