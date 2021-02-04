@@ -27,12 +27,12 @@ function [ ] = main(subNumber)
         initPsychtoolbox();
         initConstants();
         
-        saveCode();
-        
         % Generates trials.
         showTexture(LOADING_SCREEN);
         trials = getTrials('test');
         practice_trials = getTrials('practice');
+
+        saveCode(trials.list_id{1});
         
         % Experiment
         showTexture(WELCOME_SCREEN);
