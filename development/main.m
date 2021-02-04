@@ -404,8 +404,8 @@ end
 function [] = fixOutput(sub_num)
     global DATA_FOLDER;
     
-    sub_traj_file = [DATA_FOLDER '/sub' num2str(sub_num) 'traj.xlsx'];
-    sub_data_file = [DATA_FOLDER '/sub' num2str(sub_num) 'data.xlsx'];
+    sub_traj_file = [DATA_FOLDER '/sub' num2str(sub_num) 'traj.csv'];
+    sub_data_file = [DATA_FOLDER '/sub' num2str(sub_num) 'data.csv'];
 
     % Fix traj file.
     file_length = num2str(getFileLen(sub_traj_file) - 1); % Removes last line (has bad char).
