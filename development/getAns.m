@@ -8,8 +8,14 @@ function [output] = getAns(type, varargin)
     [~, traj_from, timecourse_from, ~]                  = getTraj('from_screen', cell(1,0));
     
     global ScreenWidth;
+    global refRateSec;
     
     answer = NaN;
+    
+    % If sub responded before target ended, categor_time didn't get value.
+    if isnan(categor_time) 
+        categor_time = timecourse_to(end) + refRateSec; % target cleared 1 ref rate after last sample.
+    end
     
     switch type
         case {'recog','categor'}
