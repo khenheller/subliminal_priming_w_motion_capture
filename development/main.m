@@ -6,7 +6,7 @@ function [ ] = main(subNumber)
     global NO_FULLSCREEN WINDOW_RESOLUTION TIME_SLOW
     global compKbDevice
     global WELCOME_SCREEN LOADING_SCREEN
-    global TOUCH_PLANE_INFO NATNETCLIENT START_POINT
+    global TOUCH_PLANE_INFO NATNETCLIENT
 
     TIME_SLOW = 1; % default = 1; time slower for debugging
     NO_FULLSCREEN = false; % default = false
@@ -21,7 +21,6 @@ function [ ] = main(subNumber)
         
         % Calibration and connection to natnetclient.
         [TOUCH_PLANE_INFO, NATNETCLIENT] = touch_plane_setup();
-        START_POINT = setStartPoint();
         
         % Initialize params.
         initPsychtoolbox();
@@ -33,6 +32,9 @@ function [ ] = main(subNumber)
         practice_trials = getTrials('practice');
 
         saveCode(trials.list_id{1});
+        
+        % Start,end points calibration.
+        setPoints();
         
         % Experiment
         showTexture(WELCOME_SCREEN);
@@ -223,12 +225,6 @@ function [time] = showPas()
     [~,time] = Screen('Flip', w, 0, 1);
 end
 
-function [time] = showTexture(txtr)
-    global w
-    Screen('DrawTexture',w, txtr);
-    [~,time] = Screen('Flip', w);    
-end
-
 % for practice: loads practice_trials list.
 % for test: Randomly selects a trial list from unused_lists.
 %           When unused_lists empties, refills it.
@@ -370,4 +366,16 @@ function num_lines = getFileLen(file_path)
     file = fread(file_id);
     num_lines = sum(file == newline()) + 1; % Counts lines.
     fclose(file_id);
+end
+
+% Sets start and end points in space.
+function [] = setPoints()
+    global START_POINT RIGHT_END_POINT LEFT_END_POINT DATA_FOLDER
+    global START_POINT_SCREEN RIGHT_END_POINT_SCREEN LEFT_END_POINT_SCREEN
+    
+    START_POINT = setPoint(START_POINT_SCREEN);
+    RIGHT_END_POINT = setPoint(RIGHT_END_POINT_SCREEN);
+    LEFT_END_POINT = setPoint(LEFT_END_POINT_SCREEN);
+    file_name = [DATA_FOLDER '\sub' SUB_NUM 'start_end_points.m'];
+    save(file_name, 'START_POINT','RIGHT_END_POINT','LEFT_END_POINT');
 end

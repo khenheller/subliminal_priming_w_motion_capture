@@ -6,9 +6,10 @@ function [] = initConstants()
     global WELCOME_SCREEN LOADING_SCREEN INSTRUCTIONS_SCREEN PRACTICE_SCREEN PAS_SCREEN...
         TEST_SCREEN END_SCREEN BLOCK_END_SCREEN CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN...
         RECOG_SCREEN FIXATION_SCREEN RESPOND_FASTER_SCREEN RETURN_START_POINT_SCREEN...
+        START_POINT_SCREEN RIGHT_END_POINT_SCREEN LEFT_END_POINT_SCREEN...
         BLACK_SCREEN WHITE_SCREEN...
         MASKS% experiment slides (images).
-    global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
+    global One Two Three Four leftKey abortKey rightKey spaceKey WRONG_KEY % Keys.
     global TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
     global RIGHT LEFT; % number assigned to left/right response.
     global NUM_BLOCKS BLOCK_SIZE NUM_TRIALS; % Block params.
@@ -55,6 +56,7 @@ function [] = initConstants()
     Two           =  KbName('2@');  % I had a vague perception, but I don?t know what it was
     Three         =  KbName('3#');  % I saw a clear part of the phrase
     Four          =  KbName('4$');  % I saw the entire phrase clearly
+    spaceKey      =  KbName('space');
 
     % Get slides (screen images).
     WELCOME_SCREEN = getTextureFromHD('welcome_screen.jpg');
@@ -71,6 +73,9 @@ function [] = initConstants()
     FIXATION_SCREEN = getTextureFromHD('fixation_screen.jpg');
     RESPOND_FASTER_SCREEN = getTextureFromHD('respond_faster_screen.jpg');
     RETURN_START_POINT_SCREEN = getTextureFromHD('return_start_point_screen.jpg');
+    START_POINT_SCREEN = getTextureFromHD('start_point_screen.jpg');
+    RIGHT_END_POINT_SCREEN = getTextureFromHD('right_end_point_screen.jpg');
+    LEFT_END_POINT_SCREEN = getTextureFromHD('left_end_point_screen.jpg');
     BLACK_SCREEN = getTextureFromHD('black_screen.jpg');
     WHITE_SCREEN = getTextureFromHD('white_screen.jpg');
     

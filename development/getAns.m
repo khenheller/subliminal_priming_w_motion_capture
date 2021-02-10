@@ -24,17 +24,6 @@ function [output] = getAns(type, varargin)
             else % right half.
                 answer = 0;
             end
-            
-        case 'pas'
-            if touch_point(1) < ScreenWidth/4 % leftmost quarter of screen.
-                answer = 1;
-            elseif touch_point(1) < (ScreenWidth/4 * 2)
-                answer = 2;
-            elseif touch_point(1) < (ScreenWidth/4 * 3)
-                answer = 3;
-            else
-                answer = 4;
-            end
     end
     
     output = struct('answer',answer, 'traj_to',traj_to, 'timecourse_to',timecourse_to,...
