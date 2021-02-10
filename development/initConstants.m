@@ -7,7 +7,7 @@ function [] = initConstants()
         TEST_SCREEN END_SCREEN BLOCK_END_SCREEN CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN...
         RECOG_SCREEN FIXATION_SCREEN RESPOND_FASTER_SCREEN RETURN_START_POINT_SCREEN...
         BLACK_SCREEN WHITE_SCREEN...
-        MASKS PRACTICE_MASKS% experiment slides (images).
+        MASKS% experiment slides (images).
     global One Two Three Four leftKey abortKey rightKey WRONG_KEY % Keys.
     global TIME_SHOW_PROMPT NUMBER_OF_ERRORS_PROMPT
     global RIGHT LEFT; % number assigned to left/right response.
@@ -75,12 +75,8 @@ function [] = initConstants()
     WHITE_SCREEN = getTextureFromHD('white_screen.jpg');
     
     NUM_MASKS = 60;
-    NUM_PRACTICE_MASKS = 3;
     for mask_i = 1:NUM_MASKS
         MASKS(mask_i) = getTextureFromHD(['mask' num2str(mask_i) '.jpg']);
-    end
-    for mask_i = 1:NUM_PRACTICE_MASKS
-        PRACTICE_MASKS(mask_i) = getTextureFromHD(['practice_mask' num2str(mask_i) '.jpg']);
     end
     
     % trial structure and word lists.

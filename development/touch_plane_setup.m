@@ -59,7 +59,7 @@ while ~strcmpi(reply,'Y')
     while isempty(answer)        
         prompt={'Pixel Coords: '};
         name='Lower Left Corner';
-        numlines=[1,35]; %this width allows for title to be seen
+        numlines=[1,50]; %this width allows for title to be seen
         if customFlag
             defaultanswer={['[' int2str(tableRectInfo.fullRect(1)) ' ' int2str(tableRectInfo.fullRect(4)) ']']};
         else
@@ -110,7 +110,7 @@ while ~strcmpi(reply,'Y')
     while isempty(answer)        
         prompt={'Pixel Coords: '};
         name='Lower Right Corner';
-        numlines=[1,35]; %this width allows for title to be seen
+        numlines=[1,50]; %this width allows for title to be seen
         %defaultanswer={'[1920 1080]'};
         
         if customFlag
@@ -161,7 +161,7 @@ while ~strcmpi(reply,'Y')
     while isempty(answer)        
         prompt={'Pixel Coords: '};
         name='Upper Left Corner';
-        numlines=[1,35]; %this width allows for title to be seen
+        numlines=[1,50]; %this width allows for title to be seen
         if customFlag
             defaultanswer={['[' int2str(tableRectInfo.fullRect(1)) ' ' int2str(tableRectInfo.fullRect(2)) ']']};
         else
@@ -210,7 +210,7 @@ while ~strcmpi(reply,'Y')
     while isempty(answer)        
         prompt={'Pixel Coords: '};
         name='Upper Right Corner';
-        numlines=[1,35]; %this width allows for title to be seen
+        numlines=[1,50]; %this width allows for title to be seen
         if customFlag
             defaultanswer={['[' int2str(tableRectInfo.fullRect(3)) ' ' int2str(tableRectInfo.fullRect(2)) ']']};
         else
