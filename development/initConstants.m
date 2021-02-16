@@ -17,7 +17,8 @@ function [] = initConstants()
     global CODE_OUTPUT_EXPLANATION WORD_LIST NAT_TARGETS ART_TARGETS...
         ART_PRIMES NAT_PRIMES % word lists.
     global ONE_ROW_VARS ONE_ROW_VARS_I MULTI_ROW_VARS MULTI_ROW_VARS_I;
-    global RECOG_RECORD_LENGTH CATEGOR_RECORD_LENGTH;
+    global RECOG_CAP_LENGTH_SEC RECOG_CAP_LENGTH CATEGOR_CAP_LENGTH_SEC CATEGOR_CAP_LENGTH MAX_CAP_LENGTH;
+    global refRateHz;
     
     NUMBER_OF_ERRORS_PROMPT = 3;
     TIME_SHOW_PROMPT = 1; % seconds
@@ -26,8 +27,11 @@ function [] = initConstants()
     BLOCK_SIZE = 40; % has to be a multiple of 4.
     NUM_TRIALS = NUM_BLOCKS*BLOCK_SIZE;
     
-    RECOG_RECORD_LENGTH = 1.5; % Trajectory recording length in sec.
-    CATEGOR_RECORD_LENGTH = 1; % Trajectory recording length in sec.
+    RECOG_CAP_LENGTH_SEC = 1.5; % Trajectory recording length in sec.
+    CATEGOR_CAP_LENGTH_SEC = 1;
+    RECOG_CAP_LENGTH = RECOG_CAP_LENGTH_SEC * refRateHz; % Trajectory capture length (num of samples).
+    CATEGOR_CAP_LENGTH = CATEGOR_CAP_LENGTH_SEC * refRateHz;
+    MAX_CAP_LENGTH = max(RECOG_CAP_LENGTH, CATEGOR_CAP_LENGTH);
     
     % duration in sec
     FIX_DURATION = 1;
@@ -39,7 +43,7 @@ function [] = initConstants()
      
     % stimuli folders addresses
     STIM_FOLDER = './stimuli';
-    DATA_FOLDER = './data';
+    DATA_FOLDER = '../raw_data';
     TRIALS_FOLDER = [STIM_FOLDER '/trial_lists'];
     DATA_FOLDER_WIN = replace(DATA_FOLDER, '/', '\');
     
