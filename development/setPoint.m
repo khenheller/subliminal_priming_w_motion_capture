@@ -1,11 +1,11 @@
 % Displays a point on the screen. When user presses space his coordinates are returned.
 function [point] = setPoint(point_screen)
-    global NATNETCLIENT TOUCH_PLANE_INFO spaceKey
+    global NATNETCLIENT TOUCH_PLANE_INFO spaceKey compKbDevice
 
     showTexture(point_screen);
     
     % Waits for "space" press.
-    key = 0;
+    key = zeros(1,256);
     while ~key(spaceKey)
         
         % sample location.
@@ -15,4 +15,5 @@ function [point] = setPoint(point_screen)
         % Check if space was pressed.
         [~, ~, key, ~] = KbCheck();
     end
+    KbWait(compKbDevice,1); % Waits until space is released.
 end

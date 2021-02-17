@@ -370,12 +370,13 @@ end
 
 % Sets start and end points in space.
 function [] = setPoints()
-    global START_POINT RIGHT_END_POINT LEFT_END_POINT DATA_FOLDER
+    global START_POINT RIGHT_END_POINT LEFT_END_POINT
     global START_POINT_SCREEN RIGHT_END_POINT_SCREEN LEFT_END_POINT_SCREEN
+    global SUB_NUM DATA_FOLDER
     
     START_POINT = setPoint(START_POINT_SCREEN);
     RIGHT_END_POINT = setPoint(RIGHT_END_POINT_SCREEN);
     LEFT_END_POINT = setPoint(LEFT_END_POINT_SCREEN);
-    file_name = [DATA_FOLDER '\sub' SUB_NUM 'start_end_points.m'];
+    file_name = [DATA_FOLDER '\sub' num2str(SUB_NUM) 'start_end_points.m'];
     save(file_name, 'START_POINT','RIGHT_END_POINT','LEFT_END_POINT');
 end

@@ -27,7 +27,7 @@ function [] = initConstants()
     BLOCK_SIZE = 40; % has to be a multiple of 4.
     NUM_TRIALS = NUM_BLOCKS*BLOCK_SIZE;
     
-    RECOG_CAP_LENGTH_SEC = 1.5; % Trajectory recording length in sec.
+    RECOG_CAP_LENGTH_SEC = 2; % Trajectory recording length in sec.
     CATEGOR_CAP_LENGTH_SEC = 1;
     RECOG_CAP_LENGTH = RECOG_CAP_LENGTH_SEC * refRateHz; % Trajectory capture length (num of samples).
     CATEGOR_CAP_LENGTH = CATEGOR_CAP_LENGTH_SEC * refRateHz;
