@@ -1,11 +1,9 @@
 % Receives single sub's data and runs various tests on it.
 function [pass_test] = tests (trials, trials_traj, practice)
+    warning('off','MATLAB:table:ModifiedAndSavedVarnames');
     
     % Initialize parameters.
-    initPsychtoolbox();
-    initConstants();
-    % Closes psychtoolbox.
-    Priority(0); sca; ShowCursor; ListenChar(0);
+    initConstants(0);
     global NUM_TRIALS;
     pass_test.prime_alter = 1;
     pass_test.deviations = 1;

@@ -1,4 +1,5 @@
-function [] = initConstants()
+% psychtoolbox_active - Some parameters can only be initiated after psychtoolbox was activated.    
+function [] = initConstants(psychtoolbox_active)
 
     global fontType handFontType fontSize handFontsize recogFontSize fontColor  % text params.
     global STIM_FOLDER TRIALS_FOLDER DATA_FOLDER DATA_FOLDER_WIN % paths
@@ -20,18 +21,64 @@ function [] = initConstants()
     global RECOG_CAP_LENGTH_SEC RECOG_CAP_LENGTH CATEGOR_CAP_LENGTH_SEC CATEGOR_CAP_LENGTH MAX_CAP_LENGTH;
     global refRateHz;
     
+    if psychtoolbox_active
+        RECOG_CAP_LENGTH_SEC = 5; % Trajectory recording length in sec.
+        CATEGOR_CAP_LENGTH_SEC = 1.5;
+        RECOG_CAP_LENGTH = RECOG_CAP_LENGTH_SEC * refRateHz; % Trajectory capture length (num of samples).
+        CATEGOR_CAP_LENGTH = CATEGOR_CAP_LENGTH_SEC * refRateHz;
+        MAX_CAP_LENGTH = max(RECOG_CAP_LENGTH, CATEGOR_CAP_LENGTH);
+        
+        % Response params
+        KbName('UnifyKeyNames');
+        rightKey      =  KbName('RightArrow');
+        leftKey       =  KbName('LeftArrow');
+        abortKey      =  KbName('ESCAPE'); % ESC aborts experiment
+        One           =  KbName('1!');  % I did not see the phrase
+        Two           =  KbName('2@');  % I had a vague perception, but I don?t know what it was
+        Three         =  KbName('3#');  % I saw a clear part of the phrase
+        Four          =  KbName('4$');  % I saw the entire phrase clearly
+        spaceKey      =  KbName('space');
+
+        % Get slides (screen images).
+        WELCOME_SCREEN = getTextureFromHD('welcome_screen.jpg');
+        LOADING_SCREEN = getTextureFromHD('loading_screen.jpg');
+        INSTRUCTIONS_SCREEN = getTextureFromHD('instructions_screen.jpg');
+        PRACTICE_SCREEN = getTextureFromHD('practice_screen.jpg');
+        TEST_SCREEN = getTextureFromHD('test_screen.jpg');
+        END_SCREEN = getTextureFromHD('end_screen.jpg');
+        BLOCK_END_SCREEN = getTextureFromHD('block_end_screen.jpg');
+        CATEGOR_NATURAL_LEFT_SCREEN = getTextureFromHD('categor_natural_left_screen.jpg');
+        CATEGOR_NATURAL_RIGHT_SCREEN = getTextureFromHD('categor_natural_right_screen.jpg');
+        RECOG_SCREEN = getTextureFromHD('recog_screen.jpg');
+        PAS_SCREEN = getTextureFromHD('pas_screen.jpg');
+        FIXATION_SCREEN = getTextureFromHD('fixation_screen.jpg');
+        RESPOND_FASTER_SCREEN = getTextureFromHD('respond_faster_screen.jpg');
+        RETURN_START_POINT_SCREEN = getTextureFromHD('return_start_point_screen.jpg');
+        START_POINT_SCREEN = getTextureFromHD('start_point_screen.jpg');
+        RIGHT_END_POINT_SCREEN = getTextureFromHD('right_end_point_screen.jpg');
+        LEFT_END_POINT_SCREEN = getTextureFromHD('left_end_point_screen.jpg');
+        BLACK_SCREEN = getTextureFromHD('black_screen.jpg');
+        WHITE_SCREEN = getTextureFromHD('white_screen.jpg');
+
+        NUM_MASKS = 60;
+        for mask_i = 1:NUM_MASKS
+            MASKS(mask_i) = getTextureFromHD(['mask' num2str(mask_i) '.jpg']);
+        end
+
+        MIDDLE_POINT_SCREEN = getTextureFromHD('middle_point_screen.jpg');
+        
+        global w text
+        Screen('TextFont',w, char(fontType));
+        Screen('TextStyle', w, 0);
+        text.Color = fontColor; %black
+    end
+    
     NUMBER_OF_ERRORS_PROMPT = 3;
     TIME_SHOW_PROMPT = 1; % seconds
     
     NUM_BLOCKS = 12;
     BLOCK_SIZE = 40; % has to be a multiple of 4.
     NUM_TRIALS = NUM_BLOCKS*BLOCK_SIZE;
-    
-    RECOG_CAP_LENGTH_SEC = 2.5; % Trajectory recording length in sec.
-    CATEGOR_CAP_LENGTH_SEC = 1;
-    RECOG_CAP_LENGTH = RECOG_CAP_LENGTH_SEC * refRateHz; % Trajectory capture length (num of samples).
-    CATEGOR_CAP_LENGTH = CATEGOR_CAP_LENGTH_SEC * refRateHz;
-    MAX_CAP_LENGTH = max(RECOG_CAP_LENGTH, CATEGOR_CAP_LENGTH);
     
     % duration in sec
     FIX_DURATION = 1;
@@ -51,52 +98,13 @@ function [] = initConstants()
     RIGHT = 0;
     LEFT = 1;
     
-    % Response params
-    KbName('UnifyKeyNames');
-    rightKey      =  KbName('RightArrow');
-    leftKey       =  KbName('LeftArrow');
-    abortKey      =  KbName('ESCAPE'); % ESC aborts experiment
-    One           =  KbName('1!');  % I did not see the phrase
-    Two           =  KbName('2@');  % I had a vague perception, but I don?t know what it was
-    Three         =  KbName('3#');  % I saw a clear part of the phrase
-    Four          =  KbName('4$');  % I saw the entire phrase clearly
-    spaceKey      =  KbName('space');
-
-    % Get slides (screen images).
-    WELCOME_SCREEN = getTextureFromHD('welcome_screen.jpg');
-    LOADING_SCREEN = getTextureFromHD('loading_screen.jpg');
-    INSTRUCTIONS_SCREEN = getTextureFromHD('instructions_screen.jpg');
-    PRACTICE_SCREEN = getTextureFromHD('practice_screen.jpg');
-    TEST_SCREEN = getTextureFromHD('test_screen.jpg');
-    END_SCREEN = getTextureFromHD('end_screen.jpg');
-    BLOCK_END_SCREEN = getTextureFromHD('block_end_screen.jpg');
-    CATEGOR_NATURAL_LEFT_SCREEN = getTextureFromHD('categor_natural_left_screen.jpg');
-    CATEGOR_NATURAL_RIGHT_SCREEN = getTextureFromHD('categor_natural_right_screen.jpg');
-    RECOG_SCREEN = getTextureFromHD('recog_screen.jpg');
-    PAS_SCREEN = getTextureFromHD('pas_screen.jpg');
-    FIXATION_SCREEN = getTextureFromHD('fixation_screen.jpg');
-    RESPOND_FASTER_SCREEN = getTextureFromHD('respond_faster_screen.jpg');
-    RETURN_START_POINT_SCREEN = getTextureFromHD('return_start_point_screen.jpg');
-    START_POINT_SCREEN = getTextureFromHD('start_point_screen.jpg');
-    RIGHT_END_POINT_SCREEN = getTextureFromHD('right_end_point_screen.jpg');
-    LEFT_END_POINT_SCREEN = getTextureFromHD('left_end_point_screen.jpg');
-    BLACK_SCREEN = getTextureFromHD('black_screen.jpg');
-    WHITE_SCREEN = getTextureFromHD('white_screen.jpg');
-    
-    NUM_MASKS = 60;
-    for mask_i = 1:NUM_MASKS
-        MASKS(mask_i) = getTextureFromHD(['mask' num2str(mask_i) '.jpg']);
-    end
-    
-    MIDDLE_POINT_SCREEN = getTextureFromHD('middle_point_screen.jpg');
-    
     % trial structure and word lists.
     CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
     NAT_TARGETS = readtable([STIM_FOLDER '/word_lists/nat_targets.xlsx']);
     ART_TARGETS = readtable([STIM_FOLDER '/word_lists/art_targets.xlsx']);
     ART_PRIMES = readtable([STIM_FOLDER '/word_lists/art_primes.xlsx']);
     NAT_PRIMES = readtable([STIM_FOLDER '/word_lists/nat_primes.xlsx']);
-    WORD_LIST = readtable([STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
+    WORD_LIST = readtable([STIM_FOLDER '/word_lists/practice_word_freq_list.xlsx']);
     WORD_LIST = WORD_LIST(:,[1,3]); % Remove word frequencies.
     
     if height(WORD_LIST)*2 < BLOCK_SIZE % *2 because we have 2 comulns.
@@ -130,9 +138,4 @@ function [] = initConstants()
     handFontsize = ceil((wordWidth * 100 / 11)*screenScaler);
     fontSize = ceil((wordWidth * 100 / 10)*screenScaler); % typescript font size.
     recogFontSize = ceil((wordWidth * 100 / 10)*screenScaler); % font size oin recog question.
-
-    global w text
-    Screen('TextFont',w, char(fontType));
-    Screen('TextStyle', w, 0);
-    text.Color = fontColor; %black
 end
