@@ -1,35 +1,39 @@
 % Receives single sub's data and runs various tests on it.
-function [pass_test] = tests (trials, trials_traj, practice)
+% type - 'data', 'trials_list', 'practice_trials_list', each runs different set of tests.
+function [pass_test] = tests (trials, trials_traj, type)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
     
     % Initialize parameters.
     initConstants(0);
     global NUM_TRIALS;
-    pass_test.prime_alter = NaN;
     pass_test.deviations = NaN;
     pass_test.deviation_of_mean = NaN;
     pass_test.std = NaN;
     pass_test.prime_alter = NaN;
     
     % Remove practice trials, unless testing practice trials.
-    if ~practice
+    if ~strcmp(type, 'practice_trials_list')
         trials(trials.practice==1, :) = [];
     end
     
     % Test event durations.
-    disp('------------------------------- Event Durations -------------------------------');
-    events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
-    timestamps = trials(:,events);
-    desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
-    pass_timings = timingsTest(events, timestamps, desired_durations);
-    pass_test.deviations = pass_timings.deviations;
-    pass_test.deviation_of_mean = pass_timings.deviation_of_mean;
-    pass_test.std = pass_timings.std;
+    if strcmp(type, 'data')
+        disp('------------------------------- Event Durations -------------------------------');
+        events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
+        timestamps = trials(:,events);
+        desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
+        pass_timings = timingsTest(events, timestamps, desired_durations);
+        pass_test.deviations = pass_timings.deviations;
+        pass_test.deviation_of_mean = pass_timings.deviation_of_mean;
+        pass_test.std = pass_timings.std;
+    end
     
     % Test output has values for all fields.
-    disp('------------------------------- Has Values -------------------------------');
-    pass_test.data_values = hasValuesTest(trials, 'iTrial');
-    pass_test.traj_values = hasValuesTest(trials_traj, 'iTrial');
+    if strcmp(type, 'data')
+        disp('------------------------------- Has Values -------------------------------');
+        pass_test.data_values = hasValuesTest(trials, 'iTrial');
+        pass_test.traj_values = hasValuesTest(trials_traj, 'iTrial');
+    end
     
     % Test prime-target-distractor relations (don't share letters, are from same/diff categor).
     disp('------------------------------- Relations -------------------------------');
@@ -58,6 +62,8 @@ function [pass_test] = tests (trials, trials_traj, practice)
         disp(['Prime is on left side in categor question: ' num2str(sum(trials.prime_left))...
             ' times, instead of: ' num2str(NUM_TRIALS/2)]);
         pass_test.prime_alter = 0;
+    else
+        pass_test.prime_alter = 1;
     end
     
     % Test there are enough trials and blocks.

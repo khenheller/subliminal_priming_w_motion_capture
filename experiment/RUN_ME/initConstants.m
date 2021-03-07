@@ -89,8 +89,10 @@ function [] = initConstants(psychtoolbox_active)
     TARGET_DURATION = 0.5;
      
     % stimuli folders addresses
-    STIM_FOLDER = './stimuli';
-    DATA_FOLDER = '../../raw_data';
+    [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
+    curr_path = replace(curr_path, '\', '/');
+    STIM_FOLDER = [curr_path './stimuli'];
+    DATA_FOLDER = [curr_path '../../raw_data'];
     TRIALS_FOLDER = [STIM_FOLDER '/trial_lists'];
     DATA_FOLDER_WIN = replace(DATA_FOLDER, '/', '\');
     
