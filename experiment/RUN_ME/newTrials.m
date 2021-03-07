@@ -35,7 +35,13 @@ function trials = newTrials(draw_stats, practice)
     
     % sample words to use as targets (See main.docx for explanation on this calc).
     divisors = 1:height(WORD_LIST);
-    n_words_to_use = max(divisors(mod(NUM_TRIALS/4,divisors) == 0));
+    if practice
+        n_words_to_use = BLOCK_SIZE/2;
+        word_repetitions = 1;
+    else
+        n_words_to_use = max(divisors(mod(NUM_TRIALS/4,divisors) == 0));
+        word_repetitions = (NUM_TRIALS / 2 / 2 / n_words_to_use); % trials/conditions/categories/n_words_to_use.
+    end
     [nat_words_to_use, nat_i] = datasample(WORD_LIST{:,'natural'}, n_words_to_use, 'Replace',false);
     [art_words_to_use, art_i] = datasample(WORD_LIST{:,'artificial'}, n_words_to_use, 'Replace',false);
     chosen_words  = [nat_words_to_use; art_words_to_use];
@@ -71,10 +77,14 @@ function trials = newTrials(draw_stats, practice)
     end
     
     % Add same / diff condition.
-    for word = words.word'
-        word_is_target = ismember(trials.target, word);
-        num_instances = sum(word_is_target);
-        trials.same(word_is_target) = randerr(1,num_instances, num_instances/2); % half 1 half 0.
+    if practice
+        trials.same(:) = randerr(1, height(trials), height(trials)/2)'; % half 1 half 0.
+    else
+        for word = words.word'
+            word_is_target = ismember(trials.target, word);
+            num_instances = sum(word_is_target);
+            trials.same(word_is_target) = randerr(1,num_instances, num_instances/2); % half 1 half 0.
+        end
     end
     
     % determines randomly for each trial if prime is displayed on left side.
@@ -93,11 +103,10 @@ function trials = newTrials(draw_stats, practice)
             indices = ismember(trials.target, possible_targets(:,i)); % all indices of possible targets.
             indices = indices & cellfun(@isempty, trials.prime); % only empty primes.
             indices = find(indices);
-            prime_repetitions = (NUM_TRIALS / 2 / 2 / n_words_to_use); % trials/conditions/categories/n_words_to_use.
-            if length(indices) < prime_repetitions % doesn't have enough places to put prime.
+            if length(indices) < word_repetitions % doesn't have enough places to put prime.
                 break;
             end
-            indices = datasample(indices, prime_repetitions, 'Replace',false);
+            indices = datasample(indices, word_repetitions, 'Replace',false);
             trials.prime(indices) = words.word(i);
         end
     end
@@ -111,11 +120,10 @@ function trials = newTrials(draw_stats, practice)
             indices = ismember(trials.prime, possible_primes(:,i)); % all indices of possible primes.
             indices = indices & cellfun(@isempty, trials.distractor); % only empty dist.
             indices = find(indices);
-            dist_repetitions = (NUM_TRIALS / 2 / n_words_to_use); % trials/categories/n_words_to_use.
-            if length(indices) < dist_repetitions % doesn't have enough places to put dist.
+            if length(indices) < word_repetitions % doesn't have enough places to put dist.
                 break;
             end
-            indices = datasample(indices, dist_repetitions, 'Replace',false);
+            indices = datasample(indices, word_repetitions, 'Replace',false);
             trials.distractor(indices) = words.word(i);
         end
     end

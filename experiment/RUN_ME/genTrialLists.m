@@ -13,7 +13,7 @@ function [] = genTrialLists(num_lists)
 
     % Generate lists.
     for iList = 1:num_lists
-        curr_list = newTrials(1, 0);        
+        curr_list = newTrials(1, 0);
         
         % Check if identical to previous lists.
         iPrev_list = iList - 1;

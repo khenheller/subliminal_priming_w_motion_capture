@@ -6,12 +6,15 @@ clc;
 clear all;
 addpath('.\NatNetSDK');
 
-% Parameter definit1ion.1
+% Parameter definit1ion.
 subNumber = 999;
 global sittingDistance viewAngleX viewAngleY
 sittingDistance = 60; % in cm.
 viewAngleX = 2.5; % in deg.
 viewAngleY = 1;
+
+global NO_FULLSCREEN
+NO_FULLSCREEN = 1;
 % -------------------------- Run Experiment -------------------------------
 main(subNumber);
 % -------------------------- Generate trial lists --------------------------

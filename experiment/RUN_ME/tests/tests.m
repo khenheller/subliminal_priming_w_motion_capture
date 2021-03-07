@@ -1,10 +1,11 @@
 % Receives single sub's data and runs various tests on it.
-function [pass_test] = tests (trials, trials_traj)
+function [pass_test] = tests (trials, trials_traj, practice)
+    
+    % Initialize parameters.
     initPsychtoolbox();
     initConstants();
     % Closes psychtoolbox.
-    Priority(0); sca; ShowCursor; ListenChar(0);    
-    
+    Priority(0); sca; ShowCursor; ListenChar(0);
     global NUM_TRIALS;
     pass_test.prime_alter = 1;
     pass_test.deviations = 1;
@@ -12,8 +13,10 @@ function [pass_test] = tests (trials, trials_traj)
     pass_test.std = 1;
     pass_test.prime_alter = 1;
     
-    % Remove practice trials.
-    trials(trials.practice==1, :) = [];
+    % Remove practice trials, unless testing practice trials.
+    if ~practice
+        trials(trials.practice==1, :) = [];
+    end
     
     
     % Test event durations.

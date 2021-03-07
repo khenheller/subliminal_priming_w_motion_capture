@@ -10,17 +10,17 @@ function [touch_point, traj, timecourse, categor_time] = getTraj(traj_type, vara
     global TARGET_DURATION;
     global RESPOND_FASTER_SCREEN RETURN_START_POINT_SCREEN;
     global START_POINT;
-    global CATEGOR_CAP_LENGTH RECOG_CAP_LENGTH;
+    global CATEGOR_CAP_LENGTH RECOG_CAP_LENGTH MAX_CAP_LENGTH;
     
-    finger_size = 0.02; % marker distance (m) from screen when touching it.
+    finger_size = 0.03; % marker distance (m) from screen when touching it.
     
     % Sample length is different for recog/categor questions.
     sample_length = isempty(varargin{1}) * RECOG_CAP_LENGTH + ...
         ~isempty(varargin{1}) * CATEGOR_CAP_LENGTH;
     
     touch_point = NaN(1,3);
-    traj = NaN(sample_length, 3); % 3 cordinates (x,y,z).
-    timecourse = NaN(sample_length,1);
+    traj = NaN(MAX_CAP_LENGTH, 3); % 3 cordinates (x,y,z).
+    timecourse = NaN(MAX_CAP_LENGTH,1);
     categor_time = NaN;
     curRange = NaN;
     
