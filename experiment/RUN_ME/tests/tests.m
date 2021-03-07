@@ -5,17 +5,16 @@ function [pass_test] = tests (trials, trials_traj, practice)
     % Initialize parameters.
     initConstants(0);
     global NUM_TRIALS;
-    pass_test.prime_alter = 1;
-    pass_test.deviations = 1;
-    pass_test.deviation_of_mean = 1;
-    pass_test.std = 1;
-    pass_test.prime_alter = 1;
+    pass_test.prime_alter = NaN;
+    pass_test.deviations = NaN;
+    pass_test.deviation_of_mean = NaN;
+    pass_test.std = NaN;
+    pass_test.prime_alter = NaN;
     
     % Remove practice trials, unless testing practice trials.
     if ~practice
         trials(trials.practice==1, :) = [];
     end
-    
     
     % Test event durations.
     disp('------------------------------- Event Durations -------------------------------');

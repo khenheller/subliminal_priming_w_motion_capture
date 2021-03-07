@@ -104,7 +104,7 @@ function [] = initConstants(psychtoolbox_active)
     ART_TARGETS = readtable([STIM_FOLDER '/word_lists/art_targets.xlsx']);
     ART_PRIMES = readtable([STIM_FOLDER '/word_lists/art_primes.xlsx']);
     NAT_PRIMES = readtable([STIM_FOLDER '/word_lists/nat_primes.xlsx']);
-    WORD_LIST = readtable([STIM_FOLDER '/word_lists/practice_word_freq_list.xlsx']);
+    WORD_LIST = readtable([STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
     WORD_LIST = WORD_LIST(:,[1,3]); % Remove word frequencies.
     
     if height(WORD_LIST)*2 < BLOCK_SIZE % *2 because we have 2 comulns.
