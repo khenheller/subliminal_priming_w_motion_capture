@@ -80,10 +80,19 @@ function [] = experiment(trials, practice_trials)
 end
 
 function [trials] = runTrials(trials)
-    global compKbDevice refRateSec;
+    global compKbDevice refRateSec w;
     global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
     global BLOCK_END_SCREEN BLOCK_SIZE;
     global SUB_NUM;
+    global CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN CATEGOR_SCREEN;
+    global fontType fontSize handFontType handFontsize
+    
+    % Set categories display side.
+    if trials(1,'natural_left')
+        CATEGOR_SCREEN = CATEGOR_NATURAL_LEFT_SCREEN;
+    else
+        CATEGOR_SCREEN = CATEGOR_NATURAL_RIGHT_SCREEN;
+    end
     
     try        
         % Iterates over trials.
@@ -98,10 +107,14 @@ function [trials] = runTrials(trials)
                 end               
             end
             
+            % Set prime font now to save run time.
+            Screen('TextFont',w, handFontType);
+            Screen('TextSize', w, handFontsize);
+            
             % Fixation
             time(1) = showFixation();
-            WaitSecs(FIX_DURATION - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of TIME_FIXATION.
-
+            WaitSecs(FIX_DURATION - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of FIX_DURATION.
+            
             % Mask 1
             time(2) = showMask(trials(1,:), 'mask1');
             WaitSecs(MASK1_DURATION - refRateSec / 2);
@@ -119,10 +132,12 @@ function [trials] = runTrials(trials)
             WaitSecs(MASK3_DURATION - refRateSec / 2);
 
             % Target
+            Screen('TextFont',w, fontType, 'TextSize', w, fontSize);
+            Screen('DrawTexture',w, CATEGOR_SCREEN); % Shows categor answers with target.
             time(6) = showWord(trials(1,:), 'target');
             
             % Target categorization.
-            target_ans = getAns('categor', trials.natural_left(1));
+            target_ans = getAns('categor');
             
             % Prime recognition.
             time(8) = showRecog(trials(1,:));
@@ -173,24 +188,7 @@ function [time] = showMask(trial, mask) % 'mask' - which mask to show (1st / 2nd
 end
 
 function [time] = showWord(trial, prime_or_target)
-    global fontType fontSize handFontType handFontsize;
-    global w ScreenHeight CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN WHITE_SCREEN;
-    
-    % prime=handwriting, target=typescript
-    if strcmp(prime_or_target, 'prime')
-        Screen('TextFont',w, handFontType);
-        Screen('TextSize', w, handFontsize);
-    else
-        Screen('TextFont',w, fontType);
-        Screen('TextSize', w, fontSize);
-        % Shows categor answers with target.
-        if trial.natural_left
-            Screen('DrawTexture',w, CATEGOR_NATURAL_LEFT_SCREEN);
-        else
-            Screen('DrawTexture',w, CATEGOR_NATURAL_RIGHT_SCREEN);
-        end
-    end
-
+    global w ScreenHeight
     DrawFormattedText(w, double(trial.(prime_or_target){:}), 'center', (ScreenHeight/2+3), [0 0 0]);
     [~,time] = Screen('Flip',w,0,1);
 end

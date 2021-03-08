@@ -1,16 +1,18 @@
 % Gets question type ('recog','categor','pas').
-% varargin relevant only for type='categor', indicates on which side natural
-% is dispayed.
 % returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
-function [output] = getAns(type, varargin)
+function [output] = getAns(type)
     
-    [touch_point, traj_to, timecourse_to, categor_time] = getTraj('to_screen',varargin);
-    [~, traj_from, timecourse_from, ~]                  = getTraj('from_screen', cell(1,0));
+    [traj_to, timecourse_to, categor_time]  = getTraj('to_screen', type);
+    [traj_from, timecourse_from, ~]         = getTraj('from_screen', type);
     
     global ScreenWidth;
     global refRateSec;
+    global TOUCH_PLANE_INFO
     
     answer = NaN;
+    
+    last_sample = find(isnan(traj_to(:,1)), 1, 'last');
+    touch_point = traj_to(last_sample,1) / TOUCH_PLANE_INFO.mPerPixel; % Sample current position, convert to pixels.
     
     % If sub responded before target ended, categor_time didn't get value.
     if isnan(categor_time) 
