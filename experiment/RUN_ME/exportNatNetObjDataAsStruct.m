@@ -4,14 +4,14 @@
 %       the size of the struct dynamically. Optimally, we'll have a
 %       natNetObj.numRigidBodies property to rely on.
 function outStruct = exportNatNetObjDataAsStruct()
-    global NATNETCLIENT
+    global p.NATNETCLIENT
 
     outStruct.frameNum = -1; % This as a default value
 
     % Iterate over all rigid bodies in the frame:
     outStruct.RB = {};
     iRigidBody = 1;
-    currBody = NATNETCLIENT.RigidBody(iRigidBody);
+    currBody = p.NATNETCLIENT.RigidBody(iRigidBody);
     while(~isempty(currBody))
         RBstruct.x = currBody.x;
         RBstruct.y = currBody.y;
@@ -19,13 +19,13 @@ function outStruct = exportNatNetObjDataAsStruct()
         outStruct.RB{iRigidBody} = RBstruct;
 
         iRigidBody = iRigidBody+1;
-        currBody = NATNETCLIENT.RigidBody(iRigidBody);
+        currBody = p.NATNETCLIENT.RigidBody(iRigidBody);
     end
 
     % Iterate over all the markers in the frame:
     outStruct.Ms = {};
     iMarker = 1;
-    currMarker = NATNETCLIENT.LabeledMarker(iMarker);
+    currMarker = p.NATNETCLIENT.LabeledMarker(iMarker);
     while(~isempty(currMarker))
         Mstruct.x = currMarker.x;
         Mstruct.y = currMarker.y;
@@ -33,6 +33,6 @@ function outStruct = exportNatNetObjDataAsStruct()
         outStruct.Ms{iMarker} = Mstruct ;
 
         iMarker = iMarker+1;
-        currMarker = NATNETCLIENT.LabeledMarker(iMarker);
+        currMarker = p.NATNETCLIENT.LabeledMarker(iMarker);
     end
 end

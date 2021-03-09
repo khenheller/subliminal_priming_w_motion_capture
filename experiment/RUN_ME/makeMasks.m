@@ -2,8 +2,8 @@
 % which cover a certain viewing angle.
 function [] = makeMasks(num_masks)
 
-    initPsychtoolbox();
-    initConstants();
+    p = initPsychtoolbox();
+    p = initConstants(1, p);
     
     % closes psychtoolbox window
     Priority(0);
@@ -11,7 +11,7 @@ function [] = makeMasks(num_masks)
     ShowCursor;
     ListenChar(0);
 
-    global fontSize wordWidth wordHeight
+    global p.FONT_SIZE p.WORD_WIDTH p.WORD_HEIGHT
     
     %@@@@@@@@ Define the following @@@@@@@@
     num_shapes_each_kind = 11; % num squares and diamonds.
@@ -24,8 +24,8 @@ function [] = makeMasks(num_masks)
     font_diamond_ratio = 2.5/4;% original measured values: 2.5/3.5;
     
     % When font=100 and square_LineWidth=15 & diamond_LineWidth=10, all widths are equal.
-    square_width = 15 * fontSize / 100;
-    diamond_width = 10 * fontSize / 100;
+    square_width = 15 * p.FONT_SIZE / 100;
+    diamond_width = 10 * p.FONT_SIZE / 100;
     
     % Open fullscreen figure.
     set(gcf, 'Units','centimeters',  'WindowState','fullscreen',  'MenuBar','None');
@@ -34,9 +34,9 @@ function [] = makeMasks(num_masks)
     screen_size = get(gcf,'Position');
     width = screen_size(3);
     height = screen_size(4);
-    % sets mask at center of screen.
-    set(gca,'Units','centimeters','Position',[(width/2 - wordWidth/2) (height/2 - wordHeight/2)...
-        wordWidth wordHeight]);
+    % sets mask at p.center of screen.
+    set(gca,'Units','centimeters','Position',[(width/2 - p.WORD_WIDTH/2) (height/2 - p.WORD_HEIGHT/2)...
+        p.WORD_WIDTH p.WORD_HEIGHT]);
     % grey background.
     set(gcf,'color',[0.5 0.5 0.5]);
     set(gcf, 'InvertHardcopy', 'off'); % prevents matlab overide my background setting when saving to a file.
@@ -47,24 +47,24 @@ function [] = makeMasks(num_masks)
         
         % draw squares.
         for shape_i = 1:num_shapes_each_kind
-            x = rand * wordWidth;
-            y = rand * wordHeight;
-            square_size = fontSize * font_square_ratio;
+            x = rand * p.WORD_WIDTH;
+            y = rand * p.WORD_HEIGHT;
+            square_size = p.FONT_SIZE * font_square_ratio;
             plot(x,y, 's','MarkerEdgeColor','black','MarkerSize',square_size,'LineWidth',square_width)
             hold on;
         end
         
         % draw diamonds.
         for shape_i = 1:num_shapes_each_kind % draws a shape.
-            x = rand * wordWidth;
-            y = rand * wordHeight;
-            diamond_size = fontSize * font_diamond_ratio;
+            x = rand * p.WORD_WIDTH;
+            y = rand * p.WORD_HEIGHT;
+            diamond_size = p.FONT_SIZE * font_diamond_ratio;
             plot(x,y, 'd','MarkerEdgeColor','black','MarkerSize',diamond_size,'LineWidth',diamond_width)
             hold on;
         end
-        xlim([0 wordWidth]);
-        ylim([0 wordHeight]);
+        xlim([0 p.WORD_WIDTH]);
+        ylim([0 p.WORD_HEIGHT]);
         axis 'off';
-        saveas(gcf, [stim_folder '/masks/mask' num2str(mask_i) '.jpg']);%, 'jpeg');%print(gcf, '-djpeg', [STIM_FOLDER '/masks/mask' num2str(mask_i) '.jpg']);
+        saveas(gcf, [stim_folder '/masks/mask' num2str(mask_i) '.jpg']);%, 'jpeg');%print(gcf, '-djpeg', [p.STIM_FOLDER '/masks/mask' num2str(mask_i) '.jpg']);
     end
 end

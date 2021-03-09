@@ -7,19 +7,18 @@ clear all;
 addpath('.\NatNetSDK');
 
 % Parameter definit1ion.
-subNumber = 999;
-global sittingDistance viewAngleX viewAngleY
-sittingDistance = 60; % in cm.
-viewAngleX = 2.5; % in deg.
-viewAngleY = 1;
+p.SUB_NUM = 999;
+p.SITTING_DISTANCE = 60; % in cm.
+p.VIEW_ANGLE_X = 2.5; % in deg.
+p.VIEW_ANGLE_Y = 1;
 
-global NO_FULLSCREEN
-NO_FULLSCREEN = 1;
+p.FULLSCREEN = 1;
+p.DEBUG = 1;
 % -------------------------- Run Experiment -------------------------------
-main(subNumber);
+main(p);
 % -------------------------- Generate trial lists --------------------------
-% global NO_FULLSCREEN
-% NO_FULLSCREEN = false; % default = false
+% global p.FULLSCREEN
+% p.FULLSCREEN = true; % default = true
 % num_trial_lists = 10;
 % genTrialLists(num_trial_lists);
 % -------------------------- Generate Masks -------------------------------
@@ -29,11 +28,11 @@ main(subNumber);
 % close all
 % clc
 % 
-% global NUM_TRIALS
+% global p.NUM_TRIALS
 % global RECOG_RECORD_LENGTH CATEGOR_RECORD_LENGTH
-% global refRateHz
+% global p.REF_RATE_HZ
 % 
-% record_len = 200;%max(RECOG_RECORD_LENGTH, CATEGOR_RECORD_LENGTH) * refRateHz;
+% record_len = 200;%max(RECOG_RECORD_LENGTH, CATEGOR_RECORD_LENGTH) * p.REF_RATE_HZ;
 % 
 % num_practice_trials = 40;
 % 
@@ -49,7 +48,7 @@ main(subNumber);
 % diff_trials_data = trials_data(~trials_data.same == 1, :);
 % diff_trials_traj = trials_traj(~ismember(trials_traj.iTrial, same_trials_data.iTrial), :);
 % 
-% for trial = 1:NUM_TRIALS/2
+% for trial = 1:p.NUM_TRIALS/2
 %     plot3(same_trials_traj.target_x_to(1:record_len), same_trials_traj.target_z_to(1:record_len), same_trials_traj.target_y_to(1:record_len), 'LineWidth',3, 'color','b')
 %     hold on;
 %     plot3(diff_trials_traj.target_x_to(1:record_len), diff_trials_traj.target_z_to(1:record_len), diff_trials_traj.target_y_to(1:record_len), 'LineWidth',3, 'color','r')

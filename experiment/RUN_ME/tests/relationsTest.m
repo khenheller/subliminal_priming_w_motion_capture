@@ -2,7 +2,7 @@
 % Makes sure matching words (same row) from both lists don't share letters in common locations.
 % 'prime-target': check prime categor is different from target.
 % 'prime-dist': check prime categor is same as distractor.
-function pass_test = relationsTest (list_a, list_b, type)
+function pass_test = relationsTest (list_a, list_b, type, p)
     pass_test.common_letters = 1;
     pass_test.categor = 1;
     
@@ -20,8 +20,8 @@ function pass_test = relationsTest (list_a, list_b, type)
     end
     
     
-    categor_a = getCategor(list_a);
-    categor_b = getCategor(list_b);
+    categor_a = getCategor(list_a, p);
+    categor_b = getCategor(list_b, p);
     if strcmp(type,'prime_target') % checks if prime & target from same categor.
         bad_categor = categor_a == categor_b;
         bad_categor(same_word) = 0; % Ignore same word instances.
@@ -35,12 +35,11 @@ function pass_test = relationsTest (list_a, list_b, type)
 end
 
 % Gets word list, returns category (natural/artificial) of each word.
-function categor = getCategor(words)
-    global WORD_LIST;
+function categor = getCategor(words, p)
     categor = strings(size(words,1), 1);
     % locate word in each list.
-    nat_words = ismember(words, WORD_LIST.natural);
-    art_words = ismember(words, WORD_LIST.artificial);
+    nat_words = ismember(words, p.WORD_LIST.natural);
+    art_words = ismember(words, p.WORD_LIST.artificial);
     categor(nat_words) = 'natural';
     categor(art_words) = 'artificial';
 end

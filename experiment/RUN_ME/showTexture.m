@@ -1,5 +1,4 @@
-function [time] = showTexture(txtr)
-    global w
-    Screen('DrawTexture',w, txtr);
-    [~,time] = Screen('Flip', w);    
+function [time] = showTexture(txtr, p)
+    Screen('DrawTexture',p.w, txtr);
+    [~,time] = Screen('Flip', p.w);    
 end

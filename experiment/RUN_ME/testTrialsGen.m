@@ -4,8 +4,9 @@ function [freq] = testTrialsGen(nSets)
 
     warning('off','MATLAB:table:PreallocateCharWarning');
     
-    initPsychtoolbox();
-    initConstants();
+    p.FULLSCREEN = true; % default = true
+    p = initPsychtoolbox();
+    p = initConstants(1, p);
     
     % closes psychtoolbox window
     Priority(0);
@@ -13,13 +14,11 @@ function [freq] = testTrialsGen(nSets)
     ShowCursor;
     ListenChar(0);
 
-    global NO_FULLSCREEN WINDOW_RESOLUTION TIME_SLOW SUB_NUM WORD_LIST;
+    global p.FULLSCREEN p.BOX_RESOLUTION TIME_SLOW p.SUB_NUM p.WORD_LIST;
     TIME_SLOW = 1; % default = 1; time slower for debugging
-    NO_FULLSCREEN = false; % default = false
-    WINDOW_RESOLUTION = [100 100 900 700];
-    SUB_NUM = 99999;
+    p.SUB_NUM = 99999;
     
-    words = reshape(WORD_LIST{:,:}, [], 1);
+    words = reshape(p.WORD_LIST{:,:}, [], 1);
     % word freq as prime/target/distractor.
     freq.prime = zeros(length(words),1);
     freq.target = zeros(length(words),1);

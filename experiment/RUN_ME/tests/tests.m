@@ -4,8 +4,7 @@ function [pass_test] = tests (trials, trials_traj, type)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
     
     % Initialize parameters.
-    initConstants(0);
-    global NUM_TRIALS;
+    p = initConstants(0, []);
     pass_test.deviations = NaN;
     pass_test.deviation_of_mean = NaN;
     pass_test.std = NaN;
@@ -37,8 +36,8 @@ function [pass_test] = tests (trials, trials_traj, type)
     
     % Test prime-target-distractor relations (don't share letters, are from same/diff categor).
     disp('------------------------------- Relations -------------------------------');
-    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target), 'prime_target');
-    pass_relations.prime_dist = relationsTest(cell2mat(trials.prime), cell2mat(trials.distractor), 'prime_dist');
+    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target), 'prime_target', p);
+    pass_relations.prime_dist = relationsTest(cell2mat(trials.prime), cell2mat(trials.distractor), 'prime_dist', p);
     pass_test.prime_target_common_letters = pass_relations.prime_target.common_letters;
     pass_test.prime_target_categor = pass_relations.prime_target.categor;
     pass_test.prime_dist_common_letters = pass_relations.prime_dist.common_letters;
@@ -58,9 +57,9 @@ function [pass_test] = tests (trials, trials_traj, type)
     
     % Test prime alternates between left and right in recog equally.
     disp('------------------------------- Prime right/left alternations -------------------------------');
-    if sum(trials.prime_left) ~= NUM_TRIALS / 2
+    if sum(trials.prime_left) ~= p.NUM_TRIALS / 2
         disp(['Prime is on left side in categor question: ' num2str(sum(trials.prime_left))...
-            ' times, instead of: ' num2str(NUM_TRIALS/2)]);
+            ' times, instead of: ' num2str(p.NUM_TRIALS/2)]);
         pass_test.prime_alter = 0;
     else
         pass_test.prime_alter = 1;
@@ -85,15 +84,14 @@ end
 function pass_test = testTrialBlockCount(trial_num_col, block_num_col)
     pass_test.trial_count = 1;
     pass_test.block_count = 1;
-    global NUM_BLOCKS NUM_TRIALS;
     num_trials = length(unique(trial_num_col));
     num_blocks = length(unique(block_num_col));
-    if num_trials ~= NUM_TRIALS
-        disp(['Desired num of trials: ' num2str(NUM_TRIALS) '   Actual num: ' num2str(num_trials)]);
+    if num_trials ~= p.NUM_TRIALS
+        disp(['Desired num of trials: ' num2str(p.NUM_TRIALS) '   Actual num: ' num2str(num_trials)]);
         pass_test.trial_count = 0;
     end
-    if num_blocks ~= NUM_BLOCKS
-        disp(['Desired num of blocks: ' num2str(NUM_BLOCKS) '   Actual num: ' num2str(num_blocks)]);
+    if num_blocks ~= p.NUM_BLOCKS
+        disp(['Desired num of blocks: ' num2str(p.NUM_BLOCKS) '   Actual num: ' num2str(num_blocks)]);
         pass_test.block_count = 0;
     end
 end

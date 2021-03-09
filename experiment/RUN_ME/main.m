@@ -1,97 +1,77 @@
-function [ ] = main(subNumber)     
+function [ ] = main(p)
     % Subliminal priming experiment by Liad and Khen.
     % Coded by Khen (khenheller@mail.tau.ac.il)
     % Prof. Liad Mudrik's Lab, Tel-Aviv University
-
-    global NO_FULLSCREEN WINDOW_RESOLUTION TIME_SLOW
-    global compKbDevice
-    global WELCOME_SCREEN LOADING_SCREEN
-    global TOUCH_PLANE_INFO NATNETCLIENT
-
-    TIME_SLOW = 1; % default = 1; time slower for debugging
-    NO_FULLSCREEN = false; % default = false
-    WINDOW_RESOLUTION = [100 100 900 700];
     
-    global SUB_NUM
-    SUB_NUM = subNumber;    
-    
-    if nargin < 1; error('Missing subject number!'); end
+    if nargin < 1
+        error('Missing subject number!');
+    end
 
     try
         
         % Calibration and connection to natnetclient.
-        [TOUCH_PLANE_INFO, NATNETCLIENT] = touch_plane_setup();
+        [p.TOUCH_PLANE_INFO, p.NATNETCLIENT] = touch_plane_setup();
         
         % Initialize params.
-        initPsychtoolbox();
-        initConstants();
+        p = initPsychtoolbox(p);
+        p = initConstants(1, p);
         
         % Generates trials.
-        showTexture(LOADING_SCREEN);
-        trials = getTrials('test');
-        practice_trials = getTrials('practice');
+        showTexture(p.LOADING_SCREEN, p);
+        trials = getTrials('test', p);
+        practice_trials = getTrials('practice', p);
 
-        saveCode(trials.list_id{1});
+        saveCode(trials.list_id{1}, p);
         
         % Start,end points calibration.
-        setPoints();
+        p = setPoints(p);
         
         % Experiment
-        showTexture(WELCOME_SCREEN);
-        KbWait(compKbDevice,3);
-        experiment(trials, practice_trials);
+        showTexture(p.WELCOME_SCREEN, p);
+        KbWait([], 3);
+        experiment(trials, practice_trials, p);
         
-        NATNETCLIENT.disconnect;
+        p.NATNETCLIENT.disconnect;
         
     catch e
-        safeExit();
+        safeExit(p);
         rethrow(e);        
     end
-    safeExit();
+    safeExit(p);
 end
 
 function [] = cleanExit( )
     error('Exit by user!');
 end
 
-function [] = experiment(trials, practice_trials)
-
-    global INSTRUCTIONS_SCREEN PRACTICE_SCREEN TEST_SCREEN END_SCREEN;
-    global SUB_NUM;
-    
+function [] = experiment(trials, practice_trials, p)
     % instructions.
-    showTexture(INSTRUCTIONS_SCREEN);
-    getInput('instruction');
+    showTexture(p.INSTRUCTIONS_SCREEN, p);
+    getInput('instruction', p);
     
     % practice.
-    showTexture(PRACTICE_SCREEN);
-    getInput('instruction');
-    runTrials(practice_trials);
+    showTexture(p.PRACTICE_SCREEN, p);
+    getInput('instruction', p);
+    p = runTrials(practice_trials, p);
     
     % test.
-    showTexture(TEST_SCREEN);
-    getInput('instruction');
-    runTrials(trials);
+    showTexture(p.TEST_SCREEN, p);
+    getInput('instruction', p);
+    p = runTrials(trials, p);
     
-    fixOutput(SUB_NUM);
+    fixOutput(p.SUB_NUM);
     
-    showTexture(END_SCREEN);
-    getInput('instruction');
+    showTexture(p.END_SCREEN, p);
+    getInput('instruction', p);
 end
 
-function [trials] = runTrials(trials)
-    global compKbDevice refRateSec w;
-    global FIX_DURATION MASK1_DURATION MASK2_DURATION PRIME_DURATION MASK3_DURATION; % in sec.
-    global BLOCK_END_SCREEN BLOCK_SIZE;
-    global SUB_NUM;
-    global CATEGOR_NATURAL_LEFT_SCREEN CATEGOR_NATURAL_RIGHT_SCREEN CATEGOR_SCREEN;
-    global fontType fontSize handFontType handFontsize
-    
+function [p] = runTrials(trials, p)
+
     % Set categories display side.
     if trials(1,'natural_left')
-        CATEGOR_SCREEN = CATEGOR_NATURAL_LEFT_SCREEN;
+        p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_LEFT_SCREEN;
     else
-        CATEGOR_SCREEN = CATEGOR_NATURAL_RIGHT_SCREEN;
+        p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_RIGHT_SCREEN;
     end
     
     try        
@@ -101,104 +81,93 @@ function [trials] = runTrials(trials)
             
             % block change
             if trials.iTrial(1) ~= 1 
-                if mod(trials.iTrial(1), BLOCK_SIZE) == 1
-                    time = showTexture(BLOCK_END_SCREEN);
-                    KbWait(compKbDevice,3);
+                if mod(trials.iTrial(1), p.BLOCK_SIZE) == 1
+                    time = showTexture(p.BLOCK_END_SCREEN);
+                    KbWait([], 3);
                 end               
             end
             
             % Set prime font now to save run time.
-            Screen('TextFont',w, handFontType);
-            Screen('TextSize', w, handFontsize);
+            Screen('TextFont',p.w, p.HAND_FONT_TYPE);
+            Screen('TextSize', p.w, p.HAND_FONT_SIZE);
             
             % Fixation
-            time(1) = showFixation();
-            WaitSecs(FIX_DURATION - refRateSec / 2); % "- refRateSec / 2" so that it will flip exactly at the end of FIX_DURATION.
+            time(1) = showFixation(p);
+            WaitSecs(p.FIX_DURATION - p.REF_RATE_SEC / 2); % "- p.REF_RATE_SEC / 2" so that it will flip exactly at the end of p.FIX_DURATION.
             
             % Mask 1
-            time(2) = showMask(trials(1,:), 'mask1');
-            WaitSecs(MASK1_DURATION - refRateSec / 2);
+            time(2) = showMask(trials(1,:), 'mask1', p);
+            WaitSecs(p.MASK1_DURATION - p.REF_RATE_SEC / 2);
             
             % Mask 2
-            time(3) = showMask(trials(1,:), 'mask2');
-            WaitSecs(MASK2_DURATION - refRateSec / 2);
+            time(3) = showMask(trials(1,:), 'mask2', p);
+            WaitSecs(p.MASK2_DURATION - p.REF_RATE_SEC / 2);
 
             % Prime
-            time(4) = showWord(trials(1,:), 'prime');
-            WaitSecs(PRIME_DURATION - refRateSec / 2);
+            time(4) = showWord(trials(1,:), 'prime', p);
+            WaitSecs(p.PRIME_DURATION - p.REF_RATE_SEC / 2);
 
             % Mask 3
-            time(5) = showMask(trials(1,:), 'mask3');
-            WaitSecs(MASK3_DURATION - refRateSec / 2);
+            time(5) = showMask(trials(1,:), 'mask3', p);
+            WaitSecs(p.MASK3_DURATION - p.REF_RATE_SEC / 2);
 
             % Target
-            Screen('TextFont',w, fontType, 'TextSize', w, fontSize);
-            Screen('DrawTexture',w, CATEGOR_SCREEN); % Shows categor answers with target.
-            time(6) = showWord(trials(1,:), 'target');
+            Screen('TextFont',p.w, p.FONT_TYPE, 'TextSize', p.w, p.FONT_SIZE); % Set target font.
+            Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with target.
+            time(6) = showWord(trials(1,:), 'target', p);
             
             % Target categorization.
-            target_ans = getAns('categor');
+            target_ans = getAns('categor', p);
             
             % Prime recognition.
-            time(8) = showRecog(trials(1,:));
-            prime_ans = getAns('recog');
+            time(8) = showRecog(trials(1,:), p);
+            prime_ans = getAns('recog', p);
             
             % PAS
-            time(9) = showPas();
-            [pas, pas_time] = getInput('pas');
+            time(9) = showPas(p);
+            [pas, pas_time] = getInput('pas', p);
             
             % Assigns collected data to trials.
             trials = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_time);
             
             % Save trial to file and removes it from list.
-            saveToFile(trials(1,:));
+            saveToFile(trials(1,:), p);
             trials(1,:) = [];
         end
     catch e % if error occured, saves data before exit.
-        fixOutput(SUB_NUM);
+        fixOutput(p);
         rethrow(e);
     end
 end
 
-function [] = safeExit()
-%     global oldone
-    global NATNETCLIENT
-    NATNETCLIENT.disconnect;
+function [] = safeExit(p)
+    p.NATNETCLIENT.disconnect;
     Priority(0);
     sca;
     ShowCursor;
     ListenChar(0);
-%     Screen('Preference', 'TextEncodingLocale', oldone);
 end
 
-function [time] = showFixation()
+function [time] = showFixation(p)
     % waits until finger in start point.
     finInStartPoint();
     
-    global w % window experiment runs on. initialized in initPsychtoolbox();
-    global FIXATION_SCREEN BLACK_SCREEN
-    Screen('DrawTexture',w, FIXATION_SCREEN);
-    [~,time] = Screen('Flip', w);
+    Screen('DrawTexture',p.w, p.FIXATION_SCREEN);
+    [~,time] = Screen('Flip', p.w);
 end
 
-function [time] = showMask(trial, mask) % 'mask' - which mask to show (1st / 2nd / 3rd).
-    global w
-    Screen('DrawTexture',w, trial.(mask));
-    [~,time] = Screen('Flip', w);
+function [time] = showMask(trial, mask, p) % 'mask' - which mask to show (1st / 2nd / 3rd).
+    Screen('DrawTexture',p.w, trial.(mask));
+    [~,time] = Screen('Flip', p.w);
 end
 
-function [time] = showWord(trial, prime_or_target)
-    global w ScreenHeight
-    DrawFormattedText(w, double(trial.(prime_or_target){:}), 'center', (ScreenHeight/2+3), [0 0 0]);
-    [~,time] = Screen('Flip',w,0,1);
+function [time] = showWord(trial, prime_or_target, p)
+    DrawFormattedText(p.w, double(trial.(prime_or_target){:}), 'p.center', (p.ScreenHeight/2+3), [0 0 0]);
+    [~,time] = Screen('Flip',p.w,0,1);
 end
 
 % draws prime and distractor for recognition task.
-function [time] = showRecog(trial)
-    global w ScreenWidth ScreenHeight;
-    global recogFontSize;
-    global RECOG_SCREEN;
-    
+function [time] = showRecog(trial, p)
     if trial.prime_left
         left_word = trial.prime{:};
         right_word = trial.distractor{:};
@@ -207,20 +176,18 @@ function [time] = showRecog(trial)
         right_word = trial.prime{:};
     end
     
-    Screen('DrawTexture',w, RECOG_SCREEN);
-    Screen('TextSize', w, recogFontSize);
-    DrawFormattedText(w, double(left_word), ScreenWidth*2/7, ScreenHeight*3/8, [0 0 0]);
-    DrawFormattedText(w, double(right_word), 'right', ScreenHeight*3/8, [0 0 0], [], [], [], [] ,[],...
-        [ScreenWidth/4 ScreenHeight ScreenWidth*17/24 0]);
-    [~,time] = Screen('Flip', w, 0, 1);
+    Screen('DrawTexture',p.w, p.RECOG_SCREEN);
+    Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
+    DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.ScreenHeight*3/8, [0 0 0]);
+    DrawFormattedText(p.w, double(right_word), 'right', p.ScreenHeight*3/8, [0 0 0], [], [], [], [] ,[],...
+        [p.SCREEN_WIDTH/4 p.ScreenHeight p.SCREEN_WIDTH*17/24 0]);
+    [~,time] = Screen('Flip', p.w, 0, 1);
 end
 
 % draws PAS task.
-function [time] = showPas()
-    global w PAS_SCREEN
-    
-    Screen('DrawTexture',w, PAS_SCREEN);
-    [~,time] = Screen('Flip', w, 0, 1);
+function [time] = showPas(p)
+    Screen('DrawTexture',p.w, p.PAS_SCREEN);
+    [~,time] = Screen('Flip', p.w, 0, 1);
 end
 
 % for practice: loads practice_trials list.
@@ -228,13 +195,9 @@ end
 %           When unused_lists empties, refills it.
 %           This makes sure that one list doesn't repeat more than others.
 % type: 'practice' / 'test'
-function [trials] = getTrials(type)
-    global TRIALS_FOLDER SUB_NUM;
-    global MULTI_ROW_VARS;
-    global RECORD_LENGTH refRateHz;
-    
+function [trials] = getTrials(type, p)
     if isequal(type, 'test')
-        unused_lists_path = [TRIALS_FOLDER '/unused_lists.mat'];
+        unused_lists_path = [p.TRIALS_FOLDER '/unused_lists.mat'];
         unused_lists = [];
 
         % If file exists, loads it.
@@ -245,7 +208,7 @@ function [trials] = getTrials(type)
 
         % If used all trials, refills.
         if isempty(unused_lists)
-            unused_lists = cellstr(ls(TRIALS_FOLDER));
+            unused_lists = cellstr(ls(p.TRIALS_FOLDER));
             % Remove '.', '..', 'practice.trials.xlsx', 'unused_lists.mat'
             unused_lists(strcmp(unused_lists, '.')) = [];
             unused_lists(strcmp(unused_lists, '..')) = [];
@@ -262,15 +225,15 @@ function [trials] = getTrials(type)
         list = {'practice_trials.xlsx'};
     end
     
-    trials = readtable([TRIALS_FOLDER '/' list{:}]);
+    trials = readtable([p.TRIALS_FOLDER '/' list{:}]);
     % List ID.
     trials.list_id = repmat(list, height(trials), 1);
     % Assign subject's number.
-    trials.sub_num = ones(height(trials),1) * SUB_NUM;
+    trials.sub_num = ones(height(trials),1) * p.SUB_NUM;
     % In categorization task, "natural" is on the left for odd sub numbers.
-    trials.natural_left = ones(height(trials),1) * rem(SUB_NUM, 2);
+    trials.natural_left = ones(height(trials),1) * rem(p.SUB_NUM, 2);
     % convert vars with multiple row in each trial to cells.
-    for var = MULTI_ROW_VARS
+    for var = p.MULTI_ROW_VARS
         trials.(var{:}) = num2cell(NaN(height(trials),1));
     end
 end
@@ -322,26 +285,21 @@ function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, p
 end
 
 % Prints word on screen to measure thier actual size (by hand).
-function [] = testWordSize()
-    global fontType fontSize handFontType handFontsize;
-    global w ScreenHeight;
+function [] = testWordSize(p)
+    Screen('TextFont',p.w, p.HAND_FONT_TYPE);
+    Screen('TextSize', p.w, p.HAND_FONT_SIZE);
+    DrawFormattedText(p.w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'p.center', p.ScreenHeight/4, [0 0 0]);
     
-    Screen('TextFont',w, handFontType);
-    Screen('TextSize', w, handFontsize);
-    DrawFormattedText(w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'center', ScreenHeight/4, [0 0 0]);
-    
-    Screen('TextFont',w, fontType);
-    Screen('TextSize', w, fontSize);
-    DrawFormattedText(w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'center', ScreenHeight*3/4, [0 0 0]);
-    [~,time] = Screen('Flip',w);
+    Screen('TextFont',p.w, p.FONT_TYPE);
+    Screen('TextSize', p.w, p.FONT_SIZE);
+    DrawFormattedText(p.w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'p.center', p.ScreenHeight*3/4, [0 0 0]);
+    [~,time] = Screen('Flip',p.w);
 end
 
 % Removes bad char('') from output files.
-function [] = fixOutput(sub_num)
-    global DATA_FOLDER;
-    
-    sub_traj_file = [DATA_FOLDER '/sub' num2str(sub_num) 'traj.csv'];
-    sub_data_file = [DATA_FOLDER '/sub' num2str(sub_num) 'data.csv'];
+function [] = fixOutput(p)
+    sub_traj_file = [p.DATA_FOLDER '/sub' num2str(p.SUB_NUM) 'traj.csv'];
+    sub_data_file = [p.DATA_FOLDER '/sub' num2str(p.SUB_NUM) 'data.csv'];
 
     % Fix traj file.
     file_length = num2str(getFileLen(sub_traj_file) - 1); % Removes last line (has bad char).
@@ -367,15 +325,11 @@ function num_lines = getFileLen(file_path)
 end
 
 % Sets start and end points in space.
-function [] = setPoints()
-    global START_POINT RIGHT_END_POINT LEFT_END_POINT MIDDLE_POINT
-    global START_POINT_SCREEN RIGHT_END_POINT_SCREEN LEFT_END_POINT_SCREEN MIDDLE_POINT_SCREEN
-    global SUB_NUM DATA_FOLDER
-    
-    START_POINT = setPoint(START_POINT_SCREEN);
-    RIGHT_END_POINT = setPoint(RIGHT_END_POINT_SCREEN);
-    LEFT_END_POINT = setPoint(LEFT_END_POINT_SCREEN);
-    MIDDLE_POINT = setPoint(MIDDLE_POINT_SCREEN);
-    file_name = [DATA_FOLDER '\sub' num2str(SUB_NUM) 'start_end_points.m'];
-    save(file_name, 'START_POINT','RIGHT_END_POINT','LEFT_END_POINT', 'MIDDLE_POINT');
+function [p] = setPoints(p)
+    p.START_POINT = setPoint(p.START_POINT_SCREEN, p);
+    p.RIGHT_END_POINT = setPoint(p.RIGHT_END_POINT_SCREEN, p);
+    p.LEFT_END_POINT = setPoint(p.LEFT_END_POINT_SCREEN, p);
+    p.MIDDLE_POINT = setPoint(p.MIDDLE_POINT_SCREEN, p);
+    file_name = [p.DATA_FOLDER '\sub' num2str(p.SUB_NUM) 'start_end_points.m'];
+    save(file_name, 'p.START_POINT','p.RIGHT_END_POINT','p.LEFT_END_POINT', 'MIDDLE_POINT');
 end

@@ -1,88 +1,66 @@
-function screenError = initPsychtoolbox()
+function p = initPsychtoolbox(p)
     % INITPSYCHTOOLBOX Initilizes Psychtoolbox and opens graphics window
     % output:
     % -------
     % * Opens a psychtoolbox window *
     % screenError - true or false answer if the function did not succeed in
     % opening a 100Hz window.
-
-    global screenScaler oldone screenNumber DEBUG ScreenHeight ScreenWidth refRateHz refRateSec gray w REF_RATE_OPTIMAL center 
-    global WINDOW_RESOLUTION debugFactor NO_FULLSCREEN  
-
-    REF_RATE_OPTIMAL = 100;
+    
+    p.BOX_RESOLUTION = [0 0 400 300]; % resolution when not in fullscreen.
+    
+    p.REF_RATE_OPTIMAL = 100;
     
     PsychDefaultSetup(2);
-
-    %trying to set the refresh rate to optimal (100Hz)
-    try
-        SetResolution(screenNumber,ScreenWidth,ScreenHeight,(REF_RATE_OPTIMAL));
-        screenError = false;
-    catch
-        screenError = true;
-    end
     
     % Set sync tests:
- 
     Screen('Preference', 'SkipSyncTests', 0)
-    Screen('Preference', 'VisualDebugLevel', 4);
-    try
-        if DEBUG; Screen('Preference', 'SkipSyncTests', 1); else; Screen('Preference', 'SkipSyncTests', 0); end
-    catch
-        if DEBUG; Screen('Preference', 'SkipSyncTests', 1); else; Screen('Preference', 'SkipSyncTests', 0); end
-    end
-   
-
     Screen('Preference', 'VisualDebugLevel', 4);
 
     screens         =   Screen('Screens');
-    screenNumber    =   max(screens);
-    gray           =   128 * [1 1 1 1];
+    p.screenNumber  =   max(screens);
+    p.gray          =   128 * [1 1 1 1];
 
     % Finding the screen size and current resolution
-    try
-        if NO_FULLSCREEN; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray, WINDOW_RESOLUTION); else; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray); end
-    catch
-        if NO_FULLSCREEN; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray, WINDOW_RESOLUTION); else; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray); end
+    if p.FULLSCREEN
+        [p.w, wRect]  =  Screen('OpenWindow',p.screenNumber, p.gray);
+    else
+        [p.w, wRect]  =  Screen('OpenWindow',p.screenNumber, p.gray, p.BOX_RESOLUTION);
     end
     
-    ScreenWidth     =  wRect(3); disp(['ScreenWidth: ' num2str(ScreenWidth)]);
-    ScreenHeight    =  wRect(4); disp(['ScreenHeight: ' num2str(ScreenHeight)]);
-    center          =  [ScreenWidth/2; ScreenHeight/2];
-    refRateHz = Screen('NominalFrameRate', w); disp(['refRateHz: ' num2str(refRateHz)]);
-    refRateSec = refRateHz.^(-1); disp(['refRateSec: ' num2str(refRateSec)]); % in seconds. 
-    if DEBUG == 2; refRateSec = refRateSec / debugFactor; end
-    sca;
-
-    screenScaler = ScreenWidth/1920; % allows scaling so that with smaller screens, objects will be of smaller sizes (1 = Full HD)
-
-    try
-        if NO_FULLSCREEN; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray, WINDOW_RESOLUTION); else; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray); end
-    catch
-        if NO_FULLSCREEN; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray, WINDOW_RESOLUTION); else; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray); end
+    p.SCREEN_WIDTH       =  wRect(3);
+    p.ScreenHeight      =  wRect(4);
+    p.center            =  [p.SCREEN_WIDTH/2; p.ScreenHeight/2];
+    p.REF_RATE_HZ         = Screen('NominalFrameRate', p.w);
+    p.REF_RATE_SEC        = p.REF_RATE_HZ.^(-1);
+    
+    %trying to set the refresh rate to optimal (100Hz)
+    if ~p.DEBUG
+        SetResolution(p.screenNumber,p.SCREEN_WIDTH,p.ScreenHeight,(p.REF_RATE_OPTIMAL));
     end
-
-    HideCursor(w);
-    if ~NO_FULLSCREEN
-%         HideCursor(1);
+    
+    disp(['p.SCREEN_WIDTH: ' num2str(p.SCREEN_WIDTH)]);
+    disp(['p.ScreenHeight: ' num2str(p.ScreenHeight)]);
+    disp(['p.REF_RATE_HZ: ' num2str(p.REF_RATE_HZ)]);
+    disp(['p.REF_RATE_SEC: ' num2str(p.REF_RATE_SEC)]); % in seconds. 
+    
+    if p.FULLSCREEN
+        HideCursor(p.w);
     end
   
     slCharacterEncoding('ISO_8859-8')
-    Screen('TextFont', w, '-:lang=he');
+    Screen('TextFont', p.w, '-:lang=he');
     if ~IsLinux
-%         oldone = Screen('Preference', 'TextEncodingLocale', 'Hebrew_israel.1255');
-        oldone = Screen('Preference', 'TextEncodingLocale', 'UTF-8');
+%         Screen('Preference', 'TextEncodingLocale', 'Hebrew_israel.1255');
+        Screen('Preference', 'TextEncodingLocale', 'UTF-8');
     else
-        oldone = Screen('Preference', 'TextEncodingLocale', 'en_US.UTF-8');
+        Screen('Preference', 'TextEncodingLocale', 'en_US.UTF-8');
     end
     Screen('Preference', 'TextRenderer', 0);
-
-    global ptb_drawformattedtext_disableClipping;
-    ptb_drawformattedtext_disableClipping = 1;
     
     % this enables us to use the alpha transparency
-    Screen('BlendFunction', w, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA',gray);
+    Screen('BlendFunction', p.w, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA',p.gray);
 
-    Priority(MaxPriority(w));
+    Priority(MaxPriority(p.w));
 
     %% PRELIMINTY PREPATATION
     % check for Opengl compatibility, abort otherwise
@@ -96,7 +74,7 @@ function screenError = initPsychtoolbox()
     KbCheck;
     WaitSecs(0.1);
     GetSecs;
-    if ~NO_FULLSCREEN
+    if p.FULLSCREEN
         ListenChar(2);
     end
 end

@@ -1,56 +1,52 @@
 % Waits for keyboard response to the question displayed to participant.
 % type: 'instruction','categor', 'recog', 'pas'.
-function [ key, Resp_Time ] = getInput(type)
-
-    global compKbDevice abortKey rightKey leftKey WRONG_KEY One Two Three Four
-    global RIGHT LEFT
-
+function [ key, Resp_Time ] = getInput(type, p)
     key = [];
     Resp_Time = [];
     
-    [Resp_Time, Resp] = KbWait(compKbDevice, 2); % Waits for keypress.
+    [Resp_Time, Resp] = KbWait([], 2); % Waits for keypress.
     switch type
         case ('instruction')
-            if Resp(abortKey)
-                key = abortKey;
+            if Resp(p.ABORT_KEY)
+                key = p.ABORT_KEY;
                 error('Exit by user!');
             end
         case ('categor')
-            if Resp(abortKey)
-                key = abortKey;
+            if Resp(p.ABORT_KEY)
+                key = p.ABORT_KEY;
                 error('Exit by user!');
-            elseif Resp(rightKey)
-                key = RIGHT;
-            elseif Resp(leftKey)
-                key = LEFT; 
+            elseif Resp(p.RIGHT_KEY)
+                key = p.RIGHT;
+            elseif Resp(p.LEFT_KEY)
+                key = p.LEFT; 
             else
-                key = WRONG_KEY;
+                key = p.WRONG_KEY;
             end
         case ('recog')
-            if Resp(abortKey)
-                key = abortKey;
+            if Resp(p.ABORT_KEY)
+                key = p.ABORT_KEY;
                 error('Exit by user!');
-            elseif Resp(rightKey)
-                key = RIGHT;
-            elseif Resp(leftKey)
-                key = LEFT; 
+            elseif Resp(p.RIGHT_KEY)
+                key = p.RIGHT;
+            elseif Resp(p.LEFT_KEY)
+                key = p.LEFT; 
             else
-                key = WRONG_KEY;
+                key = p.WRONG_KEY;
             end
         case ('pas')
-            if Resp(abortKey)
-                key = abortKey;
+            if Resp(p.ABORT_KEY)
+                key = p.ABORT_KEY;
                 error('Exit by user!');
-            elseif Resp(One)
+            elseif Resp(p.ONE)
                 key = 1;
-            elseif Resp(Two)
+            elseif Resp(p.TWO)
                 key = 2;
-            elseif Resp(Three)
+            elseif Resp(p.THREE)
                 key = 3;
-            elseif Resp(Four)
+            elseif Resp(p.FOUR)
                 key = 4;
             else
-                key = WRONG_KEY;
+                key = p.WRONG_KEY;
             end
     end
 end
