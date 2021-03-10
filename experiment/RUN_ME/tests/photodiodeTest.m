@@ -1,6 +1,14 @@
 % Checks if event durations recorded by the photodiode match those recorded in matlab,
 % and are equal to desired durations.
 % last event in events ---ISN'T TESTED---.
+% File organization:
+%   Put your experiment output file in a folder with the osciliscope output folders and nothing else.
+%   Experiment output file - should be a '.csv' where each column is a variable and each row is a trial.
+%                           Put 'sub' in the experiment output file's name.
+%                           Timings should be absolute (event timestamp, not event duration).
+%   osciloscope folders & files - should be named in rising order (e.g. F0002CH2, F0003CH2, F0004CH2...).
+%                               First file (F0002CH2) is matched to first trial.
+%               
 % Input: test_path - folder with experiment output files and osciloscope output folders. 
 %       events - cell array, names of timestamps' headers in output data.
 %       desired_durations - double array. Same order as events.
