@@ -28,18 +28,18 @@ function p = initPsychtoolbox(p)
     end
     
     p.SCREEN_WIDTH       =  wRect(3);
-    p.ScreenHeight      =  wRect(4);
-    p.center            =  [p.SCREEN_WIDTH/2; p.ScreenHeight/2];
+    p.SCREEN_HEIGHT      =  wRect(4);
+    p.CENTER            =  [p.SCREEN_WIDTH/2; p.SCREEN_HEIGHT/2];
     p.REF_RATE_HZ         = Screen('NominalFrameRate', p.w);
     p.REF_RATE_SEC        = p.REF_RATE_HZ.^(-1);
     
     %trying to set the refresh rate to optimal (100Hz)
     if ~p.DEBUG
-        SetResolution(p.screenNumber,p.SCREEN_WIDTH,p.ScreenHeight,(p.REF_RATE_OPTIMAL));
+        SetResolution(p.screenNumber,p.SCREEN_WIDTH,p.SCREEN_HEIGHT,(p.REF_RATE_OPTIMAL));
     end
     
     disp(['p.SCREEN_WIDTH: ' num2str(p.SCREEN_WIDTH)]);
-    disp(['p.ScreenHeight: ' num2str(p.ScreenHeight)]);
+    disp(['p.SCREEN_HEIGHT: ' num2str(p.SCREEN_HEIGHT)]);
     disp(['p.REF_RATE_HZ: ' num2str(p.REF_RATE_HZ)]);
     disp(['p.REF_RATE_SEC: ' num2str(p.REF_RATE_SEC)]); % in seconds. 
     

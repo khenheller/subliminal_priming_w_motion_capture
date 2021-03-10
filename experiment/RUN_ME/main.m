@@ -68,7 +68,7 @@ end
 function [p] = runTrials(trials, p)
 
     % Set categories display side.
-    if trials(1,'natural_left')
+    if trials{1,'natural_left'}
         p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_LEFT_SCREEN;
     else
         p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_RIGHT_SCREEN;
@@ -112,7 +112,8 @@ function [p] = runTrials(trials, p)
             WaitSecs(p.MASK3_DURATION - p.REF_RATE_SEC / 2);
 
             % Target
-            Screen('TextFont',p.w, p.FONT_TYPE, 'TextSize', p.w, p.FONT_SIZE); % Set target font.
+            Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
+            Screen('TextSize', p.w, p.FONT_SIZE);
             Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with target.
             time(6) = showWord(trials(1,:), 'target', p);
             
@@ -150,7 +151,7 @@ end
 
 function [time] = showFixation(p)
     % waits until finger in start point.
-    finInStartPoint();
+    finInStartPoint(p);
     
     Screen('DrawTexture',p.w, p.FIXATION_SCREEN);
     [~,time] = Screen('Flip', p.w);
@@ -162,7 +163,7 @@ function [time] = showMask(trial, mask, p) % 'mask' - which mask to show (1st / 
 end
 
 function [time] = showWord(trial, prime_or_target, p)
-    DrawFormattedText(p.w, double(trial.(prime_or_target){:}), 'p.center', (p.ScreenHeight/2+3), [0 0 0]);
+    DrawFormattedText(p.w, double(trial.(prime_or_target){:}), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
     [~,time] = Screen('Flip',p.w,0,1);
 end
 
@@ -178,9 +179,9 @@ function [time] = showRecog(trial, p)
     
     Screen('DrawTexture',p.w, p.RECOG_SCREEN);
     Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
-    DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.ScreenHeight*3/8, [0 0 0]);
-    DrawFormattedText(p.w, double(right_word), 'right', p.ScreenHeight*3/8, [0 0 0], [], [], [], [] ,[],...
-        [p.SCREEN_WIDTH/4 p.ScreenHeight p.SCREEN_WIDTH*17/24 0]);
+    DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*3/8, [0 0 0]);
+    DrawFormattedText(p.w, double(right_word), 'right', p.SCREEN_HEIGHT*3/8, [0 0 0], [], [], [], [] ,[],...
+        [p.SCREEN_WIDTH/4 p.SCREEN_HEIGHT p.SCREEN_WIDTH*17/24 0]);
     [~,time] = Screen('Flip', p.w, 0, 1);
 end
 
@@ -288,11 +289,11 @@ end
 function [] = testWordSize(p)
     Screen('TextFont',p.w, p.HAND_FONT_TYPE);
     Screen('TextSize', p.w, p.HAND_FONT_SIZE);
-    DrawFormattedText(p.w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'p.center', p.ScreenHeight/4, [0 0 0]);
+    DrawFormattedText(p.w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'p.CENTER', p.SCREEN_HEIGHT/4, [0 0 0]);
     
     Screen('TextFont',p.w, p.FONT_TYPE);
     Screen('TextSize', p.w, p.FONT_SIZE);
-    DrawFormattedText(p.w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'p.center', p.ScreenHeight*3/4, [0 0 0]);
+    DrawFormattedText(p.w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'p.CENTER', p.SCREEN_HEIGHT*3/4, [0 0 0]);
     [~,time] = Screen('Flip',p.w);
 end
 
@@ -331,5 +332,5 @@ function [p] = setPoints(p)
     p.LEFT_END_POINT = setPoint(p.LEFT_END_POINT_SCREEN, p);
     p.MIDDLE_POINT = setPoint(p.MIDDLE_POINT_SCREEN, p);
     file_name = [p.DATA_FOLDER '\sub' num2str(p.SUB_NUM) 'start_end_points.m'];
-    save(file_name, 'p.START_POINT','p.RIGHT_END_POINT','p.LEFT_END_POINT', 'MIDDLE_POINT');
+    save(file_name, 'p');
 end

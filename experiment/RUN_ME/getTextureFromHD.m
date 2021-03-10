@@ -10,5 +10,5 @@ function [txtr] = getTextureFromHD(name, p)
             img(:, :, 4) = alpha;
         end
     end
-    txtr = Screen('MakeTexture', p.w, imresize(img,[p.ScreenHeight p.SCREEN_WIDTH]));
+    txtr = Screen('MakeTexture', p.w, imresize(img,[p.SCREEN_HEIGHT p.SCREEN_WIDTH]));
 end

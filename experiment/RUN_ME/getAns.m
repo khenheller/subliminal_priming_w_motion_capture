@@ -2,8 +2,8 @@
 % returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
 function [output] = getAns(type, p)
     
-    [traj_to, timecourse_to, categor_time]  = getTraj('to_screen', type);
-    [traj_from, timecourse_from, ~]         = getTraj('from_screen', type);   
+    [traj_to, timecourse_to, categor_time]  = getTraj('to_screen', type, p);
+    [traj_from, timecourse_from, ~]         = getTraj('from_screen', type, p);   
     
     answer = NaN;
     

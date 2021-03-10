@@ -34,7 +34,7 @@ function [] = makeMasks(num_masks)
     screen_size = get(gcf,'Position');
     width = screen_size(3);
     height = screen_size(4);
-    % sets mask at p.center of screen.
+    % sets mask at center of screen.
     set(gca,'Units','centimeters','Position',[(width/2 - p.WORD_WIDTH/2) (height/2 - p.WORD_HEIGHT/2)...
         p.WORD_WIDTH p.WORD_HEIGHT]);
     % grey background.

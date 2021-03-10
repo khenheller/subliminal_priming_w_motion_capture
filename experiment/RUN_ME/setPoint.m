@@ -1,7 +1,7 @@
 % Displays a point on the screen. When user presses space his coordinates are returned.
 function [point] = setPoint(point_screen, p)
 
-    showTexture(point_screen);
+    showTexture(point_screen, p);
     
     % Waits for "space" press.
     key = zeros(1,256);

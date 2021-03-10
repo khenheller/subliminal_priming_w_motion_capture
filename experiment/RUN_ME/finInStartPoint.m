@@ -1,8 +1,5 @@
 % Waits for finger to return to starting point.
-function [] = finInStartPoint()
-    global p.NATNETCLIENT p.TOUCH_PLANE_INFO p.START_POINT;
-    global p.ABORT_KEY;
-    
+function [] = finInStartPoint(p)
     inRange = 0.02; %3D distance range finger needs to be in. in meter.
     inRangeFlag = 0;
     
