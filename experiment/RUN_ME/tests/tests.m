@@ -4,7 +4,11 @@ function [pass_test] = tests (trials, trials_traj, type)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
     
     % Initialize parameters.
-    p = initConstants(0, []);
+    p.SUB_NUM = 9992;
+    p.SITTING_DISTANCE = 60; % in cm.
+    p.VIEW_ANGLE_X = 2.5; % in deg.
+    p.VIEW_ANGLE_Y = 1;
+    p = initConstants(0, p);
     pass_test.deviations = NaN;
     pass_test.deviation_of_mean = NaN;
     pass_test.std = NaN;
@@ -67,7 +71,7 @@ function [pass_test] = tests (trials, trials_traj, type)
     
     % Test there are enough trials and blocks.
     disp('------------------------------- Count trials and blocks -------------------------------');
-    pass_count = testTrialBlockCount(trials.iTrial, trials.iBlock);
+    pass_count = testTrialBlockCount(trials.iTrial, trials.iBlock, p);
     pass_test.block_count = pass_count.block_count;
     pass_test.trial_count = pass_count.trial_count;
     
@@ -81,7 +85,7 @@ end
 
 % Makes sure num trials and blocks is right.
 % trial_num_col: column with trial nums, from output data table.
-function pass_test = testTrialBlockCount(trial_num_col, block_num_col)
+function pass_test = testTrialBlockCount(trial_num_col, block_num_col, p)
     pass_test.trial_count = 1;
     pass_test.block_count = 1;
     num_trials = length(unique(trial_num_col));

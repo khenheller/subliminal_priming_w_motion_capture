@@ -28,14 +28,14 @@ function [ ] = main(p)
         
         % Experiment
         showTexture(p.WELCOME_SCREEN, p);
-        KbWait([], 3);
+        getInput('instruction', p);
         experiment(trials, practice_trials, p);
         
         p.NATNETCLIENT.disconnect;
         
     catch e
         safeExit(p);
-        rethrow(e);        
+        rethrow(e);
     end
     safeExit(p);
 end
@@ -82,7 +82,7 @@ function [p] = runTrials(trials, p)
             % block change
             if trials.iTrial(1) ~= 1 
                 if mod(trials.iTrial(1), p.BLOCK_SIZE) == 1
-                    time = showTexture(p.BLOCK_END_SCREEN);
+                    time = showTexture(p.BLOCK_END_SCREEN, p);
                     KbWait([], 3);
                 end               
             end
@@ -93,23 +93,28 @@ function [p] = runTrials(trials, p)
             
             % Fixation
             time(1) = showFixation(p);
-            WaitSecs(p.FIX_DURATION - p.REF_RATE_SEC / 2); % "- p.REF_RATE_SEC / 2" so that it will flip exactly at the end of p.FIX_DURATION.
+%             WaitSecs(p.FIX_DURATION - p.REF_RATE_SEC / 2); % "- p.REF_RATE_SEC / 2" so that it will flip exactly at the end of p.FIX_DURATION.
+            WaitSecs(p.FIX_DURATION - p.REF_RATE_SEC * 3 / 4);
             
             % Mask 1
             time(2) = showMask(trials(1,:), 'mask1', p);
-            WaitSecs(p.MASK1_DURATION - p.REF_RATE_SEC / 2);
+%             WaitSecs(p.MASK1_DURATION - p.REF_RATE_SEC / 2);
+            WaitSecs(p.MASK1_DURATION - p.REF_RATE_SEC * 3 / 4);
             
             % Mask 2
             time(3) = showMask(trials(1,:), 'mask2', p);
-            WaitSecs(p.MASK2_DURATION - p.REF_RATE_SEC / 2);
+%             WaitSecs(p.MASK2_DURATION - p.REF_RATE_SEC / 2);
+            WaitSecs(p.MASK2_DURATION - p.REF_RATE_SEC * 3 / 4);
 
             % Prime
             time(4) = showWord(trials(1,:), 'prime', p);
-            WaitSecs(p.PRIME_DURATION - p.REF_RATE_SEC / 2);
+%             WaitSecs(p.PRIME_DURATION - p.REF_RATE_SEC / 2);
+            WaitSecs(p.PRIME_DURATION - p.REF_RATE_SEC * 3 / 4);
 
             % Mask 3
             time(5) = showMask(trials(1,:), 'mask3', p);
-            WaitSecs(p.MASK3_DURATION - p.REF_RATE_SEC / 2);
+%             WaitSecs(p.MASK3_DURATION - p.REF_RATE_SEC / 2);
+            WaitSecs(p.MASK3_DURATION - p.REF_RATE_SEC * 3 / 4);
 
             % Target
             Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
@@ -180,8 +185,7 @@ function [time] = showRecog(trial, p)
     Screen('DrawTexture',p.w, p.RECOG_SCREEN);
     Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
     DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*3/8, [0 0 0]);
-    DrawFormattedText(p.w, double(right_word), 'right', p.SCREEN_HEIGHT*3/8, [0 0 0], [], [], [], [] ,[],...
-        [p.SCREEN_WIDTH/4 p.SCREEN_HEIGHT p.SCREEN_WIDTH*17/24 0]);
+    DrawFormattedText(p.w, double(right_word), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*3/8, [0 0 0]);
     [~,time] = Screen('Flip', p.w, 0, 1);
 end
 

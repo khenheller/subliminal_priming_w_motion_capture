@@ -49,7 +49,7 @@ function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
         end
 
         % Target duration passed, remove it and show only categorization screen.
-        if (strcmp(ques_type, 'categor') && (frame_i+1 == p.TARGET_DURATION*p.REF_RATE_HZ))
+        if (strcmp(ques_type, 'categor') && (frame_i+1 == p.TARGET_DURATION*p.REF_RATE_HZ) && to_screen)
             Screen('DrawTexture',p.w, p.CATEGOR_SCREEN);
             categor_time = timecourse(frame_i) + p.REF_RATE_SEC;
         end

@@ -22,9 +22,10 @@ function pass_test = timingsTest(events, timestamps, desired_durations)
     desired_durations = desired_durations * 1000;
     durations_mean = mean(durations,1, 'omitnan');
     durations_std = std(durations,1, 'omitnan');
-    deviations = abs(durations - desired_durations);
-    bad_deviations_index = find(deviations > max_dev);
-    [bad_deviations_trial,~] = ind2sub(size(deviations), bad_deviations_index);
+    deviations = durations - desired_durations;
+    deviations_abs = abs(deviations);
+    bad_deviations_index = find(deviations_abs > max_dev);
+    [bad_deviations_trial,~] = ind2sub(size(deviations_abs), bad_deviations_index);
     bad_deviations = deviations(bad_deviations_index);
     
     % Checks if passed tests.

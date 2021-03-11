@@ -7,7 +7,7 @@ function [output] = getAns(type, p)
     
     answer = NaN;
     
-    last_sample = find(isnan(traj_to(:,1)), 1, 'last');
+    last_sample = find(~isnan(traj_to(:,1)), 1, 'last');
     touch_point = traj_to(last_sample,1) / p.TOUCH_PLANE_INFO.mPerPixel; % Sample current position, convert to pixels.
     
     % If sub responded before target ended, categor_time didn't get value.

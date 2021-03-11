@@ -6,7 +6,7 @@ function p = initPsychtoolbox(p)
     % screenError - true or false answer if the function did not succeed in
     % opening a 100Hz window.
     
-    p.BOX_RESOLUTION = [0 0 400 300]; % resolution when not in fullscreen.
+    p.BOX_RESOLUTION = [0 0 700 500]; % resolution when not in fullscreen.
     
     p.REF_RATE_OPTIMAL = 100;
     

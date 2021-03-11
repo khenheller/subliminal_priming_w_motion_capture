@@ -12,20 +12,20 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.FONT_SIZE = ceil(p.WORD_WIDTH * 100 / 10); % typescript font size.
     p.RECOG_FONT_SIZE = ceil(p.WORD_WIDTH * 100 / 10); % font size oin recog question.
     
+    % Paths
+    [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
+    curr_path = replace(curr_path, '\', '/');
+    p.STIM_FOLDER = [curr_path '/./stimuli'];
+    p.DATA_FOLDER = [curr_path '/../../raw_data'];
+    p.TRIALS_FOLDER = [p.STIM_FOLDER '/trial_lists'];
+    p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
+    
     if psychtoolbox_active
         p.RECOG_CAP_LENGTH_SEC = 5; % Trajectory recording length in sec.
         p.CATEGOR_CAP_LENGTH_SEC = 1.5;
         p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
         p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
         p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
-        
-        % Paths
-        [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
-        curr_path = replace(curr_path, '\', '/');
-        p.STIM_FOLDER = [curr_path '/./stimuli'];
-        p.DATA_FOLDER = [curr_path '/../../raw_data'];
-        p.TRIALS_FOLDER = [p.STIM_FOLDER '/trial_lists'];
-        p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
         
         % Response keys.
         KbName('UnifyKeyNames');
