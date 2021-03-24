@@ -1,0 +1,63 @@
+% Recieves a subject's trajectories.
+% Trims each trial to start at the movement onset and end at movemnt offset, fills the end of recording with NaNs.
+% Onset criterion: the first out of 4 consequetive frames where each velocity was greater
+%                   than threshold and total acceleration was over a threshold.
+% Offset criterion: first frame where velocity dropped below threshold or
+%                   position reached max.
+% Receives: trajs_mat - a subject's trajectory, of 1 type (categot_to / categor_from / recog_to / recog_from).
+%               3 Dim double matrix, row = sample, column = trial, 3rd dim = axis (x,y,z).
+%               Each trial has MAX_RECORD_LENGTH samples.
+function trajs_mat = trimOnsetOffset(trajs_mat, p)
+    thresh.v = 0.002; % onset and offset velocity threshold (m/s).
+    thresh.a = 0.002; % onset acceleration threshold (m/s^2).
+    
+    % calc velocity.
+    vel_2d = trajs_mat(2:end, :, :) - trajs_mat(1:end-1, :, :);
+    vel = sqrt(sum(vel_2d.^2, 3));
+    vel = [vel; NaN(1,p.NUM_TRIALS)]; % Round size.
+    % trim each trial.
+    for iTrial = 1:p.NUM_TRIALS
+        trial_vel = vel(:, iTrial);
+        trial_traj = squeeze(trajs_mat(:, iTrial, :));
+        % velocity above threshoold.
+        onset = getOnset(trial_vel, thresh);
+        % velocity below threshoold or eached maximum position.
+        offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3));
+        % remove values before onset.
+        trial_traj = circshift(trial_traj, -onset+1, 1);
+        trial_vel = circshift(trial_vel, -onset+1, 1);
+        % remove values after offset.
+        trial_traj(offset+1 : p.MAX_RECORD_LENGTH, :) = NaN;
+        trajs_mat(:, iTrial, :) = trial_traj;
+    end
+end
+
+% Return onset index (according to onset criterion).
+function onset = getOnset(velocities, thresh)
+    % all indices that match criterion.
+    onsets = velocities(1 : end-3) > thresh.v & ...
+            velocities(2 : end-2) > thresh.v & ...
+            velocities(3 : end-1) > thresh.v & ...
+            velocities(4 : end) > thresh.v & ...
+            (velocities(4 : end) - velocities(1 : end-3)) >= thresh.a;
+    % Check if sub didn't move
+    if isempty(find(onsets))
+        onset = 1;
+    else
+        % send only the first.
+        onset = find(onsets, 1);
+    end
+end
+% Return offset index (according to offset criterion).
+function offset = getOffset(velocities, thresh, z_traj)
+    % Distance from start point.
+    dist_start_point = abs(z_traj(1 : end-3) - z_traj(1));
+    % all indices that match criterion.
+    offsets = (velocities(1 : end-3) < thresh.v & ...
+            velocities(2 : end-2) < thresh.v & ...
+            velocities(3 : end-1) < thresh.v & ...
+            velocities(4 : end) < thresh.v) |...
+            dist_start_point == max(dist_start_point);
+    % Send only the first.
+    offset = find(offsets, 1);
+end
