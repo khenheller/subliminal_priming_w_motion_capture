@@ -4,7 +4,6 @@
 % traj_type - 'to_screen', 'from_screen'
 % ques_type - question type ('recog','categor').
 function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
-    finger_size = 0.03; % marker distance (m) from screen when touching it.
     
     % Sample length is different for recog/categor questions.
     sample_length = strcmp(ques_type, 'recog') * p.RECOG_CAP_LENGTH + ...
@@ -35,7 +34,7 @@ function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
             
             % REACHING TO SCREEN: identify screen touch.
             if to_screen
-                if traj(frame_i,3)-finger_size < 0
+                if traj(frame_i,3)-p.FINGER_SIZE < 0
                     Screen('Flip',p.w,0,0); % Erase stimuli and sync to screen flips.
                     return;
                 end

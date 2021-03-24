@@ -15,7 +15,7 @@ p.VIEW_ANGLE_Y = 1;
 p.FULLSCREEN = 1;
 p.DEBUG = 1;
 % -------------------------- Run Experiment -------------------------------
-main(p);
+p = main(p);
 % -------------------------- Generate trial lists --------------------------
 % global p.FULLSCREEN
 % p.FULLSCREEN = true; % default = true

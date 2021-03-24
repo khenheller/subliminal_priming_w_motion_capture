@@ -17,6 +17,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     curr_path = replace(curr_path, '\', '/');
     p.STIM_FOLDER = [curr_path '/./stimuli'];
     p.DATA_FOLDER = [curr_path '/../../raw_data'];
+    p.PROC_DATA_FOLDER = [curr_path '/../../analysis/processed_data']; % preprocessed data folder.
     p.TRIALS_FOLDER = [p.STIM_FOLDER '/trial_lists'];
     p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
     
@@ -62,14 +63,14 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.LEFT_END_POINT_SCREEN = getTextureFromHD('left_end_point_screen.jpg', p);
         p.BLACK_SCREEN = getTextureFromHD('black_screen.jpg', p);
         p.WHITE_SCREEN = getTextureFromHD('white_screen.jpg', p);
-
         p.NUM_MASKS = 60;
         for mask_i = 1:p.NUM_MASKS
             p.MASKS(mask_i) = getTextureFromHD(['mask' num2str(mask_i) '.jpg'], p);
         end
-
         p.MIDDLE_POINT_SCREEN = getTextureFromHD('middle_point_screen.jpg', p);
+        p.SAVING_DATA_SCREEN = getTextureFromHD('saving_data_screen.jpg', p);
         
+        % Text
         global text
         Screen('TextFont',p.w, char(p.FONT_TYPE));
         Screen('TextStyle', p.w, 0);

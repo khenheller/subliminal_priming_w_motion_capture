@@ -1,4 +1,4 @@
-function [ ] = main(p)
+function [p] = main(p)
     % Subliminal priming experiment by Liad and Khen.
     % Coded by Khen (khenheller@mail.tau.ac.il)
     % Prof. Liad Mudrik's Lab, Tel-Aviv University
@@ -59,6 +59,8 @@ function [] = experiment(trials, practice_trials, p)
     getInput('instruction', p);
     p = runTrials(trials, p);
     
+    showTexture(p.SAVING_DATA_SCREEN, p);
+    
     fixOutput(p);
     
     showTexture(p.END_SCREEN, p);
@@ -93,29 +95,24 @@ function [p] = runTrials(trials, p)
             
             % Fixation
             time(1) = showFixation(p);
-%             WaitSecs(p.FIX_DURATION - p.REF_RATE_SEC / 2); % "- p.REF_RATE_SEC / 2" so that it will flip exactly at the end of p.FIX_DURATION.
-            WaitSecs(p.FIX_DURATION - p.REF_RATE_SEC * 3 / 4);
+            waitUntil(p.FIX_DURATION, p);
             
             % Mask 1
             time(2) = showMask(trials(1,:), 'mask1', p);
-%             WaitSecs(p.MASK1_DURATION - p.REF_RATE_SEC / 2);
-            WaitSecs(p.MASK1_DURATION - p.REF_RATE_SEC * 3 / 4);
+            waitUntil(p.MASK1_DURATION, p);
             
             % Mask 2
             time(3) = showMask(trials(1,:), 'mask2', p);
-%             WaitSecs(p.MASK2_DURATION - p.REF_RATE_SEC / 2);
-            WaitSecs(p.MASK2_DURATION - p.REF_RATE_SEC * 3 / 4);
-
+            waitUntil(p.MASK2_DURATION, p);
+            
             % Prime
             time(4) = showWord(trials(1,:), 'prime', p);
-%             WaitSecs(p.PRIME_DURATION - p.REF_RATE_SEC / 2);
-            WaitSecs(p.PRIME_DURATION - p.REF_RATE_SEC * 3 / 4);
-
+            waitUntil(p.PRIME_DURATION, p);
+            
             % Mask 3
             time(5) = showMask(trials(1,:), 'mask3', p);
-%             WaitSecs(p.MASK3_DURATION - p.REF_RATE_SEC / 2);
-            WaitSecs(p.MASK3_DURATION - p.REF_RATE_SEC * 3 / 4);
-
+            waitUntil(p.MASK3_DURATION, p);
+            
             % Target
             Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
             Screen('TextSize', p.w, p.FONT_SIZE);
@@ -301,8 +298,6 @@ function [] = testWordSize(p)
     [~,time] = Screen('Flip',p.w);
 end
 
-
-
 % Sets start and end points in space.
 function [p] = setPoints(p)
     p.START_POINT = setPoint(p.START_POINT_SCREEN, p);
@@ -311,4 +306,15 @@ function [p] = setPoints(p)
     p.MIDDLE_POINT = setPoint(p.MIDDLE_POINT_SCREEN, p);
     file_name = [p.DATA_FOLDER '\sub' num2str(p.SUB_NUM) 'start_end_points.m'];
     save(file_name, 'p');
+end
+
+% Waits until event ends. 3 types of wait:
+%   until event_dur - 1/2 refrate.
+%   until event_dur - 3/4 refrate.
+%   until last_event_time + event_dur - 1/2 refrate.
+% didn't use switch case to save process time.
+function [] = waitUntil(event_dur, p)
+%     WaitSecs(event_dur - p.REF_RATE_SEC / 2); % "- p.REF_RATE_SEC / 2" so that it will flip exactly at the end of p.FIX_DURATION.
+    WaitSecs(event_dur - p.REF_RATE_SEC * 3 / 4);
+%     WaitSecs('UntilTime', time(1) + (event_dur - p.REF_RATE_SEC / 2));
 end
