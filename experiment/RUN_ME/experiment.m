@@ -8,14 +8,12 @@ addpath('.\NatNetSDK');
 
 % Parameter definit1ion.
 p.SUB_NUM = 999;
-p.SITTING_DISTANCE = 60; % in cm.
-p.VIEW_ANGLE_X = 2.5; % in deg.
-p.VIEW_ANGLE_Y = 1;
 
 p.FULLSCREEN = 1;
 p.DEBUG = 1;
 % -------------------------- Run Experiment -------------------------------
 p = main(p);
+save('p.mat', 'p');
 % -------------------------- Generate trial lists --------------------------
 % global p.FULLSCREEN
 % p.FULLSCREEN = true; % default = true

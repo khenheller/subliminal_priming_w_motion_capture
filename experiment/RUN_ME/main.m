@@ -11,6 +11,7 @@ function [p] = main(p)
         
         % Calibration and connection to natnetclient.
         [p.TOUCH_PLANE_INFO, p.NATNETCLIENT] = touch_plane_setup();
+        p.SAMPLE_RATE = p.NATNETCLIENT.samplerate
         
         % Initialize params.
         p = initPsychtoolbox(p);
@@ -20,16 +21,17 @@ function [p] = main(p)
         showTexture(p.LOADING_SCREEN, p);
         trials = getTrials('test', p);
         practice_trials = getTrials('practice', p);
-
-        saveCode(trials.list_id{1}, p);
         
         % Start,end points calibration.
         p = setPoints(p);
         
+        saveCode(trials.list_id{1}, p);
+        save('p.mat', 'p');
+        
         % Experiment
         showTexture(p.WELCOME_SCREEN, p);
         getInput('instruction', p);
-        experiment(trials, practice_trials, p);
+        p = experiment(trials, practice_trials, p);
         
         p.NATNETCLIENT.disconnect;
         
@@ -44,7 +46,7 @@ function [] = cleanExit( )
     error('Exit by user!');
 end
 
-function [] = experiment(trials, practice_trials, p)
+function [p] = experiment(trials, practice_trials, p)
     % instructions.
     showTexture(p.INSTRUCTIONS_SCREEN, p);
     getInput('instruction', p);

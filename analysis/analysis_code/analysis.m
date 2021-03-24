@@ -4,9 +4,9 @@ p.MAX_RECORD_LENGTH = 500;
 p.NUM_TRIALS = 480;
 p.DATA_FOLDER = '../../raw_data';
 p.PROC_DATA_FOLDER = '../processed_data';
-p.SAMPLE_RATE = 100;
 %% Parameters
-sub_nums = [1];
+load('../../experiment/RUN_ME/p.mat');
+sub_nums = [1 1008];
 p.norm_frames = 200; % length of normalized trajs.
 p.norm_type = 4; % 1=to time, 2=to x, 3=to y, 4=to z.
 p.sample_rate = p.SAMPLE_RATE; % Camera samprate in Hz.

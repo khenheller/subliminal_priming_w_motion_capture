@@ -1,5 +1,11 @@
 % psychtoolbox_active - Some parameters can only be initiated after psychtoolbox was activated.    
 function [p] = initConstants(psychtoolbox_active, p)
+
+    % Setup
+    p.SITTING_DISTANCE = 60; % in cm.
+    p.SCREEN_DIST = 0.40; %from start point, in meter.
+    p.VIEW_ANGLE_X = 2.5; % in deg.
+    p.VIEW_ANGLE_Y = 1;
     
     % TEXT
     p.FONT_TYPE = 'Arial Bold'; %font name e.g. 'David';
@@ -119,4 +125,15 @@ function [p] = initConstants(psychtoolbox_active, p)
     % output data that has 1 row per trial. used in saveToFile.m.
     p.ONE_ROW_VARS = p.VARIABLE_NAMES(~multi_row_logical_index);
     [~,p.ONE_ROW_VARS_I] = ismember(p.ONE_ROW_VARS, p.VARIABLE_NAMES);
+    
+    %% Analysis params.
+    % Sample length restrictions.
+    p.MIN_SAMP_LEN = 0.1; % in sec.
+    p.MAX_MISSING_DATA = 0.1; % in sec.
+    
+    p.SAMPLE_RATE = 100; % Hz.
+    
+    % Reach distance.
+    p.MAX_DIST_FROM_SCREEN = 0.05; %that is still considered as "touch" in analysis. in meter.
+    p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN; % trials with shorter reaches will be discarded.
 end
