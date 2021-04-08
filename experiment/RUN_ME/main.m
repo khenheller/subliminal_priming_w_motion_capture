@@ -11,7 +11,7 @@ function [p] = main(p)
         
         % Calibration and connection to natnetclient.
         [p.TOUCH_PLANE_INFO, p.NATNETCLIENT] = touch_plane_setup();
-        p.SAMPLE_RATE = p.NATNETCLIENT.samplerate
+        p.SAMPLE_RATE = p.NATNETCLIENT.FrameRate;
         
         % Initialize params.
         p = initPsychtoolbox(p);
@@ -50,6 +50,10 @@ function [p] = experiment(trials, practice_trials, p)
     % instructions.
     showTexture(p.INSTRUCTIONS_SCREEN, p);
     getInput('instruction', p);
+    % Example trial.
+    showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
+    getInput('instruction', p);
+    exampleTrial(trials, p)
     
     % practice.
     showTexture(p.PRACTICE_SCREEN, p);
@@ -139,6 +143,78 @@ function [p] = runTrials(trials, p)
             saveToFile(trials(1,:), p);
             trials(1,:) = [];
         end
+    catch e % if error occured, saves data before exit.
+        fixOutput(p);
+        rethrow(e);
+    end
+end
+
+function [p] = exampleTrial(trials, p)
+
+    % Set categories display side.
+    if trials{1,'natural_left'}
+        p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_LEFT_SCREEN;
+    else
+        p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_RIGHT_SCREEN;
+    end
+    
+    try
+        % Set prime font now to save run time.
+        Screen('TextFont',p.w, p.HAND_FONT_TYPE);
+        Screen('TextSize', p.w, p.HAND_FONT_SIZE);
+
+        % Fixation
+        time(1) = showFixation(p);
+        waitUntil(p.FIX_DURATION, p);
+
+        % Mask 1
+        Screen('DrawTexture',p.w, p.MASKS(1));
+        [~,time] = Screen('Flip', p.w);
+        waitUntil(p.MASK1_DURATION, p);
+
+        % Mask 2
+        Screen('DrawTexture',p.w, p.MASKS(2));
+        [~,time] = Screen('Flip', p.w);
+        waitUntil(p.MASK2_DURATION, p);
+
+        % Prime
+        DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
+        [~,time] = Screen('Flip',p.w,0,1);
+        waitUntil(p.PRIME_DURATION, p);
+
+        % Mask 3
+        Screen('DrawTexture',p.w, p.MASKS(3));
+        [~,time] = Screen('Flip', p.w);
+        waitUntil(p.MASK3_DURATION, p);
+
+        % Target
+        Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
+        Screen('TextSize', p.w, p.FONT_SIZE);
+        Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with target.
+        DrawFormattedText(p.w, double('עלה'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
+        [~,time] = Screen('Flip',p.w,0,1);
+        
+        % Waits for key press.
+        getInput('instruction',p);
+
+        % Target categorization.
+        target_ans = getAns('categor', p);
+
+        % Prime recognition.
+        Screen('DrawTexture',p.w, p.RECOG_SCREEN);
+        Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
+        DrawFormattedText(p.w, double('תיק'), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*3/8, [0 0 0]);
+        DrawFormattedText(p.w, double('ספל'), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*3/8, [0 0 0]);
+        [~,time] = Screen('Flip', p.w, 0, 1);
+        
+        % Waits for key press.
+        getInput('instruction',p);
+        
+        prime_ans = getAns('recog', p);
+
+        % PAS
+        time(9) = showPas(p);
+        [pas, pas_time] = getInput('pas', p);
     catch e % if error occured, saves data before exit.
         fixOutput(p);
         rethrow(e);
