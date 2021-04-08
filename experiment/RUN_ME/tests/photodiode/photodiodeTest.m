@@ -3,9 +3,9 @@
 % last event in events ---ISN'T TESTED---.
 % File organization:
 %   Put your experiment output file in a folder with the osciliscope output folders and nothing else.
-%   Experiment output file - should be a '.csv' where each column is a variable and each row is a trial.
-%                           Put 'sub' in the experiment output file's name.
-%                           Timings should be absolute (event timestamp, not event duration).
+%   Experiment output file - Should be called 'sub*data.csv', '*' be the subjet's number.
+%                           Columns are events (can contain other columns as well), and rows are trials.
+%                           Values are the timestamp (not duraion) of the event.
 %   osciloscope folders & files - should be named in rising order (e.g. F0002CH2, F0003CH2, F0004CH2...).
 %                               First file (F0002CH2) is matched to first trial.
 %               
