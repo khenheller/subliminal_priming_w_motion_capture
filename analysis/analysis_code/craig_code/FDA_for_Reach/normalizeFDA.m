@@ -1,4 +1,4 @@
-function  normalizedReach = normalizeFDA(data,toNormalize,normalizeFrames,normalizeType,frameRate)
+function  [normalizedReach, newTimes] = normalizeFDA(data,toNormalize,normalizeFrames,normalizeType,frameRate)
 
 %data = cell array where each cell holds the x,y,z (as columns) position
 %data for each IR (or tracked marker)

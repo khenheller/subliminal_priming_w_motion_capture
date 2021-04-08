@@ -49,43 +49,51 @@ load sampleTrial
 toNormalize = 1; 
 normalizeFrames = 200;
 normalizeType = 4;
-frameRate = 150;
+frameRate = 100;
 
-data_length = 101;
+data_length = find(~isnan(current_traj(:,1)), 1, 'last'); data = {current_traj};
 data{1} = data{1}(1:data_length,:);
 % data{1} = [data{1}(1:data_length,:); NaN(40,3)];
-% data = {current_traj};
 
-normalizedReach = normalizeFDA(data,toNormalize,normalizeFrames,normalizeType,frameRate);
+[normalizedReach, normalizedTime] = normalizeFDA(data,toNormalize,normalizeFrames,normalizeType,frameRate);
 
+samprate_sec = (1/p.SAMPLE_RATE);
+timestamps = 0 : samprate_sec : (size(data{1}, 1)-1) * samprate_sec;
 close all;
 figure();
 subplot(3,1,1);
-plot(data{1}(:,1), 'ob');
+plot(timestamps, data{1}(:,1), 'ob');
 hold on;
 subplot(3,1,2);
-plot(data{1}(:,2), 'ob');
+plot(timestamps, data{1}(:,2), 'ob');
 subplot(3,1,3);
-plot(data{1}(:,3), 'ob');
+plot(timestamps, data{1}(:,3), 'ob');
 
 %1
 subplot(3,1,1);
 hold on;
-plot(linspace(1,data_length,normalizeFrames), normalizedReach{1}(:,1));
+plot(normalizedTime, normalizedReach{1}(:,1), 'LineWidth', 3);
+% plot(linspace(1,data_length,normalizeFrames), normalizedReach{1}(:,1));
 title("X");
 set(gca,'fontsize',14)
 legend("original", "fit");
+ylabel("position");
 %2
 subplot(3,1,2);
 hold on;
-plot(linspace(1,data_length,normalizeFrames), normalizedReach{1}(:,2));
+plot(normalizedTime, normalizedReach{1}(:,2), 'LineWidth', 3);
+% plot(linspace(1,data_length,normalizeFrames), normalizedReach{1}(:,2));
 title("Y");
 set(gca,'fontsize',14)
 legend("original", "fit");
+ylabel("position");
 %3
 subplot(3,1,3);
 hold on;
-plot(linspace(1,data_length,normalizeFrames), normalizedReach{1}(:,3));
+plot(normalizedTime, normalizedReach{1}(:,3), 'LineWidth', 3);
+% plot(linspace(1,data_length,normalizeFrames), normalizedReach{1}(:,3));
 title("Z");
 set(gca,'fontsize',14)
 legend("original", "fit");
+xlabel("time");
+ylabel("position");

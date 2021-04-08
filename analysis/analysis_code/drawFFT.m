@@ -1,6 +1,6 @@
 % Calc and draw FFT.
 % Inputs:   signal - signal to analyze.
-%           dt - single sample time in sec (not whole capture time).
+%           dt - sample interval in sec (not whole capture time).
 % Outputs: ps - array of doubles, power spectrum.
 %           f - array of doubles, frequency.
 function [ps, f] = drawFFT(signal, dt, draw_plot)

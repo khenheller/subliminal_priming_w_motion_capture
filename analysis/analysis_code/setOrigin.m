@@ -5,7 +5,7 @@
 %   Set each trial's first timestamp as time=0.
 % Receives: trajs_mat - a subject's trajectory, of 1 type (categot_to / categor_from / recog_to / recog_from).
 %               3 Dim double matrix, row = sample, column = trial, 3rd dim = axis (x,y,z).
-%               Each trial has MAX_RECORD_LENGTH samples.
+%               Each trial has MAX_CAP_LENGTH samples.
 %           timestamps - timestamps of traj samples.
 %                       Double matrix, row = timestamps, column = trials.
 function [trajs_mat, timestamps_mat] = setOrigin(trajs_mat, timestamps_mat)

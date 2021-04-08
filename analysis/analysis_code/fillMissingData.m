@@ -1,7 +1,7 @@
 % Fills NaNs in trajectory using inpaint_nsn.
 % Receives: trajs_mat - a subject's trajectory, of 1 type (categot_to / categor_from / recog_to / recog_from).
 %               3 Dim double matrix, row = sample, column = trial, 3rd dim = axis (x,y,z).
-%               Each trial has MAX_RECORD_LENGTH samples.
+%               Each trial has MAX_CAP_LENGTH samples.
 function trajs_mat = fillMissingData(trajs_mat, p)
     
     for iTrial = 1:p.NUM_TRIALS

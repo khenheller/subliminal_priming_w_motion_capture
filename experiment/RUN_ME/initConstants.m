@@ -6,6 +6,8 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.SCREEN_DIST = 0.40; %from start point, in meter.
     p.VIEW_ANGLE_X = 2.5; % in deg.
     p.VIEW_ANGLE_Y = 1;
+    p.FINGER_SIZE = 0.03; %in meter.
+    p.START_POINT_RANGE = 0.02; %3D distance (in meter) from start point which counts as finger in start point.
     
     % TEXT
     p.FONT_TYPE = 'Arial Bold'; %font name e.g. 'David';
@@ -44,6 +46,8 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.THREE         =  KbName('3#');  % I saw a clear part of the phrase
         p.FOUR          =  KbName('4$');  % I saw the entire phrase clearly
         p.SPACE_KEY      =  KbName('space');
+        p.A_KEY      =  KbName('A');
+        p.B_KEY      =  KbName('B');
         p.WRONG_KEY = 997;
         % number assigned to left/right response.
         p.RIGHT = 0;
@@ -75,6 +79,8 @@ function [p] = initConstants(psychtoolbox_active, p)
         end
         p.MIDDLE_POINT_SCREEN = getTextureFromHD('middle_point_screen.jpg', p);
         p.SAVING_DATA_SCREEN = getTextureFromHD('saving_data_screen.jpg', p);
+        p.ALIGNMENT_SCREEN = getTextureFromHD('alignment_screen.jpg', p);
+        p.TRIAL_EXAMPLE_SCREEN = getTextureFromHD('trial_example_screen.jpg', p);
         
         % Text
         global text
@@ -131,9 +137,20 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.MIN_SAMP_LEN = 0.1; % in sec.
     p.MAX_MISSING_DATA = 0.1; % in sec.
     
-    p.SAMPLE_RATE = 100; % Hz.
+    % Cameras
+    p.SAMPLE_RATE_HZ = p.REF_RATE_HZ; % Camera sample rate in Hz.
+    p.SAMPLE_RATE_SEC = 1 / p.SAMPLE_RATE_HZ; % Sec
+    
+    % Lowpass filter
+    p.TRAJ_FILT_ORDER = 2;
+    p.TRAJ_FILT_CUTOFF = 8;% in Hz.
+                            % originaly in paper dual pass: [8, 12]. To use dual, add 'stop' input to butter in lowpass.m
+    p.VEL_FILTER_ORDER = 2;
+    p.VEL_FILTER_CUTOFF = 10;% in Hz.
     
     % Reach distance.
     p.MAX_DIST_FROM_SCREEN = 0.05; %that is still considered as "touch" in analysis. in meter.
     p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN; % trials with shorter reaches will be discarded.
+    p.TARGET_MISS_RANGE = 0.03; %Touches outside this radius of the target (circle flat on screen, centered on target),
+                                % are disqualified from analysis.
 end

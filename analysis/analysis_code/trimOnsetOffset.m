@@ -6,30 +6,49 @@
 %                   position reached max.
 % Receives: trajs_mat - a subject's trajectory, of 1 type (categot_to / categor_from / recog_to / recog_from).
 %               3 Dim double matrix, row = sample, column = trial, 3rd dim = axis (x,y,z).
-%               Each trial has MAX_RECORD_LENGTH samples.
+%               Each trial has MAX_CAP_LENGTH samples.
 function trajs_mat = trimOnsetOffset(trajs_mat, p)
     thresh.v = 0.002; % onset and offset velocity threshold (m/s).
     thresh.a = 0.002; % onset acceleration threshold (m/s^2).
     
     % calc velocity.
-    vel_2d = trajs_mat(2:end, :, :) - trajs_mat(1:end-1, :, :);
-    vel = sqrt(sum(vel_2d.^2, 3));
+    dx = trajs_mat(2:end, :, :) - trajs_mat(1:end-1, :, :); % distance between 2 samples.
+    vel_per_axis = dx / p.SAMPLE_RATE_SEC;
+    vel = sqrt(sum(vel_per_axis.^2, 3));
     vel = [vel; NaN(1,p.NUM_TRIALS)]; % Round size.
     % trim each trial.
     for iTrial = 1:p.NUM_TRIALS
         trial_vel = vel(:, iTrial);
         trial_traj = squeeze(trajs_mat(:, iTrial, :));
+        % Lowpass filter velocity.
+        trial_vel = filterVel(trial_vel, p);
         % velocity above threshoold.
         onset = getOnset(trial_vel, thresh);
-        % velocity below threshoold or eached maximum position.
+        % velocity below threshoold or reached maximum position.
         offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3));
         % remove values before onset.
         trial_traj = circshift(trial_traj, -onset+1, 1);
         trial_vel = circshift(trial_vel, -onset+1, 1);
         % remove values after offset.
-        trial_traj(offset+1 : p.MAX_RECORD_LENGTH, :) = NaN;
+        trial_traj(offset+1 : p.MAX_CAP_LENGTH, :) = NaN;
         trajs_mat(:, iTrial, :) = trial_traj;
     end
+end
+
+% Lowpass filters velocity vector.
+function trial_vel = filterVel(trial_vel, p)
+    samprate = p.SAMPLE_RATE_HZ;
+    cutoff = p.VEL_FILTER_CUTOFF;
+    order = p.VEL_FILTER_ORDER;
+    
+    last_value = find(~isnan(trial_vel), 1, 'last');
+    filtered_vel = trial_vel(1:last_value);
+    
+    % Filters only trials longer than 1.
+    if last_value > 1
+        [filtered_vel, ~] = lowpassFilt(trial_vel(1:last_value), samprate, cutoff, order);
+    end
+    trial_vel(1:last_value) = filtered_vel;
 end
 
 % Return onset index (according to onset criterion).
@@ -51,13 +70,10 @@ end
 % Return offset index (according to offset criterion).
 function offset = getOffset(velocities, thresh, z_traj)
     % Distance from start point.
-    dist_start_point = abs(z_traj(1 : end-3) - z_traj(1));
+    dist_start_point = abs(z_traj - z_traj(1));
     % all indices that match criterion.
-    offsets = (velocities(1 : end-3) < thresh.v & ...
-            velocities(2 : end-2) < thresh.v & ...
-            velocities(3 : end-1) < thresh.v & ...
-            velocities(4 : end) < thresh.v) |...
-            dist_start_point == max(dist_start_point);
+    offsets = (velocities < thresh.v) |...
+            (dist_start_point == max(dist_start_point));
     % Send only the first.
     offset = find(offsets, 1);
 end
