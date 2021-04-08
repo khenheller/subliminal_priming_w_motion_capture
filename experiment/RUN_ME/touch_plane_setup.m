@@ -11,11 +11,7 @@ calibrations_path = 'D:\khen_heller\calibrations\';
 % 
 % client = NatNetML.NatNetClientML(1);
 
-if length(varargin)==1
-    ip = varargin{1};
-else
-    ip = '127.0.0.1';
-end
+natnetclient = initializeNatnet(varargin);
 
 % ask whether to collect new touch_plane_info or use saved
 ButtonName = questdlg('Use old touch plane calibration?', ...
@@ -32,20 +28,6 @@ switch ButtonName
  case 'Quit'
     return;      
 end % switch
-
-natnetclient = natnet;
-
-fprintf( 'Connecting to the server\n' )
-natnetclient.HostIP = ip;
-natnetclient.ClientIP = ip;
-natnetclient.ConnectionType = 'Multicast';
-natnetclient.connect;
-if ( natnetclient.IsConnected == 0 )
-    fprintf( 'Client failed to connect\n' )
-    fprintf( '\tMake sure the host is connected to the network\n' )
-    fprintf( '\tand that the host and client IP addresses are correct\n\n' ) 
-    return
-end
 
 % Used old calibration, so the rest is unnecessary.
 if customFlag
