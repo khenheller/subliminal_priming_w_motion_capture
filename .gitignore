@@ -1,3 +1,4 @@
+analysis/processed_data/
 raw_data
 development/data
 *.asv

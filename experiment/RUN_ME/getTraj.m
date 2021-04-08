@@ -16,8 +16,6 @@ function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
     
     to_screen = strcmp(traj_type, 'to_screen') * 1;
     
-    start_point_range = 0.02; %3D distance from start point which finger needs to be in (in meter).
-    
     % records trajectory upto screen.
     for frame_i = 1:sample_length
 
@@ -41,7 +39,7 @@ function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
             % RETURNING FROM SCREEN: identify start point touch.
             else
                 curDistance = sqrt(sum((traj(frame_i,:)-p.START_POINT).^2));
-                if curDistance < start_point_range
+                if curDistance < p.START_POINT_RANGE
                     return;
                 end
             end

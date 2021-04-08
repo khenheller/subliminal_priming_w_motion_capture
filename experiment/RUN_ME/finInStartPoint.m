@@ -1,6 +1,5 @@
 % Waits for finger to return to starting point.
 function [] = finInStartPoint(p)
-    inRange = 0.02; %3D distance range finger needs to be in. in meter.
     inRangeFlag = 0;
     
     % Waits until finger returns to start pos.
@@ -22,7 +21,7 @@ function [] = finInStartPoint(p)
 
             curRange = sqrt(sum((cur_location-p.START_POINT).^2));
 
-            if curRange < inRange
+            if curRange < p.START_POINT_RANGE
                 inRangeFlag = 1;
             end
         end
