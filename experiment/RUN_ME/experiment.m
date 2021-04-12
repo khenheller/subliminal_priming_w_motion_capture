@@ -7,14 +7,12 @@ clear all;
 addpath('.\NatNetSDK');
 
 % Parameter definit1ion.
-p.SUB_NUM = 1009;
-
+p.SUB_NUM = 1011;
+  
 p.FULLSCREEN = 1;
-p.DEBUG = 1;
+p.DEBUG = 0;
 %% -------------------------- Align screen --------------------------------
-load('./p.mat');
-alignScreen(p);
-clear p;
+% alignScreen(p);
 %% -------------------------- Run Experiment ------------------------------
 p = main(p);
 save('p.mat', 'p');

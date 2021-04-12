@@ -46,8 +46,10 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.THREE         =  KbName('3#');  % I saw a clear part of the phrase
         p.FOUR          =  KbName('4$');  % I saw the entire phrase clearly
         p.SPACE_KEY      =  KbName('space');
+        p.S_KEY      =  KbName('S');
         p.A_KEY      =  KbName('A');
         p.B_KEY      =  KbName('B');
+        p.T_KEY      =  KbName('T');
         p.WRONG_KEY = 997;
         % number assigned to left/right response.
         p.RIGHT = 0;

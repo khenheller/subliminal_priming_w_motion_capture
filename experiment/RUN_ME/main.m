@@ -223,7 +223,7 @@ end
 
 function [] = safeExit(p)
     p.NATNETCLIENT.disconnect;
-    Priority(0);
+%     Priority(0);
     sca;
     ShowCursor;
     ListenChar(0);
