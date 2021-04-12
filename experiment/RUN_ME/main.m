@@ -270,54 +270,6 @@ function [time] = showPas(p)
     [~,time] = Screen('Flip', p.w, 0, 1);
 end
 
-% for practice: loads practice_trials list.
-% for test: Randomly selects a trial list from unused_lists.
-%           When unused_lists empties, refills it.
-%           This makes sure that one list doesn't repeat more than others.
-% type: 'practice' / 'test'
-function [trials] = getTrials(type, p)
-    if isequal(type, 'test')
-        unused_lists_path = [p.TRIALS_FOLDER '/unused_lists.mat'];
-        unused_lists = [];
-
-        % If file exists, loads it.
-        if isfile(unused_lists_path)
-            unused_lists = load(unused_lists_path);
-            unused_lists = unused_lists.unused_lists;
-        end
-
-        % If used all trials, refills.
-        if isempty(unused_lists)
-            unused_lists = cellstr(ls(p.TRIALS_FOLDER));
-            % Remove '.', '..', 'practice.trials.xlsx', 'unused_lists.mat'
-            unused_lists(strcmp(unused_lists, '.')) = [];
-            unused_lists(strcmp(unused_lists, '..')) = [];
-            unused_lists(strcmp(unused_lists, 'practice_trials.xlsx')) = [];
-            unused_lists(strcmp(unused_lists, 'unused_lists.mat')) = [];
-        end
-
-        % Samples a list randomly.
-        [list, list_index] = datasample(unused_lists,1);
-        
-        unused_lists(list_index) = [];
-        save(unused_lists_path, 'unused_lists');
-    else
-        list = {'practice_trials.xlsx'};
-    end
-    
-    trials = readtable([p.TRIALS_FOLDER '/' list{:}]);
-    % List ID.
-    trials.list_id = repmat(list, height(trials), 1);
-    % Assign subject's number.
-    trials.sub_num = ones(height(trials),1) * p.SUB_NUM;
-    % In categorization task, "natural" is on the left for odd sub numbers.
-    trials.natural_left = ones(height(trials),1) * rem(p.SUB_NUM, 2);
-    % convert vars with multiple row in each trial to cells.
-    for var = p.MULTI_ROW_VARS
-        trials.(var{:}) = num2cell(NaN(height(trials),1));
-    end
-end
-
 % Assigns data captured in this trial to 'trials'.
 function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_time)
     trials.trial_start_time(1) = time(1);
