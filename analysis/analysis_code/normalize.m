@@ -12,10 +12,10 @@ function [traj_mat, time_mat] = normalize(traj_mat, p)
         current_traj(isnan(current_traj(:,1)), :) = [];% remove nans.
         % Normalize when trial longer than 2 samples (otherwise normalizeFDA doesn't work).
         if size(current_traj,1) > 2
-            [norm_traj, norm_time] = normalizeFDA({current_traj}, 1, p.norm_frames, p.norm_type, p.sample_rate);
+            [norm_traj, norm_time] = normalizeFDA({current_traj}, 1, p.NORM_FRAMES, p.NORM_TYPE, p.SAMPLE_RATE_HZ);
             traj_mat(:, iTrial, :) = NaN;
-            traj_mat(1:p.norm_frames, iTrial, :) = norm_traj{1}(:, 1:3); %1:3 are position, 4:6 are velocity
-            time_mat(1:p.norm_frames, iTrial) = norm_time;
+            traj_mat(1:p.NORM_FRAMES, iTrial, :) = norm_traj{1}(:, 1:3); %1:3 are position, 4:6 are velocity
+            time_mat(1:p.NORM_FRAMES, iTrial) = norm_time;
         end
     end
 end
