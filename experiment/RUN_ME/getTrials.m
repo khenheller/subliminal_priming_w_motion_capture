@@ -16,11 +16,11 @@ function [trials] = getTrials(type, p)
 
         % If used all trials, refills.
         if isempty(unused_lists)
-            lists = string(ls(p.TRIALS_FOLDER));
+            lists = cellstr(ls(p.TRIALS_FOLDER));
             % Keep only trial lists files.
             lists = regexp(lists, 'trials\d+.xlsx', 'match');
             lists(cellfun(@isempty, lists)) = [];
-            unused_lists = lists;
+            unused_lists = vertcat(lists{:});
         end
 
         % Samples a list randomly.
@@ -32,8 +32,7 @@ function [trials] = getTrials(type, p)
         list = {'practice_trials.xlsx'};
     end
     
-    list = char(list{:});
-    trials = readtable([p.TRIALS_FOLDER '/' list]);
+    trials = readtable([p.TRIALS_FOLDER '/' list{:}]);
     % List ID.
     trials.list_id = repmat(list, height(trials), 1);
     % Assign subject's number.
