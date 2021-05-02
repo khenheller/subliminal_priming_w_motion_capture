@@ -135,9 +135,13 @@ function [p] = initConstants(psychtoolbox_active, p)
     [~,p.ONE_ROW_VARS_I] = ismember(p.ONE_ROW_VARS, p.VARIABLE_NAMES);
     
     %% Analysis params.
-    % Sample length restrictions.
+    % Missing data restrictions.
     p.MIN_SAMP_LEN = 0.1; % in sec.
     p.MAX_MISSING_DATA = 0.1; % in sec.
+    p.MAX_BAD_TRIALS = p.NUM_TRIALS / 2; % sub with more bad trials is disqualified.
+    p.MIN_AMNT_TRIALS_IN_COND = 100; % sub with less good trials in each condition is disqualified.
+    p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
+    
     
     % Cameras
     p.SAMPLE_RATE_HZ = p.REF_RATE_HZ; % Camera sample rate in Hz.

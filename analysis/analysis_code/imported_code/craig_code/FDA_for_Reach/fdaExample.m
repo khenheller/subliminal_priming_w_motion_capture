@@ -17,7 +17,7 @@ load sampleFDAData
 %variables).  In this example there are two grouping factors the first
 %(contained in group{1}) is condition (of which there was 16)and the second
 %(contained in group{2} is subject (of which this sample includes 4).  NOTE
-%the code used below ALWAYS assumes that subject is coded in the FINAL
+%the code used below AlWAYS assumes that subject is coded in the FINAl
 %grouping factor.  SO, if you had 3 indendent variables then the code for
 %subject would be in group{4}.
 
@@ -29,7 +29,7 @@ load sampleFDAData
 %2) was cued.
 
 %get the index of the trials that match what you want
-idx = find(group{1}==1 | group{1}==2 | group{1}==13 |group{1}==14);
+idx = find(group{1}==1 | group{1}==2 | group{1}==13 |group{1}==14); % He only wants to compare these 4 conditions.
 
 %STEP 2
 %for the dimesion along which you want to make a comparison, for repeated
@@ -62,15 +62,15 @@ idx = find(group{1}==1 | group{1}==2 | group{1}==13 |group{1}==14);
 %STEP 4
 %you can plot the corrected pvalue over the function of x (in this case
 %over percent y distance, divided into 200 slices).  Add in a line at a
-%conventional alpha (0.05). Lable the axis, put units into something more
+%conventional alpha (0.05). lable the axis, put units into something more
 %identifiable (i.e percent from 0-100, not 0-200...do this by changing the 
 % x argument to the plot command)
 plot((1:200)/2,corrPx(1,:),'linewidth',2);
 line([0 100],[0.05 0.05],'color','r','linewidth',2);
-yLim([0 1]);
+ylim([0 1]);
 xlabel('Percent Y Distance');
-yLabel('p-value of X deviation');
-title('Overall ANOVA, top L and R');
+ylabel('p-value of X deviation');
+title('Overall ANOVA, top l and R');
 
 %STEP 5 (which really just repeats steps 1-4)
 %for doing follow ups, you can just define a new index, identifying only
@@ -89,10 +89,10 @@ idx = find(group{1}==1 | group{1}==2);
 figure;
 plot((1:200)/2,corrPx(1,:),'linewidth',2);
 line([0 100],[0.05 0.05],'color','r','linewidth',2);
-yLim([0 1]);
+ylim([0 1]);
 xlabel('Percent Y Distance');
-yLabel('p-value of X deviation');
-title('Follow up ANOVA 2-target L vs 2-target R');
+ylabel('p-value of X deviation');
+title('Follow up ANOVA 2-target l vs 2-target R');
 
 
 %compare that against the follow up comparing a two-target trial that ended
@@ -110,10 +110,10 @@ idx = find(group{1}==1 | group{1}==13);
 figure;
 plot((1:200)/2,corrPx(1,:),'linewidth',2);
 line([0 100],[0.05 0.05],'color','r','linewidth',2);
-yLim([0 1]);
+ylim([0 1]);
 xlabel('Percent Y Distance');
-yLabel('p-value of X deviation');
-title('Follow up ANOVA 1-target L vs 2-target L');
+ylabel('p-value of X deviation');
+title('Follow up ANOVA 1-target l vs 2-target l');
 
 
 %to plot the actual trajectories, you can use the same logic as above.
@@ -129,22 +129,22 @@ title('Follow up ANOVA 1-target L vs 2-target L');
 %to plot the grand average:
 
 %get the appropriate indexes for each condition
-idx1topL = find(group{1}==13); %this will be green
+idx1topl = find(group{1}==13); %this will be green
 idx1topR = find(group{1}==14); %this will be black
-idx2topL = find(group{1}==1); %this will be blue
+idx2topl = find(group{1}==1); %this will be blue
 idx2topR = find(group{1}==2); %this will be red
 
 %plot in 3D - add in labels and titles
 figure; hold on;
-plot3(mean(fdaMat.x(idx1topL,:)),mean(fdaMat.y(idx1topL,:)),mean(fdaMat.z(idx1topL,:)),'g','linewidth',2);
-plot3(mean(fdaMat.x(idx1topR,:)),mean(fdaMat.y(idx1topL,:)),mean(fdaMat.z(idx1topL,:)),'k','linewidth',2);
-plot3(mean(fdaMat.x(idx2topL,:)),mean(fdaMat.y(idx1topL,:)),mean(fdaMat.z(idx1topL,:)),'b','linewidth',2);
-plot3(mean(fdaMat.x(idx2topR,:)),mean(fdaMat.y(idx1topL,:)),mean(fdaMat.z(idx1topL,:)),'r','linewidth',2);
+plot3(mean(fdaMat.x(idx1topl,:)),mean(fdaMat.y(idx1topl,:)),mean(fdaMat.z(idx1topl,:)),'g','linewidth',2);
+plot3(mean(fdaMat.x(idx1topR,:)),mean(fdaMat.y(idx1topl,:)),mean(fdaMat.z(idx1topl,:)),'k','linewidth',2);
+plot3(mean(fdaMat.x(idx2topl,:)),mean(fdaMat.y(idx1topl,:)),mean(fdaMat.z(idx1topl,:)),'b','linewidth',2);
+plot3(mean(fdaMat.x(idx2topR,:)),mean(fdaMat.y(idx1topl,:)),mean(fdaMat.z(idx1topl,:)),'r','linewidth',2);
 view(3);
-title('Grand mean average trajectories top L and R')
-xlabel('Lateral deviation');
-yLabel('Reach distance');
-zLabel('Reach height');
+title('Grand mean average trajectories top l and R')
+xlabel('lateral deviation');
+ylabel('Reach distance');
+zlabel('Reach height');
 
 
 %to plot the average of subject averages:
@@ -159,21 +159,21 @@ idx = find(group{1}==1 | group{1}==2 | group{1}==13 |group{1}==14);
 %get the appropriate indexes for each condition.  Recall that the
 %getRMMeans function renumbers your conditions (assings 1 through the
 %number of unique conditions, in this case 4)
-idx1topL = find(newGroupx{1}==3); %this will be green
+idx1topl = find(newGroupx{1}==3); %this will be green
 idx1topR = find(newGroupx{1}==4); %this will be black
-idx2topL = find(newGroupx{1}==1); %this will be blue
+idx2topl = find(newGroupx{1}==1); %this will be blue
 idx2topR = find(newGroupx{1}==2); %this will be red
 
 %plot in 3D - add in labels and titles
 figure; hold on;
-plot3(mean(meansx(idx1topL,:)),mean(meansy(idx1topL,:)),mean(meansz(idx1topL,:)),'g','linewidth',2);
-plot3(mean(meansx(idx1topR,:)),mean(meansy(idx1topL,:)),mean(meansz(idx1topL,:)),'k','linewidth',2);
-plot3(mean(meansx(idx2topL,:)),mean(meansy(idx1topL,:)),mean(meansz(idx1topL,:)),'b','linewidth',2);
-plot3(mean(meansx(idx2topR,:)),mean(meansy(idx1topL,:)),mean(meansz(idx1topL,:)),'r','linewidth',2);
+plot3(mean(meansx(idx1topl,:)),mean(meansy(idx1topl,:)),mean(meansz(idx1topl,:)),'g','linewidth',2);
+plot3(mean(meansx(idx1topR,:)),mean(meansy(idx1topl,:)),mean(meansz(idx1topl,:)),'k','linewidth',2);
+plot3(mean(meansx(idx2topl,:)),mean(meansy(idx1topl,:)),mean(meansz(idx1topl,:)),'b','linewidth',2);
+plot3(mean(meansx(idx2topR,:)),mean(meansy(idx1topl,:)),mean(meansz(idx1topl,:)),'r','linewidth',2);
 
 view(3);
-title('Average of subject average trajectories top L and R')
-xlabel('Lateral deviation');
-yLabel('Reach distance');
-zLabel('Reach height');
+title('Average of subject average trajectories top l and R')
+xlabel('lateral deviation');
+ylabel('Reach distance');
+zlabel('Reach height');
 
