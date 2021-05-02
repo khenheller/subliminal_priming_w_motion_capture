@@ -1,14 +1,9 @@
 % Receives single sub's data and runs various tests on it.
 % type - 'data', 'trials_list', 'practice_trials_list', each runs different set of tests.
-function [pass_test] = tests (trials, trials_traj, type)
+function [pass_test] = tests (trials, trials_traj, type, p)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
     
     % Initialize parameters.
-    p.SUB_NUM = 9992;
-    p.SITTING_DISTANCE = 60; % in cm.
-    p.VIEW_ANGLE_X = 2.5; % in deg.
-    p.VIEW_ANGLE_Y = 1;
-    p = initConstants(0, p);
     pass_test.deviations = NaN;
     pass_test.deviation_of_mean = NaN;
     pass_test.std = NaN;
