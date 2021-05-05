@@ -10,6 +10,8 @@ function [subs_avg] = avgBetween(traj_name, p)
     subs_avg.rt.diff_right = 0;
     subs_avg.fc.same = 0;
     subs_avg.fc.diff = 0;
+    subs_avg.pas.same = [0 0 0 0]; % 4 lvls of pas.
+    subs_avg.pas.diff = [0 0 0 0];
     
     bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' traj_name{1} '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
     subs = p.SUBS .* ~bad_subs{:,'any'}'; % remove bad subs.
@@ -28,6 +30,8 @@ function [subs_avg] = avgBetween(traj_name, p)
         subs_avg.rt.diff_right = subs_avg.rt.diff_right + avg.rt.diff_right;
         subs_avg.fc.same = subs_avg.fc.same + avg.fc.same;
         subs_avg.fc.diff = subs_avg.fc.diff + avg.fc.diff;
+        subs_avg.pas.same = subs_avg.pas.same + avg.pas.same;
+        subs_avg.pas.diff = subs_avg.pas.diff + avg.pas.diff;
     end
     subs_avg.traj.same_left  = subs_avg.traj.same_left  / length(subs);
     subs_avg.traj.same_right = subs_avg.traj.same_right / length(subs);
@@ -39,4 +43,6 @@ function [subs_avg] = avgBetween(traj_name, p)
     subs_avg.rt.diff_right = subs_avg.rt.diff_right / length(subs);
     subs_avg.fc.same = subs_avg.fc.same / length(subs);
     subs_avg.fc.diff = subs_avg.fc.diff / length(subs);
+    subs_avg.pas.same = subs_avg.pas.same / length(subs);
+    subs_avg.pas.diff = subs_avg.pas.diff / length(subs);
 end

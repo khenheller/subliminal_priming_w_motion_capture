@@ -23,10 +23,10 @@ function [p] = initConstants(psychtoolbox_active, p)
     % Paths
     [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
     curr_path = replace(curr_path, '\', '/');
-    p.STIM_FOLDER = [curr_path '/./stimuli'];
-    p.DATA_FOLDER = [curr_path '/../../raw_data'];
-    p.PROC_DATA_FOLDER = [curr_path '/../../analysis/processed_data']; % preprocessed data folder.
-    p.TRIALS_FOLDER = [p.STIM_FOLDER '/trial_lists'];
+    p.STIM_FOLDER = [curr_path '/./stimuli/'];
+    p.DATA_FOLDER = [curr_path '/../../raw_data/'];
+    p.PROC_DATA_FOLDER = [curr_path '/../../analysis/processed_data/']; % preprocessed data folder.
+    p.TRIALS_FOLDER = [p.STIM_FOLDER '/trial_lists/'];
     p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
     
     if psychtoolbox_active

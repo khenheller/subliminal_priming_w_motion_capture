@@ -1,3 +1,15 @@
+% Finds trials that answered screening reasons:
+%   Have too much missing data.
+%   Reach distance too short.
+%   Finger missed target.
+% Output:
+%   bad_trials - Cell for each sub, has table inside.
+%               Table has row for each trial and column for each screening reason,
+%               and a 'any' colum that indicates if any screen reason happend.
+%   n_bad_trials - table, row for each sub, shows how many bad trials for each reason.
+%   bad_trials_i - Cell for each sub, has table inside.
+%               Table has list of disqualified trials for each screen reason.
+%               bad_trials is logical indexing, this is numeric.
 function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
     screen_reasons = {'missing_data','short_traj','missed_target','any'};
     % Bad trials' numbers. row = bad trial, column = reason.

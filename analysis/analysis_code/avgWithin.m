@@ -32,6 +32,8 @@ function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     single.rt.diff_right = data_table.(rt_col)(~bad & pas & ~same & ~left);
     single.fc.same = data_table.prime_correct(~bad & pas & same); % forced choice.
     single.fc.diff = data_table.prime_correct(~bad & pas & ~same);
+    single.pas.same = data_table.pas(~bad & same);
+    single.pas.diff = data_table.pas(~bad & ~same);
     % Average.
     avg.traj.same_left  = squeeze(mean(single.trajs.same_left , 2));
     avg.traj.same_right = squeeze(mean(single.trajs.same_right, 2));
@@ -43,4 +45,9 @@ function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     avg.rt.diff_right = mean(single.rt.diff_right);
     avg.fc.same = mean(single.fc.same);
     avg.fc.diff = mean(single.fc.diff);
+    % Count pas ratings.
+    for i = 1:4
+        avg.pas.same(i) = sum(single.pas.same == i); 
+        avg.pas.diff(i) = sum(single.pas.diff == i);
+    end
 end
