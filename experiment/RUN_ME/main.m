@@ -101,23 +101,28 @@ function [p] = runTrials(trials, p)
             
             % Fixation
             time(1) = showFixation(p);
-            waitUntil(p.FIX_DURATION, p);
+%             waitUntil(p.FIX_DURATION, p);
+            WaitSecs(p.FIX_DURATION);
             
             % Mask 1
             time(2) = showMask(trials(1,:), 'mask1', p);
-            waitUntil(p.MASK1_DURATION, p);
+%             waitUntil(p.MASK1_DURATION, p);
+            WaitSecs(p.MASK1_DURATION);
             
             % Mask 2
             time(3) = showMask(trials(1,:), 'mask2', p);
-            waitUntil(p.MASK2_DURATION, p);
+%             waitUntil(p.MASK2_DURATION, p);
+            WaitSecs(p.MASK2_DURATION);
             
             % Prime
             time(4) = showWord(trials(1,:), 'prime', p);
-            waitUntil(p.PRIME_DURATION, p);
+%             waitUntil(p.PRIME_DURATION, p);
+            WaitSecs(p.PRIME_DURATION);
             
             % Mask 3
             time(5) = showMask(trials(1,:), 'mask3', p);
-            waitUntil(p.MASK3_DURATION, p);
+%             waitUntil(p.MASK3_DURATION, p);
+            WaitSecs(p.MASK3_DURATION);
             
             % Target
             Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.

@@ -99,12 +99,12 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.NUM_TRIALS = p.NUM_BLOCKS*p.BLOCK_SIZE;
     
     % duration in sec
-    p.FIX_DURATION = 1;
-    p.MASK1_DURATION = 0.27;
-    p.MASK2_DURATION = 0.03;
-    p.PRIME_DURATION = 0.03;
-    p.MASK3_DURATION = 0.03;
-    p.TARGET_DURATION = 0.5;
+    p.FIX_DURATION = 1 - p.REF_RATE_SEC * 3 / 4;
+    p.MASK1_DURATION = 0.27 - p.REF_RATE_SEC * 3 / 4;
+    p.MASK2_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
+    p.PRIME_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
+    p.MASK3_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
+    p.TARGET_DURATION = 0.5 - p.REF_RATE_SEC * 3 / 4;
     
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
