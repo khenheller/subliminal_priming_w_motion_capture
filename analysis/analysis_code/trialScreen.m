@@ -23,8 +23,12 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
     n_bad_trials = bad_trials_table; % amount of bad trials, one row for each sub.
     n_bad_trials(p.N_SUBS+1 : end, :) = [];
     bad_trials = cell(p.N_SUBS, 1); % table for each sub, each row will be a trial marked as good/bad.
+    
+    too_short = load([p.PROC_DATA_FOLDER '/too_short_to_filter.mat'], 'too_short_to_filter');  too_short = too_short.too_short_to_filter;
 
     for iSub = p.SUBS
+        too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
+        
         traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj.mat']);  traj_table = traj_table.traj_table;
         % remove practice.
         traj_table(traj_table{:,'practice'} == 1, :) = [];
@@ -39,7 +43,8 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
             success = ones(1, length(screen_reasons)); % 0 = bad trial.
             single_traj = squeeze(traj_mat(:,iTrial,:));
             % Check if too much data is missing.
-            success(ismember(screen_reasons, 'missing_data')) = testAmountData(single_traj, p);
+            success(ismember(screen_reasons, 'missing_data')) = testAmountData(single_traj, p) &...
+                ~any(too_short_to_filter{:} == iTrial);
             % Check if reach distance is too short.
             success(ismember(screen_reasons, 'short_traj')) = testReachDist(single_traj, p);
             % Check if finger missed target.

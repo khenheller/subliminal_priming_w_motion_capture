@@ -31,8 +31,8 @@ function [b_spline, traj] = fitBspline(traj, p)
             points = fnval(b_spline(iTrial, iDim), linspace(1, trial_length, num_points)');
             traj_mat(:, iTrial, iDim) = [points; NaN(p.MAX_RECORD_LENGTH - num_points, 1)];
             %@@@@@@@@@@@@@@@@ Remove, linear interp @@@@@@@@@@@@@@@@@@@@@@@@
-            points = interp1(1:trial_length, trial_traj, linspace(1, trial_length, num_points)');
-            traj_mat(:, iTrial, iDim) = [points; NaN(p.MAX_RECORD_LENGTH - num_points, 1)];
+%             points = interp1(1:trial_length, trial_traj, linspace(1, trial_length, num_points)');
+%             traj_mat(:, iTrial, iDim) = [points; NaN(p.MAX_RECORD_LENGTH - num_points, 1)];
             %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         end
     end

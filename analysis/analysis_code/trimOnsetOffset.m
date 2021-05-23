@@ -5,11 +5,17 @@
 % Offset criterion: first frame where velocity dropped below threshold or
 %                   position reached max.
 % Receives: trajs_mat - a subject's trajectory, of 1 type (categot_to / categor_from / recog_to / recog_from).
-%               3 Dim double matrix, row = sample, column = trial, 3rd dim = axis (x,y,z).
+%               3 Dim matrix of doubles, row = sample, column = trial, 3rd dim = axis (x,y,z).
 %               Each trial has MAX_CAP_LENGTH samples.
-function trajs_mat = trimOnsetOffset(trajs_mat, p)
+%           time_mat - a sub's timestamps mat. matching trajs_mat.
+%                   row = sample, column = trial.
+% Output: onsets/offsets - timestamp of movement initiation and finish.
+function [trajs_mat, onsets, offsets] = trimOnsetOffset(trajs_mat, time_mat, p)
     thresh.v = 0.002; % onset and offset velocity threshold (m/s).
     thresh.a = 0.002; % onset acceleration threshold (m/s^2).
+    
+    onsets  = NaN(p.NUM_TRIALS,1);
+    offsets = NaN(p.NUM_TRIALS,1);
     
     % calc velocity.
     dx = trajs_mat(2:end, :, :) - trajs_mat(1:end-1, :, :); % distance between 2 samples.
@@ -25,13 +31,16 @@ function trajs_mat = trimOnsetOffset(trajs_mat, p)
         % velocity above threshoold.
         onset = getOnset(trial_vel, thresh);
         % velocity below threshoold or reached maximum position.
-        offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3));
+        offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3)); 
         % remove values before onset.
         trial_traj = circshift(trial_traj, -onset+1, 1);
         trial_vel = circshift(trial_vel, -onset+1, 1);
         % remove values after offset.
         trial_traj(offset+1 : p.MAX_CAP_LENGTH, :) = NaN;
         trajs_mat(:, iTrial, :) = trial_traj;
+        
+        onsets(iTrial)  = time_mat(onset             , iTrial);
+        offsets(iTrial) = time_mat(onset + offset - 1, iTrial); % Offset is relative to onset.
     end
 end
 
@@ -72,8 +81,9 @@ function offset = getOffset(velocities, thresh, z_traj)
     % Distance from start point.
     dist_start_point = abs(z_traj - z_traj(1));
     % all indices that match criterion.
-    offsets = (velocities < thresh.v) |...
-            (dist_start_point == max(dist_start_point));
+%     offsets = (velocities < thresh.v) |...
+%             (dist_start_point == max(dist_start_point));
+    offsets = dist_start_point == max(dist_start_point);
     % Send only the first.
     offset = find(offsets, 1);
 end

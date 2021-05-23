@@ -1,4 +1,4 @@
-function [lineOut, fillOut] = stdshade(amatrix,alpha,acolor,F,smth,depend_y)
+function [lineOut, fillOut] = stdshade(amatrix,alpha,acolor,F,smth,depend_y, type, a_val)
 % usage: stdshading(amatrix,alpha,acolor,F,smth)
 % plot mean and sem/std coming from a matrix of data, at which each row is an
 % observation. sem/std is shown as shading.
@@ -7,6 +7,8 @@ function [lineOut, fillOut] = stdshade(amatrix,alpha,acolor,F,smth,depend_y)
 % - alpha defines transparency of the shading (default is no shading and black mean line)
 % - smth defines the smoothing factor (default is no smooth)
 % - depend_y plot dependent var on x axis (0) or on y axis (1).
+% 19/05/21 Khen: type - want to draw 'std' / 'se' (standard error) / 'ci' (Coinfidence interval).
+%               a_val - alpha value when drawing CI.
 % smusall 2010/4/23
 if exist('acolor','var')==0 || isempty(acolor)
     acolor='r'; 
@@ -24,7 +26,20 @@ amean = nanmean(amatrix,1); %get man over first dimension
 if smth > 1
     amean = boxFilter(nanmean(amatrix,1),smth); %use boxfilter to smooth data
 end
+% 19/05/21 Khen: Turns STD to SE (standtard error of the sample). 
 astd = nanstd(amatrix,[],1); % to get std shading
+switch type
+    case 'std'
+    case 'se'
+        astd = astd / sqrt(size(amatrix,1));
+    case 'ci'
+        df = size(amatrix,1) - 1;
+        t_val = tinv(a_val, df);
+        astd =  t_val * astd / sqrt(size(amatrix,1));
+    otherwise
+        error('Wrong input, has to be: std/se/ci');
+end
+
 % astd = nanstd(amatrix,[],1)/sqrt(size(amatrix,1)); % to get sem shading
 if depend_y
     std_x = [F fliplr(F)];
