@@ -1,17 +1,16 @@
 % Generates masks composed of squares and diamonds in random positions,
 % which cover a certain viewing angle.
-function [] = makeMasks(num_masks)
+% side - 'left'/'right', side of natrual category.
+function [] = makeMasks(num_masks, p, side)
 
-    p = initPsychtoolbox();
-    p = initConstants(1, p);
+    p = initPsychtoolbox(p);
+    p = initConstants(0, p);
     
     % closes psychtoolbox window
     Priority(0);
     sca;
     ShowCursor;
     ListenChar(0);
-
-    global p.FONT_SIZE p.WORD_WIDTH p.WORD_HEIGHT
     
     %@@@@@@@@ Define the following @@@@@@@@
     num_shapes_each_kind = 11; % num squares and diamonds.
@@ -27,24 +26,29 @@ function [] = makeMasks(num_masks)
     square_width = 15 * p.FONT_SIZE / 100;
     diamond_width = 10 * p.FONT_SIZE / 100;
     
+    % Get Categorization screen.
+    categor_screen = imread(fullfile(p.STIM_FOLDER, ['categor_natural_' side '_screen.jpg']));
     % Open fullscreen figure.
     set(gcf, 'Units','centimeters',  'WindowState','fullscreen',  'MenuBar','None');
     pause(1); % pause for 100ms because it takes matlab time to create fullscreen figure.
+    % Draw categories.
+    categor_ax = axes('Units','normalized', 'Position',[0 0 1 1]);
+    image(categor_screen);
+    axis off;
     % Gets screen size.
     screen_size = get(gcf,'Position');
     width = screen_size(3);
     height = screen_size(4);
     % sets mask at center of screen.
+    mask_ax = axes();
     set(gca,'Units','centimeters','Position',[(width/2 - p.WORD_WIDTH/2) (height/2 - p.WORD_HEIGHT/2)...
         p.WORD_WIDTH p.WORD_HEIGHT]);
     % grey background.
     set(gcf,'color',[0.5 0.5 0.5]);
     set(gcf, 'InvertHardcopy', 'off'); % prevents matlab overide my background setting when saving to a file.
     
-    % make masks
     for mask_i = 1:num_masks
         hold off;
-        
         % draw squares.
         for shape_i = 1:num_shapes_each_kind
             x = rand * p.WORD_WIDTH;
@@ -53,7 +57,6 @@ function [] = makeMasks(num_masks)
             plot(x,y, 's','MarkerEdgeColor','black','MarkerSize',square_size,'LineWidth',square_width)
             hold on;
         end
-        
         % draw diamonds.
         for shape_i = 1:num_shapes_each_kind % draws a shape.
             x = rand * p.WORD_WIDTH;
@@ -65,6 +68,7 @@ function [] = makeMasks(num_masks)
         xlim([0 p.WORD_WIDTH]);
         ylim([0 p.WORD_HEIGHT]);
         axis 'off';
-        saveas(gcf, [stim_folder '/masks/mask' num2str(mask_i) '.jpg']);%, 'jpeg');%print(gcf, '-djpeg', [p.STIM_FOLDER '/masks/mask' num2str(mask_i) '.jpg']);
+        % Save as image.
+        saveas(gcf, [stim_folder '/masks/practice_mask' num2str(mask_i) '_natural_' side '.jpg']);
     end
 end

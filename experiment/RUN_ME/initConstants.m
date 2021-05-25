@@ -30,8 +30,10 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
     
     if psychtoolbox_active
-        p.RECOG_CAP_LENGTH_SEC = 5; % Trajectory recording length in sec.
-        p.CATEGOR_CAP_LENGTH_SEC = 1.5;
+        p.REACT_TIME = 0.325; % Maximal allowed time to movement onset (in sec).
+        p.MOVE_TIME = 0.425; % Maximal allowed movement time (in sec).
+        p.RECOG_CAP_LENGTH_SEC = 7; % Trajectory recording length in sec.
+        p.CATEGOR_CAP_LENGTH_SEC = p.REACT_TIME + p.MOVE_TIME; % in sec.
         p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
         p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
         p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
@@ -56,9 +58,11 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.LEFT = 1;
 
         % Experiment slides.
+        % "natural" category is on the left for odd sub numbers.
+        if rem(p.SUB_NUM, 2); side = 'left'; else; side = 'right'; end
         p.WELCOME_SCREEN = getTextureFromHD('welcome_screen.jpg', p);
         p.LOADING_SCREEN = getTextureFromHD('loading_screen.jpg', p);
-        p.INSTRUCTIONS_SCREEN = getTextureFromHD('instructions_screen.jpg', p);
+        p.FIRST_INSTRUCTIONS_SCREEN = getTextureFromHD('first_instructions_screen.jpg', p);
         p.PRACTICE_SCREEN = getTextureFromHD('practice_screen.jpg', p);
         p.TEST_SCREEN = getTextureFromHD('test_screen.jpg', p);
         p.END_SCREEN = getTextureFromHD('end_screen.jpg', p);
@@ -67,8 +71,8 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.CATEGOR_NATURAL_RIGHT_SCREEN = getTextureFromHD('categor_natural_right_screen.jpg', p);
         p.RECOG_SCREEN = getTextureFromHD('recog_screen.jpg', p);
         p.PAS_SCREEN = getTextureFromHD('pas_screen.jpg', p);
-        p.FIXATION_SCREEN = getTextureFromHD('fixation_screen.jpg', p);
-        p.RESPOND_FASTER_SCREEN = getTextureFromHD('respond_faster_screen.jpg', p);
+        p.FIXATION_SCREEN = getTextureFromHD(['fixation_natural_' side '_screen.jpg'], p);
+        p.MISS_RESPONSE_WINDOW_SCREEN = getTextureFromHD('miss_response_window_screen.jpg', p);
         p.RETURN_TO_START_POINT_SCREEN = getTextureFromHD('return_start_point_screen.jpg', p);
         p.START_POINT_SCREEN = getTextureFromHD('start_point_screen.jpg', p);
         p.RIGHT_END_POINT_SCREEN = getTextureFromHD('right_end_point_screen.jpg', p);
@@ -77,12 +81,16 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.WHITE_SCREEN = getTextureFromHD('white_screen.jpg', p);
         p.NUM_MASKS = 60;
         for mask_i = 1:p.NUM_MASKS
-            p.MASKS(mask_i) = getTextureFromHD(['mask' num2str(mask_i) '.jpg'], p);
+            p.MASKS(mask_i) = getTextureFromHD(['/masks/mask' num2str(mask_i) '_natural_' side '.jpg'], p);
         end
         p.MIDDLE_POINT_SCREEN = getTextureFromHD('middle_point_screen.jpg', p);
         p.SAVING_DATA_SCREEN = getTextureFromHD('saving_data_screen.jpg', p);
         p.ALIGNMENT_SCREEN = getTextureFromHD('alignment_screen.jpg', p);
         p.TRIAL_EXAMPLE_SCREEN = getTextureFromHD('trial_example_screen.jpg', p);
+        p.LATE_MOVE_ONSET_SCREEN = getTextureFromHD('late_move_onset_screen.jpg', p);
+        p.MISS_RESPONSE_WINDOW_SCREEN = getTextureFromHD('miss_response_window_screen.jpg', p);
+        p.SECOND_INSTRUCTIONS_SCREEN = getTextureFromHD('second_instructions_screen.jpg', p);
+        p.SPEED_PRACTICE_SCREEN = getTextureFromHD('speed_practice_screen.jpg', p);
         
         % Text
         global text

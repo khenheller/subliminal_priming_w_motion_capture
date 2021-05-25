@@ -15,6 +15,7 @@ function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
     curDistance = NaN;
     
     to_screen = strcmp(traj_type, 'to_screen') * 1;
+    late_move_onset = 0;
     
     % records trajectory upto screen.
     for frame_i = 1:sample_length
@@ -44,17 +45,28 @@ function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
                 end
             end
         end
-
-        % Target duration passed, remove it and show only categorization screen.
-        if (strcmp(ques_type, 'categor') && (frame_i+1 == p.TARGET_DURATION*p.REF_RATE_HZ) && to_screen)
-            Screen('DrawTexture',p.w, p.CATEGOR_SCREEN);
-            categor_time = timecourse(frame_i) + p.REF_RATE_SEC;
+        
+        if (strcmp(ques_type, 'categor') && to_screen)
+            % Exits if Movement onset passed and Sub didn't move.
+            if  (frame_i > p.REACT_TIME*p.REF_RATE_HZ)% onset passed.
+                if sqrt(sum((traj(frame_i,:)-p.START_POINT).^2)) < p.START_POINT_RANGE % sub didn't move.
+                    frame_i = sample_length;
+                    late_move_onset = 1;
+                end
+            end
+            % Target duration passed, remove it and show only categorization screen.
+            if (frame_i+1 == p.TARGET_DURATION*p.REF_RATE_HZ)
+                Screen('DrawTexture',p.w, p.CATEGOR_SCREEN);
+                categor_time = timecourse(frame_i) + p.REF_RATE_SEC;
+            end
         end
     end
     
     % Responded too late, or didn't return to start point.
-    message_screen = to_screen*p.RESPOND_FASTER_SCREEN + ~to_screen*p.RETURN_TO_START_POINT_SCREEN;    
+    message_screen = to_screen * ~late_move_onset * p.MISS_RESPONSE_WINDOW_SCREEN +...
+        ~to_screen * p.RETURN_TO_START_POINT_SCREEN + ...
+        to_screen * late_move_onset * p.LATE_MOVE_ONSET_SCREEN;
     Screen('DrawTexture',p.w, message_screen);
     Screen('Flip',p.w);
-    WaitSecs(1);
+    WaitSecs(1.5);
 end

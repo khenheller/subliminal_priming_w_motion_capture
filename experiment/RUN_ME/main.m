@@ -9,9 +9,11 @@ function [p] = main(p)
 
     try
         
-        % Calibration and connection to natnetclient.
-        [p.TOUCH_PLANE_INFO, p.NATNETCLIENT] = touch_plane_setup();
-        p.SAMPLE_RATE = p.NATNETCLIENT.FrameRate;
+        if ~p.DEBUG
+            % Calibration and connection to natnetclient.
+            [p.TOUCH_PLANE_INFO, p.NATNETCLIENT] = touch_plane_setup();
+            p.SAMPLE_RATE = p.NATNETCLIENT.FrameRate;
+        end
         
         % Initialize params.
         p = initPsychtoolbox(p);
@@ -23,7 +25,9 @@ function [p] = main(p)
         practice_trials = getTrials('practice', p);
         
         % Start,end points calibration.
-        p = setPoints(p);
+        if ~p.DEBUG
+            p = setPoints(p);
+        end
         
         saveCode(trials.list_id{1}, p);
         save('p.mat', 'p');
@@ -33,7 +37,9 @@ function [p] = main(p)
         getInput('instruction', p);
         p = experiment(trials, practice_trials, p);
         
-        p.NATNETCLIENT.disconnect;
+        if ~p.DEBUG
+            p.NATNETCLIENT.disconnect;
+        end
         
     catch e
         safeExit(p);
@@ -47,15 +53,25 @@ function [] = cleanExit( )
 end
 
 function [p] = experiment(trials, practice_trials, p)
-    % instructions.
-    showTexture(p.INSTRUCTIONS_SCREEN, p);
+    % 1st instructions.
+    showTexture(p.FIRST_INSTRUCTIONS_SCREEN, p);
     getInput('instruction', p);
+    
+    % practice w/o prime.
+    showTexture(p.SPEED_PRACTICE_SCREEN, p);
+    getInput('instruction', p);
+    p = runTrials(practice_trials, p);
+    
+    % 2nd instructions.
+    showTexture(p.SECOND_INSTRUCTIONS_SCREEN, p);
+    getInput('instruction', p);
+    
     % Example trial.
     showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
     getInput('instruction', p);
-    exampleTrial(trials, p)
+    exampleTrial(trials, p);
     
-    % practice.
+    % practice with prime.
     showTexture(p.PRACTICE_SCREEN, p);
     getInput('instruction', p);
     p = runTrials(practice_trials, p);
@@ -127,7 +143,6 @@ function [p] = runTrials(trials, p)
             % Target
             Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
             Screen('TextSize', p.w, p.FONT_SIZE);
-            Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with target.
             time(6) = showWord(trials(1,:), 'target', p);
             
             % Target categorization.
@@ -227,7 +242,9 @@ function [p] = exampleTrial(trials, p)
 end
 
 function [] = safeExit(p)
-    p.NATNETCLIENT.disconnect;
+    if ~p.DEBUG
+        p.NATNETCLIENT.disconnect;
+    end
 %     Priority(0);
     sca;
     ShowCursor;
@@ -248,6 +265,7 @@ function [time] = showMask(trial, mask, p) % 'mask' - which mask to show (1st / 
 end
 
 function [time] = showWord(trial, prime_or_target, p)
+    Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with word.
     DrawFormattedText(p.w, double(trial.(prime_or_target){:}), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
     [~,time] = Screen('Flip',p.w,0,1);
 end
