@@ -60,7 +60,7 @@ function [p] = experiment(trials, practice_trials, p)
     % practice w/o prime.
     showTexture(p.SPEED_PRACTICE_SCREEN, p);
     getInput('instruction', p);
-    p = runTrials(practice_trials, p);
+    p = runTrials(practice_trials, 0, p);
     
     % 2nd instructions.
     showTexture(p.SECOND_INSTRUCTIONS_SCREEN, p);
@@ -74,12 +74,12 @@ function [p] = experiment(trials, practice_trials, p)
     % practice with prime.
     showTexture(p.PRACTICE_SCREEN, p);
     getInput('instruction', p);
-    p = runTrials(practice_trials, p);
+    p = runTrials(practice_trials, 1, p);
     
     % test.
     showTexture(p.TEST_SCREEN, p);
     getInput('instruction', p);
-    p = runTrials(trials, p);
+    p = runTrials(trials, 1, p);
     
     showTexture(p.SAVING_DATA_SCREEN, p);
     
@@ -89,8 +89,12 @@ function [p] = experiment(trials, practice_trials, p)
     getInput('instruction', p);
 end
 
-function [p] = runTrials(trials, p)
+function [p] = runTrials(trials, include_prime, p)
 
+    % Assigned to prime ans on block w/o prime.
+    default_prime_ans = struct('answer',NaN, 'traj_to',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_to',NaN(p.MAX_CAP_LENGTH,1),...
+        'traj_from',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_from',NaN(p.MAX_CAP_LENGTH,1), 'categor_time',NaN);
+    
     % Set categories display side.
     if trials{1,'natural_left'}
         p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_LEFT_SCREEN;
@@ -131,9 +135,13 @@ function [p] = runTrials(trials, p)
             WaitSecs(p.MASK2_DURATION);
             
             % Prime
-            time(4) = showWord(trials(1,:), 'prime', p);
-%             waitUntil(p.PRIME_DURATION, p);
-            WaitSecs(p.PRIME_DURATION);
+            if include_prime
+                time(4) = showWord(trials(1,:), 'prime', p);
+%                 waitUntil(p.PRIME_DURATION, p);
+                WaitSecs(p.PRIME_DURATION);
+            else
+                time(4) = time(3);
+            end
             
             % Mask 3
             time(5) = showMask(trials(1,:), 'mask3', p);
@@ -149,8 +157,13 @@ function [p] = runTrials(trials, p)
             target_ans = getAns('categor', p);
             
             % Prime recognition.
-            time(8) = showRecog(trials(1,:), p);
-            prime_ans = getAns('recog', p);
+            if include_prime
+                time(8) = showRecog(trials(1,:), p);
+                prime_ans = getAns('recog', p);
+            else
+                time(8) = time(6);
+                prime_ans = default_prime_ans;
+            end
             
             % PAS
             time(9) = showPas(p);
@@ -223,8 +236,8 @@ function [p] = exampleTrial(trials, p)
         % Prime recognition.
         Screen('DrawTexture',p.w, p.RECOG_SCREEN);
         Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
-        DrawFormattedText(p.w, double('תיק'), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*3/8, [0 0 0]);
-        DrawFormattedText(p.w, double('ספל'), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*3/8, [0 0 0]);
+        DrawFormattedText(p.w, double('תיק'), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
+        DrawFormattedText(p.w, double('ספל'), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
         [~,time] = Screen('Flip', p.w, 0, 1);
         
         % Waits for key press.
@@ -282,8 +295,8 @@ function [time] = showRecog(trial, p)
     
     Screen('DrawTexture',p.w, p.RECOG_SCREEN);
     Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
-    DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*3/8, [0 0 0]);
-    DrawFormattedText(p.w, double(right_word), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*3/8, [0 0 0]);
+    DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
+    DrawFormattedText(p.w, double(right_word), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
     [~,time] = Screen('Flip', p.w, 0, 1);
 end
 
