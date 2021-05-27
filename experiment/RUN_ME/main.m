@@ -22,6 +22,7 @@ function [p] = main(p)
         % Generates trials.
         showTexture(p.LOADING_SCREEN, p);
         trials = getTrials('test', p);
+        practice_wo_prime_trials = getTrials('practice', p);
         practice_trials = getTrials('practice', p);
         
         % Start,end points calibration.

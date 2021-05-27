@@ -2,18 +2,17 @@
 % Checks lists aren't idnetical (at least 50% of trials are different).
 % If they are throws an error.
 % num_lists: number of lists to generate.
-function [] = genTrialLists(num_lists)
-    p = initPsychtoolbox();
+function [] = genTrialLists(num_lists, p)
+    p = initPsychtoolbox(p);
     p = initConstants(1, p);
     % Closes psychtoolbox.
     Priority(0); sca; ShowCursor; ListenChar(0);
 
-    global p.TRIALS_FOLDER;
     stim_col = {'prime','target','distractor'}; % column of stimuli words.
 
     % Generate lists.
     for iList = 1:num_lists
-        curr_list = newTrials(1, 0);
+        curr_list = newTrials(1, 0, p);
         
         % Check if identical to previous lists.
         iPrev_list = iList - 1;

@@ -1,13 +1,7 @@
 % Generates trials list.
-% practice: 1 for practice trials, 0 for test.
+% practice: 0 for test, 1 for practice trials, 2 for practice trials w/o prime.
 % draw_stats: 1=yes, 0=nope.
-function trials = newTrials(draw_stats, practice)
-
-    global p.BLOCK_SIZE p.NUM_BLOCKS p.NUM_TRIALS;
-    global p.CODE_OUTPUT_EXPLANATION; %path to data structure file.
-    global p.WORD_LIST p.NAT_TARGETS p.ART_TARGETS p.NAT_PRIMES p.ART_PRIMES;
-    global p.MASKS;
-    global p.FIX_DURATION p.MASK1_DURATION p.MASK2_DURATION p.PRIME_DURATION p.MASK3_DURATION p.TARGET_DURATION;
+function trials = newTrials(draw_stats, practice, p)
     
     trials = p.CODE_OUTPUT_EXPLANATION;
     
@@ -35,7 +29,7 @@ function trials = newTrials(draw_stats, practice)
     
     % sample words to use as targets (See main.docx for explanation on this calc).
     divisors = 1:height(p.WORD_LIST);
-    if practice
+    if practice > 0
         n_words_to_use = p.BLOCK_SIZE/2;
         word_repetitions = 1;
     else
@@ -77,7 +71,7 @@ function trials = newTrials(draw_stats, practice)
     end
     
     % Add same / diff condition.
-    if practice
+    if practice > 0
         trials.same(:) = randerr(1, height(trials), height(trials)/2)'; % half 1 half 0.
     else
         for word = words.word'

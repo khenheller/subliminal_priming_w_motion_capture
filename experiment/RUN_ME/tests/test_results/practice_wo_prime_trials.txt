@@ -1,0 +1,375 @@
+------------------------------- Relations -------------------------------
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('relationsTest')" style="font-weight:bold">relationsTest</a>
+Too many input arguments.
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('tests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\tests.m', 38)" style="font-weight:bold">tests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\tests.m',38,0)">line 38</a>)
+    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target),
+    'prime_target', type, p);
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('runTests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\runTests.m', 22)" style="font-weight:bold">runTests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\runTests.m',22,0)">line 22</a>)
+pass_test = tests(trials, trials_traj, type, p);
+} 
+opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\tests.m',38,0)
+matlab.internal.language.introspective.errorDocCallback('relationsTest')
+runTests
+------------------------------- Relations -------------------------------
+prime_target are from bad categories in trials: 2   4   5  12  13  14  16  17  18  19  20  22  23  25  26  27  32  34  35  38
+------------------------------- Conditions -------------------------------
+Repetitions: desired->120  Actual->10   for condition:
+    <strong>target_natural</strong>    <strong>same</strong>
+    <strong>______________</strong>    <strong>____</strong>
+
+          1            1  
+
+Repetitions: desired->120  Actual->10   for condition:
+    <strong>target_natural</strong>    <strong>same</strong>
+    <strong>______________</strong>    <strong>____</strong>
+
+          1            0  
+
+Repetitions: desired->120  Actual->10   for condition:
+    <strong>target_natural</strong>    <strong>same</strong>
+    <strong>______________</strong>    <strong>____</strong>
+
+          0            1  
+
+Repetitions: desired->120  Actual->10   for condition:
+    <strong>target_natural</strong>    <strong>same</strong>
+    <strong>______________</strong>    <strong>____</strong>
+
+          0            0  
+
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+Prime is on left side in categor question: 20 times, instead of: 240
+------------------------------- Count trials and blocks -------------------------------
+Desired num of trials: 480   Actual num: 40
+Desired num of blocks: 12   Actual num: 1
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: NaN
+              deviation_of_mean: NaN
+                            std: NaN
+                    prime_alter: 0
+    prime_target_common_letters: 1
+           prime_target_categor: 0
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 0
+               word_dont_repeat: 1
+                    block_count: 0
+                    trial_count: 0
+
+------------------------------- Relations -------------------------------
+categor_a
+
+categor_a = 
+
+  40×1 <a href="matlab:helpPopup string" style="font-weight:bold">string</a> array
+
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+
+categor_b
+
+categor_b = 
+
+  40×1 <a href="matlab:helpPopup string" style="font-weight:bold">string</a> array
+
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+p.PRACTICE_WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/practice_word_freq_list.xlsx']);
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('readtable', 'C:\Program Files\MATLAB\R2018B\toolbox\matlab\iofun\readtable.m', 216)" style="font-weight:bold">readtable</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2018B\toolbox\matlab\iofun\readtable.m',216,0)">line 216</a>)
+Unable to open file
+'D:/khen_heller/subliminal_priming_w_motion_capture/experiment/RUN_ME/./stimuli//word_lists/practice_word_freq_list.xlsx'
+as a workbook. Check that the file exists, read access is available, and the file is a valid spreadsheet
+file.
+} 
+p.PRACTICE_WORD_LIST = readtable(['./stimuli/word_lists/practice_word_freq_list.xlsx']);
+p.PRACTICE_WORD_LIST  = p.PRACTICE_WORD_LIST (:,[1,3]); % Remove word frequencies.
+save('p.mat', 'p');
+runTests
+------------------------------- Relations -------------------------------
+categor_a
+
+categor_a = 
+
+  40×1 <a href="matlab:helpPopup string" style="font-weight:bold">string</a> array
+
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+    ""
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+runTests
+------------------------------- Relations -------------------------------
+test_type
+
+test_type =
+
+    'trials_list'
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+runTests
+------------------------------- Relations -------------------------------
+if system_dependent('IsDebugMode')==1, dbstep; end
+<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\relationsTest.m',42,1)">42  </a>    if isequal(test_type, 'practice_trials_list')
+test_type
+
+test_type =
+
+    'practice_trials_list'
+
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbstep; end
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('cell/ismember', 'C:\Program Files\MATLAB\R2018B\toolbox\matlab\ops\@cell\ismember.p', 34)" style="font-weight:bold">cell/ismember</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2018B\toolbox\matlab\ops\@cell\ismember.p',34,0)">line 34</a>)
+Input A of class double and input B of class cell must be cell arrays of character vectors, unless one is a
+character vector.
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('relationsTest>getCategor', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\relationsTest.m', 43)" style="font-weight:bold">relationsTest>getCategor</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\relationsTest.m',43,0)">line 43</a>)
+        nat_words = ismember(words, p.PRACTICE_WORD_LIST.natural);
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('relationsTest', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\relationsTest.m', 24)" style="font-weight:bold">relationsTest</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\relationsTest.m',24,0)">line 24</a>)
+    categor_a = getCategor(list_a, test_type, p);
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('tests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\tests.m', 38)" style="font-weight:bold">tests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\tests.m',38,0)">line 38</a>)
+    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target),
+    'prime_target', type, p);
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('runTests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\runTests.m', 22)" style="font-weight:bold">runTests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\runTests.m',22,0)">line 22</a>)
+pass_test = tests(trials, trials_traj, type, p);
+} 
+runTests
+------------------------------- Relations -------------------------------
+p.PRACTICE_WORD_LIST.natural
+
+ans =
+
+  20×1 <a href="matlab:helpPopup cell" style="font-weight:bold">cell</a> array
+
+    {'אגמים'}
+    {'תולעת'}
+    {'רעמים'}
+    {'קליפה'}
+    {'חרקים'}
+    {'פרעוש'}
+    {'אריות'}
+    {'תותים'}
+    {'בהמות'}
+    {'גשמים'}
+    {'עננים'}
+    {'בצלים'}
+    {'סופות'}
+    {'חולות'}
+    {'גייזר'}
+    {'חולדה'}
+    {'זחלים'}
+    {'קוקוס'}
+    {'בננות'}
+    {'פילים'}
+
+words
+
+words =
+
+     []
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+runTests
+------------------------------- Relations -------------------------------
+list_a
+
+list_a =
+
+     []
+
+if system_dependent('IsDebugMode')==1, dbquit; end
+runTests
+------------------------------- Relations -------------------------------
+if system_dependent('IsDebugMode')==1, dbquit; end
+runTests
+['../stimuli/trial_lists/' word_list]
+
+ans =
+
+    '../stimuli/trial_lists/practice_wo_prime_trials.xlsx'
+
+if system_dependent('IsDebugMode')==1, dbquit all; end
+runTests
+if system_dependent('IsDebugMode')==1, dbstep; end
+if system_dependent('IsDebugMode')==1, dbquit; end
+runTests
+------------------------------- Relations -------------------------------
+if system_dependent('IsDebugMode')==1, dbquit; end
+runTests
+------------------------------- Relations -------------------------------
+if system_dependent('IsDebugMode')==1, dbquit; end
+runTests
+------------------------------- Relations -------------------------------
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+------------------------------- Conditions -------------------------------
+Repetitions: desired->120  Actual->10   for condition:
+    <strong>target_natural</strong>    <strong>same</strong>
+    <strong>______________</strong>    <strong>____</strong>
+
+          1            1  
+
+Repetitions: desired->120  Actual->10   for condition:
+    <strong>target_natural</strong>    <strong>same</strong>
+    <strong>______________</strong>    <strong>____</strong>
+
+          1            0  
+
+Repetitions: desired->120  Actual->10   for condition:
+    <strong>target_natural</strong>    <strong>same</strong>
+    <strong>______________</strong>    <strong>____</strong>
+
+          0            1  
+
+Repetitions: desired->120  Actual->10   for condition:
+    <strong>target_natural</strong>    <strong>same</strong>
+    <strong>______________</strong>    <strong>____</strong>
+
+          0            0  
+
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+Prime is on left side in categor question: 20 times, instead of: 240
+------------------------------- Count trials and blocks -------------------------------
+Desired num of trials: 480   Actual num: 40
+Desired num of blocks: 12   Actual num: 1
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: NaN
+              deviation_of_mean: NaN
+                            std: NaN
+                    prime_alter: 0
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 0
+               word_dont_repeat: 1
+                    block_count: 0
+                    trial_count: 0
+

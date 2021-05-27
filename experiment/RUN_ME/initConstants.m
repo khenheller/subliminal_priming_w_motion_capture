@@ -93,10 +93,9 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.SPEED_PRACTICE_SCREEN = getTextureFromHD('speed_practice_screen.jpg', p);
         
         % Text
-        global text
         Screen('TextFont',p.w, char(p.FONT_TYPE));
         Screen('TextStyle', p.w, 0);
-        text.Color = p.FONT_COLOR; %black
+        p.text.Color = p.FONT_COLOR; %black
     end
     
     p.NUMBER_OF_ERRORS_PROMPT = 3;
@@ -123,6 +122,8 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.NAT_PRIMES = readtable([p.STIM_FOLDER '/word_lists/nat_primes.xlsx']);
     p.WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
     p.WORD_LIST = p.WORD_LIST(:,[1,3]); % Remove word frequencies.
+    p.PRACTICE_WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/practice_word_freq_list.xlsx']);
+    p.PRACTICE_WORD_LIST  = p.PRACTICE_WORD_LIST (:,[1,3]); % Remove word frequencies.
     
     if height(p.WORD_LIST)*2 < p.BLOCK_SIZE % *2 because we have 2 comulns.
         error('Word list must be at least as big as block size to prevent words from repeting in the same block');

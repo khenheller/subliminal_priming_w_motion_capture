@@ -4,32 +4,35 @@
 %           This makes sure that one list doesn't repeat more than others.
 % type: 'practice' / 'test'
 function [trials] = getTrials(type, p)
-    if isequal(type, 'test')
-        unused_lists_path = [p.TRIALS_FOLDER '/unused_lists.mat'];
-        unused_lists = [];
+    switch type
+        case 'test'
+            unused_lists_path = [p.TRIALS_FOLDER '/unused_lists.mat'];
+            unused_lists = [];
 
-        % If file exists, loads it.
-        if isfile(unused_lists_path)
-            unused_lists = load(unused_lists_path);
-            unused_lists = unused_lists.unused_lists;
-        end
+            % If file exists, loads it.
+            if isfile(unused_lists_path)
+                unused_lists = load(unused_lists_path);
+                unused_lists = unused_lists.unused_lists;
+            end
 
-        % If used all trials, refills.
-        if isempty(unused_lists)
-            lists = cellstr(ls(p.TRIALS_FOLDER));
-            % Keep only trial lists files.
-            lists = regexp(lists, 'trials\d+.xlsx', 'match');
-            lists(cellfun(@isempty, lists)) = [];
-            unused_lists = vertcat(lists{:});
-        end
+            % If used all trials, refills.
+            if isempty(unused_lists)
+                lists = cellstr(ls(p.TRIALS_FOLDER));
+                % Keep only trial lists files.
+                lists = regexp(lists, 'trials\d+.xlsx', 'match');
+                lists(cellfun(@isempty, lists)) = [];
+                unused_lists = vertcat(lists{:});
+            end
 
-        % Samples a list randomly.
-        [list, list_index] = datasample(unused_lists,1);
-        
-        unused_lists(list_index) = [];
-        save(unused_lists_path, 'unused_lists');
-    else
-        list = {'practice_trials.xlsx'};
+            % Samples a list randomly.
+            [list, list_index] = datasample(unused_lists,1);
+
+            unused_lists(list_index) = [];
+            save(unused_lists_path, 'unused_lists');
+        case 'practice_wo_prime'
+            list = {'practice_wo_prime_trials.xlsx'};
+        case 'practice'
+            list = {'practice_trials.xlsx'};
     end
     
     trials = readtable([p.TRIALS_FOLDER '/' list{:}]);

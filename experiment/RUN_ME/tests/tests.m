@@ -11,7 +11,7 @@ function [pass_test] = tests (trials, trials_traj, type, p)
     
     % Remove practice trials, unless testing practice trials.
     if ~strcmp(type, 'practice_trials_list')
-        trials(trials.practice==1, :) = [];
+        trials(trials.practice > 0, :) = [];
     end
     
     % Test event durations.
@@ -35,8 +35,8 @@ function [pass_test] = tests (trials, trials_traj, type, p)
     
     % Test prime-target-distractor relations (don't share letters, are from same/diff categor).
     disp('------------------------------- Relations -------------------------------');
-    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target), 'prime_target', p);
-    pass_relations.prime_dist = relationsTest(cell2mat(trials.prime), cell2mat(trials.distractor), 'prime_dist', p);
+    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target), 'prime_target', type, p);
+    pass_relations.prime_dist = relationsTest(cell2mat(trials.prime), cell2mat(trials.distractor), 'prime_dist', type, p);
     pass_test.prime_target_common_letters = pass_relations.prime_target.common_letters;
     pass_test.prime_target_categor = pass_relations.prime_target.categor;
     pass_test.prime_dist_common_letters = pass_relations.prime_dist.common_letters;

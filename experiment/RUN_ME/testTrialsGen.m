@@ -1,6 +1,6 @@
 % Generates many trial sets to check all is good.
 % 1. checks if any word apears more than others.
-function [freq] = testTrialsGen(nSets)
+function [freq] = testTrialsGen(nSets, p)
 
     warning('off','MATLAB:table:PreallocateCharWarning');
     
@@ -14,7 +14,6 @@ function [freq] = testTrialsGen(nSets)
     ShowCursor;
     ListenChar(0);
 
-    global p.FULLSCREEN p.BOX_RESOLUTION TIME_SLOW p.SUB_NUM p.WORD_LIST;
     TIME_SLOW = 1; % default = 1; time slower for debugging
     p.SUB_NUM = 99999;
     

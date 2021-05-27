@@ -18,10 +18,8 @@ p.DEBUG = 0;
 p = main(p);
 save('p.mat', 'p');
 %% -------------------------- Generate trial lists ------------------------
-% global p.FULLSCREEN
-% p.FULLSCREEN = true; % default = true
-% num_trial_lists = 10;
-% genTrialLists(num_trial_lists);
+num_trial_lists = 1;
+genTrialLists(num_trial_lists, p);
 %% -------------------------- Generate Masks ------------------------------
 % @@@@@@@@ Make new masks if sitting distance changes @@@@@@@@@@@@@@
 % n_masks = 3;
