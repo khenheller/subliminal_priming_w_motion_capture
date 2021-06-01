@@ -22,7 +22,7 @@ function [p] = main(p)
         % Generates trials.
         showTexture(p.LOADING_SCREEN, p);
         trials = getTrials('test', p);
-        practice_wo_prime_trials = getTrials('practice', p);
+        practice_wo_prime_trials = getTrials('practice_wo_prime', p);
         practice_trials = getTrials('practice', p);
         
         % Start,end points calibration.
@@ -36,7 +36,7 @@ function [p] = main(p)
         % Experiment
         showTexture(p.WELCOME_SCREEN, p);
         getInput('instruction', p);
-        p = experiment(trials, practice_trials, p);
+        p = experiment(trials, practice_trials, practice_wo_prime_trials, p);
         
         if ~p.DEBUG
             p.NATNETCLIENT.disconnect;
@@ -53,7 +53,7 @@ function [] = cleanExit( )
     error('Exit by user!');
 end
 
-function [p] = experiment(trials, practice_trials, p)
+function [p] = experiment(trials, practice_trials, practice_wo_prime_trials, p)
     % 1st instructions.
     showTexture(p.FIRST_INSTRUCTIONS_SCREEN, p);
     getInput('instruction', p);
@@ -61,7 +61,7 @@ function [p] = experiment(trials, practice_trials, p)
     % practice w/o prime.
     showTexture(p.SPEED_PRACTICE_SCREEN, p);
     getInput('instruction', p);
-    p = runTrials(practice_trials, 0, p);
+    p = runTrials(practice_wo_prime_trials, 0, p);
     
     % 2nd instructions.
     showTexture(p.SECOND_INSTRUCTIONS_SCREEN, p);
@@ -167,8 +167,14 @@ function [p] = runTrials(trials, include_prime, p)
             end
             
             % PAS
-            time(9) = showPas(p);
-            [pas, pas_time] = getInput('pas', p);
+            if include_prime
+                time(9) = showPas(p);
+                [pas, pas_time] = getInput('pas', p);
+            else
+                time(9) = time(8);
+                pas = 1;
+                pas_time = time(9);
+            end
             
             % Assigns collected data to trials.
             trials = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_time);

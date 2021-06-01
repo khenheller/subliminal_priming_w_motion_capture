@@ -3,7 +3,7 @@ function [p] = initConstants(psychtoolbox_active, p)
 
     % Setup
     p.SITTING_DISTANCE = 60; % in cm.
-    p.SCREEN_DIST = 0.40; %from start point, in meter.
+    p.SCREEN_DIST = 0.35; %from start point, in meter.
     p.VIEW_ANGLE_X = 2.5; % in deg.
     p.VIEW_ANGLE_Y = 1;
     p.FINGER_SIZE = 0.03; %in meter.

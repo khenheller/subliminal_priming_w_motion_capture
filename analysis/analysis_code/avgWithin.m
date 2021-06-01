@@ -8,8 +8,8 @@ function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data_proc.mat']);  data_table = data_table.data_table;
 
     % remove practice.
-    traj_table(traj_table{:,'practice'} == 1, :) = [];
-    data_table(data_table{:,'practice'} == 1, :) = [];
+    traj_table(traj_table{:,'practice'} >= 1, :) = [];
+    data_table(data_table{:,'practice'} >= 1, :) = [];
 
     traj = traj_table{:, traj_name};
     % Reshape to convenient format.

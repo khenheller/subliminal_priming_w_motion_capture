@@ -6,8 +6,9 @@ load('../../experiment/RUN_ME/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-p.SUBS = [1 2 3 4 5 6 7 8 9 10]; % to analyze.
+p.SUBS = [11 12]; % to analyze.
 p.N_SUBS = length(p.SUBS);
+p.MAX_SUB = max(p.SUBS);
 pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 
@@ -42,6 +43,10 @@ traj_types = [traj_names{:,:}];
 traj_types = reshape(traj_types, [], length(traj_names));
 traj_types = traj_types(1,:);
 traj_types = replace(traj_types, '_x', '');
+
+% Reach dist: Subs 1-10 = 40cm, Subs 10-20 = 35cm.
+p.SCREEN_DIST = 0.35;
+p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
 %% Preprocessing & Normalization
 % Trials too short to filter.
 too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
@@ -54,8 +59,8 @@ for iSub = p.SUBS
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data.mat'], 'data_table');
     
     % remove practice.
-    traj_table(traj_table{:,'practice'} == 1, :) = [];
-    data_table(data_table{:,'practice'} == 1, :) = [];
+    traj_table(traj_table{:,'practice'} > 0, :) = [];
+    data_table(data_table{:,'practice'} > 0, :) = [];
     
     % Preprocessing and normalization.
     for iTraj = 1:length(traj_names)

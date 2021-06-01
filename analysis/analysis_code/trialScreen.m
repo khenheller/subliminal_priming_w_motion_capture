@@ -17,7 +17,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
         'VariableTypes', repmat({'double'}, length(screen_reasons), 1),...
         'VariableNames', screen_reasons);
     % Bad trials' indices. row = subject, column = reason, each slot contains nums of all bad trials.
-    bad_trials_i = table('Size', [p.N_SUBS length(screen_reasons)],...
+    bad_trials_i = table('Size', [p.MAX_SUB length(screen_reasons)],...
         'VariableTypes', repmat({'cell'}, length(screen_reasons), 1),...
         'VariableNames', screen_reasons);
     n_bad_trials = bad_trials_table; % amount of bad trials, one row for each sub.
@@ -31,7 +31,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
         
         traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj.mat']);  traj_table = traj_table.traj_table;
         % remove practice.
-        traj_table(traj_table{:,'practice'} == 1, :) = [];
+        traj_table(traj_table{:,'practice'} >= 1, :) = [];
         traj = traj_table{:, traj_name};
 
         bad_trials{iSub} = bad_trials_table;
