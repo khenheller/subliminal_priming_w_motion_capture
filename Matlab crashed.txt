@@ -96,24 +96,3 @@ INFO: If you called Screen('Flip', window); without the 'when' argument, this co
 INFO: of timing behaviour than a hard reliable measurement. Large numbers may indicate problems and should at least
 INFO: deserve your closer attention. Cfe. 'help SyncTrouble', the FAQ section at www.psychtoolbox.org and the
 INFO: examples in the PDF presentation in PsychDocumentation/Psychtoolbox3-Slides.pdf for more info and timing tips.
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Sub 1013 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-PTB-INFO: There are still 83 textures, offscreen windows or proxy windows open. Screen('CloseAll') will auto-close them.
-PTB-INFO: This may be fine for studies where you only use a few textures or windows, but a large number of open
-PTB-INFO: textures or offscreen windows can be an indication that you forgot to dispose no longer needed items
-PTB-INFO: via a proper call to Screen('Close', [windowOrTextureIndex]); , e.g., at the end of each trial. These
-PTB-INFO: stale objects linger around and can consume significant memory ressources, causing degraded performance,
-PTB-INFO: timing trouble (if the system has to resort to disk paging) and ultimately out of memory conditions or
-PTB-INFO: crashes. Please check your code. (Screen('Close') is a quick way to release all textures and offscreen windows)
-
-
-
-INFO: PTB's Screen('Flip', 10) command seems to have missed the requested stimulus presentation deadline
-INFO: a total of 6431 times out of a total of 174520 flips during this session.
-
-INFO: This number is fairly accurate (and indicative of real timing problems in your own code or your system)
-INFO: if you provided requested stimulus onset times with the 'when' argument of Screen('Flip', window [, when]);
-INFO: If you called Screen('Flip', window); without the 'when' argument, this count is more of a ''mild'' indicator
-INFO: of timing behaviour than a hard reliable measurement. Large numbers may indicate problems and should at least
-INFO: deserve your closer attention. Cfe. 'help SyncTrouble', the FAQ section at www.psychtoolbox.org and the
-INFO: examples in the PDF presentation in PsychDocumentation/Psychtoolbox3-Slides.pdf for more info and timing tips.
