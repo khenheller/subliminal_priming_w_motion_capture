@@ -10,8 +10,9 @@
 % Input: events - cell array of chars.
 %       timestamps - table, each column is an event, each row is a timestamp.
 %       desired_durations - vector of doubles.
-
-function pass_test = timingsTest(events, timestamps, desired_durations)
+% Output: dev_table - Contains all the trials with deviating stimuli duration.
+%                   3 col:Trial number, deviation and event type.
+function [pass_test, dev_table] = timingsTest(events, timestamps, desired_durations)
 
     max_dev = 2; % max deviation in ms.
     desired_std = 2;
@@ -41,9 +42,9 @@ function pass_test = timingsTest(events, timestamps, desired_durations)
     disp('Number of trials devaiting from desired duration:');
     disp(num2str(length(bad_deviations)));
     disp('Deviating trials and their deviation (in ms):');
-    deviations_table = table(bad_deviations_trial, bad_deviations, events(bad_deviations_index),...
+    dev_table = table(bad_deviations_trial, bad_deviations, events(bad_deviations_index),...
         'VariableNames',{'TrialNum','Deviation','Event'});
-    disp(deviations_table);
+    disp(dev_table);
     
     % Print deviations of mean from desired duration.
     deviation_of_mean_from_desired = durations_mean - desired_durations;

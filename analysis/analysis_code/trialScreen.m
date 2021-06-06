@@ -11,7 +11,7 @@
 %               Table has list of disqualified trials for each screen reason.
 %               bad_trials is logical indexing, this is numeric.
 function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
-    screen_reasons = {'missing_data','short_traj','missed_target','any'};
+    screen_reasons = {'missing_data','short_traj','missed_target','bad_stim_dur','any'};
     % Bad trials' numbers. row = bad trial, column = reason.
     bad_trials_table = table('Size', [p.NUM_TRIALS length(screen_reasons)],...
         'VariableTypes', repmat({'double'}, length(screen_reasons), 1),...
@@ -28,7 +28,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
 
     for iSub = p.SUBS
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
-        
+        dev_table = load([p.TESTS_FOLDER '/sub' num2str(iSub) '.mat']);  dev_table = dev_table.test_res.dev_table;
         traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj.mat']);  traj_table = traj_table.traj_table;
         % remove practice.
         traj_table(traj_table{:,'practice'} >= 1, :) = [];
@@ -51,6 +51,8 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
             if contains(traj_name{1}, '_to')
                 success(ismember(screen_reasons, 'missed_target')) = testMissTarget(single_traj, p);
             end
+            % Check if stim display duration was bad.
+            success(ismember(screen_reasons, 'bad_stum_dur')) = testStimDur(dev_table, iTrial);
             bad_trials{iSub}{iTrial,:} = ~success * iTrial;
         end
 

@@ -1,6 +1,6 @@
 % Receives single sub's data and runs various tests on it.
 % type - 'data', 'trials_list', 'practice_trials_list', each runs different set of tests.
-function [pass_test] = tests (trials, trials_traj, type, p)
+function [pass_test, test_res] = tests (trials, trials_traj, type, p)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
     
     % Initialize parameters.
@@ -20,7 +20,7 @@ function [pass_test] = tests (trials, trials_traj, type, p)
         events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
         timestamps = trials(:,events);
         desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
-        pass_timings = timingsTest(events, timestamps, desired_durations);
+        [pass_timings , test_res.dev_table] = timingsTest(events, timestamps, desired_durations);
         pass_test.deviations = pass_timings.deviations;
         pass_test.deviation_of_mean = pass_timings.deviation_of_mean;
         pass_test.std = pass_timings.std;

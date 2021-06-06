@@ -28,6 +28,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.PROC_DATA_FOLDER = [curr_path '/../../analysis/processed_data/']; % preprocessed data folder.
     p.TRIALS_FOLDER = [p.STIM_FOLDER '/trial_lists/'];
     p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
+    p.TESTS_FOLDER = [curr_path '/./tests/test_results/'];
     
     if psychtoolbox_active
         p.REACT_TIME = 0.325; % Maximal allowed time to movement onset (in sec).
