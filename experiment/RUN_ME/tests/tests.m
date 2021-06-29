@@ -12,6 +12,7 @@ function [pass_test, test_res] = tests (trials, trials_traj, type, p)
     % Remove practice trials, unless testing practice trials.
     if ~strcmp(type, 'practice_trials_list')
         trials(trials.practice > 0, :) = [];
+        trials_traj(trials_traj.practice > 0, :) = [];
     end
     
     % Test event durations.
@@ -29,8 +30,8 @@ function [pass_test, test_res] = tests (trials, trials_traj, type, p)
     % Test output has values for all fields.
     if strcmp(type, 'data')
         disp('------------------------------- Has Values -------------------------------');
-        pass_test.data_values = hasValuesTest(trials, 'iTrial');
-        pass_test.traj_values = hasValuesTest(trials_traj, 'iTrial');
+        [pass_test.data_values ~] = hasValuesTest(trials, 'iTrial');
+        [pass_test.traj_values test_res.miss_data] = hasValuesTest(trials_traj, 'iTrial');
     end
     
     % Test prime-target-distractor relations (don't share letters, are from same/diff categor).

@@ -6,11 +6,11 @@ load('../../experiment/RUN_ME/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-p.SUBS = [1 2 3 4 5 6 7 8 9 10]; % to analyze.
+p.SUBS = [11 12 13 14]; % to analyze.
 p.N_SUBS = length(p.SUBS);
 p.MAX_SUB = max(p.SUBS);
 pas_rate = 1; % to analyze.
-picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
+picked_trajs = [1 2 3 4]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 
 % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
 p.PROC_DATA_FOLDER = '../processed_data/';
@@ -46,12 +46,20 @@ traj_types = traj_types(1,:);
 traj_types = replace(traj_types, '_x', '');
 
 % Reach dist: Subs 1-10 = 40cm, Subs 10-20 = 35cm.
-p.SCREEN_DIST = 0.35;
-p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
 % Recog cap length: Subs 1-10 = 5sec, Subs 10-20 = 7sec.
 % Categor cap length: Subs 1-10 = 1.5sec, Subs 10-20 = 0.75sec.
-p.RECOG_CAP_LENGTH_SEC = 5;
-p.CATEGOR_CAP_LENGTH_SEC = 1.5;
+if all(p.SUBS <= 10)
+    p.SCREEN_DIST = 0.4;
+    p.RECOG_CAP_LENGTH_SEC = 5;
+    p.CATEGOR_CAP_LENGTH_SEC = 1.5;
+elseif all(p.SUBS > 10)
+    p.SCREEN_DIST = 0.35;
+    p.RECOG_CAP_LENGTH_SEC = 7;
+    p.CATEGOR_CAP_LENGTH_SEC = 0.75;
+else
+    error('Please analyze subs 1-10 seperatly from 11-20');
+end
+p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
 p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
 p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
 p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
@@ -87,17 +95,20 @@ for iSub = p.SUBS
 end
 disp('Following trials where too short to filter:');
 disp(too_short_to_filter);
-save([p.PROC_DATA_FOLDER '/too_short_to_filter.mat'], 'too_short_to_filter');
+save([p.PROC_DATA_FOLDER '/too_short_to_filter_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat'], 'too_short_to_filter');
+disp('Preprocessing done.');
 %% Trial Screening
 for iTraj = 1:length(traj_names)
     [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_names{iTraj}, p);
     save([p.PROC_DATA_FOLDER '/bad_trials_' traj_names{iTraj}{1} '.mat'], 'bad_trials', 'n_bad_trials', 'bad_trials_i');
 end
+disp('Trial screening done.');
 %% Subject screening
 for iTraj = 1:length(traj_names')
     bad_subs = subScreening(traj_names{iTraj}, p);
     save([p.PROC_DATA_FOLDER '/bad_subs_' traj_names{iTraj}{1} '.mat'], 'bad_subs');
 end
+disp('Sub screening done.');
 %% Maximum absolute deviation
 for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
@@ -107,6 +118,7 @@ for iTraj = 1:length(traj_names)
         save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) 'data_proc.mat'], 'data_table');
     end
 end
+disp('MAD calc done.');
 %% Sorting and averaging (within subject)
 for iTraj = 1:length(traj_names)
     bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' traj_names{iTraj}{1} '.mat'], 'bad_trials');  bad_trials = bad_trials.bad_trials;
@@ -116,6 +128,7 @@ for iTraj = 1:length(traj_names)
         save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_names{iTraj}{1} '.mat'], 'avg');
     end
 end
+disp('Sorting and avging within sub done.');
 %% Reach Area
 % Area between left and right traj for same/diff condition.
 for iTraj = 1:length(traj_names)
@@ -132,16 +145,19 @@ for iTraj = 1:length(traj_names)
     end
     save([p.PROC_DATA_FOLDER strrep(traj_names{iTraj}{1}, '_x','') '_reach_area.mat'], 'reach_area');
 end
+disp('Reach area calc done.');
 %% Sorting and averaging (between subjects)
 for iTraj = 1:length(traj_names)
     subs_avg = avgBetween(traj_names{iTraj}, p);
     save([p.PROC_DATA_FOLDER '/subs_avg_' traj_names{iTraj}{1} '.mat'], 'subs_avg');
 end
+disp('Sorting and avging between sub done.');
 %% FDA
 for iTraj = 1:length(traj_names)
     [p_val, corr_p, ~, stats] = runFDA(traj_names{iTraj}, p);
     save([p.PROC_DATA_FOLDER '/fda_' traj_names{iTraj}{1} '.mat'], 'p_val','corr_p','stats');
 end
+disp('FDA calc done.');
 %% Plotting params
 clc;
 close all;
@@ -719,6 +735,9 @@ for iTraj = 1:length(traj_names)
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'same - diff');
 end
+%% GUI, compares proc to real traj.
+close all;
+miss_data(p, traj_names); clc;
 %% Velocity
 %{
         % calc velocity.-----------------------------------------------

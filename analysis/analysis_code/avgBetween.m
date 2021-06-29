@@ -42,7 +42,8 @@ function [subs_avg] = avgBetween(traj_name, p)
     
     reach_area = load([p.PROC_DATA_FOLDER strrep(traj_name{1}, '_x','') '_reach_area.mat']);  reach_area = reach_area.reach_area;
     bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' traj_name{1} '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
-    subs = (1:p.MAX_SUB) .* ~bad_subs{:,'any'}'; % remove bad subs.
+    subs = p.SUBS .* ~bad_subs{p.SUBS,'any'}'; % remove bad subs.
+    subs(subs==0) = [];
     
     for iSub = subs
         % load avg within subject.

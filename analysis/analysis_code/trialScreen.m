@@ -24,7 +24,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
     n_bad_trials(p.N_SUBS+1 : end, :) = [];
     bad_trials = cell(p.N_SUBS, 1); % table for each sub, each row will be a trial marked as good/bad.
     
-    too_short = load([p.PROC_DATA_FOLDER '/too_short_to_filter.mat'], 'too_short_to_filter');  too_short = too_short.too_short_to_filter;
+    too_short = load([p.PROC_DATA_FOLDER '/too_short_to_filter_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat'], 'too_short_to_filter');  too_short = too_short.too_short_to_filter;
 
     for iSub = p.SUBS
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
