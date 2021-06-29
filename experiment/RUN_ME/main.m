@@ -96,13 +96,6 @@ function [p] = runTrials(trials, include_prime, p)
     default_prime_ans = struct('answer',NaN, 'traj_to',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_to',NaN(p.MAX_CAP_LENGTH,1),...
         'traj_from',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_from',NaN(p.MAX_CAP_LENGTH,1), 'categor_time',NaN);
     
-    % Set categories display side.
-    if trials{1,'natural_left'}
-        p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_LEFT_SCREEN;
-    else
-        p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_RIGHT_SCREEN;
-    end
-    
     try        
         % Iterates over trials.
         while ~isempty(trials)
@@ -116,6 +109,11 @@ function [p] = runTrials(trials, include_prime, p)
                 end               
             end
             
+            % Make masks slides.
+            mask1 = getTextureFromHD(p.MASKS(trials.mask1(1)), p);
+            mask2 = getTextureFromHD(p.MASKS(trials.mask2(1)), p);
+            mask3 = getTextureFromHD(p.MASKS(trials.mask3(1)), p);
+            
             % Set prime font now to save run time.
             Screen('TextFont',p.w, p.HAND_FONT_TYPE);
             Screen('TextSize', p.w, p.HAND_FONT_SIZE);
@@ -126,12 +124,12 @@ function [p] = runTrials(trials, include_prime, p)
             WaitSecs(p.FIX_DURATION);
             
             % Mask 1
-            time(2) = showMask(trials(1,:), 'mask1', p);
+            time(2) = showMask(mask1, p);
 %             waitUntil(p.MASK1_DURATION, p);
             WaitSecs(p.MASK1_DURATION);
             
             % Mask 2
-            time(3) = showMask(trials(1,:), 'mask2', p);
+            time(3) = showMask(mask2, p);
 %             waitUntil(p.MASK2_DURATION, p);
             WaitSecs(p.MASK2_DURATION);
             
@@ -145,7 +143,7 @@ function [p] = runTrials(trials, include_prime, p)
             end
             
             % Mask 3
-            time(5) = showMask(trials(1,:), 'mask3', p);
+            time(5) = showMask(mask3, p);
 %             waitUntil(p.MASK3_DURATION, p);
             WaitSecs(p.MASK3_DURATION);
             
@@ -182,6 +180,9 @@ function [p] = runTrials(trials, include_prime, p)
             % Save trial to file and removes it from list.
             saveToFile(trials(1,:), p);
             trials(1,:) = [];
+            
+            % Close mask textures.
+            Screen('close',[mask1 mask2 mask3]);
         end
     catch e % if error occured, saves data before exit.
         fixOutput(p);
@@ -190,40 +191,39 @@ function [p] = runTrials(trials, include_prime, p)
 end
 
 function [p] = exampleTrial(trials, p)
-
-    % Set categories display side.
-    if trials{1,'natural_left'}
-        p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_LEFT_SCREEN;
-    else
-        p.CATEGOR_SCREEN = p.CATEGOR_NATURAL_RIGHT_SCREEN;
-    end
     
     try
         % Set prime font now to save run time.
         Screen('TextFont',p.w, p.HAND_FONT_TYPE);
         Screen('TextSize', p.w, p.HAND_FONT_SIZE);
+        
+        % Make masks slides.
+        mask1 = getTextureFromHD(p.MASKS(trials.mask1(1)), p);
+        mask2 = getTextureFromHD(p.MASKS(trials.mask2(1)), p);
+        mask3 = getTextureFromHD(p.MASKS(trials.mask3(1)), p);
 
         % Fixation
         time(1) = showFixation(p);
         waitUntil(p.FIX_DURATION, p);
 
         % Mask 1
-        Screen('DrawTexture',p.w, p.MASKS(1));
+        Screen('DrawTexture',p.w, mask1);
         [~,time] = Screen('Flip', p.w);
         waitUntil(p.MASK1_DURATION, p);
 
         % Mask 2
-        Screen('DrawTexture',p.w, p.MASKS(2));
+        Screen('DrawTexture',p.w, mask2);
         [~,time] = Screen('Flip', p.w);
         waitUntil(p.MASK2_DURATION, p);
 
         % Prime
+        Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with word.
         DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
         [~,time] = Screen('Flip',p.w,0,1);
         waitUntil(p.PRIME_DURATION, p);
 
         % Mask 3
-        Screen('DrawTexture',p.w, p.MASKS(3));
+        Screen('DrawTexture',p.w, mask3);
         [~,time] = Screen('Flip', p.w);
         waitUntil(p.MASK3_DURATION, p);
 
@@ -255,6 +255,9 @@ function [p] = exampleTrial(trials, p)
         % PAS
         time(9) = showPas(p);
         [pas, pas_time] = getInput('pas', p);
+        
+        % Close mask textures.
+        Screen('close',[mask1 mask2 mask3]);
     catch e % if error occured, saves data before exit.
         fixOutput(p);
         rethrow(e);
@@ -273,14 +276,16 @@ end
 
 function [time] = showFixation(p)
     % waits until finger in start point.
-    finInStartPoint(p);
+    if ~p.DEBUG
+        finInStartPoint(p);
+    end
     
     Screen('DrawTexture',p.w, p.FIXATION_SCREEN);
     [~,time] = Screen('Flip', p.w);
 end
 
-function [time] = showMask(trial, mask, p) % 'mask' - which mask to show (1st / 2nd / 3rd).
-    Screen('DrawTexture',p.w, trial.(mask));
+function [time] = showMask(mask, p) % 'mask' - which mask to show (1st / 2nd / 3rd).
+    Screen('DrawTexture',p.w, mask);
     [~,time] = Screen('Flip', p.w);
 end
 

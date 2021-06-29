@@ -35,6 +35,11 @@ function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
             if to_screen
                 if traj(frame_i,3)-p.FINGER_SIZE < 0
                     Screen('Flip',p.w,0,0); % Erase stimuli and sync to screen flips.
+                    remove the line above, it causes 20ms delay between to screen recording and from screen recording @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    remove the line above @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    remove the line above @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    remove the line above @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                    remove the line above @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                     return;
                 end
             % RETURNING FROM SCREEN: identify start point touch.
@@ -66,6 +71,10 @@ function [traj, timecourse, categor_time] = getTraj(traj_type, ques_type, p)
     message_screen = to_screen * ~late_move_onset * p.MISS_RESPONSE_WINDOW_SCREEN +...
         ~to_screen * p.RETURN_TO_START_POINT_SCREEN + ...
         to_screen * late_move_onset * p.LATE_MOVE_ONSET_SCREEN;
+    fix slides here, they dont represesnt the slide number no more@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    fix slides here@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    fix slides here@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    fix slides here@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     Screen('DrawTexture',p.w, message_screen);
     Screen('Flip',p.w);
     WaitSecs(1.5);

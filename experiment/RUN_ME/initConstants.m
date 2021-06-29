@@ -61,37 +61,37 @@ function [p] = initConstants(psychtoolbox_active, p)
         % Experiment slides.
         % "natural" category is on the left for odd sub numbers.
         if rem(p.SUB_NUM, 2); side = 'left'; else; side = 'right'; end
-        p.WELCOME_SCREEN = getTextureFromHD('welcome_screen.jpg', p);
-        p.LOADING_SCREEN = getTextureFromHD('loading_screen.jpg', p);
-        p.FIRST_INSTRUCTIONS_SCREEN = getTextureFromHD('first_instructions_screen.jpg', p);
-        p.PRACTICE_SCREEN = getTextureFromHD('practice_screen.jpg', p);
-        p.TEST_SCREEN = getTextureFromHD('test_screen.jpg', p);
-        p.END_SCREEN = getTextureFromHD('end_screen.jpg', p);
-        p.BLOCK_END_SCREEN = getTextureFromHD('block_end_screen.jpg', p);
-        p.CATEGOR_NATURAL_LEFT_SCREEN = getTextureFromHD('categor_natural_left_screen.jpg', p);
-        p.CATEGOR_NATURAL_RIGHT_SCREEN = getTextureFromHD('categor_natural_right_screen.jpg', p);
-        p.RECOG_SCREEN = getTextureFromHD('recog_screen.jpg', p);
-        p.PAS_SCREEN = getTextureFromHD('pas_screen.jpg', p);
-        p.FIXATION_SCREEN = getTextureFromHD(['fixation_natural_' side '_screen.jpg'], p);
-        p.MISS_RESPONSE_WINDOW_SCREEN = getTextureFromHD('miss_response_window_screen.jpg', p);
-        p.RETURN_TO_START_POINT_SCREEN = getTextureFromHD('return_start_point_screen.jpg', p);
-        p.START_POINT_SCREEN = getTextureFromHD('start_point_screen.jpg', p);
-        p.RIGHT_END_POINT_SCREEN = getTextureFromHD('right_end_point_screen.jpg', p);
-        p.LEFT_END_POINT_SCREEN = getTextureFromHD('left_end_point_screen.jpg', p);
-        p.BLACK_SCREEN = getTextureFromHD('black_screen.jpg', p);
-        p.WHITE_SCREEN = getTextureFromHD('white_screen.jpg', p);
+        % Initialized before experiment starts.
+        p.CATEGOR_SCREEN                = getTextureFromHD(['categor_natural_' side '_screen.jpg'], p);
+        p.RECOG_SCREEN                  = getTextureFromHD('recog_screen.jpg', p);
+        p.PAS_SCREEN                    = getTextureFromHD('pas_screen.jpg', p);
+        p.FIXATION_SCREEN               = getTextureFromHD(['fixation_natural_' side '_screen.jpg'], p);
+        p.RETURN_TO_START_POINT_SCREEN  = getTextureFromHD('return_start_point_screen.jpg', p);
+        p.LATE_MOVE_ONSET_SCREEN        = getTextureFromHD('late_move_onset_screen.jpg', p);
+        p.MISS_RESPONSE_WINDOW_SCREEN   = getTextureFromHD('miss_response_window_screen.jpg', p);
+        % Initialized during experiment.
+        p.WELCOME_SCREEN = 'welcome_screen.jpg';
+        p.LOADING_SCREEN = 'loading_screen.jpg';
+        p.FIRST_INSTRUCTIONS_SCREEN = 'first_instructions_screen.jpg';
+        p.PRACTICE_SCREEN = 'practice_screen.jpg';
+        p.TEST_SCREEN = 'test_screen.jpg';
+        p.END_SCREEN = 'end_screen.jpg';
+        p.BLOCK_END_SCREEN = 'block_end_screen.jpg';
+        p.START_POINT_SCREEN = 'start_point_screen.jpg';
+        p.RIGHT_END_POINT_SCREEN = 'right_end_point_screen.jpg';
+        p.LEFT_END_POINT_SCREEN = 'left_end_point_screen.jpg';
+        p.BLACK_SCREEN = 'black_screen.jpg';
+        p.WHITE_SCREEN = 'white_screen.jpg';
         p.NUM_MASKS = 60;
         for mask_i = 1:p.NUM_MASKS
-            p.MASKS(mask_i) = getTextureFromHD(['/masks/mask' num2str(mask_i) '_natural_' side '.jpg'], p);
+            p.MASKS(mask_i) = string(['/masks/mask' num2str(mask_i) '_natural_' side '.jpg']);
         end
-        p.MIDDLE_POINT_SCREEN = getTextureFromHD('middle_point_screen.jpg', p);
-        p.SAVING_DATA_SCREEN = getTextureFromHD('saving_data_screen.jpg', p);
-        p.ALIGNMENT_SCREEN = getTextureFromHD('alignment_screen.jpg', p);
-        p.TRIAL_EXAMPLE_SCREEN = getTextureFromHD('trial_example_screen.jpg', p);
-        p.LATE_MOVE_ONSET_SCREEN = getTextureFromHD('late_move_onset_screen.jpg', p);
-        p.MISS_RESPONSE_WINDOW_SCREEN = getTextureFromHD('miss_response_window_screen.jpg', p);
-        p.SECOND_INSTRUCTIONS_SCREEN = getTextureFromHD('second_instructions_screen.jpg', p);
-        p.SPEED_PRACTICE_SCREEN = getTextureFromHD('speed_practice_screen.jpg', p);
+        p.MIDDLE_POINT_SCREEN = 'middle_point_screen.jpg';
+        p.SAVING_DATA_SCREEN = 'saving_data_screen.jpg';
+        p.ALIGNMENT_SCREEN = 'alignment_screen.jpg';
+        p.TRIAL_EXAMPLE_SCREEN = 'trial_example_screen.jpg';
+        p.SECOND_INSTRUCTIONS_SCREEN = 'second_instructions_screen.jpg';
+        p.SPEED_PRACTICE_SCREEN = 'speed_practice_screen.jpg';
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));

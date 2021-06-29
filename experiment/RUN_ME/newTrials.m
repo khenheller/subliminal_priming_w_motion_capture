@@ -64,7 +64,7 @@ function trials = newTrials(draw_stats, practice, p)
         trials.target_natural(iTrial) = iWord <= height(words)/2; % first half are natural.
         
         % Adds Masks.
-        masks = datasample(p.MASKS, 3, 'Replace',false);
+        masks = datasample(1:p.NUM_MASKS, 3, 'Replace',false);
         trials.mask1{iTrial} = masks(1);
         trials.mask2{iTrial} = masks(2);
         trials.mask3{iTrial} = masks(3);
