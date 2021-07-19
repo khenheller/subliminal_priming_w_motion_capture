@@ -3,8 +3,8 @@
 %           When unused_lists empties, refills it.
 %           This makes sure that one list doesn't repeat more than others.
 % type: 'practice' / 'test'
-function [trials] = getTrials(type, p)
-    switch type
+function [trials] = getTrials(trials_type, p)
+    switch trials_type
         case 'test'
             unused_lists_path = [p.TRIALS_FOLDER '/unused_lists.mat'];
             unused_lists = [];

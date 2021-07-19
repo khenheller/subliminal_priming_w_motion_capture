@@ -1,7 +1,7 @@
 % Gets question type ('categor',recog') and a trial,
 % and checks if response was correct.
-function [trial] = checkAns(trial, type)
-    switch type
+function [trial] = checkAns(trial, ans_type)
+    switch ans_type
         case 'categor'
             trial.target_ans_nat = trial.target_ans_left(:) == trial.natural_left; % sub answered 'natural'
             trial.target_correct = trial.target_ans_nat == trial.target_natural; % target was 'natural'
