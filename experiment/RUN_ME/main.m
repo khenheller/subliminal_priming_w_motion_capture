@@ -1,3 +1,4 @@
+%%
 function [p] = main(p)
     % Subliminal priming experiment by Liad and Khen.
     % Coded by Khen (khenheller@mail.tau.ac.il)
@@ -52,7 +53,7 @@ end
 function [] = cleanExit( )
     error('Exit by user!');
 end
-
+%%
 function [p] = experiment(trials, practice_trials, practice_wo_prime_trials, p)
     % 1st instructions.
     showTexture(p.FIRST_INSTRUCTIONS_SCREEN, p);
@@ -89,7 +90,7 @@ function [p] = experiment(trials, practice_trials, practice_wo_prime_trials, p)
     showTexture(p.END_SCREEN, p);
     getInput('instruction', p);
 end
-
+%%
 function [p] = runTrials(trials, include_prime, p)
 
     % Assigned to prime ans on block w/o prime.
@@ -99,101 +100,75 @@ function [p] = runTrials(trials, include_prime, p)
     try        
         % Iterates over trials.
         while ~isempty(trials)
-            time = nan(9,1); % time of each event, taken from system's clock.
+            times = nan(9,1); % times of each event, taken from system's clock.
             
             % block change
             if trials.iTrial(1) ~= 1 
                 if mod(trials.iTrial(1), p.BLOCK_SIZE) == 1
-                    time = showTexture(p.BLOCK_END_SCREEN, p);
+                    times = showTexture(p.BLOCK_END_SCREEN, p);
                     KbWait([], 3);
                 end               
             end
             
             % Make masks slides.
-            mask1 = getTextureFromHD(p.MASKS(trials.mask1(1)), p);
-            mask2 = getTextureFromHD(p.MASKS(trials.mask2(1)), p);
-            mask3 = getTextureFromHD(p.MASKS(trials.mask3(1)), p);
+            p.MASK1_TXTR = getTextureFromHD(p.MASKS(trials.mask1(1)), p);
+            p.MASK2_TXTR = getTextureFromHD(p.MASKS(trials.mask2(1)), p);
+            p.MASK3_TXTR = getTextureFromHD(p.MASKS(trials.mask3(1)), p);
             
-            % Set prime font now to save run time.
+            % Set prime font now to save run times.
             Screen('TextFont',p.w, p.HAND_FONT_TYPE);
             Screen('TextSize', p.w, p.HAND_FONT_SIZE);
             
-            % Fixation
-            time(1) = showFixation(p);
-%             waitUntil(p.FIX_DURATION, p);
-            WaitSecs(p.FIX_DURATION);
-            
-            % Mask 1
-            time(2) = showMask(mask1, p);
-%             waitUntil(p.MASK1_DURATION, p);
-            WaitSecs(p.MASK1_DURATION);
-            
-            % Mask 2
-            time(3) = showMask(mask2, p);
-%             waitUntil(p.MASK2_DURATION, p);
-            WaitSecs(p.MASK2_DURATION);
-            
-            % Prime
             if include_prime
-                time(4) = showWord(trials(1,:), 'prime', p);
-%                 waitUntil(p.PRIME_DURATION, p);
-                WaitSecs(p.PRIME_DURATION);
-            else
-                time(4) = time(3);
-            end
-            
-            % Mask 3
-            time(5) = showMask(mask3, p);
-%             waitUntil(p.MASK3_DURATION, p);
-            WaitSecs(p.MASK3_DURATION);
-            
-            % Target
-            Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
-            Screen('TextSize', p.w, p.FONT_SIZE);
-            time(6) = showWord(trials(1,:), 'target', p);
-            
-            % Target categorization.
-            target_ans = getAns('categor', p);
-            
-            % Prime recognition.
-            if include_prime
-                time(8) = showRecog(trials(1,:), p);
-                prime_ans = getAns('recog', p);
-            else
-                time(8) = time(6);
-                prime_ans = default_prime_ans;
-            end
-            
-            % PAS
-            if include_prime
-                time(9) = showPas(p);
+                % Create queue for current trial.
+                categor_q = build_q(trials, 'categor');
+                recog_q = build_q(trials, 'recog');
+                
+                % Shows: masks, prime, target, categorization question.
+                [target_ans, times(1:7)] = getAns('categor', categor_q, p);
+                
+                % Shows: recognition question.
+                [prime_ans, times(8)] = getAns('recog', recog_q, p);
+                
+                % PAS
+                times(9) = showPas(p);
                 [pas, pas_time] = getInput('pas', p);
             else
-                time(9) = time(8);
-                pas = 1;
-                pas_time = time(9);
+                % Create queue for current trial.
+                categor_q = build_q(trials, 'categor_wo_prime');
+                
+                % Shows: masks, target, categorization question.
+                [target_ans, times_temp] = getAns('categor_wo_prime', categor_q, p);
+                times(1:7) = [times_temp(1:3) times_temp(4) times_temp(4:6)];
+                
+                % Fill missing values.
+                prime_ans = default_prime_ans; % Recog ans.
+                times(8) = times(7); % Recog disp time.
+                times(9) = times(8); % PAS disp time.
+                pas = 1; % PAS ans.
+                pas_time = times(9);
             end
             
             % Assigns collected data to trials.
-            trials = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_time);
+            trials = assign_to_trials(trials, times, target_ans, prime_ans, pas, pas_time);
             
             % Save trial to file and removes it from list.
             saveToFile(trials(1,:), p);
             trials(1,:) = [];
             
             % Close mask textures.
-            Screen('close',[mask1 mask2 mask3]);
+            Screen('close',[p.MASK1_TXTR p.MASK2_TXTR p.MASK3_TXTR]);
         end
     catch e % if error occured, saves data before exit.
         fixOutput(p);
         rethrow(e);
     end
 end
-
+%%
 function [p] = exampleTrial(trials, p)
     
     try
-        % Set prime font now to save run time.
+        % Set prime font now to save run times.
         Screen('TextFont',p.w, p.HAND_FONT_TYPE);
         Screen('TextSize', p.w, p.HAND_FONT_SIZE);
         
@@ -203,28 +178,28 @@ function [p] = exampleTrial(trials, p)
         mask3 = getTextureFromHD(p.MASKS(trials.mask3(1)), p);
 
         % Fixation
-        time(1) = showFixation(p);
+        times(1) = showFixation(p);
         waitUntil(p.FIX_DURATION, p);
 
         % Mask 1
         Screen('DrawTexture',p.w, mask1);
-        [~,time] = Screen('Flip', p.w);
+        [~,times] = Screen('Flip', p.w);
         waitUntil(p.MASK1_DURATION, p);
 
         % Mask 2
         Screen('DrawTexture',p.w, mask2);
-        [~,time] = Screen('Flip', p.w);
+        [~,times] = Screen('Flip', p.w);
         waitUntil(p.MASK2_DURATION, p);
 
         % Prime
         Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with word.
         DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
-        [~,time] = Screen('Flip',p.w,0,1);
+        [~,times] = Screen('Flip',p.w,0,1);
         waitUntil(p.PRIME_DURATION, p);
 
         % Mask 3
         Screen('DrawTexture',p.w, mask3);
-        [~,time] = Screen('Flip', p.w);
+        [~,times] = Screen('Flip', p.w);
         waitUntil(p.MASK3_DURATION, p);
 
         % Target
@@ -232,7 +207,7 @@ function [p] = exampleTrial(trials, p)
         Screen('TextSize', p.w, p.FONT_SIZE);
         Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with target.
         DrawFormattedText(p.w, double('עלה'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
-        [~,time] = Screen('Flip',p.w,0,1);
+        [~,times] = Screen('Flip',p.w,0,1);
         
         % Waits for key press.
         getInput('instruction',p);
@@ -245,7 +220,7 @@ function [p] = exampleTrial(trials, p)
         Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
         DrawFormattedText(p.w, double('תיק'), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
         DrawFormattedText(p.w, double('ספל'), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
-        [~,time] = Screen('Flip', p.w, 0, 1);
+        [~,times] = Screen('Flip', p.w, 0, 1);
         
         % Waits for key press.
         getInput('instruction',p);
@@ -253,7 +228,7 @@ function [p] = exampleTrial(trials, p)
         prime_ans = getAns('recog', p);
 
         % PAS
-        time(9) = showPas(p);
+        times(9) = showPas(p);
         [pas, pas_time] = getInput('pas', p);
         
         % Close mask textures.
@@ -263,7 +238,7 @@ function [p] = exampleTrial(trials, p)
         rethrow(e);
     end
 end
-
+%%
 function [] = safeExit(p)
     if ~p.DEBUG
         p.NATNETCLIENT.disconnect;
@@ -274,29 +249,29 @@ function [] = safeExit(p)
     ListenChar(0);
 end
 
-function [time] = showFixation(p)
+function [times] = showFixation(p)
     % waits until finger in start point.
     if ~p.DEBUG
         finInStartPoint(p);
     end
     
     Screen('DrawTexture',p.w, p.FIXATION_SCREEN);
-    [~,time] = Screen('Flip', p.w);
+    [~,times] = Screen('Flip', p.w);
 end
 
-function [time] = showMask(mask, p) % 'mask' - which mask to show (1st / 2nd / 3rd).
+function [times] = showMask(mask, p) % 'mask' - which mask to show (1st / 2nd / 3rd).
     Screen('DrawTexture',p.w, mask);
-    [~,time] = Screen('Flip', p.w);
+    [~,times] = Screen('Flip', p.w);
 end
 
-function [time] = showWord(trial, prime_or_target, p)
+function [times] = showWord(trial, prime_or_target, p)
     Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with word.
     DrawFormattedText(p.w, double(trial.(prime_or_target){:}), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
-    [~,time] = Screen('Flip',p.w,0,1);
+    [~,times] = Screen('Flip',p.w,0,1);
 end
 
 % draws prime and distractor for recognition task.
-function [time] = showRecog(trial, p)
+function [times] = showRecog(trial, p)
     if trial.prime_left
         left_word = trial.prime{:};
         right_word = trial.distractor{:};
@@ -309,29 +284,29 @@ function [time] = showRecog(trial, p)
     Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
     DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
     DrawFormattedText(p.w, double(right_word), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
-    [~,time] = Screen('Flip', p.w, 0, 1);
+    [~,times] = Screen('Flip', p.w, 0, 1);
 end
 
 % draws PAS task.
-function [time] = showPas(p)
+function [times] = showPas(p)
     Screen('DrawTexture',p.w, p.PAS_SCREEN);
-    [~,time] = Screen('Flip', p.w, 0, 1);
+    [~,times] = Screen('Flip', p.w, 0, 1);
 end
 
 % Assigns data captured in this trial to 'trials'.
-function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, pas_time)
-    trials.trial_start_time(1) = time(1);
+function [trials] = assign_to_trials(trials, times, target_ans, prime_ans, pas, pas_time)
+    trials.trial_start_time(1) = times(1);
 
     % Assigns event times.
-    trials.fix_time(1) = time(1);
-    trials.mask1_time(1) = time(2);
-    trials.mask2_time(1) = time(3);
-    trials.prime_time(1) = time(4);
-    trials.mask3_time(1) = time(5);
-    trials.target_time(1) = time(6);
+    trials.fix_time(1) = times(1);
+    trials.mask1_time(1) = times(2);
+    trials.mask2_time(1) = times(3);
+    trials.prime_time(1) = times(4);
+    trials.mask3_time(1) = times(5);
+    trials.target_time(1) = times(6);
     trials.categor_time(1) = target_ans.categor_time;
-    trials.recog_time(1) = time(8);
-    trials.pas_time(1) = time(9);
+    trials.recog_time(1) = times(8);
+    trials.pas_time(1) = times(9);
 
     % Save responses.
     trials.target_ans_left(1) = target_ans.answer;
@@ -359,7 +334,7 @@ function [trials] = assign_to_trials(trials, time, target_ans, prime_ans, pas, p
     trials(1,:) = checkAns(trials(1,:), 'recog');
 
     trials.pas(1) = pas;
-    trials.pas_rt(1) = pas_time - time(9);
+    trials.pas_rt(1) = pas_time - times(9);
     
     trials.trial_end_time(1) = trials.pas_time(1) + pas_time;
 end
@@ -373,7 +348,7 @@ function [] = testWordSize(p)
     Screen('TextFont',p.w, p.FONT_TYPE);
     Screen('TextSize', p.w, p.FONT_SIZE);
     DrawFormattedText(p.w, double('אבגדה וזחטי אבגדהוזחטיכךלמנןסעפףצץקרשת'), 'p.CENTER', p.SCREEN_HEIGHT*3/4, [0 0 0]);
-    [~,time] = Screen('Flip',p.w);
+    [~,times] = Screen('Flip',p.w);
 end
 
 % Sets start and end points in space.
@@ -390,9 +365,9 @@ end
 %   until event_dur - 1/2 refrate.
 %   until event_dur - 3/4 refrate.
 %   until last_event_time + event_dur - 1/2 refrate.
-% didn't use switch case to save process time.
+% didn't use switch case to save process times.
 function [] = waitUntil(event_dur, p)
 %     WaitSecs(event_dur - p.REF_RATE_SEC / 2); % "- p.REF_RATE_SEC / 2" so that it will flip exactly at the end of p.FIX_DURATION.
     WaitSecs(event_dur - p.REF_RATE_SEC * 3 / 4);
-%     WaitSecs('UntilTime', time(1) + (event_dur - p.REF_RATE_SEC / 2));
+%     WaitSecs('UntilTime', times(1) + (event_dur - p.REF_RATE_SEC / 2));
 end

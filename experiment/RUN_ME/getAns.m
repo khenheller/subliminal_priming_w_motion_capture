@@ -1,29 +1,25 @@
-% Gets question type ('recog','categor','pas').
-% returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
-function [output] = getAns(type, p)
+% Records sub traj to and from screen, his answer, and timestamps of stimuli.
+% traj_type - 'categor', 'recog'.
+function [output, times] = getAns(traj_type, q, p)
     
-    [traj_to, timecourse_to, categor_time]  = getTraj('to_screen', type, p);
-    [traj_from, timecourse_from, ~]         = getTraj('from_screen', type, p);   
+    [traj_to, timecourse_to, times] = run_q(traj_type, q, p);
+    [traj_from, timecourse_from]    = finInStartPoint(p);   
     
-    answer = NaN;
-    
+    % Get screen touch point.
     last_sample = find(~isnan(traj_to(:,1)), 1, 'last');
     touch_point = traj_to(last_sample,1) / p.TOUCH_PLANE_INFO.mPerPixel; % Sample current position, convert to pixels.
     
-    % If sub responded before target ended, categor_time didn't get value.
-    if isnan(categor_time) 
-        categor_time = max(timecourse_to,[],'omitnan') + p.REF_RATE_SEC; % target cleared 1 ref rate after last sample.
-    end
-    
-    switch type
-        case {'recog','categor'}
-            if touch_point(1) < p.SCREEN_WIDTH/2 % left half of screen.
-                answer = 1;
-            else % right half.
-                answer = 0;
-            end
+    % Reorder event times.
+    times = circshift(times, -sum(isnan(times)));
+    % Fill timestamps of events that occured after sub response.
+    times(isnan(times)) = max(timecourse_to,[],'omitnan') + p.REF_RATE_SEC;
+    what happens when subject touches before target. what stimuli 
+    if touch_point(1) < p.SCREEN_WIDTH/2 % left half of screen.
+        answer = 1;
+    else % right half.
+        answer = 0;
     end
     
     output = struct('answer',answer, 'traj_to',traj_to, 'timecourse_to',timecourse_to,...
-        'traj_from',traj_from, 'timecourse_from',timecourse_from, 'categor_time',categor_time);
+        'traj_from',traj_from, 'timecourse_from',timecourse_from);
 end
