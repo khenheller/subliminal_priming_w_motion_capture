@@ -1,9 +1,10 @@
 % Waits for finger to return to starting point.
 % Records trajectory.
 function [traj, timestamp] = finInStartPoint(p)
-    traj = NaN(p.RECOG_CAP_LENGTH_SEC, 3);
-    timestamp = NaN(p.RECOG_CAP_LENGTH_SEC, 1);
+    traj = NaN(p.MAX_CAP_LENGTH, 3);
+    timestamp = NaN(p.MAX_CAP_LENGTH, 1);
     inRangeFlag = 0;
+    at_start = 0; % finger in start point.
     
     % Waits until finger returns to start pos.
     j = 1;
@@ -27,15 +28,18 @@ function [traj, timestamp] = finInStartPoint(p)
             cur_location = transform4(p.TOUCH_PLANE_INFO.T_opto_plane, cur_location); % transform to screen related space.
             traj(j,:) = cur_location;
             curRange = sqrt(sum((cur_location-p.START_POINT).^2));
-
-            if curRange < p.START_POINT_RANGE
-                inRangeFlag = 1;
-            end
+            at_start = curRange < p.START_POINT_RANGE;
         end
         
-        % Disp "rtrn to start" after a while.
-        if j == p.LATE_RES_DURATION
-            Screen('DrawTexture',p.w, p.RTRN_START_TXTR);
+        % Disp last msg for a while.
+        if j >= p.LATE_RES_DURATION
+            % Check if sub returned to start point.
+            if at_start
+                inRangeFlag = 1;
+            % If not, tells him to return.
+            else
+                Screen('DrawTexture',p.w, p.RTRN_START_TXTR);
+            end
         end
         
         % Prevents overflow if subject doesn't return to start point.

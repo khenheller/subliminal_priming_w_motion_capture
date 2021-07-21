@@ -18,7 +18,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.WORD_HEIGHT = 2 * (p.SITTING_DISTANCE*tand(p.VIEW_ANGLE_Y/2)); % in cm.
     p.HAND_FONT_SIZE = ceil(p.WORD_WIDTH * 100 / 11);
     p.FONT_SIZE = ceil(p.WORD_WIDTH * 100 / 10); % typescript font size.
-    p.RECOG_FONT_SIZE = ceil(p.WORD_WIDTH * 100 / 10); % font size oin recog question.
+    p.RECOG_FONT_SIZE = ceil(p.WORD_WIDTH * 100 / 10); % font size on recog question.
     
     % Paths
     [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
@@ -31,8 +31,8 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.TESTS_FOLDER = [curr_path '/./tests/test_results/'];
     
     if psychtoolbox_active
-        p.REACT_TIME = 0.325; % Maximal allowed time to movement onset (in sec).
-        p.MOVE_TIME = 0.425; % Maximal allowed movement time (in sec).
+        p.REACT_TIME = 0.320; % Maximal allowed time to movement onset (in sec).
+        p.MOVE_TIME = 0.420; % Maximal allowed movement time (in sec).
         p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ; % in samples.
         p.RECOG_CAP_LENGTH_SEC = 7; % Trajectory recording length in sec.
         p.CATEGOR_CAP_LENGTH_SEC = 7; % in sec.
@@ -66,7 +66,7 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.CATEGOR_SCREEN = ['categor_natural_' side '_screen.jpg'];
         p.RECOG_SCREEN = 'recog_screen.jpg';
         p.FIXATION_SCREEN = ['fixation_natural_' side '_screen.jpg'];
-        p.RETURN_TO_START_POINT_SCREEN = 'return_start_point_screen.jpg';
+        p.RETURN_START_POINT_SCREEN = 'return_start_point_screen.jpg';
         p.LATE_MOVE_ONSET_SCREEN = 'late_move_onset_screen.jpg';
         p.MISS_RESPONSE_WINDOW_SCREEN = 'miss_response_window_screen.jpg';
         p.PAS_SCREEN = 'pas_screen.jpg';
@@ -92,6 +92,7 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.TRIAL_EXAMPLE_SCREEN = 'trial_example_screen.jpg';
         p.SECOND_INSTRUCTIONS_SCREEN = 'second_instructions_screen.jpg';
         p.SPEED_PRACTICE_SCREEN = 'speed_practice_screen.jpg';
+        p.EMPTY_SCREEN = 'empty_screen.jpg';
         % Textures.
         p.CATEGOR_TXTR = getTextureFromHD(p.CATEGOR_SCREEN, p);
         p.RECOG_TXTR = getTextureFromHD(p.RECOG_SCREEN, p);
@@ -99,6 +100,7 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.RTRN_START_TXTR = getTextureFromHD(p.RETURN_START_POINT_SCREEN, p);
         p.LATE_RES_TXTR = getTextureFromHD(p.LATE_MOVE_ONSET_SCREEN, p);
         p.SLOW_MVMNT_TXTR = getTextureFromHD(p.MISS_RESPONSE_WINDOW_SCREEN, p);
+        p.EMPTY_TXTR = getTextureFromHD(p.EMPTY_SCREEN, p);
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));
@@ -114,21 +116,21 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.NUM_TRIALS = p.NUM_BLOCKS*p.BLOCK_SIZE;
     
     % Duration in sec
-    p.FIX_DURATION_SEC = 1 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK1_DURATION_SEC = 0.27 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK2_DURATION_SEC = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.PRIME_DURATION_SEC = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK3_DURATION_SEC = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.TARGET_DURATION_SEC = 0.5 - p.REF_RATE_SEC * 3 / 4;
+    p.FIX_DURATION_SEC = 1;
+    p.MASK1_DURATION_SEC = 0.27;
+    p.MASK2_DURATION_SEC = 0.03;
+    p.PRIME_DURATION_SEC = 0.03;
+    p.MASK3_DURATION_SEC = 0.03;
+    p.TARGET_DURATION_SEC = 0.5;
     p.LATE_RES_DURATION_SEC = 1.5; % Duration of "late response" msg.
     % Duration in samples.
-    p.FIX_DURATION = p.FIX_DURATION * p.REF_RATE_HZ;
-    p.MASK1_DURATION = p.MASK1_DURATION * p.REF_RATE_HZ;
-    p.MASK2_DURATION = p.MASK2_DURATION * p.REF_RATE_HZ;
-    p.PRIME_DURATION = p.PRIME_DURATION * p.REF_RATE_HZ;
-    p.MASK3_DURATION = p.MASK3_DURATION * p.REF_RATE_HZ;
-    p.TARGET_DURATION = p.TARGET_DURATION * p.REF_RATE_HZ;
-    p.LATE_RES_DURATION = p.LATE_RES_DURATION * p.REF_RATE_HZ; % Duration of "late response" msg.
+    p.FIX_DURATION = p.FIX_DURATION_SEC * p.REF_RATE_HZ;
+    p.MASK1_DURATION = p.MASK1_DURATION_SEC * p.REF_RATE_HZ;
+    p.MASK2_DURATION = p.MASK2_DURATION_SEC * p.REF_RATE_HZ;
+    p.PRIME_DURATION = p.PRIME_DURATION_SEC * p.REF_RATE_HZ;
+    p.MASK3_DURATION = p.MASK3_DURATION_SEC * p.REF_RATE_HZ;
+    p.TARGET_DURATION = p.TARGET_DURATION_SEC * p.REF_RATE_HZ;
+    p.LATE_RES_DURATION = p.LATE_RES_DURATION_SEC * p.REF_RATE_HZ; % Duration of "late response" msg.
     % Display time in samples.
     p.FIX_TIME = 1;
     p.MASK1_TIME = p.FIX_TIME + p.FIX_DURATION;
@@ -136,7 +138,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.PRIME_TIME = p.MASK2_TIME + p.MASK2_DURATION;
     p.MASK3_TIME = p.PRIME_TIME + p.PRIME_DURATION;
     p.TARGET_TIME = p.MASK3_TIME + p.MASK3_DURATION;
-    p.LATE_RES_TIME = p.TARGET_TIME + p.REACT_TIME;
+    p.LATE_RES_TIME = p.TARGET_TIME + p.REACT_TIME * p.REF_RATE_HZ;
     p.CATEGOR_TIME = p.TARGET_TIME + p.TARGET_DURATION;
     
     

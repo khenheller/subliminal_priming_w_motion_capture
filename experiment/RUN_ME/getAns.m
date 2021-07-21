@@ -1,5 +1,5 @@
 % Records sub traj to and from screen, his answer, and timestamps of stimuli.
-% traj_type - 'categor', 'recog'.
+% traj_type - 'categor', 'categor_wo_prime', 'recog'.
 function [output, times] = getAns(traj_type, q, p)
     
     [traj_to, timecourse_to, times] = run_q(traj_type, q, p);
@@ -13,12 +13,15 @@ function [output, times] = getAns(traj_type, q, p)
     times = circshift(times, -sum(isnan(times)));
     % Fill timestamps of events that occured after sub response.
     times(isnan(times)) = max(timecourse_to,[],'omitnan') + p.REF_RATE_SEC;
-    what happens when subject touches before target. what stimuli 
+    
     if touch_point(1) < p.SCREEN_WIDTH/2 % left half of screen.
         answer = 1;
     else % right half.
         answer = 0;
     end
+    
+    % Remove 'Late res' time.
+    times(q.name(~ismissing(q.name)) == "late_res") = [];
     
     output = struct('answer',answer, 'traj_to',traj_to, 'timecourse_to',timecourse_to,...
         'traj_from',traj_from, 'timecourse_from',timecourse_from);
