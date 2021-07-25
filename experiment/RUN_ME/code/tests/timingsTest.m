@@ -41,7 +41,7 @@ function [pass_test, dev_table] = timingsTest(events, timestamps, desired_durati
     % Print deviations from desired duration.
     disp('Number of trials devaiting from desired duration:');
     disp(num2str(length(bad_deviations)));
-    disp('Deviating trials and their deviation (in ms):');
+    disp('Deviating trials and their deviation (in ms, exmple: -10 = stimuli was 10 ms shorter than desired):');
     dev_table = table(bad_deviations_trial, bad_deviations, events(bad_deviations_index),...
         'VariableNames',{'TrialNum','Deviation','Event'});
     disp(dev_table);

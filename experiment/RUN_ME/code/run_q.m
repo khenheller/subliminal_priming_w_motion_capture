@@ -4,11 +4,12 @@
 % q - struct: txtr, txt1, txt2, name, len (q's length).
 %           'txt1' drawn on center or left side, 'txt2' drawn on right side.
 % traj_type - 'categor', 'recog'.
-function [traj, timecourse, times] = run_q(traj_type, q, p)
+function [traj, timecourse, events] = run_q(traj_type, q, p)
     traj = NaN(p.MAX_CAP_LENGTH,3);
     timecourse = NaN(p.MAX_CAP_LENGTH,1);
-    times = NaN(length(find(~ismissing(q.name))),1);
-    prev_txtr = 1;
+    num_events = sum(any(~isnan(q.txtr))) + 1; % '+ 1' because we add 'slow_mvmnt' here.
+    events.times = NaN(num_events, 1);
+    events.names = string(NaN(num_events, 1));
     categor_traj = any(strcmp(traj_type, ["categor","categor_wo_prime"]));
     
     for iQ = 1:q.len
@@ -35,17 +36,15 @@ function [traj, timecourse, times] = run_q(traj_type, q, p)
         
         % Left start, initiate Mvmnt Time cnt. Limit MT only when responding to target.
         if ~at_start && categor_traj
-            q.txtr(iQ + p.MOVE_TIME_SAMPLES) = p.SLOW_MVMNT_TXTR;
             q.name(iQ + p.MOVE_TIME_SAMPLES) = 'slow_mvmnt';
-            q.txt1(iQ + p.MOVE_TIME_SAMPLES,:) = NaN;
-            q.txt2(iQ + p.MOVE_TIME_SAMPLES,:) = NaN;
         end
         
         % Samples time when there is event.
-        if ~ismissing(q.name(iQ))
-            times(1) = timecourse(iQ) + p.REF_RATE_SEC;
-            times = circshift(times,-1);
-            prev_txtr = q.txtr(iQ);
+        if ~isnan(q.txtr(iQ))
+            events.times(1) = timecourse(iQ) + p.REF_RATE_SEC;
+            events.names(1) = q.name(iQ);
+            events.times = circshift(events.times,-1);
+            events.names = circshift(events.names,-1);
         end
         
         switch q.name(iQ)
@@ -71,7 +70,7 @@ function [traj, timecourse, times] = run_q(traj_type, q, p)
                     return;
                 end
             case 'slow_mvmnt' % Mvmnt too slow.
-                Screen('DrawTexture',p.w, q.txtr(iQ));
+                Screen('DrawTexture',p.w, p.SLOW_MVMNT_TXTR);
                 return;
         end
     end

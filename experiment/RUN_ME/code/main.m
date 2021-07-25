@@ -125,10 +125,18 @@ function [p] = runTrials(trials, include_prime, p)
                 recog_q = build_q(trials, 'recog', p);
                 
                 % Shows: masks, prime, target, categorization question.
-                [target_ans, times(1:7)] = getAns('categor', categor_q, p);
+                [target_ans, events(1:7)] = getAns('categor', categor_q, p);
+                times(1) = events.times(event.names == 'fix');
+                times(2) = events.times(event.names == 'mask1');
+                times(3) = events.times(event.names == 'mask2');
+                times(4) = events.times(event.names == 'prime');
+                times(5) = events.times(event.names == 'mask3');
+                times(6) = events.times(event.names == 'target');
+                times(7) = events.times(event.names == 'categor');
                 
                 % Shows: recognition question.
-                [prime_ans, times(8)] = getAns('recog', recog_q, p);
+                [prime_ans, events] = getAns('recog', recog_q, p);
+                times(8) = events.times(event.names == 'recog');
                 
                 % PAS
                 times(9) = showPas(p);
