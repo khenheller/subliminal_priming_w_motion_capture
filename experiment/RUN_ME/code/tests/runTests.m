@@ -3,7 +3,7 @@ clear all;
 close all;
 load('../p.mat');
 % To test sub data enter his number.
-sub_num = [1020];
+sub_num = [1021];
 % To test word list enter its name.
 word_list = 'practice_wo_prime_trials.xlsx';
 % Are you testing 'data' of a subject, or just a 'trials_list', or a 'practice_trials_list'.
@@ -11,8 +11,8 @@ input_type = 'data';
 for iSub = sub_num
     % Tests data.
     if isequal(input_type, 'data')
-        trials = readtable(['../../../raw_data/sub' num2str(iSub) 'data.csv']);
-        trials_traj = readtable(['../../../raw_data/sub' num2str(iSub) 'traj.csv']);
+        trials = readtable(['../../../../raw_data/sub' num2str(iSub) 'data.csv']);
+        trials_traj = readtable(['../../../../raw_data/sub' num2str(iSub) 'traj.csv']);
         diary_name = ['./test_results/sub' num2str(iSub) '.txt'];
     % Tests trial_list.
     else
