@@ -62,13 +62,8 @@ function [p] = initConstants(psychtoolbox_active, p)
         % "natural" category is on the left for odd sub numbers.
         if rem(p.SUB_NUM, 2); side = 'left'; else; side = 'right'; end
         % Initialized before experiment starts.
-        p.CATEGOR_SCREEN                = getTextureFromHD(['categor_natural_' side '_screen.jpg'], p);
-        p.RECOG_SCREEN                  = getTextureFromHD('recog_screen.jpg', p);
-        p.PAS_SCREEN                    = getTextureFromHD('pas_screen.jpg', p);
-        p.FIXATION_SCREEN               = getTextureFromHD(['fixation_natural_' side '_screen.jpg'], p);
-        p.RETURN_TO_START_POINT_SCREEN  = getTextureFromHD('return_start_point_screen.jpg', p);
-        p.LATE_MOVE_ONSET_SCREEN        = getTextureFromHD('late_move_onset_screen.jpg', p);
-        p.MISS_RESPONSE_WINDOW_SCREEN   = getTextureFromHD('miss_response_window_screen.jpg', p);
+        p.CATEGOR_TXTR                = getTextureFromHD(['categor_natural_' side '_screen.jpg'], p);
+        p.FIXATION_TXTR               = getTextureFromHD(['fixation_natural_' side '_screen.jpg'], p);
         % Initialized during experiment.
         p.WELCOME_SCREEN = 'welcome_screen.jpg';
         p.LOADING_SCREEN = 'loading_screen.jpg';
@@ -92,6 +87,11 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.TRIAL_EXAMPLE_SCREEN = 'trial_example_screen.jpg';
         p.SECOND_INSTRUCTIONS_SCREEN = 'second_instructions_screen.jpg';
         p.SPEED_PRACTICE_SCREEN = 'speed_practice_screen.jpg';
+        p.PAS_SCREEN = 'pas_screen.jpg';
+        p.RECOG_SCREEN = 'recog_screen.jpg';
+        p.RETURN_TO_START_POINT_SCREEN = 'return_start_point_screen.jpg';
+        p.LATE_MOVE_ONSET_TXTR = 'late_move_onset_screen.jpg';
+        p.MISS_RESPONSE_WINDOW_TXTR = 'miss_response_window_screen.jpg';
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));

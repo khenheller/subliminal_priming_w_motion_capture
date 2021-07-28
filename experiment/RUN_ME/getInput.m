@@ -1,13 +1,13 @@
 % Waits for keyboard response to the question displayed to participant.
-% type: 'instruction','categor', 'recog', 'pas'.
-function [ key, Resp_Time ] = getInput(type, p)
+% ques_type: question 'instruction','categor', 'recog', 'pas'.
+function [ key, Resp_Time ] = getInput(ques_type, p)
     key = [];
     Resp_Time = [];
     
     
     while isempty(key)
         [Resp_Time, Resp] = KbWait([], 2); % Waits for keypress.
-        switch type
+        switch ques_type
             case ('instruction')
                 if Resp(p.ABORT_KEY)
                     key = p.ABORT_KEY;

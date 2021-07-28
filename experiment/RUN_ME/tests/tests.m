@@ -1,6 +1,6 @@
 % Receives single sub's data and runs various tests on it.
-% type - 'data', 'trials_list', 'practice_trials_list', each runs different set of tests.
-function [pass_test, test_res] = tests (trials, trials_traj, type, p)
+% test_type - 'data', 'trials_list', 'practice_trials_list', each runs different set of tests.
+function [pass_test, test_res] = tests (trials, trials_traj, test_type, p)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
     
     % Initialize parameters.
@@ -10,13 +10,13 @@ function [pass_test, test_res] = tests (trials, trials_traj, type, p)
     pass_test.prime_alter = NaN;
     
     % Remove practice trials, unless testing practice trials.
-    if ~strcmp(type, 'practice_trials_list')
+    if ~strcmp(test_type, 'practice_trials_list')
         trials(trials.practice > 0, :) = [];
         trials_traj(trials_traj.practice > 0, :) = [];
     end
     
     % Test event durations.
-    if strcmp(type, 'data')
+    if strcmp(test_type, 'data')
         disp('------------------------------- Event Durations -------------------------------');
         events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
         timestamps = trials(:,events);
@@ -28,7 +28,7 @@ function [pass_test, test_res] = tests (trials, trials_traj, type, p)
     end
     
     % Test output has values for all fields.
-    if strcmp(type, 'data')
+    if strcmp(test_type, 'data')
         disp('------------------------------- Has Values -------------------------------');
         [pass_test.data_values ~] = hasValuesTest(trials, 'iTrial');
         [pass_test.traj_values test_res.miss_data] = hasValuesTest(trials_traj, 'iTrial');
@@ -36,8 +36,8 @@ function [pass_test, test_res] = tests (trials, trials_traj, type, p)
     
     % Test prime-target-distractor relations (don't share letters, are from same/diff categor).
     disp('------------------------------- Relations -------------------------------');
-    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target), 'prime_target', type, p);
-    pass_relations.prime_dist = relationsTest(cell2mat(trials.prime), cell2mat(trials.distractor), 'prime_dist', type, p);
+    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target), 'prime_target', test_type, p);
+    pass_relations.prime_dist = relationsTest(cell2mat(trials.prime), cell2mat(trials.distractor), 'prime_dist', test_type, p);
     pass_test.prime_target_common_letters = pass_relations.prime_target.common_letters;
     pass_test.prime_target_categor = pass_relations.prime_target.categor;
     pass_test.prime_dist_common_letters = pass_relations.prime_dist.common_letters;
