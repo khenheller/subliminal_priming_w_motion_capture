@@ -3,7 +3,7 @@ clear all;
 close all;
 load('../p.mat');
 % To test sub data enter his number.
-sub_num = [1020];
+sub_num = [1017];
 % To test word list enter its name.
 word_list = 'practice_wo_prime_trials.xlsx';
 % Are you testing 'data' of a subject, or just a 'trials_list', or a 'practice_trials_list'.
