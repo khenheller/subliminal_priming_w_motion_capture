@@ -15,13 +15,22 @@ function [pass_test, test_res] = tests (trials, trials_traj, input_type, p)
         trials_traj(trials_traj.practice > 0, :) = [];
     end
     
+    % @@@@@@@@@@@@@@@@ Specific for Khen's experiment @@@@@@@@@@@@@@@@
+    % Get last tiemstamp in every reach to target.
+    for j = 1:max(trials.iTrial)
+        timecourse = trials_traj.target_timecourse_to(trials_traj.iTrial == j);
+        last_sample_indx = find(~isnan(timecourse), 1, 'last');
+        traj_end(j) = timecourse(last_sample_indx);
+    end
+    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    
     % Test event durations.
     if strcmp(input_type, 'data')
         disp('------------------------------- Event Durations -------------------------------');
         events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
         timestamps = trials(:,events);
         desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
-        [pass_timings , test_res.dev_table] = timingsTest(events, timestamps, desired_durations);
+        [pass_timings , test_res.dev_table] = timingsTest(events, timestamps, traj_end, desired_durations);
         pass_test.deviations = pass_timings.deviations;
         pass_test.deviation_of_mean = pass_timings.deviation_of_mean;
         pass_test.std = pass_timings.std;

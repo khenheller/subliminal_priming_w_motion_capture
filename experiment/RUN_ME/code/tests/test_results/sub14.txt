@@ -1,37 +1,155 @@
 ------------------------------- Event Durations -------------------------------
 Number of trials devaiting from desired duration:
-3
+1
 Deviating trials and their deviation (in ms, exmple: -10 = stimuli was 10 ms shorter than desired):
     <strong>TrialNum</strong>    <strong>Deviation</strong>       <strong>Event</strong>    
     <strong>________</strong>    <strong>_________</strong>    <strong>____________</strong>
 
-       61        10.099      'fix_time'  
-      461        20.117      'mask2_time'
-      462        29.979      'mask2_time'
+      442        10.045      'mask2_time'
 
 Deviations in ms:
     <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
     <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
 
-          1000             1000.1          0.514                 0.07465          
-           270             269.98        0.25534               -0.020613          
-            30              30.11         1.6574                 0.10967          
-            30             29.996        0.21516              -0.0041412          
-            30             30.025        0.25127                0.024565          
-           500             499.97        0.23847               -0.026756          
+          1000               1000        0.24713                0.024907          
+           270                270        0.27715              -0.0027145          
+            30             30.028        0.52863                0.028184          
+            30             29.978        0.22476               -0.022363          
+            30             30.008        0.22572               0.0081247          
+           500             589.45         89.256                  89.445          
 
 ------------------------------- Has Values -------------------------------
 target_x_from is missing values in trials: 
-    62
-   175
+     2
+    16
+    20
+    43
+    55
+    57
+    84
+   102
+   111
+   114
+   116
+   120
+   121
+   127
+   143
+   164
+   165
+   179
+   184
+   258
+   284
+   297
+   307
+   312
+   324
+   420
+   422
+   424
+   427
+   437
+   466
+   476
 
 target_y_from is missing values in trials: 
-    62
-   175
+     2
+    16
+    20
+    43
+    55
+    57
+    84
+   102
+   111
+   114
+   116
+   120
+   121
+   127
+   143
+   164
+   165
+   179
+   184
+   258
+   284
+   297
+   307
+   312
+   324
+   420
+   422
+   424
+   427
+   437
+   466
+   476
 
 target_z_from is missing values in trials: 
-    62
-   175
+     2
+    16
+    20
+    43
+    55
+    57
+    84
+   102
+   111
+   114
+   116
+   120
+   121
+   127
+   143
+   164
+   165
+   179
+   184
+   258
+   284
+   297
+   307
+   312
+   324
+   420
+   422
+   424
+   427
+   437
+   466
+   476
+
+prime_x_to is missing values in trials: 
+    99
+   435
+   455
+
+prime_y_to is missing values in trials: 
+    99
+   435
+   455
+
+prime_z_to is missing values in trials: 
+    99
+   435
+   455
+
+prime_x_from is missing values in trials: 
+   352
+   414
+   439
+
+prime_y_from is missing values in trials: 
+   352
+   414
+   439
+
+prime_z_from is missing values in trials: 
+   352
+   414
+   439
 
 ------------------------------- Relations -------------------------------
 ------------------------------- Conditions -------------------------------
@@ -43,8 +161,8 @@ target_z_from is missing values in trials:
 ------------------------------- Test results (0=didnt pass test) -------------------------------
 ------------------------------------------------------------------------------------------------
                      deviations: 0
-              deviation_of_mean: 1
-                            std: 1
+              deviation_of_mean: 0
+                            std: 0
                     prime_alter: 1
                     data_values: 1
                     traj_values: 0
