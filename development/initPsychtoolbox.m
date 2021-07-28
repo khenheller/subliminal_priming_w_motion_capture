@@ -6,7 +6,7 @@ function screenError = initPsychtoolbox()
     % screenError - true or false answer if the function did not succeed in
     % opening a 100Hz window.
 
-    global screenScaler oldone screenNumber DEBUG ScreenHeight ScreenWidth refRate gray w REF_RATE_OPTIMAL center 
+    global screenScaler oldone screenNumber DEBUG ScreenHeight ScreenWidth refRateHz refRateSec gray w REF_RATE_OPTIMAL center 
     global WINDOW_RESOLUTION debugFactor NO_FULLSCREEN  
 
     REF_RATE_OPTIMAL = 100;
@@ -23,7 +23,8 @@ function screenError = initPsychtoolbox()
     
     % Set sync tests:
  
-    %Screen('Preference', 'SkipSyncTests', 0)
+    Screen('Preference', 'SkipSyncTests', 0)
+    Screen('Preference', 'VisualDebugLevel', 4);
     try
         if DEBUG; Screen('Preference', 'SkipSyncTests', 1); else; Screen('Preference', 'SkipSyncTests', 0); end
     catch
@@ -35,7 +36,6 @@ function screenError = initPsychtoolbox()
 
     screens         =   Screen('Screens');
     screenNumber    =   max(screens);
-    %screenNumber   =   1;
     gray           =   128 * [1 1 1 1];
 
     % Finding the screen size and current resolution
@@ -44,13 +44,13 @@ function screenError = initPsychtoolbox()
     catch
         if NO_FULLSCREEN; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray, WINDOW_RESOLUTION); else; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray); end
     end
-    ScreenWidth     =  wRect(3);
-    ScreenHeight    =  wRect(4);
+    
+    ScreenWidth     =  wRect(3); disp(['ScreenWidth: ' num2str(ScreenWidth)]);
+    ScreenHeight    =  wRect(4); disp(['ScreenHeight: ' num2str(ScreenHeight)]);
     center          =  [ScreenWidth/2; ScreenHeight/2];
-    hz = Screen('NominalFrameRate', w);
-    disp(hz);
-    refRate = hz.^(-1);
-    if DEBUG == 2; refRate = refRate / debugFactor; end
+    refRateHz = Screen('NominalFrameRate', w); disp(['refRateHz: ' num2str(refRateHz)]);
+    refRateSec = refRateHz.^(-1); disp(['refRateSec: ' num2str(refRateSec)]); % in seconds. 
+    if DEBUG == 2; refRateSec = refRateSec / debugFactor; end
     sca;
 
     screenScaler = ScreenWidth/1920; % allows scaling so that with smaller screens, objects will be of smaller sizes (1 = Full HD)
@@ -61,8 +61,9 @@ function screenError = initPsychtoolbox()
         if NO_FULLSCREEN; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray, WINDOW_RESOLUTION); else; [w, wRect]  =  Screen('OpenWindow',screenNumber, gray); end
     end
 
+    HideCursor(w);
     if ~NO_FULLSCREEN
-        %HideCursor(1);
+%         HideCursor(1);
     end
   
     slCharacterEncoding('ISO_8859-8')

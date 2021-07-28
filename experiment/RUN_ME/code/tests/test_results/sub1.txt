@@ -1,0 +1,516 @@
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+64
+Deviating trials and their deviation (in ms):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>       <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>____________</strong>
+
+        1           20       'fix_time'  
+        4         10.1       'fix_time'  
+        1           10       'mask1_time'
+        1         60.1       'mask2_time'
+        2           20       'mask2_time'
+        3           10       'mask2_time'
+        5           10       'mask2_time'
+       12         10.1       'mask2_time'
+       14           10       'mask2_time'
+       29         10.1       'mask2_time'
+       32           10       'mask2_time'
+      103         10.4       'mask2_time'
+      108         10.1       'mask2_time'
+      131           10       'mask2_time'
+      150           10       'mask2_time'
+      151           10       'mask2_time'
+      161         10.1       'mask2_time'
+      169           10       'mask2_time'
+      201           10       'mask2_time'
+      207           10       'mask2_time'
+      241         10.1       'mask2_time'
+      259         10.1       'mask2_time'
+      299           10       'mask2_time'
+      300           10       'mask2_time'
+      315           10       'mask2_time'
+      323           10       'mask2_time'
+      357          9.9       'mask2_time'
+      360           10       'mask2_time'
+      365           10       'mask2_time'
+      379           10       'mask2_time'
+        1         19.9       'prime_time'
+        1         10.1       'mask3_time'
+        2           10       'mask3_time'
+        5           10       'mask3_time'
+        9          9.3       'mask3_time'
+       16           10       'mask3_time'
+       53           10       'mask3_time'
+       68           10       'mask3_time'
+       81         10.1       'mask3_time'
+       96           10       'mask3_time'
+      117           10       'mask3_time'
+      140           10       'mask3_time'
+      155           10       'mask3_time'
+      167          9.9       'mask3_time'
+      174           10       'mask3_time'
+      216           10       'mask3_time'
+      226          9.8       'mask3_time'
+      229         10.1       'mask3_time'
+      258           10       'mask3_time'
+      276           10       'mask3_time'
+      278         10.1       'mask3_time'
+      297           10       'mask3_time'
+      321           10       'mask3_time'
+      331           10       'mask3_time'
+      334           10       'mask3_time'
+      335           10       'mask3_time'
+      355           10       'mask3_time'
+      356           10       'mask3_time'
+      387          8.7       'mask3_time'
+      394           10       'mask3_time'
+      399           10       'mask3_time'
+      418           10       'mask3_time'
+      447         10.1       'mask3_time'
+      464           10       'mask3_time'
+
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
+
+          1000             1000.1         1.0281               0.077083           
+           270             270.03        0.47673               0.030208           
+            30             30.686         3.6271                0.68583           
+            30             30.051        0.92482                0.05125           
+            30             30.678         2.5245                0.67813           
+           500             500.03        0.17702               0.027708           
+
+------------------------------- Has Values -------------------------------
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 1
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 1
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1
+
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+64
+Deviating trials and their deviation (in ms):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>       <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>____________</strong>
+
+        1           20       'fix_time'  
+        4         10.1       'fix_time'  
+        1           10       'mask1_time'
+        1         60.1       'mask2_time'
+        2           20       'mask2_time'
+        3           10       'mask2_time'
+        5           10       'mask2_time'
+       12         10.1       'mask2_time'
+       14           10       'mask2_time'
+       29         10.1       'mask2_time'
+       32           10       'mask2_time'
+      103         10.4       'mask2_time'
+      108         10.1       'mask2_time'
+      131           10       'mask2_time'
+      150           10       'mask2_time'
+      151           10       'mask2_time'
+      161         10.1       'mask2_time'
+      169           10       'mask2_time'
+      201           10       'mask2_time'
+      207           10       'mask2_time'
+      241         10.1       'mask2_time'
+      259         10.1       'mask2_time'
+      299           10       'mask2_time'
+      300           10       'mask2_time'
+      315           10       'mask2_time'
+      323           10       'mask2_time'
+      357          9.9       'mask2_time'
+      360           10       'mask2_time'
+      365           10       'mask2_time'
+      379           10       'mask2_time'
+        1         19.9       'prime_time'
+        1         10.1       'mask3_time'
+        2           10       'mask3_time'
+        5           10       'mask3_time'
+        9          9.3       'mask3_time'
+       16           10       'mask3_time'
+       53           10       'mask3_time'
+       68           10       'mask3_time'
+       81         10.1       'mask3_time'
+       96           10       'mask3_time'
+      117           10       'mask3_time'
+      140           10       'mask3_time'
+      155           10       'mask3_time'
+      167          9.9       'mask3_time'
+      174           10       'mask3_time'
+      216           10       'mask3_time'
+      226          9.8       'mask3_time'
+      229         10.1       'mask3_time'
+      258           10       'mask3_time'
+      276           10       'mask3_time'
+      278         10.1       'mask3_time'
+      297           10       'mask3_time'
+      321           10       'mask3_time'
+      331           10       'mask3_time'
+      334           10       'mask3_time'
+      335           10       'mask3_time'
+      355           10       'mask3_time'
+      356           10       'mask3_time'
+      387          8.7       'mask3_time'
+      394           10       'mask3_time'
+      399           10       'mask3_time'
+      418           10       'mask3_time'
+      447         10.1       'mask3_time'
+      464           10       'mask3_time'
+
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
+
+          1000             1000.1         1.0281               0.077083           
+           270             270.03        0.47673               0.030208           
+            30             30.686         3.6271                0.68583           
+            30             30.051        0.92482                0.05125           
+            30             30.678         2.5245                0.67813           
+           500             500.03        0.17702               0.027708           
+
+<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\tests\tests.m',26,1)">26  </a>        pass_test.std = pass_timings.std;
+test_res
+
+test_res = 
+
+  <a href="matlab:helpPopup struct" style="font-weight:bold">struct</a> with fields:
+
+    dev_table: [64ª3 table]
+
+test_res.dev_table
+
+ans =
+
+  64ª3 <a href="matlab:helpPopup table" style="font-weight:bold">table</a>
+
+    <strong>TrialNum</strong>    <strong>Deviation</strong>       <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>____________</strong>
+
+        1           20       'fix_time'  
+        4         10.1       'fix_time'  
+        1           10       'mask1_time'
+        1         60.1       'mask2_time'
+        2           20       'mask2_time'
+        3           10       'mask2_time'
+        5           10       'mask2_time'
+       12         10.1       'mask2_time'
+       14           10       'mask2_time'
+       29         10.1       'mask2_time'
+       32           10       'mask2_time'
+      103         10.4       'mask2_time'
+      108         10.1       'mask2_time'
+      131           10       'mask2_time'
+      150           10       'mask2_time'
+      151           10       'mask2_time'
+      161         10.1       'mask2_time'
+      169           10       'mask2_time'
+      201           10       'mask2_time'
+      207           10       'mask2_time'
+      241         10.1       'mask2_time'
+      259         10.1       'mask2_time'
+      299           10       'mask2_time'
+      300           10       'mask2_time'
+      315           10       'mask2_time'
+      323           10       'mask2_time'
+      357          9.9       'mask2_time'
+      360           10       'mask2_time'
+      365           10       'mask2_time'
+      379           10       'mask2_time'
+        1         19.9       'prime_time'
+        1         10.1       'mask3_time'
+        2           10       'mask3_time'
+        5           10       'mask3_time'
+        9          9.3       'mask3_time'
+       16           10       'mask3_time'
+       53           10       'mask3_time'
+       68           10       'mask3_time'
+       81         10.1       'mask3_time'
+       96           10       'mask3_time'
+      117           10       'mask3_time'
+      140           10       'mask3_time'
+      155           10       'mask3_time'
+      167          9.9       'mask3_time'
+      174           10       'mask3_time'
+      216           10       'mask3_time'
+      226          9.8       'mask3_time'
+      229         10.1       'mask3_time'
+      258           10       'mask3_time'
+      276           10       'mask3_time'
+      278         10.1       'mask3_time'
+      297           10       'mask3_time'
+      321           10       'mask3_time'
+      331           10       'mask3_time'
+      334           10       'mask3_time'
+      335           10       'mask3_time'
+      355           10       'mask3_time'
+      356           10       'mask3_time'
+      387          8.7       'mask3_time'
+      394           10       'mask3_time'
+      399           10       'mask3_time'
+      418           10       'mask3_time'
+      447         10.1       'mask3_time'
+      464           10       'mask3_time'
+
+if system_dependent('IsDebugMode')==1, dbcont; end
+------------------------------- Has Values -------------------------------
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 1
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 1
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1
+
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+64
+Deviating trials and their deviation (in ms):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>       <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>____________</strong>
+
+        1           20       'fix_time'  
+        4         10.1       'fix_time'  
+        1           10       'mask1_time'
+        1         60.1       'mask2_time'
+        2           20       'mask2_time'
+        3           10       'mask2_time'
+        5           10       'mask2_time'
+       12         10.1       'mask2_time'
+       14           10       'mask2_time'
+       29         10.1       'mask2_time'
+       32           10       'mask2_time'
+      103         10.4       'mask2_time'
+      108         10.1       'mask2_time'
+      131           10       'mask2_time'
+      150           10       'mask2_time'
+      151           10       'mask2_time'
+      161         10.1       'mask2_time'
+      169           10       'mask2_time'
+      201           10       'mask2_time'
+      207           10       'mask2_time'
+      241         10.1       'mask2_time'
+      259         10.1       'mask2_time'
+      299           10       'mask2_time'
+      300           10       'mask2_time'
+      315           10       'mask2_time'
+      323           10       'mask2_time'
+      357          9.9       'mask2_time'
+      360           10       'mask2_time'
+      365           10       'mask2_time'
+      379           10       'mask2_time'
+        1         19.9       'prime_time'
+        1         10.1       'mask3_time'
+        2           10       'mask3_time'
+        5           10       'mask3_time'
+        9          9.3       'mask3_time'
+       16           10       'mask3_time'
+       53           10       'mask3_time'
+       68           10       'mask3_time'
+       81         10.1       'mask3_time'
+       96           10       'mask3_time'
+      117           10       'mask3_time'
+      140           10       'mask3_time'
+      155           10       'mask3_time'
+      167          9.9       'mask3_time'
+      174           10       'mask3_time'
+      216           10       'mask3_time'
+      226          9.8       'mask3_time'
+      229         10.1       'mask3_time'
+      258           10       'mask3_time'
+      276           10       'mask3_time'
+      278         10.1       'mask3_time'
+      297           10       'mask3_time'
+      321           10       'mask3_time'
+      331           10       'mask3_time'
+      334           10       'mask3_time'
+      335           10       'mask3_time'
+      355           10       'mask3_time'
+      356           10       'mask3_time'
+      387          8.7       'mask3_time'
+      394           10       'mask3_time'
+      399           10       'mask3_time'
+      418           10       'mask3_time'
+      447         10.1       'mask3_time'
+      464           10       'mask3_time'
+
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
+
+          1000             1000.1         1.0281               0.077083           
+           270             270.03        0.47673               0.030208           
+            30             30.686         3.6271                0.68583           
+            30             30.051        0.92482                0.05125           
+            30             30.678         2.5245                0.67813           
+           500             500.03        0.17702               0.027708           
+
+------------------------------- Has Values -------------------------------
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 1
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 1
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1
+
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+64
+Deviating trials and their deviation (in ms):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>       <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>____________</strong>
+
+        1           20       'fix_time'  
+        4         10.1       'fix_time'  
+        1           10       'mask1_time'
+        1         60.1       'mask2_time'
+        2           20       'mask2_time'
+        3           10       'mask2_time'
+        5           10       'mask2_time'
+       12         10.1       'mask2_time'
+       14           10       'mask2_time'
+       29         10.1       'mask2_time'
+       32           10       'mask2_time'
+      103         10.4       'mask2_time'
+      108         10.1       'mask2_time'
+      131           10       'mask2_time'
+      150           10       'mask2_time'
+      151           10       'mask2_time'
+      161         10.1       'mask2_time'
+      169           10       'mask2_time'
+      201           10       'mask2_time'
+      207           10       'mask2_time'
+      241         10.1       'mask2_time'
+      259         10.1       'mask2_time'
+      299           10       'mask2_time'
+      300           10       'mask2_time'
+      315           10       'mask2_time'
+      323           10       'mask2_time'
+      357          9.9       'mask2_time'
+      360           10       'mask2_time'
+      365           10       'mask2_time'
+      379           10       'mask2_time'
+        1         19.9       'prime_time'
+        1         10.1       'mask3_time'
+        2           10       'mask3_time'
+        5           10       'mask3_time'
+        9          9.3       'mask3_time'
+       16           10       'mask3_time'
+       53           10       'mask3_time'
+       68           10       'mask3_time'
+       81         10.1       'mask3_time'
+       96           10       'mask3_time'
+      117           10       'mask3_time'
+      140           10       'mask3_time'
+      155           10       'mask3_time'
+      167          9.9       'mask3_time'
+      174           10       'mask3_time'
+      216           10       'mask3_time'
+      226          9.8       'mask3_time'
+      229         10.1       'mask3_time'
+      258           10       'mask3_time'
+      276           10       'mask3_time'
+      278         10.1       'mask3_time'
+      297           10       'mask3_time'
+      321           10       'mask3_time'
+      331           10       'mask3_time'
+      334           10       'mask3_time'
+      335           10       'mask3_time'
+      355           10       'mask3_time'
+      356           10       'mask3_time'
+      387          8.7       'mask3_time'
+      394           10       'mask3_time'
+      399           10       'mask3_time'
+      418           10       'mask3_time'
+      447         10.1       'mask3_time'
+      464           10       'mask3_time'
+
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
+
+          1000             1000.1         1.0281               0.077083           
+           270             270.03        0.47673               0.030208           
+            30             30.686         3.6271                0.68583           
+            30             30.051        0.92482                0.05125           
+            30             30.678         2.5245                0.67813           
+           500             500.03        0.17702               0.027708           
+
+------------------------------- Has Values -------------------------------
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 1
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 1
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1
+

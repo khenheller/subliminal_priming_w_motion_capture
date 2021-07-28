@@ -2,6 +2,15 @@
 % which cover a certain viewing angle.
 function [] = makeMasks(num_masks)
 
+    initPsychtoolbox();
+    initConstants();
+    
+    % closes psychtoolbox window
+    Priority(0);
+    sca;
+    ShowCursor;
+    ListenChar(0);
+
     global fontSize wordWidth wordHeight
     
     %@@@@@@@@ Define the following @@@@@@@@

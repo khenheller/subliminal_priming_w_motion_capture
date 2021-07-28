@@ -3,9 +3,9 @@
 function [trial] = checkAns(trial, type)
     switch type
         case 'categor'
-            trial.target_ans_nat = trial.target_ans_left{:} == trial.natural_left; % sub answered 'natural'
+            trial.target_ans_nat = trial.target_ans_left(:) == trial.natural_left; % sub answered 'natural'
             trial.target_correct = trial.target_ans_nat == trial.target_natural; % target was 'natural'
         case 'recog'
-            trial.prime_correct = trial.prime_ans_left{:} == trial.prime_left;
+            trial.prime_correct = trial.prime_ans_left(:) == trial.prime_left;
     end
 end
