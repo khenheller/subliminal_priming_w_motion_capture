@@ -105,7 +105,7 @@ function [p] = runTrials(trials, include_prime, p)
             % block change
             if trials.iTrial(1) ~= 1 
                 if mod(trials.iTrial(1), p.BLOCK_SIZE) == 1
-                    times = showTexture(p.BLOCK_END_SCREEN, p);
+                    showTexture(p.BLOCK_END_SCREEN, p);
                     KbWait([], 3);
                 end               
             end
@@ -165,7 +165,7 @@ function [p] = runTrials(trials, include_prime, p)
             
             % PAS
             if include_prime
-                times(9) = showPas(p);
+                times(9) = showTexture(p.PAS_SCREEN, p);
                 [pas, pas_time] = getInput('pas', p);
             else
                 
@@ -218,7 +218,7 @@ function [p] = exampleTrial(trials, p)
         waitUntil(p.MASK2_DURATION, p);
 
         % Prime
-        Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with word.
+        Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
         DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
         [~,times] = Screen('Flip',p.w,0,1);
         waitUntil(p.PRIME_DURATION, p);
@@ -231,7 +231,7 @@ function [p] = exampleTrial(trials, p)
         % Target
         Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
         Screen('TextSize', p.w, p.FONT_SIZE);
-        Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with target.
+        Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with target.
         DrawFormattedText(p.w, double('עלה'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
         [~,times] = Screen('Flip',p.w,0,1);
         
@@ -239,22 +239,24 @@ function [p] = exampleTrial(trials, p)
         getInput('instruction',p);
 
         % Target categorization.
-        target_ans = getAns('categor', p);
+%         target_ans = getAns('categor', p); not necessary in example.
 
         % Prime recognition.
-        Screen('DrawTexture',p.w, p.RECOG_SCREEN);
+        txtr_num = getTextureFromHD(p.RECOG_SCREEN, p);
+        Screen('DrawTexture',p.w, txtr_num);
         Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
         DrawFormattedText(p.w, double('תיק'), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
         DrawFormattedText(p.w, double('ספל'), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
         [~,times] = Screen('Flip', p.w, 0, 1);
+        Screen('close', txtr_num);
         
         % Waits for key press.
         getInput('instruction',p);
         
-        prime_ans = getAns('recog', p);
+%         prime_ans = getAns('recog', p); not necessary in example.
 
         % PAS
-        times(9) = showPas(p);
+        times(9) = showTexture(p.PAS_SCREEN, p);
         [pas, pas_time] = getInput('pas', p);
         
         % Close mask textures.
@@ -281,7 +283,7 @@ function [times] = showFixation(p)
         finInStartPoint(p);
     end
     
-    Screen('DrawTexture',p.w, p.FIXATION_SCREEN);
+    Screen('DrawTexture',p.w, p.FIXATION_TXTR);
     [~,times] = Screen('Flip', p.w);
 end
 
@@ -291,7 +293,7 @@ function [times] = showMask(mask, p) % 'mask' - which mask to show (1st / 2nd / 
 end
 
 function [times] = showWord(trial, prime_or_target, p)
-    Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with word.
+    Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
     DrawFormattedText(p.w, double(trial.(prime_or_target){:}), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
     [~,times] = Screen('Flip',p.w,0,1);
 end
@@ -306,17 +308,14 @@ function [times] = showRecog(trial, p)
         right_word = trial.prime{:};
     end
     
-    Screen('DrawTexture',p.w, p.RECOG_SCREEN);
+    % Prime recognition.    
+    txtr_num = getTextureFromHD(p.RECOG_SCREEN, p);
+    Screen('DrawTexture',p.w, txtr_num);
     Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
     DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
     DrawFormattedText(p.w, double(right_word), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
     [~,times] = Screen('Flip', p.w, 0, 1);
-end
-
-% draws PAS task.
-function [times] = showPas(p)
-    Screen('DrawTexture',p.w, p.PAS_SCREEN);
-    [~,times] = Screen('Flip', p.w, 0, 1);
+    Screen('close', txtr_num);
 end
 
 % Assigns data captured in this trial to 'trials'.

@@ -31,8 +31,8 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.TESTS_FOLDER = [curr_path '/./tests/test_results/'];
     
     if psychtoolbox_active
-        p.REACT_TIME = 0.325; % Maximal allowed time to movement onset (in sec).
-        p.MOVE_TIME = 0.425; % Maximal allowed movement time (in sec).
+        p.REACT_TIME = 0.320; % Maximal allowed time to movement onset (in sec).
+        p.MOVE_TIME = 0.420; % Maximal allowed movement time (in sec).
         p.RECOG_CAP_LENGTH_SEC = 7; % Trajectory recording length in sec.
         p.CATEGOR_CAP_LENGTH_SEC = p.REACT_TIME + p.MOVE_TIME; % in sec.
         p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
@@ -89,7 +89,7 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.SPEED_PRACTICE_SCREEN = 'speed_practice_screen.jpg';
         p.PAS_SCREEN = 'pas_screen.jpg';
         p.RECOG_SCREEN = 'recog_screen.jpg';
-        p.RETURN_TO_START_POINT_SCREEN = 'return_start_point_screen.jpg';
+        p.RTRN_START_POINT_SCREEN = 'return_start_point_screen.jpg';
         p.LATE_MOVE_ONSET_TXTR = 'late_move_onset_screen.jpg';
         p.MISS_RESPONSE_WINDOW_TXTR = 'miss_response_window_screen.jpg';
         
