@@ -52,7 +52,7 @@ classdef quaternion
 %                               Euler angles in radians, q is size
 %                               [s1,s2,...], quaternions normalized to 1
 %                               equivalent to Euler Angle rotations
-%  q  = quaternion.integrateomega(t,w,odeoptions) or
+%  q  = quaternion.integrateomega(t,p.w,odeoptions) or
 %  q  = quaternion.integrateomega(t,omega,axis,odeoptions)
 %                               integrate angular velocities over time
 %  q  = quaternion.modifiedrodrigues(mrp)
@@ -72,11 +72,11 @@ classdef quaternion
 % Rotation methods (Mixed Case):
 %  [angle,axis] = AngleAxis(q)  angles in radians, unit vector rotation axes
 %                               equivalent to q
-%  qd = Derivative(q,w)         quaternion derivatives, w are 3 component
-%                               angular velocity vectors, qd = 0.5*q*quaternion(w)
+%  qd = Derivative(q,p.w)         quaternion derivatives, p.w are 3 component
+%                               angular velocity vectors, qd = 0.5*q*quaternion(p.w)
 %  angles = EulerAngles(q,axes) angles are 3 Euler angles equivalent to q, axes
 %                               are strings or cell strings, '123' = 'xyz', etc.
-%  q1  = Integral(q0,t,w,odeoptions) or
+%  q1  = Integral(q0,t,p.w,odeoptions) or
 %  q1  = Integral(q0,t,omega,axis,odeoptions)
 %                               integrate angular velocities to quaternions
 %  mrp = ModifiedRodrigues(q)   Modified Rodrigues parameters equivalent to q
@@ -1298,12 +1298,12 @@ methods
     end % ComplexMatrix
 
     function qd = Derivative( varargin )
-% function qd = Derivative( q, w )  or  qd = q.Derivative( w )
+% function qd = Derivative( q, p.w )  or  qd = q.Derivative( p.w )
 % Inputs:
 %  q        quaternion array
-%  w        3xN or Nx3 element angle rate vectors in radians/s
+%  p.w        3xN or Nx3 element angle rate vectors in radians/s
 % Output:
-%  qd       quaternion derivatives, qd = 0.5 * q * quaternion(w)
+%  qd       quaternion derivatives, qd = 0.5 * q * quaternion(p.w)
         if isa( varargin{1}, 'quaternion' )
             qd  = 0.5 .* varargin{1} .* quaternion( varargin{2} );
         else
@@ -1471,7 +1471,7 @@ methods
         angles  = chop( angles );
     end % EulerAngles
 
-    function q1 = Integral( q0, t, w, varargin )
+    function q1 = Integral( q0, t, p.w, varargin )
 % Integrate angular velocities over time (using ode45) to obtain the
 % orientation quaternions at those times, starting from initial scalar q0.
 % Angular velocities (and rotation axes) are computed at intermediate times
@@ -1479,12 +1479,12 @@ methods
 % value unless there is an initial orientation.
 %
 % Calling syntax 1:
-% function q1 = Integral( q0, t, w, odeoptions )
+% function q1 = Integral( q0, t, p.w, odeoptions )
 % Inputs:
 %  q0           initial orientation quaternion (normalized, scalar)
 %  t(nt)        initial and subsequent (or previous) times t = [t0,t1,...]
 %               (monotonic)
-%  w(3,nt)      3D angular velocity vectors, radians/(unit time)
+%  p.w(3,nt)      3D angular velocity vectors, radians/(unit time)
 %  odeoptions [OPTIONAL] ode45 options
 %
 % Calling syntax 2:
@@ -1507,26 +1507,26 @@ methods
 %  ode45        matlab ode numerical differential equation integrator
         if (nargin > 3) && isnumeric( varargin{1} ) && ...
            (numel( varargin{1} ) >= 3)
-            omega       = w;
+            omega       = p.w;
             [axis, dim] = finddim( varargin{1}, 3 );
             if dim == 0
                 error( 'quaternion:Integral:badaxis', ...
                        'axis must have a dimension of size 3' );
             end
             axis        = unitvector( axis(1:3,:), 1 );
-            w           = bsxfun( @times, omega(:).', axis );
+            p.w           = bsxfun( @times, omega(:).', axis );
             varargin    = varargin(2:end);
         end
-        [w, dim]    = finddim( w, 3 );
+        [p.w, dim]    = finddim( p.w, 3 );
         if dim == 0
             error( 'quaternion:Integral:badw', ...
-                   'w must have a dimension of size 3' );
+                   'p.w must have a dimension of size 3' );
         end
-        w           = reshape( w, 3, [] );
-        nw          = size( w, 2 );
-        wend        = w(:,end);
+        p.w           = reshape( p.w, 3, [] );
+        nw          = size( p.w, 2 );
+        wend        = p.w(:,end);
         nt          = numel( t );
-        w           = [ w, wend(:,ones(1,nt-nw)) ];
+        p.w           = [ p.w, wend(:,ones(1,nt-nw)) ];
         if isempty( q0 )
             y0      = [ 1; 0; 0; 0 ];
         else
@@ -1537,7 +1537,7 @@ methods
             nt      = nw;
             t       = 1 : nt;
         end
-        wpp         = spline( t, w );
+        wpp         = spline( t, p.w );
         options     = odeset( varargin{:} );
         [~, Y]      = ode45( @Funct, t, y0, options );
             function yd = Funct( ti, yi )
@@ -1714,7 +1714,7 @@ methods
 %  t(nt)        initial and subsequent (or previous) times t = [t0,t1,...]
 %               (monotonic)
 %  @torque [OPTIONAL] function handle to calculate torque vector:
-%               tau(1:3) = torque( t, y ), where y = [q.e(1:4); w(1:3)]
+%               tau(1:3) = torque( t, y ), where y = [q.e(1:4); p.w(1:3)]
 %  odeoptions [OPTIONAL] ode45 options
 % Outputs:
 %  q1(1,nt)     array of normalized quaternions at times t1
@@ -2163,11 +2163,11 @@ methods(Static)
 % initial quaternion(1,0,0,0)
 %
 % Calling syntax 1:
-% function q = quaternion.integrateomega( t, w, odeoptions )
+% function q = quaternion.integrateomega( t, p.w, odeoptions )
 % Inputs:
 %  t(nt)        initial and subsequent (or previous) times t = [t0,t1,...]
 %               (monotonic)
-%  w(3,nt)      3D angular velocity vectors, radians/(unit time)
+%  p.w(3,nt)      3D angular velocity vectors, radians/(unit time)
 %  odeoptions [OPTIONAL] ode45 options
 %
 % Calling syntax 2:
@@ -2524,8 +2524,8 @@ end % RotMat2e
 function qout = UV2q( u, v )
 % function qout = UV2q( u, v )
 % p.ONE pair vectors U, V -> one quaternion
-w       = cross( u, v );    % construct vector w perpendicular to u and v
-magw    = norm( w );
+p.w       = cross( u, v );    % construct vector p.w perpendicular to u and v
+magw    = norm( p.w );
 dotuv   = dot( u, v );
 if magw == 0
 % Either norm(u) == 0 or norm(v) == 0 or dotuv/(norm(u)*norm(v)) == 1
@@ -2544,8 +2544,8 @@ if magw == 0
     what    = [ 0; -v(3); v(2) ]./ sqrt( v(2)^2 + v(3)^2 );
     costh   = -1;
 else
-% Use w as rotation axis, angle between u and v as rotation angle
-    what    = w(:) / magw;
+% Use p.w as rotation axis, angle between u and v as rotation angle
+    what    = p.w(:) / magw;
     costh   = dotuv /( norm(u) * norm(v) );
 end
 c       = sqrt( 0.5 *( 1 + costh ));    % real element >= 0
