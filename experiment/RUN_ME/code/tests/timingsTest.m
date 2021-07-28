@@ -9,23 +9,13 @@
 % prints results as text and histograms.
 % Input: events - cell array of chars.
 %       timestamps - table, each column is an event, each row is a timestamp.
-%       traj_end - double vec, last timestamp in each reach to target. Remove if you'r not khen.
 %       desired_durations - vector of doubles.
 % Output: dev_table - Contains all the trials with deviating stimuli duration.
 %                   3 col:Trial number, deviation and event type.
-function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desired_durations)
+function [pass_test, dev_table] = timingsTest(events, timestamps, desired_durations)
 
     max_dev = 2; % max deviation in ms.
     desired_std = 2;
-    
-    % @@@@@@@@@@@@@@@@ Specific for Khen's experiment @@@@@@@@@@@@@@@@
-    i_m_khen = 1;
-    target_col = find(ismember(events, 'target_time'));
-    % Calc delay between target disp and end of traj.
-    resp_time = traj_end' - timestamps{:,target_col};
-    resp_time = resp_time * 1000; % convert to ms.
-    resp_time = resp_time + 10;
-    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     
     % Calc deviations.
     durations = timestamps{:, 2:end} - timestamps{:, 1:end-1};
@@ -35,15 +25,7 @@ function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desi
     durations_std = std(durations,1, 'omitnan');
     deviations = durations - desired_durations;
     deviations_abs = abs(deviations);
-    if i_m_khen
-        deviating_trials = deviations_abs > max_dev;
-        % Ignore cases when sub responded before target duration passed.
-        sub_res_quickly = ceil(durations(:, target_col)) == ceil(resp_time);
-        deviating_trials(:, target_col) = deviating_trials(:, target_col) & ~sub_res_quickly;
-        bad_deviations_index = find(deviating_trials);
-    else
-        bad_deviations_index = find(deviations_abs > max_dev);
-    end
+    bad_deviations_index = find(deviations_abs > max_dev);
     [bad_deviations_trial,~] = ind2sub(size(deviations_abs), bad_deviations_index);
     bad_deviations = deviations(bad_deviations_index);
     
