@@ -8,7 +8,7 @@ close all;
 addpath('.\NatNetSDK');
 
 % Parameter definit1ion.
-p.SUB_NUM = 1022;
+p.SUB_NUM = 12;
   
 p.FULLSCREEN = 1;
 p.DEBUG = 0;

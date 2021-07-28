@@ -125,18 +125,18 @@ function [p] = runTrials(trials, include_prime, p)
                 recog_q = build_q(trials, 'recog', p);
                 
                 % Shows: masks, prime, target, categorization question.
-                [target_ans, events1] = getAns('categor', categor_q, p);
-                times(1) = events1.times(events1.names == "fix");
-                times(2) = events1.times(events1.names == "mask1");
-                times(3) = events1.times(events1.names == "mask2");
-                times(4) = events1.times(events1.names == "prime");
-                times(5) = events1.times(events1.names == "mask3");
-                times(6) = events1.times(events1.names == "target");
-                times(7) = events1.times(events1.names == "categor");
+                [target_ans, events(1:7)] = getAns('categor', categor_q, p);
+                times(1) = events.times(event.names == 'fix');
+                times(2) = events.times(event.names == 'mask1');
+                times(3) = events.times(event.names == 'mask2');
+                times(4) = events.times(event.names == 'prime');
+                times(5) = events.times(event.names == 'mask3');
+                times(6) = events.times(event.names == 'target');
+                times(7) = events.times(event.names == 'categor');
                 
                 % Shows: recognition question.
-                [prime_ans, events2] = getAns('recog', recog_q, p);
-                times(8) = events2.times(events2.names == "recog");
+                [prime_ans, events] = getAns('recog', recog_q, p);
+                times(8) = events.times(event.names == 'recog');
                 
                 % PAS
                 times(9) = showPas(p);
@@ -146,14 +146,8 @@ function [p] = runTrials(trials, include_prime, p)
                 categor_q = build_q(trials, 'categor_wo_prime', p);
                 
                 % Shows: masks, target, categorization question.
-                [target_ans, events3] = getAns('categor_wo_prime', categor_q, p);
-                times(1) = events3.times(events3.names == "fix");
-                times(2) = events3.times(events3.names == "mask1");
-                times(3) = events3.times(events3.names == "mask2");
-                times(4) = events3.times(events3.names == "mask3");
-                times(5) = events3.times(events3.names == "mask3");
-                times(6) = events3.times(events3.names == "target");
-                times(7) = events3.times(events3.names == "categor");
+                [target_ans, times_temp] = getAns('categor_wo_prime', categor_q, p);
+                times(1:7) = [times_temp(1:3); times_temp(4); times_temp(4:6)];
                 
                 % Fill missing values.
                 prime_ans = default_prime_ans; % Recog ans.

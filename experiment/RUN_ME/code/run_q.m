@@ -7,12 +7,10 @@
 function [traj, timecourse, events] = run_q(traj_type, q, p)
     traj = NaN(p.MAX_CAP_LENGTH,3);
     timecourse = NaN(p.MAX_CAP_LENGTH,1);
-    event_indx = find(~isnan(q.txtr));
-    num_events = length(event_indx) + 1; % '+ 1' because we add 'slow_mvmnt' event.
+    num_events = sum(any(~isnan(q.txtr))) + 1; % '+ 1' because we add 'slow_mvmnt' here.
     events.times = NaN(num_events, 1);
-    events.names = [q.name(event_indx); 'slow_mvmnt'];
+    events.names = string(NaN(num_events, 1));
     categor_traj = any(strcmp(traj_type, ["categor","categor_wo_prime"]));
-    seen_target = 0;
     
     for iQ = 1:q.len
         % Sync to screen refresh.
@@ -31,7 +29,7 @@ function [traj, timecourse, events] = run_q(traj_type, q, p)
         end
         
         % Identify screen touch
-        if at_screen && seen_target
+        if at_screen
             Screen('DrawTexture',p.w, p.EMPTY_TXTR);
             return;
         end
@@ -43,7 +41,10 @@ function [traj, timecourse, events] = run_q(traj_type, q, p)
         
         % Samples time when there is event.
         if ~isnan(q.txtr(iQ))
-            events.times(events.names == q.name(iQ)) = timecourse(iQ) + p.REF_RATE_SEC;
+            events.times(1) = timecourse(iQ) + p.REF_RATE_SEC;
+            events.names(1) = q.name(iQ);
+            events.times = circshift(events.times,-1);
+            events.names = circshift(events.names,-1);
         end
         
         switch q.name(iQ)
@@ -53,13 +54,11 @@ function [traj, timecourse, events] = run_q(traj_type, q, p)
                 Screen('DrawTexture',p.w, q.txtr(iQ));
                 DrawFormattedText(p.w, q.txt1(iQ,:), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
             case 'target'
-                seen_target = 1;
                 Screen('TextFont',p.w, p.FONT_TYPE);
                 Screen('TextSize', p.w, p.FONT_SIZE);
                 Screen('DrawTexture',p.w, q.txtr(iQ));
                 DrawFormattedText(p.w, q.txt1(iQ,:), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
             case 'recog'
-                seen_target = 1;
                 Screen('TextFont',p.w, p.FONT_TYPE);
                 Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
                 Screen('DrawTexture',p.w, q.txtr(iQ));
