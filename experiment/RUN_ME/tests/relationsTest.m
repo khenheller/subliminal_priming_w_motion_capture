@@ -3,34 +3,34 @@
 % 'prime-target': check prime categor is different from target.
 % 'prime-dist': check prime categor is same as distractor.
 % test_type - what are you checking: 'data', 'trials_list', 'practice_trials_list'.
-function pass_test = relationsTest (list_a, list_b, list_type, test_type, p)
+function pass_test = relationsTest (list_a, list_b, type, test_type, p)
     pass_test.common_letters = 1;
     pass_test.categor = 1;
     
     common_letters = list_a == list_b;
     common_words = any(common_letters, 2); % OR on columns.
     % Ignore prime = target.
-    if strcmp(list_type,'prime_target')
+    if strcmp(type,'prime_target')
         same_word = prod(common_letters, 2); % AND on columns.
         same_word = logical(same_word);
         common_words(same_word) = 0;
     end
     if any(common_words)
-        disp([list_type ' has common letters in trials: ' num2str(find(common_words)')]);
+        disp([type ' has common letters in trials: ' num2str(find(common_words)')]);
         pass_test.common_letters = 0;
     end
     
     
     categor_a = getCategor(list_a, test_type, p);
     categor_b = getCategor(list_b, test_type, p);
-    if strcmp(list_type,'prime_target') % checks if prime & target from same categor.
+    if strcmp(type,'prime_target') % checks if prime & target from same categor.
         bad_categor = categor_a == categor_b;
         bad_categor(same_word) = 0; % Ignore same word instances.
     else % checks if prime & dist from different categor.
         bad_categor = categor_a ~= categor_b;
     end
     if any(bad_categor)
-        disp([list_type ' are from bad categories in trials: ' num2str(find(bad_categor)')]);
+        disp([type ' are from bad categories in trials: ' num2str(find(bad_categor)')]);
         pass_test.categor = 0;
     end
 end
