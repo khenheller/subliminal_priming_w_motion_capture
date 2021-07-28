@@ -20,12 +20,12 @@ function trials = newTrials(draw_stats, practice, p)
     % Assign trails type (practice/ test).
     trials.practice = ones(height(trials),1) * practice;
     % Assign time.
-    trials.fix_duration = ones(height(trials),1) * p.FIX_DURATION_SEC;
-    trials.mask1_duration = ones(height(trials),1) * p.MASK1_DURATION_SEC;
-    trials.mask2_duration = ones(height(trials),1) * p.MASK2_DURATION_SEC;
-    trials.prime_duration = ones(height(trials),1) * p.PRIME_DURATION_SEC;
-    trials.mask3_duration = ones(height(trials),1) * p.MASK3_DURATION_SEC;
-    trials.target_duration = ones(height(trials),1) * p.TARGET_DURATION_SEC;
+    trials.fix_duration = ones(height(trials),1) * p.FIX_DURATION;
+    trials.mask1_duration = ones(height(trials),1) * p.MASK1_DURATION;
+    trials.mask2_duration = ones(height(trials),1) * p.MASK2_DURATION;
+    trials.prime_duration = ones(height(trials),1) * p.PRIME_DURATION;
+    trials.mask3_duration = ones(height(trials),1) * p.MASK3_DURATION;
+    trials.target_duration = ones(height(trials),1) * p.TARGET_DURATION;
     
     % sample words to use as targets (See main.docx for explanation on this calc).
     divisors = 1:height(p.WORD_LIST);

@@ -105,7 +105,7 @@ function [p] = runTrials(trials, include_prime, p)
             % block change
             if trials.iTrial(1) ~= 1 
                 if mod(trials.iTrial(1), p.BLOCK_SIZE) == 1
-                    showTexture(p.BLOCK_END_SCREEN, p);
+                    times = showTexture(p.BLOCK_END_SCREEN, p);
                     KbWait([], 3);
                 end               
             end
@@ -121,8 +121,8 @@ function [p] = runTrials(trials, include_prime, p)
             
             if include_prime
                 % Create queue for current trial.
-                categor_q = build_q(trials, 'categor', p);
-                recog_q = build_q(trials, 'recog', p);
+                categor_q = build_q(trials, 'categor');
+                recog_q = build_q(trials, 'recog');
                 
                 % Shows: masks, prime, target, categorization question.
                 [target_ans, times(1:7)] = getAns('categor', categor_q, p);
@@ -135,11 +135,11 @@ function [p] = runTrials(trials, include_prime, p)
                 [pas, pas_time] = getInput('pas', p);
             else
                 % Create queue for current trial.
-                categor_q = build_q(trials, 'categor_wo_prime', p);
+                categor_q = build_q(trials, 'categor_wo_prime');
                 
                 % Shows: masks, target, categorization question.
                 [target_ans, times_temp] = getAns('categor_wo_prime', categor_q, p);
-                times(1:7) = [times_temp(1:3); times_temp(4); times_temp(4:6)];
+                times(1:7) = [times_temp(1:3) times_temp(4) times_temp(4:6)];
                 
                 % Fill missing values.
                 prime_ans = default_prime_ans; % Recog ans.
@@ -179,33 +179,33 @@ function [p] = exampleTrial(trials, p)
 
         % Fixation
         times(1) = showFixation(p);
-        waitUntil(p.FIX_DURATION_SEC, p);
+        waitUntil(p.FIX_DURATION, p);
 
         % Mask 1
         Screen('DrawTexture',p.w, mask1);
         [~,times] = Screen('Flip', p.w);
-        waitUntil(p.MASK1_DURATION_SEC, p);
+        waitUntil(p.MASK1_DURATION, p);
 
         % Mask 2
         Screen('DrawTexture',p.w, mask2);
         [~,times] = Screen('Flip', p.w);
-        waitUntil(p.MASK2_DURATION_SEC, p);
+        waitUntil(p.MASK2_DURATION, p);
 
         % Prime
-        Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
+        Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with word.
         DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
         [~,times] = Screen('Flip',p.w,0,1);
-        waitUntil(p.PRIME_DURATION_SEC, p);
+        waitUntil(p.PRIME_DURATION, p);
 
         % Mask 3
         Screen('DrawTexture',p.w, mask3);
         [~,times] = Screen('Flip', p.w);
-        waitUntil(p.MASK3_DURATION_SEC, p);
+        waitUntil(p.MASK3_DURATION, p);
 
         % Target
         Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
         Screen('TextSize', p.w, p.FONT_SIZE);
-        Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with target.
+        Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with target.
         DrawFormattedText(p.w, double('עלה'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
         [~,times] = Screen('Flip',p.w,0,1);
         
@@ -213,10 +213,10 @@ function [p] = exampleTrial(trials, p)
         getInput('instruction',p);
 
         % Target categorization.
-%         target_ans = getAns('categor', q, p); dont need this
+        target_ans = getAns('categor', p);
 
         % Prime recognition.
-        Screen('DrawTexture',p.w, p.RECOG_TXTR);
+        Screen('DrawTexture',p.w, p.RECOG_SCREEN);
         Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
         DrawFormattedText(p.w, double('תיק'), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
         DrawFormattedText(p.w, double('ספל'), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
@@ -225,7 +225,7 @@ function [p] = exampleTrial(trials, p)
         % Waits for key press.
         getInput('instruction',p);
         
-%         prime_ans = getAns('recog', p); dont need this
+        prime_ans = getAns('recog', p);
 
         % PAS
         times(9) = showPas(p);
@@ -255,7 +255,7 @@ function [times] = showFixation(p)
         finInStartPoint(p);
     end
     
-    Screen('DrawTexture',p.w, p.FIXATION_TXTR);
+    Screen('DrawTexture',p.w, p.FIXATION_SCREEN);
     [~,times] = Screen('Flip', p.w);
 end
 
@@ -265,7 +265,7 @@ function [times] = showMask(mask, p) % 'mask' - which mask to show (1st / 2nd / 
 end
 
 function [times] = showWord(trial, prime_or_target, p)
-    Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
+    Screen('DrawTexture',p.w, p.CATEGOR_SCREEN); % Shows categor answers with word.
     DrawFormattedText(p.w, double(trial.(prime_or_target){:}), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
     [~,times] = Screen('Flip',p.w,0,1);
 end
@@ -280,7 +280,7 @@ function [times] = showRecog(trial, p)
         right_word = trial.prime{:};
     end
     
-    Screen('DrawTexture',p.w, p.RECOG_TXTR);
+    Screen('DrawTexture',p.w, p.RECOG_SCREEN);
     Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
     DrawFormattedText(p.w, double(left_word), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
     DrawFormattedText(p.w, double(right_word), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
@@ -289,7 +289,8 @@ end
 
 % draws PAS task.
 function [times] = showPas(p)
-    times = showTexture(p.PAS_SCREEN, p);
+    Screen('DrawTexture',p.w, p.PAS_SCREEN);
+    [~,times] = Screen('Flip', p.w, 0, 1);
 end
 
 % Assigns data captured in this trial to 'trials'.
@@ -303,7 +304,7 @@ function [trials] = assign_to_trials(trials, times, target_ans, prime_ans, pas, 
     trials.prime_time(1) = times(4);
     trials.mask3_time(1) = times(5);
     trials.target_time(1) = times(6);
-    trials.categor_time(1) = times(7);
+    trials.categor_time(1) = target_ans.categor_time;
     trials.recog_time(1) = times(8);
     trials.pas_time(1) = times(9);
 

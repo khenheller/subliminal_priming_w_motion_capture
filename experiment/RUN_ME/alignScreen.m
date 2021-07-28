@@ -11,8 +11,6 @@ function [] = alignScreen(p)
     p = initPsychtoolbox(p);
     p = initConstants(1, p);
     
-    txtr_num = getTextureFromHD(p.ALIGNMENT_SCREEN, p);
-    
     % Runs until space press.
     while ~key(p.SPACE_KEY)
         % sample location.
@@ -46,7 +44,7 @@ function [] = alignScreen(p)
         % Screen height.
         screen_height = norm(a-t); % 3d vec length.
         
-        Screen('DrawTexture',p.w, txtr_num);
+        Screen('DrawTexture',p.w, p.ALIGNMENT_SCREEN);
         messages = {['Angle between AB and AS: ' num2str(angle) ' degrees'],...
             ['Distance between screen and starting point: ' num2str(dist_to_s)],...
             ['Height of A: ' num2str(screen_height)]};
@@ -55,7 +53,6 @@ function [] = alignScreen(p)
     end
     KbWait([], 1); % Waits until space is released.
     % Close psychtoolbox.
-    Screen('close', txtr_num);
     p.NATNETCLIENT.disconnect;
     sca;
     ShowCursor;
