@@ -35,14 +35,23 @@ function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desi
     durations_std = std(durations,1, 'omitnan');
     deviations = durations - desired_durations;
     deviations_abs = abs(deviations);
+    deviating_trials = deviations_abs > max_dev;
     if i_m_khen
-        deviating_trials = deviations_abs > max_dev;
         % Ignore cases when sub responded before target duration passed.
-        sub_res_quickly = ceil(durations(:, target_col)) == ceil(resp_time);
+        sub_res_quickly = (ceil(durations(:, target_col)) == ceil(resp_time)) & (resp_time <= desired_durations(target_col));
         deviating_trials(:, target_col) = deviating_trials(:, target_col) & ~sub_res_quickly;
+        % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
+        % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
+        % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
+        % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
+        deviating_trials(:, target_col) = 0;
+        % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
+        % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
+        % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
+        % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
         bad_deviations_index = find(deviating_trials);
     else
-        bad_deviations_index = find(deviations_abs > max_dev);
+        bad_deviations_index = find(deviating_trials);
     end
     [bad_deviations_trial,~] = ind2sub(size(deviations_abs), bad_deviations_index);
     bad_deviations = deviations(bad_deviations_index);

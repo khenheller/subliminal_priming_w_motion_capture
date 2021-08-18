@@ -7,7 +7,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.VIEW_ANGLE_X = 2.5; % in deg.
     p.VIEW_ANGLE_Y = 1;
     p.FINGER_SIZE = 0.03; %in meter.
-    p.START_POINT_RANGE = 0.02; %3D distance (in meter) from start point which counts as finger in start point.
+    p.START_POINT_RANGE = 0.01; %3D distance (in meter) from start point which counts as finger in start point.
     
     % TEXT
     p.FONT_TYPE = 'Arial Bold'; %font name e.g. 'David';
@@ -32,12 +32,16 @@ function [p] = initConstants(psychtoolbox_active, p)
     
     if psychtoolbox_active
         p.REACT_TIME = 0.320; % Maximal allowed time to movement onset (in sec).
+        p.MIN_REACT_TIME = 0.100; % Faster mvmnts are considered predictive (planned before target display).
         p.MOVE_TIME = 0.420; % Maximal allowed movement time (in sec).
         p.RECOG_CAP_LENGTH_SEC = 7; % Trajectory recording length in sec.
         p.CATEGOR_CAP_LENGTH_SEC = p.REACT_TIME + p.MOVE_TIME; % in sec.
         p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
         p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
         p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
+        p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
+        p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
+        p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
         
         % Response keys.
         KbName('UnifyKeyNames');
@@ -90,8 +94,8 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.PAS_SCREEN = 'pas_screen.jpg';
         p.RECOG_SCREEN = 'recog_screen.jpg';
         p.RTRN_START_POINT_SCREEN = 'return_start_point_screen.jpg';
-        p.LATE_MOVE_ONSET_TXTR = 'late_move_onset_screen.jpg';
-        p.MISS_RESPONSE_WINDOW_TXTR = 'miss_response_window_screen.jpg';
+        p.LATE_RES_SCREEN = 'late_res_screen.jpg';
+        p.SLOW_MVMNT_SCREEN = 'slow_mvmnt_screen.jpg';
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));
@@ -112,7 +116,8 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.MASK2_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
     p.PRIME_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
     p.MASK3_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.TARGET_DURATION = 0.5 - p.REF_RATE_SEC * 3 / 4;
+    p.TARGET_DURATION = 0.5; % we don't diminish 3/4 samprate since we don't use waitSecs to wait its duration.
+    p.TARGET_DURATION_SAMPLES = p.TARGET_DURATION * p.REF_RATE_HZ;
     
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
@@ -148,8 +153,8 @@ function [p] = initConstants(psychtoolbox_active, p)
     % Missing data restrictions.
     p.MIN_SAMP_LEN = 0.1; % in sec.
     p.MAX_MISSING_DATA = 0.1; % in sec.
-    p.MAX_BAD_TRIALS = p.NUM_TRIALS / 2; % sub with more bad trials is disqualified.
-    p.MIN_AMNT_TRIALS_IN_COND = 100; % sub with less good trials in each condition is disqualified.
+    p.MAX_BAD_TRIALS = p.NUM_TRIALS - 60; % sub with more bad trials is disqualified.
+    p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition is disqualified.
     p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
     
     
@@ -167,6 +172,6 @@ function [p] = initConstants(psychtoolbox_active, p)
     % Reach distance.
     p.MAX_DIST_FROM_SCREEN = 0.05; %that is still considered as "touch" in analysis. in meter.
     p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN; % trials with shorter reaches will be discarded.
-    p.TARGET_MISS_RANGE = 0.03; %Touches outside this radius of the target (circle flat on screen, centered on target),
+    p.TARGET_MISS_RANGE = 0.12; %Touches outside this radius of the target (circle flat on screen, centered on target),
                                 % are disqualified from analysis.
 end

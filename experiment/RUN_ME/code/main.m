@@ -32,7 +32,7 @@ function [p] = main(p)
         end
         
         saveCode(trials.list_id{1}, p);
-        save('p.mat', 'p');
+        save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) 'p.mat'], 'p');
         
         % Experiment
         showTexture(p.WELCOME_SCREEN, p);
@@ -121,17 +121,14 @@ function [p] = runTrials(trials, include_prime, p)
             
             % Fixation
             times(1) = showFixation(p);
-%             waitUntil(p.FIX_DURATION, p);
             WaitSecs(p.FIX_DURATION);
             
             % Mask 1
             times(2) = showMask(mask1, p);
-%             waitUntil(p.MASK1_DURATION, p);
             WaitSecs(p.MASK1_DURATION);
             
             % Mask 2
             times(3) = showMask(mask2, p);
-%             waitUntil(p.MASK2_DURATION, p);
             WaitSecs(p.MASK2_DURATION);
             
             % Prime
@@ -205,28 +202,28 @@ function [p] = exampleTrial(trials, p)
 
         % Fixation
         times(1) = showFixation(p);
-        waitUntil(p.FIX_DURATION, p);
+        waitSecs(p.FIX_DURATION, p);
 
         % Mask 1
         Screen('DrawTexture',p.w, mask1);
         [~,times] = Screen('Flip', p.w);
-        waitUntil(p.MASK1_DURATION, p);
+        waitSecs(p.MASK1_DURATION, p);
 
         % Mask 2
         Screen('DrawTexture',p.w, mask2);
         [~,times] = Screen('Flip', p.w);
-        waitUntil(p.MASK2_DURATION, p);
+        waitSecs(p.MASK2_DURATION, p);
 
         % Prime
         Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
         DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
         [~,times] = Screen('Flip',p.w,0,1);
-        waitUntil(p.PRIME_DURATION, p);
+        waitSecs(p.PRIME_DURATION, p);
 
         % Mask 3
         Screen('DrawTexture',p.w, mask3);
         [~,times] = Screen('Flip', p.w);
-        waitUntil(p.MASK3_DURATION, p);
+        waitSecs(p.MASK3_DURATION, p);
 
         % Target
         Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
@@ -332,6 +329,9 @@ function [trials] = assign_to_trials(trials, times, target_ans, prime_ans, pas, 
     trials.categor_time(1) = target_ans.categor_time;
     trials.recog_time(1) = times(8);
     trials.pas_time(1) = times(9);
+    
+    trials.late_res(1) = target_ans.late_res;
+    trials.slow_mvmnt(1) = target_ans.slow_mvmnt;
 
     % Save responses.
     trials.target_ans_left(1) = target_ans.answer;
@@ -382,7 +382,7 @@ function [p] = setPoints(p)
     p.RIGHT_END_POINT = setPoint(p.RIGHT_END_POINT_SCREEN, p);
     p.LEFT_END_POINT = setPoint(p.LEFT_END_POINT_SCREEN, p);
     p.MIDDLE_POINT = setPoint(p.MIDDLE_POINT_SCREEN, p);
-    file_name = [p.DATA_FOLDER '\sub' num2str(p.SUB_NUM) 'start_end_points.m'];
+    file_name = [p.DATA_FOLDER '\sub' num2str(p.SUB_NUM) 'start_end_points.mat'];
     save(file_name, 'p');
 end
 

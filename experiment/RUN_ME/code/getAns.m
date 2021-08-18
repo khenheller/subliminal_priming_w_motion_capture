@@ -2,7 +2,7 @@
 % returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
 function [output] = getAns(traj_type, p)
     
-    [traj_to, timecourse_to, categor_time]  = getTraj('to_screen', traj_type, p);
+    [traj_to, timecourse_to, categor_time, late_res, slow_mvmnt]  = getTraj('to_screen', traj_type, p);
     [traj_from, timecourse_from, ~]         = getTraj('from_screen', traj_type, p);   
     
     answer = NaN;
@@ -24,6 +24,7 @@ function [output] = getAns(traj_type, p)
             end
     end
     
-    output = struct('answer',answer, 'traj_to',traj_to, 'timecourse_to',timecourse_to,...
-        'traj_from',traj_from, 'timecourse_from',timecourse_from, 'categor_time',categor_time);
+    output = struct('answer',answer, 'categor_time',categor_time, 'late_res',late_res, 'slow_mvmnt',slow_mvmnt,...
+        'traj_to',traj_to, 'timecourse_to',timecourse_to,...
+        'traj_from',traj_from, 'timecourse_from',timecourse_from);
 end

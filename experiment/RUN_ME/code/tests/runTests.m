@@ -10,8 +10,9 @@ TRIALS_LISTS_FOLDER = [STIM_FOLDER 'trial_lists/'];
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 % READ ME: if you aren't Khen, set i_m_khen in timingTest.m to 0!
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 % To test sub data enter his number.
-sub_num = [1 2 3 4 5 6 7 8 9 10];
+sub_num = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
 % To test word list enter its name.
 word_list = 'practice_wo_prime_trials.xlsx';
 % Are you testing 'data' of a subject, or just a 'trials_list', or a 'practice_trials_list'.
@@ -36,6 +37,11 @@ for iSub = sub_num
     % Log results to file.
     diary(diary_name);
     [pass_test, test_res] = tests(trials, trials_traj, test_type, p);
+    %@@@@@@@@@@@@@@@@@@@@
+    disp('@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@');
+    disp('Make a change in timingsTest.m (marked @with remove@ this) so that the time of target will also be checked.\nYou canceled its check because the getTraj.m didnt display the categor screen after 500ms of target,\n so target timing is always bad');
+    disp('@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@');
+    %@@@@@@@@@@@@@@@@@@@@
     diary off;
 
     save([TEST_RES_FOLDER 'sub' num2str(iSub) '.mat'], 'test_res');

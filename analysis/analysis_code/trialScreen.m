@@ -2,6 +2,11 @@
 %   Have too much missing data.
 %   Reach distance too short.
 %   Finger missed target.
+%   Stim duration was false.
+%   Late response.
+%   Slow movement time.
+%   Early start (predictive mvmnt instead of response to target).
+%   Incorrect (e.g. sub reached left but correct ans was right).
 % Output:
 %   bad_trials - Cell for each sub, has table inside.
 %               Table has row for each trial and column for each screening reason,
@@ -11,7 +16,8 @@
 %               Table has list of disqualified trials for each screen reason.
 %               bad_trials is logical indexing, this is numeric.
 function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
-    screen_reasons = {'missing_data','short_traj','missed_target','bad_stim_dur','any'};
+    screen_reasons = {'missing_data','short_traj','missed_target','bad_stim_dur',...
+        'late_res', 'slow_mvmnt', 'early_res', 'incorrect', 'any'};
     % Bad trials' numbers. row = bad trial, column = reason.
     bad_trials_table = table('Size', [p.NUM_TRIALS length(screen_reasons)],...
         'VariableTypes', repmat({'double'}, length(screen_reasons), 1),...
@@ -30,8 +36,10 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
         dev_table = load([p.TESTS_FOLDER '/sub' num2str(iSub) '.mat']);  dev_table = dev_table.test_res.dev_table;
         traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj.mat']);  traj_table = traj_table.traj_table;
+        trials_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data.mat']);  trials_table = trials_table.data_table;
         % remove practice.
         traj_table(traj_table{:,'practice'} >= 1, :) = [];
+        trials_table(trials_table{:,'practice'} >= 1, :) = [];
         traj = traj_table{:, traj_name};
 
         bad_trials{iSub} = bad_trials_table;
@@ -52,7 +60,14 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
                 success(ismember(screen_reasons, 'missed_target')) = testMissTarget(single_traj, p);
             end
             % Check if stim display duration was bad.
-            success(ismember(screen_reasons, 'bad_stum_dur')) = testStimDur(dev_table, iTrial);
+            success(ismember(screen_reasons, 'bad_stim_dur')) = testStimDur(dev_table, iTrial);
+            % Check if reaponse was too late or mvmnt time too long.
+            success(ismember(screen_reasons, 'late_res')) = ~trials_table.late_res(iTrial);
+            success(ismember(screen_reasons, 'slow_mvmnt')) = ~trials_table.slow_mvmnt(iTrial);
+            % Check if response was too early.
+            success(ismember(screen_reasons, 'early_res')) = ~trials_table.early_res(iTrial);
+            % Check if answer is incorrect.
+            success(ismember(screen_reasons, 'incorrect')) = trials_table.target_correct(iTrial);
             bad_trials{iSub}{iTrial,:} = ~success * iTrial;
         end
 

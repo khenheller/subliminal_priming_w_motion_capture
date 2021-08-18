@@ -7,7 +7,7 @@ function success = testAmountData (traj, p)
     last_sample = find(~isnan(traj), 1, 'last');
     missing_data = find(isnan(traj(1:last_sample)));
     if (last_sample * p.REF_RATE_SEC < p.MIN_SAMP_LEN) ||...
-            (length(missing_data) > p.MAX_MISSING_DATA)
+            (length(missing_data) * p.REF_RATE_SEC > p.MAX_MISSING_DATA)
         success = 0;
     end
 end

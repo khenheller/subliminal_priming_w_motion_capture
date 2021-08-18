@@ -1,25 +1,18 @@
 clear all;
 close all;
 clc;
+
 %% Parameters
-load('../../experiment/RUN_ME/p.mat');
+load('../../experiment/RUN_ME/code/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-p.SUBS = [11 12 13 14]; % to analyze.
+p.SUBS = [11 14 16 17 18 19 20 21 22 23 24 25]; % to analyze.
 p.N_SUBS = length(p.SUBS);
 p.MAX_SUB = max(p.SUBS);
 pas_rate = 1; % to analyze.
-picked_trajs = [1 2 3 4]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
+picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 
-% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
-p.PROC_DATA_FOLDER = '../processed_data/';
-p.DATA_FOLDER = '../../raw_data/';
-p.TESTS_FOLDER = '../../experiment/RUN_ME/tests/test_results/';
-p.MAX_BAD_TRIALS = p.NUM_TRIALS / 2; % sub with more bad trials is disqualified.
-p.MIN_AMNT_TRIALS_IN_COND = 100; % sub with less good trials in each condition is disqualified.
-p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
-% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
 % Normalization params.
 p.TRAJ_FILT_ORDER = 2;
 p.TRAJ_FILT_CUTOFF = 8;% in Hz.
@@ -60,14 +53,46 @@ else
     error('Please analyze subs 1-10 seperatly from 11-20');
 end
 p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
+p.TARGET_MISS_RANGE = 0.12; % In meter.
 p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
 p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
 p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
+% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
+p.PROC_DATA_FOLDER = '../processed_data/';
+p.DATA_FOLDER = '../../raw_data/';
+p.TESTS_FOLDER = '../../experiment/RUN_ME/code/tests/test_results/';
+p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
+p.MIN_REACT_TIME_SAMPLES = 10;
+p.MAX_BAD_TRIALS = p.NUM_TRIALS - 60; % sub with more bad trials is disqualified.
+p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.
+% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
+%% Add fields
+% Adds late_res and slow_mvmnt fields to sub 1-14.
+for iSub = p.SUBS
+    % Checks if the fields were already added.
+    data_file = fopen([p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
+    fields = textscan(data_file,'%s',1); % gets only fields
+    fields = fields{:}{:};
+    fields = split(fields, ',');
+    has_fields = any(contains(fields, 'late_res')) &...
+        any(contains(fields, 'slow_mvmnt')) &...
+        any(contains(fields, 'early_res'));
+    fclose(data_file);
+    if ~has_fields
+        data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
+        traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'traj.csv']);
+        start_end_points = load([p.DATA_FOLDER '/sub' num2str(iSub) 'start_end_points.mat']);
+        p.START_POINT = start_end_points.p.START_POINT;
+        data_table = addFields(data_table, traj_table, p);
+        writetable(data_table, [p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
+    end
+end
 %% Preprocessing & Normalization
 % Trials too short to filter.
 too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
     'VariableTypes', repmat({'cell'}, length(traj_types), 1),...
     'VariableNames', traj_types);
+disp('Preprocessing done for subject:');
 for iSub = p.SUBS
     traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'traj.csv']);
     data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
@@ -92,6 +117,7 @@ for iSub = p.SUBS
     writetable(data_table, [p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data_proc.csv']);
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj_proc.mat'], 'traj_table');
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data_proc.mat'], 'data_table');
+    disp(num2str(iSub));
 end
 disp('Following trials where too short to filter:');
 disp(too_short_to_filter);
@@ -159,7 +185,6 @@ for iTraj = 1:length(traj_names)
 end
 disp('FDA calc done.');
 %% Plotting params
-clc;
 close all;
 
 avg_plot_width = 4;
@@ -247,7 +272,7 @@ for iSub = p.SUBS
         h(4) = plot(nan,nan,diff_avg_col);
         legend(h, 'Same', 'Diff', 'Same avg', 'Diff avg', 'Location','southeast');
         xlabel('X'); xlim([-0.12, 0.12]);
-        ylabel('Z Axis (to screen)'); ylim([0, 0.4]);
+        ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
         title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
         set(gca, 'FontSize',14);
     end
@@ -275,7 +300,7 @@ for iSub = p.SUBS
         h(2) = plot(nan,nan,'Color',diff_col);
         legend(h, 'Same', 'Diff', 'Location','southeast');
         xlabel('X'); xlim([-0.12, 0.12]);
-        ylabel('Z Axis (to screen)'); ylim([0, 0.4]);
+        ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
         title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
         set(gca, 'FontSize',14);
     end
@@ -425,14 +450,14 @@ for iSub = p.SUBS
             p1 = plot(traj_same{side}(:,:,1),  traj_same{side}(:,:,3)*flip_traj,  'Color',[same_col f_alpha]);
             p3 = plot(traj_diff{side}(:,:,1),  traj_diff{side}(:,:,3)*flip_traj,  'Color',[diff_col f_alpha]);
             xlabel('X'); xlim([-0.12, 0.12]);
-            ylabel('Z Axis (to screen)'); ylim([0, 0.4]);
+            ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
             title('Maximally deviating point');
             set(gca, 'FontSize',14);
             % Draw MAD point.
             plot(mad_p_same{side}(:,1),  mad_p_same{side}(:,3)*flip_traj, 'o','color',same_col);
             plot(mad_p_diff{side}(:,1),  mad_p_diff{side}(:,3)*flip_traj, 'o','color',diff_col);
             % Draw target.
-            plot([-0.1 0.1], [0.4 0.4], 'bo', 'LineWidth',6);
+            plot([-0.1 0.1], [p.SCREEN_DIST p.SCREEN_DIST], 'bo', 'LineWidth',6);
             h = [];
             h(1) = bar(NaN,NaN,'FaceColor',same_col);
             h(2) = bar(NaN,NaN,'FaceColor',diff_col);
@@ -457,7 +482,7 @@ for iSub = p.SUBS
         plot(avg.traj.same_left(:,3)*flip_traj,  avg.x_std.same_left,  'color',same_col);
         plot(avg.traj.diff_left(:,3)*flip_traj,  avg.x_std.diff_left,  'color',diff_col);
         ylabel('X std');
-        xlim([0 0.4]);
+        xlim([0 p.SCREEN_DIST]);
         set(gca,'FontSize',14);
         title('STD in X Axis, Left');
         h = [];
@@ -471,7 +496,7 @@ for iSub = p.SUBS
         plot(avg.traj.diff_right(:,3)*flip_traj, avg.x_std.diff_right, 'color',diff_col);
         ylabel('X std');
         xlabel('Z (m)');
-        xlim([0 0.4]);
+        xlim([0 p.SCREEN_DIST]);
         set(gca,'FontSize',14);
         title('STD in X Axis, Right');
     end
@@ -506,7 +531,7 @@ for iTraj = 1:length(traj_names)
     h(2) = plot(nan,nan,'Color',diff_col);
     legend(h, 'Same', 'Diff', 'Location','southeast');
     xlabel('X'); xlim([-0.12, 0.12]);
-    ylabel('Z Axis (to screen)'); ylim([0, 0.4]);
+    ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
     set(gca, 'FontSize',14);
     title('Avg trajectory');
@@ -529,7 +554,7 @@ for iTraj = 1:length(traj_names)
     set(gca,'FontSize',14);
     ylim([0 1]);
     xlim([0 1]);
-    title('Deviation on X axis between conditions (same,diff)');
+    title('FDA - Significance of difference between\newlineconditions (trajSame_x,trajDiff_x)');
 end
 % annotation('textbox',[0 0.91 1 0.1], 'String','X deviation between same and diff', 'FontSize',40, 'LineStyle','none', 'FitBoxToText','on', 'HorizontalAlignment','center');
 
@@ -688,7 +713,7 @@ for iTraj = 1:length(traj_names)
     plot(subs_avg.traj.same_left(:,3)*flip_traj,  subs_avg.x_std.same_left, 'color',same_col);
     plot(subs_avg.traj.diff_left(:,3)*flip_traj,  subs_avg.x_std.diff_left, 'color',diff_col);
     ylabel('X STD');
-    xlim([0 0.4]);
+    xlim([0 p.SCREEN_DIST]);
     set(gca,'FontSize',14);
     title('STD in X Axis, Left');
     h = [];
@@ -702,7 +727,7 @@ for iTraj = 1:length(traj_names)
     plot(subs_avg.traj.diff_right(:,3)*flip_traj, subs_avg.x_std.diff_right, 'color',diff_col);
     ylabel('X STD');
     xlabel('Z (m)');
-    xlim([0 0.4]);
+    xlim([0 p.SCREEN_DIST]);
     set(gca,'FontSize',14);
     title('STD in X Axis, Right');
 end
@@ -718,20 +743,20 @@ for iTraj = 1:length(traj_names)
     subplot(2,3,5);
     hold on;
     stdshade(avg_each.cond_diff.left(:,p.SUBS,1)', f_alpha, 'k', subs_avg.traj.same_left(:,3)*flip_traj, 0, 1,'ci', alpha_size);
-    plot([0 0.4], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
+    plot([0 p.SCREEN_DIST], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
     xlabel('Z (m)');
     ylabel('X diff (m)');
-    title('Diff in X between cond, Left');
+    title('TrajSame_x - TrajDiff_x, Left');
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'same - diff');
     % Right
     subplot(2,3,6);
     hold on;
     stdshade(avg_each.cond_diff.right(:,p.SUBS,1)', f_alpha, 'k', subs_avg.traj.same_right(:,3)*flip_traj, 0, 1, 'ci', alpha_size);
-    plot([0 0.4], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
+    plot([0 p.SCREEN_DIST], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
     xlabel('Z (m)');
     ylabel('X diff (m)');
-    title('Diff in X between cond, Right');
+    title('TrajSame_x - TrajDiff_x, Right');
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'same - diff');
 end
