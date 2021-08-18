@@ -53,6 +53,7 @@ else
     error('Please analyze subs 1-10 seperatly from 11-20');
 end
 p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
+p.DIST_BETWEEN_TARGETS = 0.20; % In meter.
 p.TARGET_MISS_RANGE = 0.12; % In meter.
 p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
 p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
@@ -457,7 +458,8 @@ for iSub = p.SUBS
             plot(mad_p_same{side}(:,1),  mad_p_same{side}(:,3)*flip_traj, 'o','color',same_col);
             plot(mad_p_diff{side}(:,1),  mad_p_diff{side}(:,3)*flip_traj, 'o','color',diff_col);
             % Draw target.
-            plot([-0.1 0.1], [p.SCREEN_DIST p.SCREEN_DIST], 'bo', 'LineWidth',6);
+            target_pos = p.DIST_BETWEEN_TARGETS/2;
+            plot([-target_pos target_pos], [p.SCREEN_DIST p.SCREEN_DIST], 'bo', 'LineWidth',6);
             h = [];
             h(1) = bar(NaN,NaN,'FaceColor',same_col);
             h(2) = bar(NaN,NaN,'FaceColor',diff_col);
@@ -762,6 +764,7 @@ for iTraj = 1:length(traj_names)
 end
 %% GUI, compares proc to real traj.
 close all;
+warning('off','MATLAB:legend:IgnoringExtraEntries');
 miss_data(p, traj_names); clc;
 %% Velocity
 %{
