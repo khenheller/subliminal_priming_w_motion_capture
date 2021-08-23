@@ -79,6 +79,7 @@ for iSub = p.SUBS
         any(contains(fields, 'slow_mvmnt')) &...
         any(contains(fields, 'early_res'));
     fclose(data_file);
+    % If fields don't exist, add them.
     if ~has_fields
         data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
         traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'traj.csv']);

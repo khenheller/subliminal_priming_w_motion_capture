@@ -94,7 +94,7 @@ end
 function [p] = runTrials(trials, include_prime, p)
 
     % Assigned to prime ans on block w/o prime.
-    default_prime_ans = struct('answer',NaN, 'traj_to',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_to',NaN(p.MAX_CAP_LENGTH,1),...
+    default_prime_ans = struct('answer_left',NaN, 'traj_to',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_to',NaN(p.MAX_CAP_LENGTH,1),...
         'traj_from',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_from',NaN(p.MAX_CAP_LENGTH,1), 'categor_time',NaN);
     
     try        
@@ -150,6 +150,14 @@ function [p] = runTrials(trials, include_prime, p)
             
             % Target categorization.
             target_ans = getAns('categor', p);
+            
+            % Check answer.
+            trials.target_ans_left(1) = target_ans.target_ans_left;
+            trials(1,:) = checkAns(trials(1,:), 'categor');
+            if ~trials.target_correct(1)
+                showTexture(p.WRONG_ANS_SCREEN, p);
+                WaitSecs(1.5);
+            end
             
             % Prime recognition.
             if include_prime
@@ -331,10 +339,10 @@ function [trials] = assign_to_trials(trials, times, target_ans, prime_ans, pas, 
     trials.pas_time(1) = times(9);
     
     trials.late_res(1) = target_ans.late_res;
+    trials.early_res(1) = target_ans.early_res;
     trials.slow_mvmnt(1) = target_ans.slow_mvmnt;
 
     % Save responses.
-    trials.target_ans_left(1) = target_ans.answer;
     trials.target_x_to{1} = target_ans.traj_to(:,1);
     trials.target_y_to{1} = target_ans.traj_to(:,2);
     trials.target_z_to{1} = target_ans.traj_to(:,3);
@@ -344,9 +352,8 @@ function [trials] = assign_to_trials(trials, times, target_ans, prime_ans, pas, 
     trials.target_timecourse_to{1} = target_ans.timecourse_to;
     trials.target_timecourse_from{1} = target_ans.timecourse_from;
     trials.target_rt(1) = max(target_ans.timecourse_to) - min(target_ans.timecourse_to);
-    trials(1,:) = checkAns(trials(1,:), 'categor');
 
-    trials.prime_ans_left(1) = prime_ans.answer;
+    trials.prime_ans_left(1) = prime_ans.answer_left;
     trials.prime_x_to{1} = prime_ans.traj_to(:,1);
     trials.prime_y_to{1} = prime_ans.traj_to(:,2);
     trials.prime_z_to{1} = prime_ans.traj_to(:,3);

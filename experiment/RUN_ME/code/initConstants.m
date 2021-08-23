@@ -96,6 +96,8 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.RTRN_START_POINT_SCREEN = 'return_start_point_screen.jpg';
         p.LATE_RES_SCREEN = 'late_res_screen.jpg';
         p.SLOW_MVMNT_SCREEN = 'slow_mvmnt_screen.jpg';
+        p.EARLY_RES_SCREEN = 'early_res_screen.jpg';
+        p.WRONG_ANS_SCREEN = 'wrong_ans_screen.jpg';
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));

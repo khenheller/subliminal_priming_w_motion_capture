@@ -3,7 +3,7 @@
 %   waits until target display time passes and then shows categor screen.
 % traj_type - 'to_screen', 'from_screen'
 % ques_type - question type ('recog','categor').
-function [traj, timecourse, categor_time, late_res, slow_mvmnt] = getTraj(traj_type, ques_type, p)
+function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = getTraj(traj_type, ques_type, p)
     
     % Sample length is different for recog/categor questions.
     sample_length = strcmp(ques_type, 'recog') * p.RECOG_CAP_LENGTH + ...
@@ -14,6 +14,7 @@ function [traj, timecourse, categor_time, late_res, slow_mvmnt] = getTraj(traj_t
     categor_time = NaN;
     curDistance = NaN;
     late_res = 0;
+    early_res = 0;
     slow_mvmnt = 0;
     
     to_screen = strcmp(traj_type, 'to_screen') * 1;
@@ -57,8 +58,16 @@ function [traj, timecourse, categor_time, late_res, slow_mvmnt] = getTraj(traj_t
                     WaitSecs(1.5);
                     return;
                 end
+            % Sub did move.
             else
                 mvmnt_dur = mvmnt_dur + 1;
+                % Sub moved too early.
+                if frame_i <= p.MIN_REACT_TIME_SAMPLES
+                    early_res = 1;
+                    showTexture(p.EARLY_RES_SCREEN, p);
+                    WaitSecs(1.5);
+                    return;
+                end
             end
             % Slow movement.
             if mvmnt_dur >= p.MOVE_TIME_SAMPLES % '>=': when dur==max_mvmnt_time, it means move time passed and sub didn't reach screen.

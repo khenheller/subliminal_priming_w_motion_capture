@@ -9,6 +9,7 @@ function [trials_table] = addFields(trials_table, trajs_table, p)
     % Add columns.
     trials_table.late_res = nan(height(trials_table), 1);
     trials_table.slow_mvmnt = nan(height(trials_table), 1);
+    trials_table.early_res = nan(height(trials_table), 1);
     
     % Get target trajs.
     trajs_names = regexp(p.MULTI_ROW_VARS, 'target_\w_to', 'match');
@@ -41,9 +42,6 @@ function [trials_table] = addFields(trials_table, trajs_table, p)
         trials_table{j, 'late_res'} = react_time > p.REACT_TIME_SAMPLES;
         trials_table{j, 'slow_mvmnt'} = mvmnt_time >= p.MOVE_TIME_SAMPLES;
         trials_table{j, 'early_res'} = react_time <= p.MIN_REACT_TIME_SAMPLES;
-        if react_time <= p.MIN_REACT_TIME_SAMPLES
-            a = 3;
-        end
         % If sub responded too late, he didn't start moving, so his mvmnt couldn't be slow.
         trials_table{j, 'slow_mvmnt'} = trials_table{j, 'slow_mvmnt'} & ~trials_table{j, 'late_res'};
     end
