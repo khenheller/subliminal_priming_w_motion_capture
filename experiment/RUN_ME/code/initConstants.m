@@ -172,7 +172,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.VEL_FILTER_CUTOFF = 10;% in Hz.
     
     % Reach distance.
-    p.MAX_DIST_FROM_SCREEN = 0.05; %that is still considered as "touch" in analysis. in meter.
+    p.MAX_DIST_FROM_SCREEN = 0.03; %that is still considered as "touch" in analysis. in meter.
     p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN; % trials with shorter reaches will be discarded.
     p.DIST_BETWEEN_TARGETS = 0.20; % In meter.
     p.TARGET_MISS_RANGE = 0.12; %Touches outside this radius of the target (circle flat on screen, centered on target),
