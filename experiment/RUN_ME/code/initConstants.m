@@ -47,7 +47,8 @@ function [p] = initConstants(psychtoolbox_active, p)
         KbName('UnifyKeyNames');
         p.RIGHT_KEY      =  KbName('RightArrow');
         p.LEFT_KEY       =  KbName('LeftArrow');
-        p.ABORT_KEY      =  KbName('ESCAPE'); % ESC aborts experiment
+        p.ABORT_KEY1     =  KbName('ESCAPE'); % ESC + q aborts experiment
+        p.ABORT_KEY2     =  KbName('Q'); % ESC + q aborts experiment
         p.ONE           =  KbName('1!');  % I did not see the phrase
         p.TWO           =  KbName('2@');  % I had a vague perception, but I don?t know what it was
         p.THREE         =  KbName('3#');  % I saw a clear part of the phrase

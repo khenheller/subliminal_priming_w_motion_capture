@@ -134,13 +134,11 @@ function [p] = runTrials(trials, include_prime, p)
             % Prime
             if include_prime
                 times(4) = showWord(trials(1,:), 'prime', p);
-%                 waitUntil(p.PRIME_DURATION, p);
                 WaitSecs(p.PRIME_DURATION);
             end
             
             % Mask 3
             times(5) = showMask(mask3, p);
-%             waitUntil(p.MASK3_DURATION, p);
             WaitSecs(p.MASK3_DURATION);
             
             % Target
@@ -178,6 +176,7 @@ function [p] = runTrials(trials, include_prime, p)
                 times(8) = times(9);
                 pas = 1;
                 pas_time = times(9);
+                pause(0.7);
             end
             
             % Assigns collected data to trials.

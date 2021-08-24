@@ -7,8 +7,8 @@ function [] = finInStartPoint(p)
 
         % User can exit in this time.
         [~, ~, key, ~] = KbCheck();
-        if key(p.ABORT_KEY)
-            cleanExit();
+        if key(p.ABORT_KEY1) && key(p.ABORT_KEY2)
+            error('Exit by user!');
         end
         
         % samples location and time.
