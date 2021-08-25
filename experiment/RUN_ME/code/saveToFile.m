@@ -1,12 +1,12 @@
 % Appends a trial to subject's trials file.
 % If file doesn't exist, creates it.
 function [] = saveToFile(trial, p)
-    temp_data_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data_temp.csv'];
-    temp_traj_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj_temp.csv'];
-    data_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data.csv'];
-    traj_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj.csv'];
-    both_data_files = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'data*.csv'];
-    both_traj_files = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) 'traj*.csv'];
+    temp_data_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_data_temp.csv'];
+    temp_traj_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_traj_temp.csv'];
+    data_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_data.csv'];
+    traj_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_traj.csv'];
+    both_data_files = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_data*.csv'];
+    both_traj_files = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_traj*.csv'];
     
     % seperates data (1 row) from trajectories (many rows).
     trial_data = trial(1,p.ONE_ROW_VARS_I);

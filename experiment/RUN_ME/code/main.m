@@ -31,13 +31,18 @@ function [p] = main(p)
             p = setPoints(p);
         end
         
+        % Save code snapshot.
         saveCode(trials.list_id{1}, p);
-        save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) 'p.mat'], 'p');
+        % Save 'p' snapshot.
+        save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) p.DAY '_p.mat'], 'p');
         
         % Experiment
         showTexture(p.WELCOME_SCREEN, p);
         getInput('instruction', p);
         p = experiment(trials, practice_trials, practice_wo_prime_trials, p);
+        
+        % Save 'p' snapshot.
+        save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) p.DAY '_p.mat'], 'p');
         
         if ~p.DEBUG
             p.NATNETCLIENT.disconnect;
@@ -59,29 +64,42 @@ function [p] = experiment(trials, practice_trials, practice_wo_prime_trials, p)
     showTexture(p.FIRST_INSTRUCTIONS_SCREEN, p);
     getInput('instruction', p);
     
-    % practice w/o prime.
-    showTexture(p.SPEED_PRACTICE_SCREEN, p);
-    getInput('instruction', p);
-    p = runTrials(practice_wo_prime_trials, 0, p);
-    
-    % 2nd instructions.
-    showTexture(p.SECOND_INSTRUCTIONS_SCREEN, p);
-    getInput('instruction', p);
-    
-    % Example trial.
-    showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
-    getInput('instruction', p);
-    exampleTrial(trials, p);
-    
-    % practice with prime.
-    showTexture(p.PRACTICE_SCREEN, p);
-    getInput('instruction', p);
-    p = runTrials(practice_trials, 1, p);
-    
-    % test.
-    showTexture(p.TEST_SCREEN, p);
-    getInput('instruction', p);
-    p = runTrials(trials, 1, p);
+    switch p.DAY
+        case 'day1'
+            % Example trial.
+            showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
+            getInput('instruction', p);
+            exampleTrial(trials, 0, p);
+            
+            % test.
+            showTexture(p.TEST_SCREEN, p);
+            getInput('instruction', p);
+            p = runTrials(trials, 0, p);
+        case 'day2'
+            % practice w/o prime.
+            showTexture(p.SPEED_PRACTICE_SCREEN, p);
+            getInput('instruction', p);
+            p = runTrials(practice_wo_prime_trials, 0, p);
+
+            % 2nd instructions.
+            showTexture(p.SECOND_INSTRUCTIONS_SCREEN, p);
+            getInput('instruction', p);
+
+            % Example trial.
+            showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
+            getInput('instruction', p);
+            exampleTrial(trials, 1, p);
+
+            % practice with prime.
+            showTexture(p.PRACTICE_SCREEN, p);
+            getInput('instruction', p);
+            p = runTrials(practice_trials, 1, p);
+
+            % test.
+            showTexture(p.TEST_SCREEN, p);
+            getInput('instruction', p);
+            p = runTrials(trials, 1, p);
+    end
     
     showTexture(p.SAVING_DATA_SCREEN, p);
     
@@ -96,6 +114,13 @@ function [p] = runTrials(trials, include_prime, p)
     % Assigned to prime ans on block w/o prime.
     default_prime_ans = struct('answer_left',NaN, 'traj_to',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_to',NaN(p.MAX_CAP_LENGTH,1),...
         'traj_from',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_from',NaN(p.MAX_CAP_LENGTH,1), 'categor_time',NaN);
+    
+    % Shorter durations to avoide missing the screen flip.
+    fix_duration = p.FIX_DURATION - p.REF_RATE_SEC * 3 / 4;
+    mask1_duration = p.MASK1_DURATION - p.REF_RATE_SEC * 3 / 4;
+    mask2_duration = p.MASK2_DURATION - p.REF_RATE_SEC * 3 / 4;
+    prime_duration = p.PRIME_DURATION - p.REF_RATE_SEC * 3 / 4;
+    mask3_duration = p.MASK3_DURATION - p.REF_RATE_SEC * 3 / 4;
     
     try        
         % Iterates over trials.
@@ -121,25 +146,25 @@ function [p] = runTrials(trials, include_prime, p)
             
             % Fixation
             times(1) = showFixation(p);
-            WaitSecs(p.FIX_DURATION);
+            WaitSecs(fix_duration);
             
             % Mask 1
             times(2) = showMask(mask1, p);
-            WaitSecs(p.MASK1_DURATION);
+            WaitSecs(mask1_duration);
             
             % Mask 2
             times(3) = showMask(mask2, p);
-            WaitSecs(p.MASK2_DURATION);
+            WaitSecs(mask2_duration);
             
             % Prime
             if include_prime
                 times(4) = showWord(trials(1,:), 'prime', p);
-                WaitSecs(p.PRIME_DURATION);
+                WaitSecs(prime_duration);
             end
             
             % Mask 3
             times(5) = showMask(mask3, p);
-            WaitSecs(p.MASK3_DURATION);
+            WaitSecs(mask3_duration);
             
             % Target
             Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
@@ -195,8 +220,15 @@ function [p] = runTrials(trials, include_prime, p)
     end
 end
 %%
-function [p] = exampleTrial(trials, p)
-    
+function [p] = exampleTrial(trials, include_prime, p)
+
+    % Shorter durations to avoide missing the screen flip.
+    fix_duration = p.FIX_DURATION - p.REF_RATE_SEC * 3 / 4;
+    mask1_duration = p.MASK1_DURATION - p.REF_RATE_SEC * 3 / 4;
+    mask2_duration = p.MASK2_DURATION - p.REF_RATE_SEC * 3 / 4;
+    prime_duration = p.PRIME_DURATION - p.REF_RATE_SEC * 3 / 4;
+    mask3_duration = p.MASK3_DURATION - p.REF_RATE_SEC * 3 / 4;
+
     try
         % Set prime font now to save run times.
         Screen('TextFont',p.w, p.HAND_FONT_TYPE);
@@ -209,28 +241,30 @@ function [p] = exampleTrial(trials, p)
 
         % Fixation
         times(1) = showFixation(p);
-        waitSecs(p.FIX_DURATION, p);
+        waitSecs(fix_duration, p);
 
         % Mask 1
         Screen('DrawTexture',p.w, mask1);
         [~,times] = Screen('Flip', p.w);
-        waitSecs(p.MASK1_DURATION, p);
+        waitSecs(mask1_duration, p);
 
         % Mask 2
         Screen('DrawTexture',p.w, mask2);
         [~,times] = Screen('Flip', p.w);
-        waitSecs(p.MASK2_DURATION, p);
+        waitSecs(mask2_duration, p);
 
-        % Prime
-        Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
-        DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
-        [~,times] = Screen('Flip',p.w,0,1);
-        waitSecs(p.PRIME_DURATION, p);
+        if include_prime
+            % Prime
+            Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
+            DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
+            [~,times] = Screen('Flip',p.w,0,1);
+            waitSecs(prime_duration, p);
+        end
 
         % Mask 3
         Screen('DrawTexture',p.w, mask3);
         [~,times] = Screen('Flip', p.w);
-        waitSecs(p.MASK3_DURATION, p);
+        waitSecs(mask3_duration, p);
 
         % Target
         Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
@@ -245,23 +279,24 @@ function [p] = exampleTrial(trials, p)
         % Target categorization.
 %         target_ans = getAns('categor', p); not necessary in example.
 
-        % Prime recognition.
-        txtr_num = getTextureFromHD(p.RECOG_SCREEN, p);
-        Screen('DrawTexture',p.w, txtr_num);
-        Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
-        DrawFormattedText(p.w, double('תיק'), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
-        DrawFormattedText(p.w, double('ספל'), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
-        [~,times] = Screen('Flip', p.w, 0, 1);
-        Screen('close', txtr_num);
-        
-        % Waits for key press.
-        getInput('instruction',p);
-        
-%         prime_ans = getAns('recog', p); not necessary in example.
+        if include_prime
+            % Prime recognition.
+            txtr_num = getTextureFromHD(p.RECOG_SCREEN, p);
+            Screen('DrawTexture',p.w, txtr_num);
+            Screen('TextSize', p.w, p.RECOG_FONT_SIZE);
+            DrawFormattedText(p.w, double('תיק'), p.SCREEN_WIDTH*2/7, p.SCREEN_HEIGHT*5/16, [0 0 0]);
+            DrawFormattedText(p.w, double('ספל'), p.SCREEN_WIDTH*21/32, p.SCREEN_HEIGHT*5/16, [0 0 0]);
+            [~,times] = Screen('Flip', p.w, 0, 1);
+            Screen('close', txtr_num);
+            
+            % Waits for key press.
+            getInput('instruction',p);
+%           prime_ans = getAns('recog', p); not necessary in example.
 
-        % PAS
-        times(9) = showTexture(p.PAS_SCREEN, p);
-        [pas, pas_time] = getInput('pas', p);
+            % PAS
+            times(9) = showTexture(p.PAS_SCREEN, p);
+            [pas, pas_time] = getInput('pas', p);
+        end
         
         % Close mask textures.
         Screen('close',[mask1 mask2 mask3]);
@@ -388,7 +423,7 @@ function [p] = setPoints(p)
     p.RIGHT_END_POINT = setPoint(p.RIGHT_END_POINT_SCREEN, p);
     p.LEFT_END_POINT = setPoint(p.LEFT_END_POINT_SCREEN, p);
     p.MIDDLE_POINT = setPoint(p.MIDDLE_POINT_SCREEN, p);
-    file_name = [p.DATA_FOLDER '\sub' num2str(p.SUB_NUM) 'start_end_points.mat'];
+    file_name = [p.DATA_FOLDER '\sub' num2str(p.SUB_NUM) p.DAY '_start_end_points.mat'];
     save(file_name, 'p');
 end
 

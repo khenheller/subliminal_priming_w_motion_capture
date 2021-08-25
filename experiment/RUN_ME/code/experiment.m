@@ -8,7 +8,8 @@ close all;
 addpath('.\NatNetSDK');
 
 % Parameter definit1ion.
-p.SUB_NUM = 12;
+p.SUB_NUM = 999;
+p.DAY = 'day1';
   
 p.FULLSCREEN = 1;
 p.DEBUG = 0;
@@ -18,7 +19,9 @@ p.DEBUG = 0;
 p = main(p);
 save('p.mat', 'p');
 %% -------------------------- Generate trial lists ------------------------
-% num_trial_lists = 1;
+% p = load('./p.mat'); p = p.p;
+% p.DAY = 'day1';
+% num_trial_lists = 10;
 % genTrialLists(num_trial_lists, p);
 %% -------------------------- Generate Masks ------------------------------
 % @@@@@@@@ Make new masks if sitting distance changes @@@@@@@@@@@@@@

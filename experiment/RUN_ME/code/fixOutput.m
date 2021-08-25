@@ -1,7 +1,7 @@
 % Removes bad char('') from output files.
 function [] = fixOutput(p)
-    sub_traj_file = [p.DATA_FOLDER '/sub' num2str(p.SUB_NUM) 'traj.csv'];
-    sub_data_file = [p.DATA_FOLDER '/sub' num2str(p.SUB_NUM) 'data.csv'];
+    sub_traj_file = [p.DATA_FOLDER '/sub' num2str(p.SUB_NUM) p.DAY '_traj.csv'];
+    sub_data_file = [p.DATA_FOLDER '/sub' num2str(p.SUB_NUM) p.DAY '_data.csv'];
 
     % Fix traj file.
     file_length = num2str(getFileLen(sub_traj_file) - 1); % Removes last line (has bad char).

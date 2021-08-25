@@ -44,7 +44,7 @@ function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desi
         % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
         % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
         % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
-        deviating_trials(:, target_col) = 0;
+%         deviating_trials(:, target_col) = 0;
         % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
         % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@
         % @@@@@@@@@@@@@@@@ remove this @@@@@@@@@@@@@@@@

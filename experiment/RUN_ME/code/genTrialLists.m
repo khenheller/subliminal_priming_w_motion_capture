@@ -3,13 +3,11 @@
 % If they are throws an error.
 % num_lists: number of lists to generate.
 function [] = genTrialLists(num_lists, p)
-    p = initPsychtoolbox(p);
-    p = initConstants(1, p);
-    % Closes psychtoolbox.
-    Priority(0); sca; ShowCursor; ListenChar(0);
+    p = initConstants(0, p);
 
     stim_col = {'prime','target','distractor'}; % column of stimuli words.
 
+    disp('Done generating following lists:');
     % Generate lists.
     for iList = 1:num_lists
         curr_list = newTrials(1, 0, p);
@@ -17,7 +15,7 @@ function [] = genTrialLists(num_lists, p)
         % Check if identical to previous lists.
         iPrev_list = iList - 1;
         while iPrev_list > 0
-            prev_list = readtable([p.TRIALS_FOLDER '/trials' num2str(iPrev_list) '.xlsx']);
+            prev_list = readtable([p.TRIALS_FOLDER '/trials' num2str(iPrev_list) p.DAY '.xlsx']);
             equal_trials = strcmp(prev_list{:,stim_col}, curr_list{:,stim_col});
             per_equal_trials = mean(equal_trials,1); % percent identical trials.
             if any(per_equal_trials > 0.5)
@@ -29,6 +27,8 @@ function [] = genTrialLists(num_lists, p)
         end
         
         % Isn't identical to prev lists, so save it.
-        writetable(curr_list, [p.TRIALS_FOLDER '/trials' num2str(iList) '.xlsx']);
+        writetable(curr_list, [p.TRIALS_FOLDER '/trials' num2str(iList) p.DAY '.xlsx']);
+        disp(iList);
     end
+    disp('Done genereating lists');
 end

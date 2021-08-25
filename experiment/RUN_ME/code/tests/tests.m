@@ -2,6 +2,7 @@
 % test_type - 'data', 'trials_list', 'practice_trials_list', each runs different set of tests.
 function [pass_test, test_res] = tests (trials, trials_traj, test_type, p)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
+    test_res = [];
     
     % Initialize parameters.
     pass_test.deviations = NaN;
@@ -9,20 +10,18 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, p)
     pass_test.std = NaN;
     pass_test.prime_alter = NaN;
     
-    % Remove practice trials, unless testing practice trials.
-    if ~strcmp(test_type, 'practice_trials_list')
+    if strcmp(test_type, 'data')
+        % Remove practice trials only if its data list.
         trials(trials.practice > 0, :) = [];
         trials_traj(trials_traj.practice > 0, :) = [];
+        
+        % Get last tiemstamp in every reach to target.
+        for j = 1:max(trials.iTrial)
+            timecourse = trials_traj.target_timecourse_to(trials_traj.iTrial == j);
+            last_sample_indx = find(~isnan(timecourse), 1, 'last');
+            traj_end(j) = timecourse(last_sample_indx);
+        end
     end
-    
-    % @@@@@@@@@@@@@@@@ Specific for Khen's experiment @@@@@@@@@@@@@@@@
-    % Get last tiemstamp in every reach to target.
-    for j = 1:max(trials.iTrial)
-        timecourse = trials_traj.target_timecourse_to(trials_traj.iTrial == j);
-        last_sample_indx = find(~isnan(timecourse), 1, 'last');
-        traj_end(j) = timecourse(last_sample_indx);
-    end
-    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     
     % Test event durations.
     if strcmp(test_type, 'data')
@@ -57,7 +56,7 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, p)
     var_names = {'target_natural','same'};
     vars = trials(:,var_names);
     lvls = table([1;1;0;0],[1;0;1;0], 'VariableNames',var_names);
-    reps = [120 120 120 120];
+    reps = (p.NUM_TRIALS / p.NUM_CONDS) * ones(1,p.NUM_CONDS);
     pass_test.conditions = conditionTests(vars, lvls, reps); 
     
     % Test target doesn't repeat in block.

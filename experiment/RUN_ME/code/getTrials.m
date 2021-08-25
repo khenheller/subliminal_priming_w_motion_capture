@@ -2,11 +2,11 @@
 % for test: Randomly selects a trial list from unused_lists.
 %           When unused_lists empties, refills it.
 %           This makes sure that one list doesn't repeat more than others.
-% type: 'practice' / 'test'
+% type: 'practice' / 'test' / 'practice_wo_prime'
 function [trials] = getTrials(trial_type, p)
     switch trial_type
         case 'test'
-            unused_lists_path = [p.TRIALS_FOLDER '/unused_lists.mat'];
+            unused_lists_path = [p.TRIALS_FOLDER '/unused_lists_' p.DAY '.mat'];
             unused_lists = [];
 
             % If file exists, loads it.
@@ -19,7 +19,7 @@ function [trials] = getTrials(trial_type, p)
             if isempty(unused_lists)
                 lists = cellstr(ls(p.TRIALS_FOLDER));
                 % Keep only trial lists files.
-                lists = regexp(lists, 'trials\d+.xlsx', 'match');
+                lists = regexp(lists, ['trials\d+' p.DAY '.xlsx'], 'match');
                 lists(cellfun(@isempty, lists)) = [];
                 unused_lists = vertcat(lists{:});
             end

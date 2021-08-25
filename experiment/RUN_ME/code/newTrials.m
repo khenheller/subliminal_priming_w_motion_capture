@@ -106,10 +106,11 @@ function trials = newTrials(draw_stats, practice, p)
     end
     
     % Add distractors.
+    word_repetitions = word_repetitions * 2; % Primes are identical to targets in half of the trials, but distractors must be found for every trial, thus '*2'.
     % Tries until succeed filling all dist.
     while sum(cellfun(@isempty, trials.distractor)) > 0
         trials.distractor = cell(height(trials), 1);
-        % Iterate over primes randomly.
+        % Iterate over distractors randomly.
         for i = randperm(size(possible_targets, 2))
             indices = ismember(trials.prime, possible_primes(:,i)); % all indices of possible primes.
             indices = indices & cellfun(@isempty, trials.distractor); % only empty dist.
@@ -167,6 +168,9 @@ function trials = setDefault(trials)
     trials.target_ans_nat = zeros(height(trials),1);
     trials.target_correct = zeros(height(trials),1);
     trials.prime_correct = zeros(height(trials),1);
+    trials.late_res = zeros(height(trials),1);
+    trials.slow_mvmnt = zeros(height(trials),1);
+    trials.early_res = zeros(height(trials),1);
 end
 
 function empty = isEmptyCell(cell_array)

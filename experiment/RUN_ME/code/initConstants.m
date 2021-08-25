@@ -109,32 +109,40 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.NUMBER_OF_ERRORS_PROMPT = 3;
     p.TIME_SHOW_PROMPT = 1; % seconds
     
-    p.NUM_BLOCKS = 12;
+    switch p.DAY
+        case 'day1'
+            p.NUM_BLOCKS = 6;
+        case 'day2'
+            p.NUM_BLOCKS = 12;
+        otherwise
+            error(['p.DAY has wrong value: ' p.DAY]);
+    end
     p.BLOCK_SIZE = 40; % has to be a multiple of 4.
     p.NUM_TRIALS = p.NUM_BLOCKS*p.BLOCK_SIZE;
+    p.NUM_CONDS = 4;
     
     % duration in sec
-    p.FIX_DURATION = 1 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK1_DURATION = 0.27 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK2_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.PRIME_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK3_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.TARGET_DURATION = 0.5; % we don't diminish 3/4 samprate since we don't use waitSecs to wait its duration.
+    p.FIX_DURATION = 1;
+    p.MASK1_DURATION = 0.27;
+    p.MASK2_DURATION = 0.03;
+    p.PRIME_DURATION = 0.03;
+    p.MASK3_DURATION = 0.03;
+    p.TARGET_DURATION = 0.5;
     p.TARGET_DURATION_SAMPLES = p.TARGET_DURATION * p.REF_RATE_HZ;
     
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
     % word lists.
-    p.NAT_TARGETS = readtable([p.STIM_FOLDER '/word_lists/nat_targets.xlsx']);
-    p.ART_TARGETS = readtable([p.STIM_FOLDER '/word_lists/art_targets.xlsx']);
-    p.ART_PRIMES = readtable([p.STIM_FOLDER '/word_lists/art_primes.xlsx']);
-    p.NAT_PRIMES = readtable([p.STIM_FOLDER '/word_lists/nat_primes.xlsx']);
-    p.WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
+    p.NAT_TARGETS = readtable([p.STIM_FOLDER '/word_lists/nat_targets_' p.DAY '.xlsx']);
+    p.ART_TARGETS = readtable([p.STIM_FOLDER '/word_lists/art_targets_' p.DAY '.xlsx']);
+    p.ART_PRIMES = readtable([p.STIM_FOLDER '/word_lists/art_primes_' p.DAY '.xlsx']);
+    p.NAT_PRIMES = readtable([p.STIM_FOLDER '/word_lists/nat_primes_' p.DAY '.xlsx']);
+    p.WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/word_freq_list_' p.DAY '.xlsx']);
     p.WORD_LIST = p.WORD_LIST(:,[1,3]); % Remove word frequencies.
-    p.PRACTICE_WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/practice_word_freq_list.xlsx']);
+    p.PRACTICE_WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/word_freq_list_practice.xlsx']);
     p.PRACTICE_WORD_LIST  = p.PRACTICE_WORD_LIST (:,[1,3]); % Remove word frequencies.
     
-    if height(p.WORD_LIST)*2 < p.BLOCK_SIZE % *2 because we have 2 comulns.
+    if height(p.WORD_LIST)*2 < p.BLOCK_SIZE % *2 because we have 2 comulns in word_list file.
         error('Word list must be at least as big as block size to prevent words from repeting in the same block');
     end    
     

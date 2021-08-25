@@ -1,48 +1,57 @@
 clc;
 clear all;
 close all;
-load('../p.mat');
 warning('OFF', 'MATLAB:DELETE:FileNotFound');
-TEST_RES_FOLDER = './test_results/';
-DATA_FOLDER = '../../../../raw_data/';
+TESTS_FOLDER = './tests/';
+TEST_RES_FOLDER = [TESTS_FOLDER '/test_results/'];
+DATA_FOLDER = '../../../raw_data/';
 STIM_FOLDER = '../stimuli/';
 TRIALS_LISTS_FOLDER = [STIM_FOLDER 'trial_lists/'];
+addpath('.\tests');
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 % READ ME: if you aren't Khen, set i_m_khen in timingTest.m to 0!
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 % To test sub data enter his number.
-sub_num = [1023];
+sub_num = [919];
 % To test word list enter its name.
-word_list = 'practice_wo_prime_trials.xlsx';
+word_list = 'trials1day1.xlsx';
 % Are you testing 'data' of a subject, or just a 'trials_list', or a 'practice_trials_list'.
-test_type = 'data';
+test_type = 'trials_list';
+% Day: 'day1' or 'day2'.
+day = 'day1';
 for iSub = sub_num
+    file_name = ['sub' num2str(iSub) day];
     % Tests data.
     if isequal(test_type, 'data')
-        trials = readtable([DATA_FOLDER 'sub' num2str(iSub) 'data.csv']);
-        trials_traj = readtable([DATA_FOLDER 'sub' num2str(iSub) 'traj.csv']);
-        diary_name = [TEST_RES_FOLDER 'sub' num2str(iSub) '.txt'];
+        trials = readtable([DATA_FOLDER file_name '_data.csv']);
+        trials_traj = readtable([DATA_FOLDER file_name '_traj.csv']);
+        diary_name = [TEST_RES_FOLDER file_name '.txt'];
+        p = load([DATA_FOLDER file_name 'p.mat']); p = p.p;
+        error('make sure line above this loads correct sub p');
     % Tests trial_list.
     else
         trials = readtable([TRIALS_LISTS_FOLDER word_list]);
         trials_traj = [];
         diary_name = [TEST_RES_FOLDER strrep(word_list,'.xlsx','') '.txt'];
+        p = load('p.mat'); p = p.p;
+        p.DAY = 'day1'; disp('@@@Dont need this line after having a p.mat from sub 26 and higher@@@');
+        p = initConstants(0,p);
     end
     
     % Delete prev test data.
-    delete([TEST_RES_FOLDER 'sub' num2str(iSub) '.mat']);
+    delete([TEST_RES_FOLDER file_name '.mat']);
     delete(diary_name);
     
     % Log results to file.
     diary(diary_name);
     [pass_test, test_res] = tests(trials, trials_traj, test_type, p);
-    diary off;
-
     %@@@@@@@@@@@@@@@@@@@@
     disp('@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@');
     disp('Make a change in timingsTest.m (marked @with remove@ this) so that the time of target will also be checked.\nYou canceled its check because the getTraj.m didnt display the categor screen after 500ms of target,\n so target timing is always bad');
     disp('@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@');
     %@@@@@@@@@@@@@@@@@@@@
-    save([TEST_RES_FOLDER 'sub' num2str(iSub) '.mat'], 'test_res');
+    diary off;
+
+    save([TEST_RES_FOLDER file_name '.mat'], 'test_res');
 end
