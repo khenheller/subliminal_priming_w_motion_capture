@@ -55,7 +55,7 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
                 if  (frame_i >= p.REACT_TIME_SAMPLES) % '>=': when frame==max_react_time, it means react time passed and sub didn't move.
                     late_res = 1;
                     showTexture(p.LATE_RES_SCREEN, p);
-                    WaitSecs(1.5);
+                    WaitSecs(p.MSG_DURATION);
                     return;
                 end
             % Sub did move.
@@ -65,7 +65,7 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
                 if frame_i <= p.MIN_REACT_TIME_SAMPLES
                     early_res = 1;
                     showTexture(p.EARLY_RES_SCREEN, p);
-                    WaitSecs(1.5);
+                    WaitSecs(p.MSG_DURATION);
                     return;
                 end
             end
@@ -73,7 +73,7 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
             if mvmnt_dur >= p.MOVE_TIME_SAMPLES % '>=': when dur==max_mvmnt_time, it means move time passed and sub didn't reach screen.
                 slow_mvmnt = 1;
                 showTexture(p.SLOW_MVMNT_SCREEN, p);
-                WaitSecs(1.5);
+                WaitSecs(p.MSG_DURATION);
                 return;
             end
             % Target duration passed, remove it and show only categorization screen.
@@ -87,6 +87,6 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
     % Didn't return to start point.
     if ~to_screen
         showTexture(p.RTRN_START_POINT_SCREEN, p);
-        WaitSecs(1.5);
+        WaitSecs(p.MSG_DURATION);
     end
 end

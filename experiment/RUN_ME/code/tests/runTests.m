@@ -13,13 +13,13 @@ addpath('.\tests');
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 % To test sub data enter his number.
-sub_num = [919];
+sub_num = [1024];
 % To test word list enter its name.
 word_list = 'trials1day1.xlsx';
 % Are you testing 'data' of a subject, or just a 'trials_list', or a 'practice_trials_list'.
-test_type = 'trials_list';
+test_type = 'data';
 % Day: 'day1' or 'day2'.
-day = 'day1';
+day = 'day2';
 for iSub = sub_num
     file_name = ['sub' num2str(iSub) day];
     % Tests data.
@@ -27,8 +27,7 @@ for iSub = sub_num
         trials = readtable([DATA_FOLDER file_name '_data.csv']);
         trials_traj = readtable([DATA_FOLDER file_name '_traj.csv']);
         diary_name = [TEST_RES_FOLDER file_name '.txt'];
-        p = load([DATA_FOLDER file_name 'p.mat']); p = p.p;
-        error('make sure line above this loads correct sub p');
+        p = load([DATA_FOLDER file_name '_p.mat']); p = p.p;
     % Tests trial_list.
     else
         trials = readtable([TRIALS_LISTS_FOLDER word_list]);

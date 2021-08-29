@@ -175,11 +175,12 @@ function [p] = runTrials(trials, include_prime, p)
             target_ans = getAns('categor', p);
             
             % Check answer.
-            trials.target_ans_left(1) = target_ans.target_ans_left;
+            trials.target_ans_left(1) = target_ans.answer_left;
             trials(1,:) = checkAns(trials(1,:), 'categor');
-            if ~trials.target_correct(1)
+            sub_answered = ~(target_ans.late_res | target_ans.slow_mvmnt | target_ans.early_res);
+            if ~trials.target_correct(1) && sub_answered
                 showTexture(p.WRONG_ANS_SCREEN, p);
-                WaitSecs(1.5);
+                WaitSecs(p.MSG_DURATION);
             end
             
             % Prime recognition.
@@ -241,30 +242,30 @@ function [p] = exampleTrial(trials, include_prime, p)
 
         % Fixation
         times(1) = showFixation(p);
-        waitSecs(fix_duration, p);
+        WaitSecs(fix_duration);
 
         % Mask 1
         Screen('DrawTexture',p.w, mask1);
         [~,times] = Screen('Flip', p.w);
-        waitSecs(mask1_duration, p);
+        WaitSecs(mask1_duration);
 
         % Mask 2
         Screen('DrawTexture',p.w, mask2);
         [~,times] = Screen('Flip', p.w);
-        waitSecs(mask2_duration, p);
+        WaitSecs(mask2_duration);
 
         if include_prime
             % Prime
             Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
             DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
             [~,times] = Screen('Flip',p.w,0,1);
-            waitSecs(prime_duration, p);
+            WaitSecs(prime_duration);
         end
 
         % Mask 3
         Screen('DrawTexture',p.w, mask3);
         [~,times] = Screen('Flip', p.w);
-        waitSecs(mask3_duration, p);
+        WaitSecs(mask3_duration);
 
         % Target
         Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.

@@ -1,4 +1,4 @@
-% Gets question traj_type ('recog','categor','pas').
+% Gets question traj_type ('recog','categor').
 % returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
 function [output] = getAns(traj_type, p)
     
@@ -15,16 +15,13 @@ function [output] = getAns(traj_type, p)
         categor_time = max(timecourse_to,[],'omitnan') + p.REF_RATE_SEC; % target cleared 1 ref rate after last sample.
     end
     
-    switch traj_type
-        case {'recog','categor'}
-            if touch_point(1) < p.SCREEN_WIDTH/2 % left half of screen.
-                answer_left = 1;
-            else % right half.
-                answer_left = 0;
-            end
+    if touch_point < p.SCREEN_WIDTH/2 % left half of screen.
+        answer_left = 1;
+    else % right half.
+        answer_left = 0;
     end
     
-    output = struct('answer',answer_left, 'categor_time',categor_time,...
+    output = struct('answer_left',answer_left, 'categor_time',categor_time,...
         'late_res',late_res, 'early_res', early_res, 'slow_mvmnt',slow_mvmnt,...
         'traj_to',traj_to, 'timecourse_to',timecourse_to,...
         'traj_from',traj_from, 'timecourse_from',timecourse_from);

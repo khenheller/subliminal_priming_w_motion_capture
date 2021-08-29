@@ -89,7 +89,7 @@ function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desi
         durations_hist = histogram(durations(:,iEvent));
         hold on;
         line([durations_mean(iEvent) durations_mean(iEvent)], [0 height(timestamps)], 'color','red', 'LineWidth',3);
-        xlim([min(durations(:,iEvent)) max(durations(:,iEvent))]);
+        xlim([min(durations(:,iEvent)) (max(durations(:,iEvent)) + 0.0001)]);
         ylim([0 max(durations_hist.Values)]);
         xlabel('duration'); ylabel('trials');
         title(events(1,iEvent), 'FontSize',14);

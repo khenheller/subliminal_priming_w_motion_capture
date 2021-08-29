@@ -6,7 +6,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.SCREEN_DIST = 0.35; %from start point, in meter.
     p.VIEW_ANGLE_X = 2.5; % in deg.
     p.VIEW_ANGLE_Y = 1;
-    p.FINGER_SIZE = 0.03; %in meter.
+    p.FINGER_SIZE = 0.015; %in meter.
     p.START_POINT_RANGE = 0.01; %3D distance (in meter) from start point which counts as finger in start point.
     
     % TEXT
@@ -129,6 +129,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.MASK3_DURATION = 0.03;
     p.TARGET_DURATION = 0.5;
     p.TARGET_DURATION_SAMPLES = p.TARGET_DURATION * p.REF_RATE_HZ;
+    p.MSG_DURATION = 0.9;
     
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');

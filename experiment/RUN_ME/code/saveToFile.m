@@ -20,7 +20,11 @@ function [] = saveToFile(trial, p)
     trial_traj = array2table(trial_traj_matrix, 'VariableNames',['sub_num' 'iBlock' 'iTrial' 'practice' p.MULTI_ROW_VARS]);
     
     % on first trial there isn't a file yet. So we add headers.
-    file_doesnt_exist = trial.iTrial==1 & trial.practice==2; % practice=2 is practice block w/o prime.
+    if p.DAY == 'day1'
+        file_doesnt_exist = trial.iTrial==1;
+    else
+        file_doesnt_exist = trial.iTrial==1 & trial.practice==2; % practice=2 is practice block w/o prime.
+    end
     
     % saves to temporary file.
     writetable(trial_data, temp_data_file, 'WriteVariableNames', file_doesnt_exist);
