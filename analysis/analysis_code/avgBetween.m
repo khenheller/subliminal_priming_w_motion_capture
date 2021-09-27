@@ -47,7 +47,7 @@ function [subs_avg] = avgBetween(traj_name, p)
     
     for iSub = subs
         % load avg within subject.
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_name{1}]);  avg = avg.avg;
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_name{1}]);  avg = avg.avg;
         % sum to calc avg between subjects.
         subs_avg.traj.same_left  = subs_avg.traj.same_left  + avg.traj.same_left;
         subs_avg.traj.same_right = subs_avg.traj.same_right + avg.traj.same_right;

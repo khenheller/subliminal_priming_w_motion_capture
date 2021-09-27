@@ -21,7 +21,7 @@ function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desi
     % @@@@@@@@@@@@@@@@ Specific for Khen's experiment @@@@@@@@@@@@@@@@
     i_m_khen = 1;
     target_col = find(ismember(events, 'target_time'));
-    % Calc delay between target disp and end of traj.
+    % Calc RT = delay between target disp and end of traj.
     resp_time = traj_end' - timestamps{:,target_col};
     resp_time = resp_time * 1000; % convert to ms.
     resp_time = resp_time + 10;

@@ -7,19 +7,11 @@ load('../../experiment/RUN_ME/code/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-p.SUBS = [11 14 16 17 18 19 20 21 22 23 24 25]; % to analyze.
-p.N_SUBS = length(p.SUBS);
-p.MAX_SUB = max(p.SUBS);
+SUBS = [14 16 17 18 19 22 25]; % to analyze.
+DAY = 'day2';
 pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
-
-% Normalization params.
-p.TRAJ_FILT_ORDER = 2;
-p.TRAJ_FILT_CUTOFF = 8;% in Hz.
-p.VEL_FILTER_ORDER = 2;
-p.VEL_FILTER_CUTOFF = 10;% in Hz.
-p.NORM_FRAMES = 200; % length of normalized trajs.
-p.NORM_TYPE = 4; % 1=to time, 2=to x, 3=to y, 4=to z.
+p = defineParams(p, SUBS, DAY, SUBS(1));
 
 % Name of trajectory column in output data. each cell is a diff type of traj.
 traj_names = {{'target_x_to' 'target_y_to' 'target_z_to'},...
@@ -37,41 +29,11 @@ traj_types = [traj_names{:,:}];
 traj_types = reshape(traj_types, [], length(traj_names));
 traj_types = traj_types(1,:);
 traj_types = replace(traj_types, '_x', '');
-
-% Reach dist: Subs 1-10 = 40cm, Subs 10-20 = 35cm.
-% Recog cap length: Subs 1-10 = 5sec, Subs 10-20 = 7sec.
-% Categor cap length: Subs 1-10 = 1.5sec, Subs 10-20 = 0.75sec.
-if all(p.SUBS <= 10)
-    p.SCREEN_DIST = 0.4;
-    p.RECOG_CAP_LENGTH_SEC = 5;
-    p.CATEGOR_CAP_LENGTH_SEC = 1.5;
-elseif all(p.SUBS > 10)
-    p.SCREEN_DIST = 0.35;
-    p.RECOG_CAP_LENGTH_SEC = 7;
-    p.CATEGOR_CAP_LENGTH_SEC = 0.75;
-else
-    error('Please analyze subs 1-10 seperatly from 11-20');
-end
-p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
-p.DIST_BETWEEN_TARGETS = 0.20; % In meter.
-p.TARGET_MISS_RANGE = 0.12; % In meter.
-p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
-p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
-p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
-% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
-p.PROC_DATA_FOLDER = '../processed_data/';
-p.DATA_FOLDER = '../../raw_data/';
-p.TESTS_FOLDER = '../../experiment/RUN_ME/code/tests/test_results/';
-p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
-p.MIN_REACT_TIME_SAMPLES = 10;
-p.MAX_BAD_TRIALS = p.NUM_TRIALS - 60; % sub with more bad trials is disqualified.
-p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.
-% @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
 %% Add fields
 % Adds late_res and slow_mvmnt fields to sub 1-14.
 for iSub = p.SUBS
     % Checks if the fields were already added.
-    data_file = fopen([p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
+    data_file = fopen([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
     fields = textscan(data_file,'%s',1); % gets only fields
     fields = fields{:}{:};
     fields = split(fields, ',');
@@ -81,12 +43,12 @@ for iSub = p.SUBS
     fclose(data_file);
     % If fields don't exist, add them.
     if ~has_fields
-        data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
-        traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'traj.csv']);
-        start_end_points = load([p.DATA_FOLDER '/sub' num2str(iSub) 'start_end_points.mat']);
+        data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
+        traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
+        start_end_points = load([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'start_end_points.mat']);
         p.START_POINT = start_end_points.p.START_POINT;
         data_table = addFields(data_table, traj_table, p);
-        writetable(data_table, [p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
+        writetable(data_table, [p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
     end
 end
 %% Preprocessing & Normalization
@@ -96,10 +58,11 @@ too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
     'VariableNames', traj_types);
 disp('Preprocessing done for subject:');
 for iSub = p.SUBS
-    traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'traj.csv']);
-    data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) 'data.csv']);
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj.mat'], 'traj_table'); % '.mat' is faster to read than '.csv'.
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data.mat'], 'data_table');
+    p = defineParams(p, SUBS, DAY, iSub);
+    traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
+    data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.mat'], 'traj_table'); % '.mat' is faster to read than '.csv'.
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.mat'], 'data_table');
     
     % remove practice.
     traj_table(traj_table{:,'practice'} > 0, :) = [];
@@ -115,10 +78,10 @@ for iSub = p.SUBS
     traj_table = traj_table(1 : p.NORM_FRAMES * p.NUM_TRIALS, :);
     traj_table{:,:} = reshape(matrix, p.NORM_FRAMES * p.NUM_TRIALS, width(traj_table));
     % Save
-    writetable(traj_table, [p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj_proc.csv']);
-    writetable(data_table, [p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data_proc.csv']);
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj_proc.mat'], 'traj_table');
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data_proc.mat'], 'data_table');
+    writetable(traj_table, [p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj_proc.csv']);
+    writetable(data_table, [p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data_proc.csv']);
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj_proc.mat'], 'traj_table');
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data_proc.mat'], 'data_table');
     disp(num2str(iSub));
 end
 disp('Following trials where too short to filter:');
@@ -140,10 +103,10 @@ disp('Sub screening done.');
 %% Maximum absolute deviation
 for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
-        traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) 'traj_proc.mat']);  traj_table = traj_table.traj_table;
-        data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) 'data_proc.mat']);  data_table = data_table.data_table;
+        traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_' 'traj_proc.mat']);  traj_table = traj_table.traj_table;
+        data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_' 'data_proc.mat']);  data_table = data_table.data_table;
         data_table = calcMAD(traj_table, data_table, traj_names{iTraj}, p);
-        save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) 'data_proc.mat'], 'data_table');
+        save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_' 'data_proc.mat'], 'data_table');
     end
 end
 disp('MAD calc done.');
@@ -152,8 +115,8 @@ for iTraj = 1:length(traj_names)
     bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' traj_names{iTraj}{1} '.mat'], 'bad_trials');  bad_trials = bad_trials.bad_trials;
     for iSub = p.SUBS
         [avg, single] = avgWithin(iSub, traj_names{iTraj}, bad_trials, pas_rate, p);
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat'], 'single');
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_names{iTraj}{1} '.mat'], 'avg');
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat'], 'single');
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat'], 'avg');
     end
 end
 disp('Sorting and avging within sub done.');
@@ -161,7 +124,7 @@ disp('Sorting and avging within sub done.');
 % Area between left and right traj for same/diff condition.
 for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
         % Turn traj to 2D.
         same_left_2d  = [avg.traj.same_left(:,3)  avg.traj.same_left(:,1)];
         same_right_2d = [avg.traj.same_right(:,3) avg.traj.same_right(:,1)];
@@ -202,7 +165,7 @@ diff_avg_col = 'r';
 % Unite all subs to one variable.
 for iSub = p.SUBS
     for iTraj = 1:length(traj_names)
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
         avg_each.traj(iTraj).same_left(:,iSub,:) = avg.traj.same_left;
         avg_each.traj(iTraj).same_right(:,iSub,:) = avg.traj.same_right;
         avg_each.traj(iTraj).diff_left(:,iSub,:) = avg.traj.diff_left;
@@ -244,14 +207,15 @@ for iSub = p.SUBS
     figure(sub_f(iSub,2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
     figure(sub_f(iSub,3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 end
+
 % ------- Traj of each trial -------
 for iSub = p.SUBS
 %     figure('Name',['sub' num2str(iSub) ' traj'],'WindowState','maximized', 'MenuBar','figure');
     figure(sub_f(iSub,1));
     subplot(2,3,1);
     for iTraj = 1:length(traj_names)
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
         % Flips traj to screen since its Z values are negative.
         flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
 %         subplot(2,2,iTraj);
@@ -282,12 +246,12 @@ end
 
 % ------- Avg traj with shade -------
 for iSub = p.SUBS
-%     figure('Name',['sub' num2str(iSub) ' traj'],'WindowState','maximized', 'MenuBar','figure');
+%     figure('Name',['sub' num2str(iSub) p.DAY '_' ' traj'],'WindowState','maximized', 'MenuBar','figure');
     figure(sub_f(iSub,1));
     subplot(2,3,2);
     for iTraj = 1:length(traj_names)
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
         % Flips traj to screen since its Z values are negative.
         flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
 %         subplot(2,2,iTraj);
@@ -314,7 +278,7 @@ for iSub = p.SUBS
     subplot(2,1,2);
     for iTraj = 1:length(traj_names)
         hold on;
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
         beesdata = {single.react.same_left,  single.react.diff_left,...
                     single.mt.same_left,     single.mt.diff_left,...
                     single.rt.same_left,     single.rt.diff_left,...
@@ -345,7 +309,7 @@ end
 %     subplot(2,1,2);
 %     for iTraj = 1:length(traj_names)
 %         hold on;
-%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
 %         beesdata = {single.react.same_left, single.react.diff_left, single.react.same_right, single.react.diff_right};
 %         yLabel = 'Reaction Time (Sec)';
 %         XTickLabels = {'Same left', 'Diff left', 'Same right', 'Diff right'};%cellstr(strrep(fieldnames(single.rt), '_',' '))'; % remove '_' from names.
@@ -361,7 +325,7 @@ end
 %     subplot(2,1,2);
 %     for iTraj = 1:length(traj_names)
 %         hold on;
-%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
 %         beesdata = {single.mt.same_left, single.mt.diff_left, single.mt.same_right, single.mt.diff_right};
 %         XTickLabels = {'Same left', 'Diff left', 'Same right', 'Diff right'};%cellstr(strrep(fieldnames(single.rt), '_',' '))'; % remove '_' from names.
 %         yLabel = 'Movement Time (Sec)';
@@ -377,7 +341,7 @@ end
 %     subplot(2,1,2);
 %     for iTraj = 1:length(traj_names)
 %         hold on;
-%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
 %         beesdata = {single.rt.same_left, single.rt.diff_left, single.rt.same_right, single.rt.diff_right};
 %         XTickLabels = {'Same left', 'Diff left', 'Same right', 'Diff right'};%cellstr(strrep(fieldnames(single.rt), '_',' '))'; % remove '_' from names.
 %         yLabel = 'RT (Sec)';
@@ -389,21 +353,56 @@ end
 
 % ------- PAS -------
 for iSub = p.SUBS
-%     figure('Name',['sub' num2str(iSub) ' PAS']);
+%     figure('Name',['sub' num2str(iSub) p.DAY '_' ' PAS']);
     figure(sub_f(iSub,1));
-    subplot(2,3,3);
-    avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+    subplot(2,6,5);
+    avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
     bar(1:4, avg.pas.same * 100 / sum(avg.pas.same), 'FaceColor',same_col);
     hold on;
     bar(5:8, avg.pas.diff * 100 / sum(avg.pas.diff), 'FaceColor',diff_col);
     xticks(1:8);
+    yticks(0:10:100);
     xticklabels({1:4 1:4});
     legend('Same','Diff');
     xlabel('PAS');
     ylabel('%', 'FontWeight','bold');
     ylim([0 100]);
-    title(['Sub ' num2str(iSub) ' PAS']);
+    title(['PAS']);
     set(gca,'FontSize',14);
+    ax = gca;
+    ax.YGrid = 'on';
+end
+
+% ------- Forced Choice -------
+for iSub = p.SUBS
+%     figure('Name',['sub' num2str(iSub) p.DAY '_' ' Forced Choice']);
+    figure(sub_f(iSub,1));
+    subplot(2,6,6);
+    avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+    single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+    fc_same = avg.fc.same * 100; % percentage.
+    fc_diff = avg.fc.diff * 100;
+    bar(1, fc_same, 'FaceColor',same_col);
+    hold on;
+    bar(2, fc_diff, 'FaceColor',diff_col);
+    xticks(1:2);
+    xticklabels({[num2str(round(fc_same,1)) '%'] [num2str(round(fc_diff,1)) '%']});
+    yticks(0:10:100);
+    legend('Same','Diff');
+    xlabel('Same / Diff');
+    ylabel('%Correct', 'FontWeight','bold');
+    ylim([0 100]);
+    title(['Forced Choice (PAS=1)']);
+    set(gca,'FontSize',14);
+    ax = gca;
+    ax.YGrid = 'on';
+    % Binomial test.
+    n_same_trials = size(single.fc.same,1);
+    n_diff_trials = size(single.fc.diff,1);
+    binom_same = round(binopdf(round(avg.fc.same*n_same_trials), n_same_trials, 0.5), 2);
+    binom_diff = round(binopdf(round(avg.fc.diff*n_diff_trials), n_diff_trials, 0.5), 2);
+    text(1, fc_same+5, ['p_{bin}=' num2str(binom_same)], 'HorizontalAlignment','center');
+    text(2, fc_diff+5, ['p_{bin}=' num2str(binom_diff)], 'HorizontalAlignment','center');
 end
 
 % ------- MAD -------
@@ -413,7 +412,7 @@ for iSub = p.SUBS
     subplot(1,2,1);
     for iTraj = 1:length(traj_names)
         hold on;
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
         beesdata = {single.mad.same_left, single.mad.diff_left, single.mad.same_right, single.mad.diff_right};
         yLabel = 'MAD (meter)';
         XTickLabels = [];
@@ -438,7 +437,7 @@ end
 for iSub = p.SUBS
     figure(sub_f(iSub,2));
     for iTraj = 1:length(traj_names)
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
+        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
         % Flips traj to screen since its Z values are negative.
         flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
         traj_same = {single.trajs.same_left, single.trajs.same_right};
@@ -478,7 +477,7 @@ for iSub = p.SUBS
     for iTraj = 1:length(traj_names)
         % Flips traj to screen since its Z values are negative.
         flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
         % Left.
         subplot(4,2,6);
         hold on;
@@ -583,7 +582,7 @@ for iTraj = 1:length(traj_names)
     % Group graphs.
     ticks = get(gca,'XTick');
     labels = {["",""]; ["React","MT","RT"]; ["Left","Right"]};
-    dist = [0, 80, 240];
+    dist = [0, 80, 160];
     font_size = [1, 15, 20];
     groupTick(ticks, labels, dist, font_size)
     % Connect each sub's dots with lines.
@@ -614,7 +613,7 @@ colors = {same_col, diff_col};
 title_char = ['Forced response (PAS = ' num2str(pas_rate) ')'];
 printBeeswarm(beesdata, [], XTickLabel, colors, space, title_char, 'ci', alpha_size);
 plot([-20 20], [0.5 0.5], '--', 'color',[0.3 0.3 0.3 f_alpha], 'LineWidth',2); % Line at 50%.
-text([1 1+space],[0.1 0.1], {['p = ' num2str(fc_p_val(1))], ['p = ' num2str(fc_p_val(2))]}, 'FontSize',14, 'HorizontalAlignment','center');
+text(get(gca, 'xTick'),[0.1 0.1], {['p = ' num2str(fc_p_val(1))], ['p = ' num2str(fc_p_val(2))]}, 'FontSize',14, 'HorizontalAlignment','center');
 ylabel('% Correct', 'FontWeight','bold');
 ylim([0 1]);
 
@@ -651,7 +650,7 @@ for iTraj = 1:length(traj_names)
     % Group graphs.
     ticks = get(gca,'XTick');
     labels = {["",""]; ["Left","Right"]};
-    dist = [0, 0.0025];
+    dist = [0, 0.005];
     font_size = [1, 15];
     groupTick(ticks, labels, dist, font_size)
     % T-test
@@ -764,9 +763,9 @@ for iTraj = 1:length(traj_names)
     legend(['CI, \alpha=' num2str(alpha_size)], 'same - diff');
 end
 %% GUI, compares proc to real traj.
-close all;
-warning('off','MATLAB:legend:IgnoringExtraEntries');
-miss_data(p, traj_names); clc;
+% close all;
+% warning('off','MATLAB:legend:IgnoringExtraEntries');
+% miss_data(p, traj_names); clc;
 %% Velocity
 %{
         % calc velocity.-----------------------------------------------
@@ -809,3 +808,52 @@ miss_data(p, traj_names); clc;
         title(traj_names{iTraj}{1}, 'Interpreter','none');
         set(gca, 'FontSize',14);
         %}
+%%
+function p = defineParams(p, SUBS, DAY, iSub)
+    p.DATA_FOLDER = '../../raw_data/';
+
+    p = load([p.DATA_FOLDER '/sub' num2str(iSub) DAY '_' 'p.mat']); p = p.p;
+    p.DATA_FOLDER = '../../raw_data/';
+    p.SUBS = SUBS;
+    p.DAY = DAY;
+    p.N_SUBS = length(p.SUBS);
+    p.MAX_SUB = max(p.SUBS);
+    % Normalization params.
+    p.TRAJ_FILT_ORDER = 2;
+    p.TRAJ_FILT_CUTOFF = 8;% in Hz.
+    p.VEL_FILTER_ORDER = 2;
+    p.VEL_FILTER_CUTOFF = 10;% in Hz.
+    p.NORM_FRAMES = 200; % length of normalized trajs.
+    p.NORM_TYPE = 4; % 1=to time, 2=to x, 3=to y, 4=to z.
+
+    % Reach dist: Subs 1-10 = 40cm, Subs 10-20 = 35cm.
+    % Recog cap length: Subs 1-10 = 5sec, Subs 10-20 = 7sec.
+    % Categor cap length: Subs 1-10 = 1.5sec, Subs 10-20 = 0.75sec.
+    if all(p.SUBS <= 10)
+        p.SCREEN_DIST = 0.4;
+        p.RECOG_CAP_LENGTH_SEC = 5;
+        p.CATEGOR_CAP_LENGTH_SEC = 1.5;
+    elseif all(p.SUBS > 10)
+        p.SCREEN_DIST = 0.35;
+        p.RECOG_CAP_LENGTH_SEC = 7;
+        p.CATEGOR_CAP_LENGTH_SEC = 0.75;
+    else
+        error('Please analyze subs 1-10 seperatly from 11-20');
+    end
+    p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
+    p.DIST_BETWEEN_TARGETS = 0.20; % In meter.
+    p.TARGET_MISS_RANGE = 0.12; % In meter.
+    p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
+    p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
+    p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
+    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
+    p.PROC_DATA_FOLDER = '../processed_data/';
+    p.TESTS_FOLDER = '../../experiment/RUN_ME/code/tests/test_results/';
+    p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
+    p.MIN_REACT_TIME_SAMPLES = 10;
+    p.MAX_BAD_TRIALS = p.NUM_TRIALS - 60; % sub with more bad trials is disqualified.
+    p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.
+    p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
+    p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
+    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
+end

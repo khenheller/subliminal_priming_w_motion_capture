@@ -4,8 +4,8 @@
 % single - struct, each field contains one condition's trials, that were good and had "pas_rate".
 function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     % Get sub data.
-    traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj_proc.mat']);  traj_table = traj_table.traj_table;
-    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data_proc.mat']);  data_table = data_table.data_table;
+    traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj_proc.mat']);  traj_table = traj_table.traj_table;
+    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data_proc.mat']);  data_table = data_table.data_table;
 
     % remove practice.
     traj_table(traj_table{:,'practice'} >= 1, :) = [];

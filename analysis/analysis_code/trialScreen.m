@@ -1,4 +1,5 @@
 % Finds trials that answered screening reasons:
+%   Has big hole (NaNs) in data.
 %   Have too much missing data.
 %   Reach distance too short.
 %   Finger missed target.
@@ -16,8 +17,19 @@
 %               Table has list of disqualified trials for each screen reason.
 %               bad_trials is logical indexing, this is numeric.
 function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
-    screen_reasons = {'missing_data','short_traj','missed_target','bad_stim_dur',...
+    screen_reasons = {'hole_in_data','missing_data','short_traj','missed_target','bad_stim_dur',...
         'late_res', 'slow_mvmnt', 'early_res', 'incorrect', 'any'};
+    % Index of each reason.
+    indx.hole_in_data = ismember(screen_reasons, 'hole_in_data');
+    indx.missing_data = ismember(screen_reasons, 'missing_data');
+    indx.short_traj = ismember(screen_reasons, 'short_traj');
+    indx.missed_target = ismember(screen_reasons, 'missed_target');
+    indx.bad_stim_dur = ismember(screen_reasons, 'bad_stim_dur');
+    indx.late_res = ismember(screen_reasons, 'late_res');
+    indx.slow_mvmnt = ismember(screen_reasons, 'slow_mvmnt');
+    indx.early_res = ismember(screen_reasons, 'early_res');
+    indx.incorrect = ismember(screen_reasons, 'incorrect');
+    indx.any = ismember(screen_reasons, 'any');
     % Bad trials' numbers. row = bad trial, column = reason.
     bad_trials_table = table('Size', [p.NUM_TRIALS length(screen_reasons)],...
         'VariableTypes', repmat({'double'}, length(screen_reasons), 1),...
@@ -34,9 +46,9 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
 
     for iSub = p.SUBS
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
-        dev_table = load([p.TESTS_FOLDER '/sub' num2str(iSub) '.mat']);  dev_table = dev_table.test_res.dev_table;
-        traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj.mat']);  traj_table = traj_table.traj_table;
-        trials_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data.mat']);  trials_table = trials_table.data_table;
+        dev_table = load([p.TESTS_FOLDER '/sub' num2str(iSub) p.DAY '.mat']);  dev_table = dev_table.test_res.dev_table;
+        traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.mat']);  traj_table = traj_table.traj_table;
+        trials_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.mat']);  trials_table = trials_table.data_table;
         % remove practice.
         traj_table(traj_table{:,'practice'} >= 1, :) = [];
         trials_table(trials_table{:,'practice'} >= 1, :) = [];
@@ -50,24 +62,28 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
         for iTrial = 1:p.NUM_TRIALS
             success = ones(1, length(screen_reasons)); % 0 = bad trial.
             single_traj = squeeze(traj_mat(:,iTrial,:));
-            % Check if too much data is missing.
-            success(ismember(screen_reasons, 'missing_data')) = testAmountData(single_traj, p) &...
-                ~any(too_short_to_filter{:} == iTrial);
+            % Check if reaponse was too late or mvmnt time too long.
+            success(indx.late_res) = ~trials_table.late_res(iTrial);
+            success(indx.slow_mvmnt) = ~trials_table.slow_mvmnt(iTrial);
+            % Check if response was too early.
+            success(indx.early_res) = ~trials_table.early_res(iTrial);
             % Check if reach distance is too short.
-            success(ismember(screen_reasons, 'short_traj')) = testReachDist(single_traj, p);
+            success(indx.short_traj) = testReachDist(single_traj, p);
+            % Check if there is a big hole in the data.
+            success(indx.hole_in_data) = testHoleData(single_traj, p);
+            % Check if too much data is missing.
+            success(indx.missing_data) = testAmountData(single_traj, p) &...
+                ~any(too_short_to_filter{:} == iTrial);
             % Check if finger missed target.
             if contains(traj_name{1}, '_to')
-                success(ismember(screen_reasons, 'missed_target')) = testMissTarget(single_traj, p);
+                success(indx.missed_target) = testMissTarget(single_traj, p);
             end
             % Check if stim display duration was bad.
-            success(ismember(screen_reasons, 'bad_stim_dur')) = testStimDur(dev_table, iTrial);
-            % Check if reaponse was too late or mvmnt time too long.
-            success(ismember(screen_reasons, 'late_res')) = ~trials_table.late_res(iTrial);
-            success(ismember(screen_reasons, 'slow_mvmnt')) = ~trials_table.slow_mvmnt(iTrial);
-            % Check if response was too early.
-            success(ismember(screen_reasons, 'early_res')) = ~trials_table.early_res(iTrial);
+            success(indx.bad_stim_dur) = testStimDur(dev_table, iTrial);
             % Check if answer is incorrect.
-            success(ismember(screen_reasons, 'incorrect')) = trials_table.target_correct(iTrial);
+            success(indx.incorrect) = trials_table.target_correct(iTrial);
+            % Cancel unsuccess if it is are caused by other unsuccess.
+            success = cancelDuplicates(success, indx);
             bad_trials{iSub}{iTrial,:} = ~success * iTrial;
         end
 
@@ -80,4 +96,16 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
         % Count bad trials.
         n_bad_trials{iSub, :} = sum(bad_trials{iSub}{:,:} > 0, 1);
     end
+end
+
+% Somescreening reasons cause other, Displaying both we be uneccesary duplication, so we remove one.
+function success = cancelDuplicates(success, indx)
+    success(indx.missing_data)  = success(indx.missing_data) |...
+        ~(success(indx.short_traj) & success(indx.late_res) & success(indx.early_res));
+    success(indx.missed_target) = success(indx.missed_target) |...
+        ~(success(indx.short_traj) & success(indx.late_res) & success(indx.early_res) & success(indx.slow_mvmnt));
+    success(indx.incorrect)     = success(indx.incorrect) |...
+        ~(success(indx.short_traj) & success(indx.late_res) & success(indx.early_res) & success(indx.slow_mvmnt));
+    success(indx.short_traj)    = success(indx.short_traj) |...
+        ~(success(indx.late_res) & success(indx.slow_mvmnt) & success(indx.early_res));
 end

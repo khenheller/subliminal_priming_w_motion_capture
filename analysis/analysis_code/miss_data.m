@@ -102,8 +102,8 @@ end
 % --- Executes on button press in Load_miss_data.
 function Load_miss_data_Callback(hObject, eventdata, h)
 % Get sub data.
-real_traj = load(['../processed_data/sub' h.sub.String{:} 'traj.mat']);  real_traj = real_traj.traj_table;
-proc_traj = load(['../processed_data/sub' h.sub.String{:} 'traj_proc.mat']);  proc_traj = proc_traj.traj_table;
+real_traj = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_' 'traj.mat']);  real_traj = real_traj.traj_table;
+proc_traj = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_' 'traj_proc.mat']);  proc_traj = proc_traj.traj_table;
 % Remove practice
 real_traj(real_traj.practice > 0, :) = [];
 proc_traj(proc_traj.practice > 0, :) = [];
@@ -111,7 +111,7 @@ h.real_traj = real_traj;
 h.proc_traj = proc_traj;
 % Get missing data trials.
 var_names = real_traj.Properties.VariableNames;
-miss_data = load([h.p.TESTS_FOLDER '/sub' h.sub.String{:} '.mat']);  miss_data = miss_data.test_res.miss_data;
+miss_data = load([h.p.TESTS_FOLDER '/sub' h.sub.String{:} h.p.DAY '.mat']);  miss_data = miss_data.test_res.miss_data;
 % Keep only trajectories.
 miss_data = miss_data(:, contains(var_names, ["_x_" "_y_" "_z_"]));
 % Select one traj, according to selected var.
@@ -272,8 +272,8 @@ function Pause_Callback(hObject, eventdata, handles)
 % --- Executes on button press in Load_all.
 function Load_all_Callback(hObject, eventdata, h)
 % Get sub data.
-real_traj = load(['../processed_data/sub' h.sub.String{:} 'traj.mat']);  real_traj = real_traj.traj_table;
-proc_traj = load(['../processed_data/sub' h.sub.String{:} 'traj_proc.mat']);  proc_traj = proc_traj.traj_table;
+real_traj = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_' 'traj.mat']);  real_traj = real_traj.traj_table;
+proc_traj = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_' 'traj_proc.mat']);  proc_traj = proc_traj.traj_table;
 % Remove practice
 real_traj(real_traj.practice > 0, :) = [];
 proc_traj(proc_traj.practice > 0, :) = [];

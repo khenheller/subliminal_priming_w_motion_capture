@@ -10,7 +10,7 @@ function [bad_subs] = subScreening(traj_name, p)
     good_diff_trials = NaN(p.N_SUBS, 1);
     
     for iSub = p.SUBS
-        data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data_proc.mat']);  data_table = data_table.data_table;
+        data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data_proc.mat']);  data_table = data_table.data_table;
         % Remove practice.
         data_table(data_table.practice>=1, :) = [];
         % Too much missing trials.
