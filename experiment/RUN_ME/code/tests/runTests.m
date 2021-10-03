@@ -17,7 +17,7 @@ desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 % To test sub data enter his number.
-sub_num = [26];
+sub_num = [32 33];
 % To test word list enter its name.
 word_list = 'trials1day1.xlsx';
 % Are you testing 'data' of a subject, or just a 'trials_list', or a 'practice_trials_list'.
@@ -64,11 +64,6 @@ for iSub = sub_num
     % Log results to file.
     diary(diary_name);
     [pass_test, test_res] = tests(trials, trials_traj, test_type, events, desired_durations, test_day, p);
-    %@@@@@@@@@@@@@@@@@@@@
-    disp('@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@');
-    disp('Make a change in timingsTest.m (marked @with remove@ this) so that the time of target will also be checked.\nYou canceled its check because the getTraj.m didnt display the categor screen after 500ms of target,\n so target timing is always bad');
-    disp('@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@');
-    %@@@@@@@@@@@@@@@@@@@@
     diary off;
 
     save([TEST_RES_FOLDER file_name '.mat'], 'test_res');
