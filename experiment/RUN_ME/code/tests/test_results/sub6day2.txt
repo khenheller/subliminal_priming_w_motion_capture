@@ -1,0 +1,92 @@
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+2
+Deviating trials and their deviation (in ms):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>        <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>_____________</strong>
+
+      181        -69.884     'target_time'
+      334         9.9421     'target_time'
+
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
+
+          1000               1000        0.21296               0.032761           
+           270             270.01        0.22442                0.01312           
+            30              29.99        0.22523              -0.010046           
+            30             29.988        0.18104               -0.01193           
+            30              30.02        0.19706               0.019553           
+           500             499.91         3.2327              -0.090116           
+
+------------------------------- Has Values -------------------------------
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 1
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 1
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1
+
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+2
+Deviating trials and their deviation (in ms):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>        <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>_____________</strong>
+
+      181        -69.884     'target_time'
+      334         9.9421     'target_time'
+
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
+
+          1000               1000        0.21296               0.032761           
+           270             270.01        0.22442                0.01312           
+            30              29.99        0.22523              -0.010046           
+            30             29.988        0.18104               -0.01193           
+            30              30.02        0.19706               0.019553           
+           500             499.91         3.2327              -0.090116           
+
+------------------------------- Has Values -------------------------------
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 1
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 1
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1
+
