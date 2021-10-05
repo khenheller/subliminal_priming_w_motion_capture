@@ -7,7 +7,7 @@ load('../../experiment/RUN_ME/code/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-SUBS = [26 28 29 31 32 33]; % to analyze.
+SUBS = [26 28 29 31 32 33 34]; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
@@ -400,8 +400,8 @@ for iSub = p.SUBS
     % Binomial test.
     n_same_trials = size(single.fc.same,1);
     n_diff_trials = size(single.fc.diff,1);
-    binom_same = round(binopdf(round(avg.fc.same*n_same_trials), n_same_trials, 0.5), 2);
-    binom_diff = round(binopdf(round(avg.fc.diff*n_diff_trials), n_diff_trials, 0.5), 2);
+    binom_same = round(myBinomTest(sum(single.fc.same), n_same_trials, 0.5, 'Two'), 3);
+    binom_diff = round(myBinomTest(sum(single.fc.diff), n_diff_trials, 0.5, 'Two'), 3);
     text(1, fc_same+5, ['p_{bin}=' num2str(binom_same)], 'HorizontalAlignment','center');
     text(2, fc_diff+5, ['p_{bin}=' num2str(binom_diff)], 'HorizontalAlignment','center');
 end
@@ -855,5 +855,6 @@ function p = defineParams(p, SUBS, DAY, iSub)
     p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.
     p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
     p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
+    p.SIG_PVAL = 0.05;
     % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
 end

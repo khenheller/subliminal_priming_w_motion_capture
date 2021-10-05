@@ -22,7 +22,7 @@ function [bad_subs] = subScreening(traj_name, p)
             good_diff_trials(iSub) < p.MIN_AMNT_TRIALS_IN_COND;
         % Number of correct ans is at chance lvl (for categorization).
         amnt_corr = sum(data_table.target_correct);
-        bad_subs{iSub, 'ans_chance_lvl'} = myBinomTest(amnt_corr, p.NUM_TRIALS, 0.5, 'Two');
+        bad_subs{iSub, 'ans_chance_lvl'} = myBinomTest(amnt_corr, p.NUM_TRIALS, 0.5, 'Two') >= p.SIG_PVAL;
         % Any.
         bad_subs{iSub, 'any'} = any(bad_subs{iSub,1:end-1});
     end
