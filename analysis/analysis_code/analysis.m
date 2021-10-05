@@ -7,7 +7,7 @@ load('../../experiment/RUN_ME/code/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-SUBS = [14 16 17 18 19 22 25]; % to analyze.
+SUBS = [26 28 29 31 32 33]; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
@@ -388,6 +388,7 @@ for iSub = p.SUBS
     xticks(1:2);
     xticklabels({[num2str(round(fc_same,1)) '%'] [num2str(round(fc_diff,1)) '%']});
     yticks(0:10:100);
+    plot([0 4], [50 50], '--k');
     legend('Same','Diff');
     xlabel('Same / Diff');
     ylabel('%Correct', 'FontWeight','bold');
@@ -849,7 +850,6 @@ function p = defineParams(p, SUBS, DAY, iSub)
     % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
     p.PROC_DATA_FOLDER = '../processed_data/';
     p.TESTS_FOLDER = '../../experiment/RUN_ME/code/tests/test_results/';
-    p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
     p.MIN_REACT_TIME_SAMPLES = 10;
     p.MAX_BAD_TRIALS = p.NUM_TRIALS - 60; % sub with more bad trials is disqualified.
     p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.

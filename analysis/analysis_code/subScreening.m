@@ -20,8 +20,10 @@ function [bad_subs] = subScreening(traj_name, p)
         good_diff_trials(iSub) = sum(~bad_trials{iSub}.any & ~data_table.same);
         bad_subs{iSub, 'not_enough_trials_in_cond'} = good_same_trials(iSub) < p.MIN_AMNT_TRIALS_IN_COND |...
             good_diff_trials(iSub) < p.MIN_AMNT_TRIALS_IN_COND;
-        % Target correct ans is at chance lvl.
-        bad_subs{iSub, 'ans_chance_lvl'} = sum(data_table.target_correct) <= p.MIN_CORRECT_ANS;
+        % Number of correct ans is at chance lvl (for categorization).
+        amnt_corr = sum(data_table.target_correct);
+        bad_subs{iSub, 'ans_chance_lvl'} = myBinomTest(amnt_corr, p.NUM_TRIALS, 0.5, 'Two');
+        % Any.
         bad_subs{iSub, 'any'} = any(bad_subs{iSub,1:end-1});
     end
 end

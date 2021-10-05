@@ -167,8 +167,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.MAX_MISSING_DATA = 0.1; % in sec.
     p.MAX_BAD_TRIALS = p.NUM_TRIALS - 60; % sub with more bad trials is disqualified.
     p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition is disqualified.
-    p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
-    
+    p.SIG_PVAL = 0.05; % Significance threshold for P-values (smaller p-vals are significant).
     
     % Cameras
     p.SAMPLE_RATE_HZ = p.REF_RATE_HZ; % Camera sample rate in Hz.
