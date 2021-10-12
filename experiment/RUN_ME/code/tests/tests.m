@@ -67,7 +67,8 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, 
     var_names = {'target_natural','same'};
     vars = trials(:,var_names);
     lvls = table([1;1;0;0],[1;0;1;0], 'VariableNames',var_names);
-    reps = (p.NUM_TRIALS / p.NUM_CONDS) * ones(1,p.NUM_CONDS);
+    num_cond = p.N_COND * p.N_CATEGOR; % Num conditions.
+    reps = (p.NUM_TRIALS / num_cond) * ones(1,num_cond);
     pass_test.conditions = conditionTests(vars, lvls, reps); 
     
     % Test target doesn't repeat in block.

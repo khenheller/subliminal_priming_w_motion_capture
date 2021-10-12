@@ -7,7 +7,7 @@ load('../../experiment/RUN_ME/code/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-SUBS = [26 28 29 31 32 33 34]; % to analyze.
+SUBS = [26 28 29 31 32 33 34 35]; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
@@ -123,6 +123,8 @@ disp('Sorting and avging within sub done.');
 %% Reach Area
 % Area between left and right traj for same/diff condition.
 for iTraj = 1:length(traj_names)
+    reach_area.same = NaN(1,p.MAX_SUB);
+    reach_area.diff = NaN(1,p.MAX_SUB);
     for iSub = p.SUBS
         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
         % Turn traj to 2D.
@@ -149,6 +151,35 @@ for iTraj = 1:length(traj_names)
     save([p.PROC_DATA_FOLDER '/fda_' traj_names{iTraj}{1} '.mat'], 'p_val','corr_p','stats');
 end
 disp('FDA calc done.');
+%% Count trials
+for iTraj = 1:length(traj_names)
+    num_trials = struct('same_left',NaN(p.MAX_SUB,1), 'same_right',NaN(p.MAX_SUB,1),...
+        'diff_left',NaN(p.MAX_SUB,1), 'diff_right',NaN(p.MAX_SUB,1));
+    for iSub = p.SUBS
+        % Get trials stats for this sub.
+        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']); single = single.single;
+        num_trials.same_left(iSub)  = size(single.rt.same_left, 1);
+        num_trials.same_right(iSub) = size(single.rt.same_right, 1);
+        num_trials.diff_left(iSub)  = size(single.rt.diff_left, 1);
+        num_trials.diff_right(iSub) = size(single.rt.diff_right, 1);
+    end
+    save([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'num_trials');
+end
+disp('Counting trials in each condition done.');
+%% Format to R
+% Convert matlab data to a format suitable for R dataframes.
+for iTraj = 1:length(traj_names)
+    % Get bad subs.
+    bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' traj_names{iTraj}{1} '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
+    bad_subs = find(bad_subs.any);
+    
+    % Reach Area.
+    reach_area = fReachArea(traj_names{iTraj}, p);
+    reach_area(ismember(reach_area.sub_num, bad_subs), :) = [];
+    writetable(reach_area, [p.PROC_DATA_FOLDER '/reach_area_' p.DAY '_' traj_names{iTraj}{1} '.csv']);
+end
+
+disp('Formating to R done.');
 %% Plotting params
 close all;
 
@@ -856,5 +887,7 @@ function p = defineParams(p, SUBS, DAY, iSub)
     p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
     p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
     p.SIG_PVAL = 0.05;
+    p.CONDS = ["same" "diff"];
+    p.N_COND = length(p.CONDS); % Conditions: Same/Diff.
     % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
 end

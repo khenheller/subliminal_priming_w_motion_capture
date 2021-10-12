@@ -2,7 +2,7 @@ analysis/processed_data/
 raw_data
 development/data
 *.asv
-
+*.ini
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/38.1.psd
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/39.1.psd
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/Untitled-2.psd
@@ -3896,3 +3896,7 @@ development/motion_capture/opti_setup_touch_plane_new.m
 development/motion_capture/optiTrackingExamples.m
 development/motion_capture/touchDrawDemo.m
 development/motion_capture/transform4.m
+.Rproj.user
+*.ini
+development/stimuli/desktop.ini
+experiment/RUN_ME/stimuli/desktop.ini

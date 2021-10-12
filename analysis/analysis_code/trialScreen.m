@@ -87,12 +87,13 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
             bad_trials{iSub}{iTrial,:} = ~success * iTrial;
         end
 
+        % Mark if any test failed.
+        bad_trials{iSub}.any = any(bad_trials{iSub}{:,1:end-1} > 0, 2); % OR between columns (reasons).
+        bad_trials_i{iSub,'any'}{:,:} = find(bad_trials{iSub}{:,'any'});
         % save indices of bad trials.
         for iReason = 1:length(screen_reasons)-1
             bad_trials_i{iSub, iReason}{:,:} = find(bad_trials{iSub}{:,iReason});
         end
-        % Mark if any test failed.
-        bad_trials{iSub}.any = any(bad_trials{iSub}{:,1:end-1} > 0, 2); % OR between columns (reasons).
         % Count bad trials.
         n_bad_trials{iSub, :} = sum(bad_trials{iSub}{:,:} > 0, 1);
     end
