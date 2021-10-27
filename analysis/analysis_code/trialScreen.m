@@ -7,6 +7,7 @@
 %   Late response.
 %   Slow movement time.
 %   Early start (predictive mvmnt instead of response to target).
+%   Quit (sub quit exp before this trial).
 %   Incorrect (e.g. sub reached left but correct ans was right).
 % Output:
 %   bad_trials - Cell for each sub, has table inside.
@@ -18,7 +19,7 @@
 %               bad_trials is logical indexing, this is numeric.
 function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
     screen_reasons = {'hole_in_data','missing_data','short_traj','missed_target','bad_stim_dur',...
-        'late_res', 'slow_mvmnt', 'early_res', 'incorrect', 'any'};
+        'late_res', 'slow_mvmnt', 'early_res', 'incorrect', 'quit', 'any'};
     % Index of each reason.
     indx.hole_in_data = ismember(screen_reasons, 'hole_in_data');
     indx.missing_data = ismember(screen_reasons, 'missing_data');
@@ -29,6 +30,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
     indx.slow_mvmnt = ismember(screen_reasons, 'slow_mvmnt');
     indx.early_res = ismember(screen_reasons, 'early_res');
     indx.incorrect = ismember(screen_reasons, 'incorrect');
+    indx.quit = ismember(screen_reasons, 'quit');
     indx.any = ismember(screen_reasons, 'any');
     % Bad trials' numbers. row = bad trial, column = reason.
     bad_trials_table = table('Size', [p.NUM_TRIALS length(screen_reasons)],...
@@ -42,7 +44,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
     n_bad_trials(p.N_SUBS+1 : end, :) = [];
     bad_trials = cell(p.N_SUBS, 1); % table for each sub, each row will be a trial marked as good/bad.
     
-    too_short = load([p.PROC_DATA_FOLDER '/too_short_to_filter_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat'], 'too_short_to_filter');  too_short = too_short.too_short_to_filter;
+    too_short = load([p.PROC_DATA_FOLDER '/too_short_to_filter_' p.DAY '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat'], 'too_short_to_filter');  too_short = too_short.too_short_to_filter;
 
     for iSub = p.SUBS
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
@@ -82,8 +84,11 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
             success(indx.bad_stim_dur) = testStimDur(dev_table, iTrial);
             % Check if answer is incorrect.
             success(indx.incorrect) = trials_table.target_correct(iTrial);
-            % Cancel unsuccess if it is are caused by other unsuccess.
+            % Check if sub quit before this trial.
+            success(indx.quit) = ~trials_table.quit(iTrial);
+            % Cancel unsuccess if it is caused by other unsuccess.
             success = cancelDuplicates(success, indx);
+            % Mark failed trials.
             bad_trials{iSub}{iTrial,:} = ~success * iTrial;
         end
 
@@ -99,7 +104,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
     end
 end
 
-% Somescreening reasons cause other, Displaying both we be uneccesary duplication, so we remove one.
+% Some screening reasons cause other, Displaying both is redundant, so we remove one.
 function success = cancelDuplicates(success, indx)
     success(indx.missing_data)  = success(indx.missing_data) |...
         ~(success(indx.short_traj) & success(indx.late_res) & success(indx.early_res));

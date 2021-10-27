@@ -23,12 +23,13 @@ function [p] = initConstants(psychtoolbox_active, p)
     % Paths
     [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
     curr_path = replace(curr_path, '\', '/');
-    p.STIM_FOLDER = [curr_path '/../stimuli/'];
-    p.DATA_FOLDER = [curr_path '/../../../raw_data/'];
-    p.PROC_DATA_FOLDER = [curr_path '/../../../analysis/processed_data/']; % preprocessed data folder.
+    p.EXP_FOLDER = [curr_path];
+    p.STIM_FOLDER = [p.EXP_FOLDER '/../stimuli/'];
+    p.DATA_FOLDER = [p.EXP_FOLDER '/../../../raw_data/'];
+    p.PROC_DATA_FOLDER = [p.EXP_FOLDER '/../../../analysis/processed_data/']; % preprocessed data folder.
     p.TRIALS_FOLDER = [p.STIM_FOLDER '/trial_lists/'];
     p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
-    p.TESTS_FOLDER = [curr_path '/./tests/test_results/'];
+    p.TESTS_FOLDER = [p.EXP_FOLDER '/./tests/test_results/'];
     
     if psychtoolbox_active
         p.REACT_TIME = 0.320; % Maximal allowed time to movement onset (in sec).
@@ -121,7 +122,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.NUM_TRIALS = p.NUM_BLOCKS*p.BLOCK_SIZE;
     p.N_CATEGOR = 2; % Num of word categories (2 = natural / artificial).
     p.CONDS = ["same" "diff"];
-    p.N_COND = length(p.CONDS); % Conditions: Same/Diff.
+    p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
     
     % duration in sec
     p.FIX_DURATION = 1;
