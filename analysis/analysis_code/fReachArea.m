@@ -1,10 +1,13 @@
 % Format reach area to R dataframe.
+% Reach area is calc on avg traj, but we need single trials to perform Linear mixed model,
+% so we bootstrap: resmaple N trials and calc avg traj, we do this M times.
+% N = min_amnt, M = iter.
 % Output:
 %   Columns: sub, condition, reach area, num_trials.
 %   Rows: one for each combination of sub and condition.
 % Input:
-%   bs_iter = number of bootstrap iterations.
-function [r_a_df] = fReachArea(traj_name, bs_iter, p)
+%   iter = number of bootstrap iterations.
+function [r_a_df] = fReachArea(traj_name, iter, p)
 % Get bad subs.
 bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_name{1} '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
 bad_subs = find(bad_subs.any);
@@ -15,7 +18,7 @@ num_trials = cell2mat(struct2cell(num_trials)');
 num_trials(bad_subs, :) = [];
 min_amnt = min(num_trials,[], 'all');
 % Build dataframe.
-num_rows = length(subs) * p.N_CONDS * bs_iter;
+num_rows = length(subs) * p.N_CONDS * iter;
 columns = ["sub", "cond", "reach_area"];
 r_a_df = table('Size',[num_rows length(columns)], 'VariableTypes',{'double','string','double'} , 'VariableNames',columns);
 
@@ -29,12 +32,16 @@ for iSub = subs
         % Get trajs of this cond.
         left_trajs = sub_trajs.(strcat(cond,'_','left'));
         right_trajs = sub_trajs.(strcat(cond,'_','right'));
-        for iter = 1:bs_iter
+        % Resample trajs and calc 'iter' avg trajectories.
+        for iter = 1:iter
             % Sample traj and avg.
             left_avg = mean(datasample(left_trajs, min_amnt, 2), 2);
             right_avg = mean(datasample(right_trajs, min_amnt, 2), 2);
             % Calc area.
             reach_area = calcReachArea(left_avg, right_avg);
+            if reach_area > 1
+                error('Reach area is too big, check for error in analysis.');
+            end
             r_a_df(j,:) = table(iSub, cond, reach_area); % has to match columns!
             j = j+1;
         end
