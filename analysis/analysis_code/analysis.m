@@ -35,11 +35,13 @@ traj_types = replace(traj_types, '_x', '');
 %% Create proc data file
 % Copy the real data to a new file, to keep the original data safe.
 tic
+disp('Creating processing data files for sub:');
 for iSub = p.SUBS
     traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
     data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.mat'], 'traj_table'); % '.mat' is faster to read than '.csv'.
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.mat'], 'data_table');
+    disp(num2str(iSub));
 end
 timing = num2str(toc);
 disp(['Done Creating processing data files. ' timing 'Sec'])
@@ -48,28 +50,27 @@ disp(['Done Creating processing data files. ' timing 'Sec'])
 % (late_res and slow_mvmnt fields to sub 1-14).
 % (quit to sub 1-38).
 tic
+disp('Adding missing fields to sub:');
 for iSub = p.SUBS
     % Checks if the fields were already added.
-    data_file = fopen([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
-    fields = textscan(data_file,'%s',1); % gets only fields
-    fields = fields{:}{:};
-    fields = split(fields, ',');
+    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
+    fields = data_table.Properties.VariableNames;
     has_t_fields = any(contains(fields, 'late_res')) &...
         any(contains(fields, 'slow_mvmnt')) &...
         any(contains(fields, 'early_res'));
     has_q_field = any(contains(fields, 'quit'));
-    fclose(data_file);
     % If fields don't exist, add them.
     if ~has_t_fields || ~has_q_field
-        data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
-        traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
+        traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_traj.mat']);  traj_table = traj_table.traj_table;
         if ~has_t_fields
             start_end_points = load([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'start_end_points.mat']);
             p.START_POINT = start_end_points.p.START_POINT;
             data_table = addFields(data_table, traj_table, p);
+            disp([num2str(iSub) ' timing fields']);
         end
         if ~has_q_field
             data_table.quit(:) = 0;
+            disp([num2str(iSub) ' quit field']);
         end
         save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.mat'], 'data_table');
     end
@@ -242,7 +243,7 @@ for iTraj = 1:length(traj_names)
     % Traj
     traj = fTraj(traj_names{iTraj}, p);
     traj(ismember(traj.sub, bad_subs), :) = [];
-    writetable(traj, [p.PROC_DATA_FOLDER '/traj_' p.DAY '_' traj_names{iTraj}{1} '.csv']);
+    writetable(traj, [p.PROC_DATA_FOLDER '/xpos_' p.DAY '_' traj_names{iTraj}{1} '.csv']);
 end
 timing = num2str(toc);
 disp(['Formating to R done. ' timing 'Sec']);

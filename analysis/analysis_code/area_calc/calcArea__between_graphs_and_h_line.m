@@ -1,6 +1,9 @@
 % Receives two 2D graphs, calculates area between them:
-% Calc area between 'a' and h_line (horizontal line), and 'b' and h_line,
-% and subtract areas to receive area between 'a' and 'b'.
+% Graphs need to have equal X vals, so we fit func to 'a', and than get
+% the Y vals that match 'b's X vals with interpolation.
+% BUT since 'a','b' can retract (go back and forth in X), we cant fit func to 'a'.
+% INSTEAD: calc area between 'a' and h_line (horizontal line), and 'b' and h_line,
+%           and subtract areas to receive area between 'a' and 'b'.
 % a,b - curves, 1st column = X values, 2nd column = Y values.
 function area = calcArea(a, b)
     % Find graph with smallest Y.
@@ -35,12 +38,12 @@ function area = calcArea(a, b)
 
     % Iterate over segments.
     for j = 1:length(points_a)-1
-        % Loops create segments of length=1, this rises an error in trapz. So we skip loops.
+        % Loops are skipped.
         loop_in_graph = points_a(j) == points_a(j+1) || points_b(j) == points_b(j+1);
-        % ----------------------------------- Perhaps can be removed --------------------------------------------------------------------------------------
-        not_in_order = ~isequal(sort(points_a), points_a) || ~isequal(sort(points_b), points_b);
-        if not_in_order
-            error("The points_a/b isn't sorted, so the segments (between intersections) will not be calculated in their order. Not sure if thats bad or not.")
+        % -------------------------------------------------------------------------------------------------------------------------
+        real_loop = ~isequal(sort(points_a), points_a) || ~isequal(sort(points_b), points_b);
+        if real_loop
+            error("The points_a/b isn't sorted, so the areas will not be calculated in their order.")
         end
         % -------------------------------------------------------------------------------------------------------------------------
         if ~loop_in_graph
@@ -81,3 +84,18 @@ function d = trimGrpah(c,d)
         end
     end
 end
+% ------------------------------------------
+function [] = plotab(new_fig, a,b, atitle, m,n,subplot_num)
+    if new_fig
+        figure();
+    end
+    subplot(m,n,subplot_num);
+    plot(a(:,1), a(:,2), 'b', 'LineWidth',3); hold on;
+    plot(b(:,1), b(:,2), 'r', 'LineWidth',3);
+    xlabel('X (meter)');% xlim([-1 8]);
+    ylabel('Z (meter)');% ylim([-4 2]);
+    title(atitle);
+    grid on;
+    legend('a', 'b');
+end
+% ------------------------------------------
