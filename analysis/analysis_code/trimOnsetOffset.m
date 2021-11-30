@@ -1,6 +1,6 @@
 % Recieves a subject's trajectories.
 % Trims each trial to start at the movement onset and end at movemnt offset, fills the end of recording with NaNs.
-% Onset criterion: the first out of 4 consequetive frames where each velocity was greater
+% Onset criterion: the first out of 4 consequetive frames where each velocity towards screen was greater
 %                   than threshold and total acceleration was over a threshold.
 % Offset criterion: first frame where velocity dropped below threshold or
 %                   position reached max.
@@ -22,16 +22,31 @@ function [trajs_mat, onsets, offsets] = trimOnsetOffset(trajs_mat, time_mat, p)
     vel_per_axis = dx / p.SAMPLE_RATE_SEC;
     vel = sqrt(sum(vel_per_axis.^2, 3));
     vel = [vel; NaN(1,p.NUM_TRIALS)]; % Round size.
+    
     % trim each trial.
     for iTrial = 1:p.NUM_TRIALS
         trial_vel = vel(:, iTrial);
         trial_traj = squeeze(trajs_mat(:, iTrial, :));
+        
+        % Determine direction.
+        last_sample = find(~isnan(trial_traj(:,3)), 1,'last');
+        % Can't calc direction if traj len is 1.
+        if last_sample > 1
+            dist_from_end = abs(trial_traj(last_sample, 3) - trial_traj(1:last_sample, 3));
+            direction = dist_from_end(1:end-1) < dist_from_end(2:end);
+            direction = direction * -1;
+            direction(direction == 0) = 1;
+            direction(end+1:height(trial_vel), :) = 1;
+            % Apply direction to vel.
+            trial_vel = trial_vel(1:length(direction)) .* direction;
+        end
+
         % Lowpass filter velocity.
         trial_vel = filterVel(trial_vel, p);
         % velocity above threshoold.
         onset = getOnset(trial_vel, thresh);
         % velocity below threshoold or reached maximum position.
-        offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3)); 
+        offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3));
         % remove values before onset.
         trial_traj = circshift(trial_traj, -onset+1, 1);
         trial_vel = circshift(trial_vel, -onset+1, 1);
@@ -69,7 +84,7 @@ function onset = getOnset(velocities, thresh)
             velocities(4 : end) > thresh.v & ...
             (velocities(4 : end) - velocities(1 : end-3)) >= thresh.a;
     % Check if sub didn't move
-    if isempty(find(onsets))
+    if isempty(find(onsets,1))
         onset = 1;
     else
         % send only the first.
