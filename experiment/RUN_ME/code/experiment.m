@@ -1,16 +1,16 @@
 % prevents display of some warnings.
 warning('off','MATLAB:table:PreallocateCharWarning');
 warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
-
-clc; 
+ 
+clc;
 clear all;
 close all;
 addpath('.\NatNetSDK');
 
-% Parameter definit1ion.
+% Parameter definition.
 p.SUB_NUM = 999;
 p.DAY = 'day1';
-  
+
 p.FULLSCREEN = 1;
 p.DEBUG = 0;
 %% -------------------------- Align screen --------------------------------

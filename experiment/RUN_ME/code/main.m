@@ -195,18 +195,18 @@ function [p] = runTrials(trials, include_prime, p)
             % PAS
             if include_prime
                 times(9) = showTexture(p.PAS_SCREEN, p);
-                [pas, pas_ans_time] = getInput('pas', p);
+                [pas, pas_time] = getInput('pas', p);
             else
                 
                 times(9) = target_ans.categor_time;
                 times(8) = times(9);
                 pas = 1;
-                pas_ans_time = times(9);
+                pas_time = times(9);
                 pause(0.7);
             end
             
             % Assigns collected data to trials.
-            trials = assign_to_trials(trials, times, target_ans, prime_ans, pas, pas_ans_time);
+            trials = assign_to_trials(trials, times, target_ans, prime_ans, pas, pas_time);
             
             % Save trial to file and removes it from list.
             saveToFile(trials(1,:), p);
@@ -359,7 +359,7 @@ function [times] = showRecog(trial, p)
 end
 
 % Assigns data captured in this trial to 'trials'.
-function [trials] = assign_to_trials(trials, times, target_ans, prime_ans, pas, pas_ans_time)
+function [trials] = assign_to_trials(trials, times, target_ans, prime_ans, pas, pas_time)
     trials.trial_start_time(1) = times(1);
 
     % Assigns event times.
@@ -401,9 +401,9 @@ function [trials] = assign_to_trials(trials, times, target_ans, prime_ans, pas, 
     trials(1,:) = checkAns(trials(1,:), 'recog');
 
     trials.pas(1) = pas;
-    trials.pas_rt(1) = pas_ans_time - trials.pas_time(1);
+    trials.pas_rt(1) = pas_time - times(9);
     
-    trials.trial_end_time(1) = pas_ans_time;
+    trials.trial_end_time(1) = pas_time;
 end
 
 % Prints word on screen to measure thier actual size (by hand).
