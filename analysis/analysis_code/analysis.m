@@ -291,8 +291,8 @@ for iSub = p.SUBS
         avg_each.cond_diff(iTraj).left(:,iSub,:)  = avg.cond_diff.left;
         avg_each.cond_diff(iTraj).right(:,iSub,:) = avg.cond_diff.right;
     end
-    avg_each.fc.same(iSub) = avg.fc.same;
-    avg_each.fc.diff(iSub) = avg.fc.diff;
+    avg_each.fc_prime.same(iSub) = avg.fc_prime.same;
+    avg_each.fc_prime.diff(iSub) = avg.fc_prime.diff;
 end
 %% Single Sub plots.
 % Create figure for each sub.
@@ -471,15 +471,15 @@ for iSub = p.SUBS
     ax.YGrid = 'on';
 end
 
-% ------- Forced Choice -------
+% ------- Prime Forced Choice -------
 for iSub = p.SUBS
 %     figure('Name',['sub' num2str(iSub) p.DAY '_' ' Forced Choice']);
     figure(sub_f(iSub,1));
     subplot(2,6,6);
     avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
     single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-    fc_same = avg.fc.same * 100; % percentage.
-    fc_diff = avg.fc.diff * 100;
+    fc_same = avg.fc_prime.same * 100; % percentage.
+    fc_diff = avg.fc_prime.diff * 100;
     bar(1, fc_same, 'FaceColor',same_col);
     hold on;
     bar(2, fc_diff, 'FaceColor',diff_col);
@@ -491,15 +491,15 @@ for iSub = p.SUBS
     xlabel('Same / Diff');
     ylabel('%Correct', 'FontWeight','bold');
     ylim([0 100]);
-    title(['Forced Choice (PAS=1)']);
+    title(['Prime Forced Choice (PAS=1)']);
     set(gca,'FontSize',14);
     ax = gca;
     ax.YGrid = 'on';
     % Binomial test.
-    n_same_trials = size(single.fc.same,1);
-    n_diff_trials = size(single.fc.diff,1);
-    binom_same = round(myBinomTest(sum(single.fc.same), n_same_trials, 0.5, 'Two'), 3);
-    binom_diff = round(myBinomTest(sum(single.fc.diff), n_diff_trials, 0.5, 'Two'), 3);
+    n_same_trials = size(single.fc_prime.same,1);
+    n_diff_trials = size(single.fc_prime.diff,1);
+    binom_same = round(myBinomTest(sum(single.fc_prime.same), n_same_trials, 0.5, 'Two'), 3);
+    binom_diff = round(myBinomTest(sum(single.fc_prime.diff), n_diff_trials, 0.5, 'Two'), 3);
     text(1, fc_same+5, ['p_{bin}=' num2str(binom_same)], 'HorizontalAlignment','center');
     text(2, fc_diff+5, ['p_{bin}=' num2str(binom_diff)], 'HorizontalAlignment','center');
 end
@@ -699,17 +699,17 @@ for iTraj = 1:length(traj_names)
     legend(h,'Same','Diff', 'Location','northwest');
 end
 
-% ------- Forced choice -------
+% ------- Prime Forced choice -------
 % fc_pas_f = figure('Name','Forced choice','Units','normalized','OuterPosition',[0.25 0.25 0.5 0.5]);
 figure(all_sub_f(3));
-subplot(2,2,1); % plot fc and pas together.
-beesdata = {avg_each.fc.same(p.SUBS), avg_each.fc.diff(p.SUBS)};
-[h, fc_p_val(1) , ci, stats] = ttest(avg_each.fc.same(p.SUBS), 0.5);
-[h, fc_p_val(2) , ci, stats] = ttest(avg_each.fc.diff(p.SUBS), 0.5);
+subplot(2,2,1); % plot fc_prime and pas together.
+beesdata = {avg_each.fc_prime.same(p.SUBS), avg_each.fc_prime.diff(p.SUBS)};
+[h, fc_p_val(1) , ci, stats] = ttest(avg_each.fc_prime.same(p.SUBS), 0.5);
+[h, fc_p_val(2) , ci, stats] = ttest(avg_each.fc_prime.diff(p.SUBS), 0.5);
 fc_p_val = round(fc_p_val, 2);
 XTickLabel = {'Same', 'Diff'};
 colors = {same_col, diff_col};
-title_char = ['Forced response (PAS = ' num2str(pas_rate) ')'];
+title_char = ['Prime Forced response (PAS = ' num2str(pas_rate) ')'];
 printBeeswarm(beesdata, [], XTickLabel, colors, space, title_char, 'ci', alpha_size);
 plot([-20 20], [0.5 0.5], '--', 'color',[0.3 0.3 0.3 f_alpha], 'LineWidth',2); % Line at 50%.
 text(get(gca, 'xTick'),[0.1 0.1], {['p = ' num2str(fc_p_val(1))], ['p = ' num2str(fc_p_val(2))]}, 'FontSize',14, 'HorizontalAlignment','center');
@@ -719,7 +719,7 @@ ylim([0 1]);
 % ------- PAS -------
 figure(all_sub_f(3));
 hold on;
-subplot(2,2,2); % plot fc and pas together.
+subplot(2,2,2); % plot fc_prime and pas together.
 subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '.mat']);  subs_avg = subs_avg.subs_avg;
 bar(1:4, subs_avg.pas.same * 100 / sum(subs_avg.pas.same), 'FaceColor',same_col);
 hold on;

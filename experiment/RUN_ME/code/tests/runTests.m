@@ -17,13 +17,13 @@ desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
 %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 % To test sub data enter his number.
-sub_num = [34 35];
+sub_num = [999];
 % To test word list enter its name.
 word_list = 'trials1day1.xlsx';
 % Are you testing 'data' of a subject, or just a 'trials_list', or a 'practice_trials_list'.
 test_type = 'data';
 % Day: 'day1' or 'day2'.
-test_day = 'day2';
+test_day = 'day1';
 
 for iSub = sub_num
     file_name = ['sub' num2str(iSub) test_day];
@@ -66,7 +66,7 @@ for iSub = sub_num
 %     % Remove @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 %     p.N_CATEGOR = 2; % Num of word categories (2 = natural / artificial).
 %     p.CONDS = ["same" "diff"];
-%     p.N_COND = length(p.CONDS); % Conditions: Same/Diff.
+%     p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
 %     % Remove @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     [pass_test, test_res] = tests(trials, trials_traj, test_type, events, desired_durations, test_day, p);
     diary off;
