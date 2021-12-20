@@ -42,6 +42,8 @@ function [trials] = getTrials(trial_type, p)
     trials.sub_num = ones(height(trials),1) * p.SUB_NUM;
     % In categorization task, "natural" is on the left for odd sub numbers.
     trials.natural_left = ones(height(trials),1) * rem(p.SUB_NUM, 2);
+    % Set quit to 0.
+    trials.quit = zeros(height(trials),1);
     % convert vars with multiple row in each trial to cells.
     for var = p.MULTI_ROW_VARS
         trials.(var{:}) = num2cell(NaN(height(trials),1));
