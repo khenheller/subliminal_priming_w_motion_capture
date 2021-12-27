@@ -149,6 +149,7 @@ output_list <- getOutliers(r_a_data, 'reach_area')
 outliers <- output_list[[1]] 
 inliers <- output_list[[2]]
 inliers %>% ggplot(aes(x=reach_area, color=cond, fill=cond)) + geom_histogram(alpha=0.4, position="identity", bins=200) + theme_minimal() + theme(text=element_text(size=15))
+inliers %>% ggplot(aes(x=cond, y=reach_area, fill=cond)) + geom_violin(alpha=0.4) + geom_boxplot(width=0.15) + theme_minimal() + theme(text=element_text(size=15))
 # Heteroscedasticity - resPlot should distribute normaly / equally across y'.
 plot(r_a_mixed, which=1)
 # Multicolinearity - irelevant, we have 1 predictor.
@@ -164,6 +165,7 @@ output_list <- getOutliers(mad_data, 'mad')
 outliers <- output_list[[1]] 
 inliers <- output_list[[2]]
 inliers %>% ggplot(aes(x=mad, color=cond, fill=cond)) + geom_histogram(alpha=0.4, position="identity", bins=200) + theme_minimal() + theme(text=element_text(size=15))
+inliers %>% ggplot(aes(x=cond, y=mad, fill=cond)) + geom_violin(alpha=0.4) + geom_boxplot(width=0.15) + theme_minimal() + theme(text=element_text(size=15)) + facet_wrap(~side)
 # Heteroscedasticity - resPlot should distribute normaly / equally across y'.
 plot(mad_mixed, which=1)
 # Multicolinearity - irelevant, we have 1 predictor.
