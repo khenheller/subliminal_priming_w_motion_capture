@@ -26,6 +26,8 @@ function trials = newTrials(draw_stats, practice, p)
     trials.prime_duration = ones(height(trials),1) * p.PRIME_DURATION;
     trials.mask3_duration = ones(height(trials),1) * p.MASK3_DURATION;
     trials.target_duration = ones(height(trials),1) * p.TARGET_DURATION;
+    % Assign 'quit'.
+    trials.quit = zeros(height(trials),1);
     
     % sample words to use as targets (See main.docx for explanation on this calc).
     divisors = 1:height(p.WORD_LIST);
