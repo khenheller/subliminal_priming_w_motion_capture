@@ -146,30 +146,28 @@ function [p] = runTrials(trials, include_prime, p)
             
             % Fixation
             times(1) = showFixation(p);
-            WaitSecs(fix_duration);
             
             % Mask 1
-            times(2) = showMask(mask1, p);
-            WaitSecs(mask1_duration);
+            times(2) = showMask(mask1, times(1) + fix_duration, p);
             
             % Mask 2
-            times(3) = showMask(mask2, p);
-            WaitSecs(mask2_duration);
+            times(3) = showMask(mask2, times(2) + mask1_duration, p);
             
             % Prime
             if include_prime
-                times(4) = showWord(trials(1,:), 'prime', p);
-                WaitSecs(prime_duration);
+                times(4) = showWord(trials(1,:), 'prime', times(3) + mask2_duration, p);
+                mask_3_disp_time = times(4) + prime_duration;
+            else
+                mask_3_disp_time = times(3) + mask2_duration;
             end
             
             % Mask 3
-            times(5) = showMask(mask3, p);
-            WaitSecs(mask3_duration);
+            times(5) = showMask(mask3, mask_3_disp_time, p);
             
             % Target
             Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
             Screen('TextSize', p.w, p.FONT_SIZE);
-            times(6) = showWord(trials(1,:), 'target', p);
+            times(6) = showWord(trials(1,:), 'target', times(5) + mask3_duration, p);
             
             % Target categorization.
             target_ans = getAns('categor', p);
@@ -241,38 +239,36 @@ function [p] = exampleTrial(trials, include_prime, p)
         mask3 = getTextureFromHD(p.MASKS(trials.mask3(1)), p);
 
         % Fixation
-        times(1) = showFixation(p);
-        WaitSecs(fix_duration);
+        times = showFixation(p);
 
         % Mask 1
         Screen('DrawTexture',p.w, mask1);
-        [~,times] = Screen('Flip', p.w);
-        WaitSecs(mask1_duration);
+        [~,times] = Screen('Flip', p.w, times + fix_duration);
 
         % Mask 2
         Screen('DrawTexture',p.w, mask2);
-        [~,times] = Screen('Flip', p.w);
-        WaitSecs(mask2_duration);
+        [~,times] = Screen('Flip', p.w, times + mask1_duration);
 
         if include_prime
             % Prime
             Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
             DrawFormattedText(p.w, double('תיק'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
-            [~,times] = Screen('Flip',p.w,0,1);
-            WaitSecs(prime_duration);
+            [~,times] = Screen('Flip', p.w, times + mask2_duration, 1);
+            mask_3_disp_time = times + prime_duration;
+        else
+            mask_3_disp_time = times + mask2_duration;
         end
 
         % Mask 3
         Screen('DrawTexture',p.w, mask3);
-        [~,times] = Screen('Flip', p.w);
-        WaitSecs(mask3_duration);
+        [~,times] = Screen('Flip', p.w, mask_3_disp_time);
 
         % Target
         Screen('TextFont',p.w, p.FONT_TYPE); % Set target font.
         Screen('TextSize', p.w, p.FONT_SIZE);
         Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with target.
         DrawFormattedText(p.w, double('עלה'), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
-        [~,times] = Screen('Flip',p.w,0,1);
+        [~,times] = Screen('Flip', p.w, times + mask3_duration, 1);
         
         % Waits for key press.
         getInput('instruction',p);
@@ -327,15 +323,17 @@ function [times] = showFixation(p)
     [~,times] = Screen('Flip', p.w);
 end
 
-function [times] = showMask(mask, p) % 'mask' - which mask to show (1st / 2nd / 3rd).
+% When=absolute time.
+function [times] = showMask(mask, when, p) % 'mask' - which mask to show (1st / 2nd / 3rd).
     Screen('DrawTexture',p.w, mask);
-    [~,times] = Screen('Flip', p.w);
+    [~,times] = Screen('Flip', p.w, when);
 end
 
-function [times] = showWord(trial, prime_or_target, p)
+% When=absolute time.
+function [times] = showWord(trial, prime_or_target, when, p)
     Screen('DrawTexture',p.w, p.CATEGOR_TXTR); % Shows categor answers with word.
     DrawFormattedText(p.w, double(trial.(prime_or_target){:}), 'center', (p.SCREEN_HEIGHT/2+3), [0 0 0]);
-    [~,times] = Screen('Flip',p.w,0,1);
+    [~,times] = Screen('Flip', p.w, when, 1);
 end
 
 % draws prime and distractor for recognition task.
