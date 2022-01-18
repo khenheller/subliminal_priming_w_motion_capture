@@ -4,7 +4,7 @@ addpath(genpath('./imported_code'));
 % -----------------------------------
 % Counts trials with correct ans and trails with good RT in each day.
 % -----------------------------------
-SUBS = [26 27 28 29 30 31 32 33 34 35 36 37 38 41];
+SUBS = [26 27 28 29 30 31 32 33 34 35 36 37 38 41 42];
 load('../../experiment/RUN_ME/code/p.mat');
 p = defineParams(p, SUBS, 'day1', SUBS(1));
 nTrials = [240 480]; % num trials on day 1 and 2 accordingly.
@@ -44,10 +44,15 @@ disp('Done checking timing\n');
 
 
 disp('Num of trials with correct target classification:');
+const_space = 7; % Between results in same line.
 for iSub = SUBS
-    spaces(1) = repeat(' ', 7-lenght(correct(iSub,1)));
-    spaces(2) = repeat(' ', 7-lenght(correct(iSub,1)));
-    disp(['Sub' num2str(iSub) ': day1 ' num2str(correct(iSub,1)) '     day2 ' num2str(correct(iSub,2)) '  Isnt guessing on day1: ' num2str(not_at_chance(iSub,1)) '   day2: ' num2str(not_at_chance(iSub,2)) '      in percent:    day1 ' num2str(correct_per(iSub,1)) '%    day2 ' num2str(correct_per(iSub,2)) '%']);
+    disp(['Sub' num2str(iSub) ':'...
+        'day1 ' pad(num2str(correct(iSub,1)), const_space, 'right')...
+        'day2 ' pad(num2str(correct(iSub,2)), const_space, 'right')...
+        'Isnt guessing on day1: ' pad(num2str(not_at_chance(iSub,1)), const_space, 'right')...
+        'day2: ' pad(num2str(not_at_chance(iSub,2)), const_space, 'right')...
+        'in percent: day1 ' pad([num2str(correct_per(iSub,1)) '%'], const_space, 'right')...
+        'day2 ' pad([num2str(correct_per(iSub,2)) '%'], const_space, 'right')]);
 end
 avg = nanmean(correct, 1);
 stdev = nanstd(correct, 1);
