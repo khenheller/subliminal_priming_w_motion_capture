@@ -116,7 +116,7 @@ xpos_mixed <- xpos_data %>% group_by(side) %>% group_by(zindex, .add=T) %>%
 ##------------------------- Model comparison -----------------------------
 # ---- Reach Area ----
 # ANOVA
-anova(r_a_empty, r_a_mixed, test="chi")
+anova(r_a_empty, r_a_mixed)
 # LOOCV
 #loocv(reach_area ~ 1 + cond + (1|sub), r_a_data, r_a_data$reach_area) @@@@@@@@@@@@@@ Im not sure how to do this for mixed model @@@@@@@@@@@@@@@@@@@@@@@
 # ------- MAD --------

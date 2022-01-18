@@ -7,7 +7,7 @@ load('../../experiment/RUN_ME/code/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-SUBS = [26 28 29 31 32 33 34 35 37 38]; % to analyze.
+SUBS = [26 28 29 31 32 33 34 35 37 38 39 40]; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -778,7 +778,7 @@ for iTraj = 1:length(traj_names)
     hold on;
     reach_area = load([p.PROC_DATA_FOLDER strrep(traj_names{iTraj}{1}, '_x','') '_' p.DAY '_reach_area.mat']);  reach_area = reach_area.reach_area;
     beesdata = {reach_area.same(p.SUBS) reach_area.diff(p.SUBS)};
-    yLabel = 'Reach area (cm^2)';
+    yLabel = 'Reach area (m^2)';
     XTickLabels = ["Same","Diff"];
     colors = {same_col, diff_col};
     title_char = cell2mat(['Reach Area ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
