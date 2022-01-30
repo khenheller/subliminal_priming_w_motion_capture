@@ -5,7 +5,7 @@
 % Input:
 %   pas_rate - double, only trials with this pas rating will be averaged.
 function [bad_subs] = subScreening(traj_name, pas_rate, p)
-    bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_name{1} '.mat']);
+    bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_name{1} '_subs_' p.SUBS_STRING '.mat']);
     bad_trials = bad_trials.bad_trials;
     screen_reasons = {'not_enough_trials','not_enough_trials_in_cond','categor_chance_lvl','seen_prime','any'};
     bad_subs = table('size',[p.MAX_SUB, length(screen_reasons)],...

@@ -1,4 +1,4 @@
-function [lineOut, fillOut] = stdshade(amatrix,alpha,acolor,F,smth,depend_y, type, a_val)
+function [lineOut, fillOut] = stdshade(amatrix,alpha,acolor,F,smth,depend_y, type, a_val, linewidth)
 % usage: stdshading(amatrix,alpha,acolor,F,smth)
 % plot mean and sem/std coming from a matrix of data, at which each row is an
 % observation. sem/std is shown as shading.
@@ -8,7 +8,7 @@ function [lineOut, fillOut] = stdshade(amatrix,alpha,acolor,F,smth,depend_y, typ
 % - smth defines the smoothing factor (default is no smooth)
 % - depend_y plot dependent var on x axis (0) or on y axis (1).
 % 19/05/21 Khen: type - want to draw 'std' / 'se' (standard error) / 'ci' (Coinfidence interval).
-%               a_val - alpha value when drawing CI.
+%               a_val - alpha value when drawing CI. This isn't the transperency.
 % smusall 2010/4/23
 if exist('acolor','var')==0 || isempty(acolor)
     acolor='r'; 
@@ -62,7 +62,7 @@ if ishold==0
     check=true; else check=false;
 end
 hold on;
-lineOut = plot(mean_x,mean_y, 'color', acolor,'linewidth',1.5); %% change color or linewidth to adjust mean line
+lineOut = plot(mean_x,mean_y, 'color', acolor,'linewidth',linewidth); %% change color or linewidth to adjust mean line
 if check
     hold off;
 end

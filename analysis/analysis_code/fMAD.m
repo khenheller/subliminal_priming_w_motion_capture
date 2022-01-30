@@ -33,7 +33,7 @@ mad_df(ismissing(mad_df.cond), :) = [];
 %{
 % This uses average mad for each sub, instead of singel trial. %
 % Get num of trials.
-num_trials = load([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_name{1} '.mat'], 'num_trials');  num_trials = num_trials.num_trials;
+num_trials = load([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_name{1} '_subs_' p.SUBS_STRING '.mat'], 'num_trials');  num_trials = num_trials.num_trials;
 % Fill table with goods.
 j = 1;
 for iSub = p.SUBS

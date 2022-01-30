@@ -7,9 +7,11 @@
 function [p_val, corr_p, t, stats] = runFDA(trajs_name, p)
     fdaMat = struct('x',[],'y',[],'z',[]);
     group = {[], [], []}; % 3 grouping options: same/diff, left/right, subs.
+
+    good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' trajs_name{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
     
     % GROUPING THE DATA
-    for iSub = p.SUBS
+    for iSub = good_subs
         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' trajs_name{1} '.mat']);  single = single.single;
         trajs = single.trajs; % Sub's trajss (sorted).
         % Concatenate all the sub's trials.

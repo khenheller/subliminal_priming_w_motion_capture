@@ -1,4 +1,5 @@
-function p = defineParams(p, SUBS, DAY, iSub)
+% SORTED_SUBS - subjects sorted according to the version of the experiment they participated in.
+function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     p.DATA_FOLDER = '../../raw_data/';
 
     p = load([p.DATA_FOLDER '/sub' num2str(iSub) DAY '_' 'p.mat']); p = p.p;
@@ -13,7 +14,11 @@ function p = defineParams(p, SUBS, DAY, iSub)
     p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
     p.TESTS_FOLDER = [p.EXP_FOLDER '/./tests/test_results/'];
     % Subjects
+    p.EXP_1_SUBS = SORTED_SUBS.EXP_1_SUBS;
+    p.EXP_2_SUBS = SORTED_SUBS.EXP_2_SUBS;
+    p.EXP_3_SUBS = SORTED_SUBS.EXP_3_SUBS;
     p.SUBS = SUBS;
+    p.SUBS_STRING = regexprep(num2str(p.SUBS), '\s+', '_'); % Concatenate sub's numbers with '_' between them.
     p.DAY = DAY;
     p.N_SUBS = length(p.SUBS);
     p.MAX_SUB = max(p.SUBS);

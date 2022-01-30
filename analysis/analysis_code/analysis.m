@@ -3,16 +3,20 @@ close all;
 clc;
 
 %% Parameters
+disp("Started setting up params.")
 load('../../experiment/RUN_ME/code/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-SUBS = [26 28 29 31 32 33 34 35 37 38 39 40]; % to analyze.
+SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
+SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
+SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
+SUBS = SORTED_SUBS.EXP_3_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
-p = defineParams(p, SUBS, DAY, SUBS(1));
+p = defineParams(p, SUBS, DAY, SUBS(1), SORTED_SUBS);
 
 % Name of trajectory column in output data. each cell is a diff type of traj.
 traj_names = {{'target_x_to' 'target_y_to' 'target_z_to'},...
@@ -32,6 +36,7 @@ traj_types = [traj_names{:,:}];
 traj_types = reshape(traj_types, [], length(traj_names));
 traj_types = traj_types(1,:);
 traj_types = replace(traj_types, '_x', '');
+disp("Done setting params.");
 %% Create proc data file
 % Copy the real data to a new file, to keep the original data safe.
 tic
@@ -108,7 +113,7 @@ too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
     'VariableNames', traj_types);
 disp('Preprocessing done for subject:');
 for iSub = p.SUBS
-    p = defineParams(p, SUBS, DAY, iSub);
+    p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS);
     traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_traj.mat']);  traj_table = traj_table.traj_table;
     data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
     
@@ -132,14 +137,14 @@ for iSub = p.SUBS
 end
 disp('Following trials where too short to filter:');
 disp(too_short_to_filter);
-save([p.PROC_DATA_FOLDER '/too_short_to_filter_'  p.DAY '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat'], 'too_short_to_filter');
+save([p.PROC_DATA_FOLDER '/too_short_to_filter_'  p.DAY '_subs_' p.SUBS_STRING '.mat'], 'too_short_to_filter');
 timing = num2str(toc);
 disp(['Preprocessing done. ' timing 'Sec']);
 %% Trial Screening
 tic
 for iTraj = 1:length(traj_names)
     [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_names{iTraj}, p);
-    save([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'bad_trials', 'n_bad_trials', 'bad_trials_i');
+    save([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_trials', 'n_bad_trials', 'bad_trials_i');
 end
 timing = num2str(toc);
 disp(['Trial screening done. ' timing 'Sec']);
@@ -147,7 +152,9 @@ disp(['Trial screening done. ' timing 'Sec']);
 tic
 for iTraj = 1:length(traj_names')
     bad_subs = subScreening(traj_names{iTraj}, pas_rate, p);
-    save([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'bad_subs');
+    good_subs = p.SUBS(~ismember(p.SUBS, find(bad_subs.any)));
+    save([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');
+    save([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'good_subs');
 end
 timing = num2str(toc);
 disp(['Sub screening done. ' timing 'Sec']);
@@ -166,7 +173,7 @@ disp(['MAD calc done. ' timing 'Sec']);
 %% Sorting and averaging (within subject)
 tic
 for iTraj = 1:length(traj_names)
-    bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'bad_trials');  bad_trials = bad_trials.bad_trials;
+    bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_trials');  bad_trials = bad_trials.bad_trials;
     for iSub = p.SUBS
         [avg, single] = avgWithin(iSub, traj_names{iTraj}, bad_trials, pas_rate, p);
         save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat'], 'single');
@@ -181,12 +188,15 @@ tic
 for iTraj = 1:length(traj_names)
     reach_area.same = NaN(1,p.MAX_SUB);
     reach_area.diff = NaN(1,p.MAX_SUB);
-    for iSub = p.SUBS
+    
+    good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+    
+    for iSub = good_subs
         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
         reach_area.same(iSub) = calcReachArea(avg.traj.same_left, avg.traj.same_right);
         reach_area.diff(iSub) = calcReachArea(avg.traj.diff_left, avg.traj.diff_right);
     end
-    save([p.PROC_DATA_FOLDER strrep(traj_names{iTraj}{1}, '_x','') '_' p.DAY '_reach_area.mat'], 'reach_area');
+    save([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'reach_area');
 end
 timing = num2str(toc);
 disp(['Reach area calc done. ' timing 'Sec']);
@@ -194,7 +204,7 @@ disp(['Reach area calc done. ' timing 'Sec']);
 tic
 for iTraj = 1:length(traj_names)
     subs_avg = avgBetween(traj_names{iTraj}, p);
-    save([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'subs_avg');
+    save([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'subs_avg');
 end
 timing = num2str(toc);
 disp(['Sorting and avging between sub done. ' timing 'Sec']);
@@ -202,7 +212,7 @@ disp(['Sorting and avging between sub done. ' timing 'Sec']);
 tic
 for iTraj = 1:length(traj_names)
     [p_val, corr_p, ~, stats] = runFDA(traj_names{iTraj}, p);
-    save([p.PROC_DATA_FOLDER '/fda_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'p_val','corr_p','stats');
+    save([p.PROC_DATA_FOLDER '/fda_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'p_val','corr_p','stats');
 end
 timing = num2str(toc);
 disp(['FDA calc done. ' timing 'Sec']);
@@ -219,7 +229,7 @@ for iTraj = 1:length(traj_names)
         num_trials.diff_left(iSub)  = size(single.rt.diff_left, 1);
         num_trials.diff_right(iSub) = size(single.rt.diff_right, 1);
     end
-    save([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'num_trials');
+    save([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'num_trials');
 end
 timing = num2str(toc);
 disp(['Counting trials in each condition done. ' timing 'Sec']);
@@ -228,26 +238,27 @@ disp(['Counting trials in each condition done. ' timing 'Sec']);
 tic
 for iTraj = 1:length(traj_names)
     % Get bad subs.
-    bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
-    bad_subs = find(bad_subs.any);
+    bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
+    bad_subs_numbers = find(bad_subs.any);
     
     % Reach Area.
     reach_area = fReachArea(traj_names{iTraj}, bs_iter, p);
-    writetable(reach_area, [p.PROC_DATA_FOLDER '/reach_area_' p.DAY '_' traj_names{iTraj}{1} '.csv']);
+    writetable(reach_area, [p.PROC_DATA_FOLDER '/reach_area_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
 
     % MAD
     mad = fMAD(traj_names{iTraj}, p);
-    mad(ismember(mad.sub, bad_subs), :) = [];
-    writetable(mad, [p.PROC_DATA_FOLDER '/mad_' p.DAY '_' traj_names{iTraj}{1} '.csv']);
+    mad(ismember(mad.sub, bad_subs_numbers), :) = [];
+    writetable(mad, [p.PROC_DATA_FOLDER '/mad_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
 
     % Traj
     traj = fTraj(traj_names{iTraj}, p);
-    traj(ismember(traj.sub, bad_subs), :) = [];
-    writetable(traj, [p.PROC_DATA_FOLDER '/xpos_' p.DAY '_' traj_names{iTraj}{1} '.csv']);
+    traj(ismember(traj.sub, bad_subs_numbers), :) = [];
+    writetable(traj, [p.PROC_DATA_FOLDER '/xpos_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
 end
 timing = num2str(toc);
 disp(['Formating to R done. ' timing 'Sec']);
 %% Plotting params
+disp("Started setting plotting params.");
 close all;
 
 avg_plot_width = 4;
@@ -255,10 +266,15 @@ alpha_size = 0.05; % For confidence interval.
 space = 4; % between beeswarm graphs.
 % Color of plots.
 f_alpha = 0.2; % transperacy of shading.
-same_col = [0 0.4470 0.7410];%[0 0.4470 0.7410 f_f_alpha];
+linewidth = 4; % Used for some graphs.
+same_col = [0 0.35294 0.7098];%[0 0.4470 0.7410 f_f_alpha];
 same_avg_col = 'b';
-diff_col = [0.6350 0.0780 0.1840];%[0.6350 0.0780 0.1840 f_f_alpha];
+diff_col = [0.86275 0.19608 0.12549];%[0.6350 0.0780 0.1840 f_f_alpha];
 diff_avg_col = 'r';
+neg_slope = '--';
+pos_slope = '-';
+exp_2_color = [225 225 225] / 255; % used when comparing exp 2 and 3.
+exp_3_color = [0 146 146] / 255;
 
 % Unite all subs to one variable.
 for iSub = p.SUBS
@@ -294,16 +310,17 @@ for iSub = p.SUBS
     avg_each.fc_prime.same(iSub) = avg.fc_prime.same;
     avg_each.fc_prime.diff(iSub) = avg.fc_prime.diff;
 end
+disp("Done setting plotting params.");
 %% Single Sub plots.
 % Create figure for each sub.
 for iSub = p.SUBS
     sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
     sub_f(iSub,2) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
-    sub_f(iSub,3) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
+%     sub_f(iSub,3) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
     % Add title.
     figure(sub_f(iSub,1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
     figure(sub_f(iSub,2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-    figure(sub_f(iSub,3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+%     figure(sub_f(iSub,3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 end
 
 % ------- Traj of each trial -------
@@ -355,10 +372,10 @@ for iSub = p.SUBS
 %         subplot(2,2,iTraj);
         hold on;
         % Avg with var shade.
-        stdshade(single.trajs.same_left(:,:,1)',  f_alpha, same_col, avg.traj.same_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size);
-        stdshade(single.trajs.same_right(:,:,1)', f_alpha, same_col, avg.traj.same_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size);
-        stdshade(single.trajs.diff_left(:,:,1)',  f_alpha, diff_col, avg.traj.diff_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size);
-        stdshade(single.trajs.diff_right(:,:,1)', f_alpha, diff_col, avg.traj.diff_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size);
+        stdshade(single.trajs.same_left(:,:,1)',  f_alpha, same_col, avg.traj.same_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+        stdshade(single.trajs.same_right(:,:,1)', f_alpha, same_col, avg.traj.same_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+        stdshade(single.trajs.diff_left(:,:,1)',  f_alpha, diff_col, avg.traj.diff_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+        stdshade(single.trajs.diff_right(:,:,1)', f_alpha, diff_col, avg.traj.diff_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
         h = [];
         h(1) = plot(nan,nan,'Color',same_col);
         h(2) = plot(nan,nan,'Color',diff_col);
@@ -571,71 +588,77 @@ for iSub = p.SUBS
 end
 
 % ------- X Deviation -------
-for iSub = p.SUBS
-    figure(sub_f(iSub,3));
-    for iTraj = 1:length(traj_names)
-        % Flips traj to screen since its Z values are negative.
-        flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-        % Left.
-        subplot(4,2,6);
-        hold on;
-        plot(avg.traj.same_left(:,3)*flip_traj,  avg.x_std.same_left,  'color',same_col);
-        plot(avg.traj.diff_left(:,3)*flip_traj,  avg.x_std.diff_left,  'color',diff_col);
-        ylabel('X std');
-        xlim([0 p.SCREEN_DIST]);
-        set(gca,'FontSize',14);
-        title('STD in X Axis, Left');
-        h = [];
-        h(1) = bar(NaN,NaN,'FaceColor',same_col);
-        h(2) = bar(NaN,NaN,'FaceColor',diff_col);
-        legend(h,'Same','Diff', 'Location','northwest');
-        % Right
-        subplot(4,2,8);
-        hold on;
-        plot(avg.traj.same_right(:,3)*flip_traj, avg.x_std.same_right, 'color',same_col);
-        plot(avg.traj.diff_right(:,3)*flip_traj, avg.x_std.diff_right, 'color',diff_col);
-        ylabel('X std');
-        xlabel('Z (m)');
-        xlim([0 p.SCREEN_DIST]);
-        set(gca,'FontSize',14);
-        title('STD in X Axis, Right');
-    end
-end
+% for iSub = p.SUBS
+%     figure(sub_f(iSub,3));
+%     for iTraj = 1:length(traj_names)
+%         % Flips traj to screen since its Z values are negative.
+%         flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
+%         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+%         % Left.
+%         subplot(4,2,6);
+%         hold on;
+%         plot(avg.traj.same_left(:,3)*flip_traj,  avg.x_std.same_left,  'color',same_col);
+%         plot(avg.traj.diff_left(:,3)*flip_traj,  avg.x_std.diff_left,  'color',diff_col);
+%         ylabel('X std');
+%         xlim([0 p.SCREEN_DIST]);
+%         set(gca,'FontSize',14);
+%         title('STD in X Axis, Left');
+%         h = [];
+%         h(1) = bar(NaN,NaN,'FaceColor',same_col);
+%         h(2) = bar(NaN,NaN,'FaceColor',diff_col);
+%         legend(h,'Same','Diff', 'Location','northwest');
+%         % Right
+%         subplot(4,2,8);
+%         hold on;
+%         plot(avg.traj.same_right(:,3)*flip_traj, avg.x_std.same_right, 'color',same_col);
+%         plot(avg.traj.diff_right(:,3)*flip_traj, avg.x_std.diff_right, 'color',diff_col);
+%         ylabel('X std');
+%         xlabel('Z (m)');
+%         xlim([0 p.SCREEN_DIST]);
+%         set(gca,'FontSize',14);
+%         title('STD in X Axis, Right');
+%     end
+% end
 %% Multiple subs average plots.
 % Create figures.
 all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(5)); annotation('textbox',[0.41 0.915 0.1 0.1], 'String','Number of bad trials', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 
+good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
 
 % ------- Avg traj with shade -------
 for iTraj = 1:length(traj_names)
 %     traj_fda_f(iTraj) = figure('Name','avg_traj','WindowState','maximized', 'MenuBar','figure');
     figure(all_sub_f(2));
-    subplot(2,2,2); % Avg traj and FDA in same figure.
+    subplot(2,2,1); % Avg traj and FDA in same figure.
     hold on;
-    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '.mat']);  subs_avg = subs_avg.subs_avg;
+    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
     % Flips traj to screen since its Z values are negative.
-    flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
+%     flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
+    flip_traj = 1; % Canceled flipping when changed to %Z (instead of actual Z value).
     % Avg with var shade.
-    stdshade(avg_each.traj(iTraj).same_left(:,p.SUBS,1)',  f_alpha, same_col, subs_avg.traj.same_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size);
-    stdshade(avg_each.traj(iTraj).same_right(:,p.SUBS,1)', f_alpha, same_col, subs_avg.traj.same_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size);
-    stdshade(avg_each.traj(iTraj).diff_left(:,p.SUBS,1)',  f_alpha, diff_col, subs_avg.traj.diff_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size);
-    stdshade(avg_each.traj(iTraj).diff_right(:,p.SUBS,1)', f_alpha, diff_col, subs_avg.traj.diff_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size);
+    stdshade(avg_each.traj(iTraj).same_left(:,good_subs,1)',  f_alpha*0.3, same_col, subs_avg .traj.same_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+    stdshade(avg_each.traj(iTraj).same_right(:,good_subs,1)', f_alpha*0.3, same_col, subs_avg.traj.same_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+    stdshade(avg_each.traj(iTraj).diff_left(:,good_subs,1)',  f_alpha*0.3, diff_col, subs_avg.traj.diff_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+    stdshade(avg_each.traj(iTraj).diff_right(:,good_subs,1)', f_alpha*0.3, diff_col, subs_avg.traj.diff_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
     h = [];
-    h(1) = plot(nan,nan,'Color',same_col);
-    h(2) = plot(nan,nan,'Color',diff_col);
-    legend(h, 'Same', 'Diff', 'Location','southeast');
-    xlabel('X'); xlim([-0.12, 0.12]);
-    ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
-    title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
+    h(1) = plot(nan,nan,'Color',same_col, 'LineWidth',linewidth);
+    h(2) = plot(nan,nan,'Color',diff_col, 'LineWidth',linewidth);
+    legend(h, 'Congruent', 'Incongruent', 'Location','southeast');
+    xlabel('X'); xlim([-0.105, 0.105]);
+    ylabel('% path traveled'); %ylim([0, p.SCREEN_DIST]);
+%     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
     set(gca, 'FontSize',14);
-    title('Avg trajectory');
+%     title('Avg trajectory');
 end
 % annotation('textbox',[0.4 0.9 0.1 0.1], 'String','Avg across Subs', 'FontSize',40, 'LineStyle','none', 'FitBoxToText','on');
 
@@ -645,7 +668,7 @@ f_alpha = 0.05;
 for iTraj = 1:length(traj_names)
 %     figure(traj_fda_f(iTraj));
     figure(all_sub_f(1));
-    p_val = load([p.PROC_DATA_FOLDER '/fda_' p.DAY '_' traj_names{iTraj}{1} '.mat'], 'p_val');  p_val = p_val.p_val;
+    p_val = load([p.PROC_DATA_FOLDER '/fda_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'p_val');  p_val = p_val.p_val;
     subplot(2,3,6);
     hold on;
     plot(1/p.NORM_FRAMES : 1/p.NORM_FRAMES : 1, p_val.x(1,:), 'k', 'LineWidth',2); % 1=same/diff index in p_val.
@@ -664,12 +687,12 @@ f_alpha = 0.5;
 figure(all_sub_f(3));
 for iTraj = 1:length(traj_names)
     % Beeswarm.
-    beesdata = {avg_each.react(iTraj).same_left(p.SUBS),      avg_each.react(iTraj).diff_left(p.SUBS),...
-                    avg_each.mt(iTraj).same_left(p.SUBS),     avg_each.mt(iTraj).diff_left(p.SUBS),...
-                    avg_each.rt(iTraj).same_left(p.SUBS),     avg_each.rt(iTraj).diff_left(p.SUBS),...
-                    avg_each.react(iTraj).same_right(p.SUBS), avg_each.react(iTraj).diff_right(p.SUBS),...
-                    avg_each.mt(iTraj).same_right(p.SUBS),    avg_each.mt(iTraj).diff_right(p.SUBS),...
-                    avg_each.rt(iTraj).same_right(p.SUBS),    avg_each.rt(iTraj).diff_right(p.SUBS)};
+    beesdata = {avg_each.react(iTraj).same_left(good_subs),      avg_each.react(iTraj).diff_left(good_subs),...
+                    avg_each.mt(iTraj).same_left(good_subs),     avg_each.mt(iTraj).diff_left(good_subs),...
+                    avg_each.rt(iTraj).same_left(good_subs),     avg_each.rt(iTraj).diff_left(good_subs),...
+                    avg_each.react(iTraj).same_right(good_subs), avg_each.react(iTraj).diff_right(good_subs),...
+                    avg_each.mt(iTraj).same_right(good_subs),    avg_each.mt(iTraj).diff_right(good_subs),...
+                    avg_each.rt(iTraj).same_right(good_subs),    avg_each.rt(iTraj).diff_right(good_subs)};
     beesdata = cellfun(@times,beesdata,repmat({1000},size(beesdata)),'UniformOutput',false); % convert to ms.
     yLabel = 'Time (Sec)';
     XTickLabel = [];
@@ -685,13 +708,13 @@ for iTraj = 1:length(traj_names)
     font_size = [1, 15, 20];
     groupTick(ticks, labels, dist, font_size)
     % Connect each sub's dots with lines.
-    left_data = [avg_each.react(iTraj).same_left(p.SUBS), avg_each.mt(iTraj).same_left(p.SUBS), avg_each.rt(iTraj).same_left(p.SUBS);
-                 avg_each.react(iTraj).diff_left(p.SUBS), avg_each.mt(iTraj).diff_left(p.SUBS), avg_each.rt(iTraj).diff_left(p.SUBS)];
-    right_data = [avg_each.react(iTraj).same_right(p.SUBS), avg_each.mt(iTraj).same_right(p.SUBS), avg_each.rt(iTraj).same_right(p.SUBS);
-                 avg_each.react(iTraj).diff_right(p.SUBS), avg_each.mt(iTraj).diff_right(p.SUBS), avg_each.rt(iTraj).diff_right(p.SUBS)];
+    left_data = [avg_each.react(iTraj).same_left(good_subs), avg_each.mt(iTraj).same_left(good_subs), avg_each.rt(iTraj).same_left(good_subs);
+                 avg_each.react(iTraj).diff_left(good_subs), avg_each.mt(iTraj).diff_left(good_subs), avg_each.rt(iTraj).diff_left(good_subs)];
+    right_data = [avg_each.react(iTraj).same_right(good_subs), avg_each.mt(iTraj).same_right(good_subs), avg_each.rt(iTraj).same_right(good_subs);
+                 avg_each.react(iTraj).diff_right(good_subs), avg_each.mt(iTraj).diff_right(good_subs), avg_each.rt(iTraj).diff_right(good_subs)];
     y_data = [left_data right_data] * 1000; % turn to ms.
     x_data = reshape(get(gca,'XTick'), 2,[]);
-    x_data = repelem(x_data,1,p.N_SUBS);
+    x_data = repelem(x_data,1,length(good_subs));
     plot(x_data, y_data, 'color',[0.1 0.1 0.1, f_alpha]);
     h = [];
     h(1) = bar(NaN,NaN,'FaceColor',same_col);
@@ -703,9 +726,9 @@ end
 % fc_pas_f = figure('Name','Forced choice','Units','normalized','OuterPosition',[0.25 0.25 0.5 0.5]);
 figure(all_sub_f(3));
 subplot(2,2,1); % plot fc_prime and pas together.
-beesdata = {avg_each.fc_prime.same(p.SUBS), avg_each.fc_prime.diff(p.SUBS)};
-[h, fc_p_val(1) , ci, stats] = ttest(avg_each.fc_prime.same(p.SUBS), 0.5);
-[h, fc_p_val(2) , ci, stats] = ttest(avg_each.fc_prime.diff(p.SUBS), 0.5);
+beesdata = {avg_each.fc_prime.same(good_subs), avg_each.fc_prime.diff(good_subs)};
+[h, fc_p_val(1) , ci, stats] = ttest(avg_each.fc_prime.same(good_subs), 0.5);
+[h, fc_p_val(2) , ci, stats] = ttest(avg_each.fc_prime.diff(good_subs), 0.5);
 fc_p_val = round(fc_p_val, 2);
 XTickLabel = {'Same', 'Diff'};
 colors = {same_col, diff_col};
@@ -720,7 +743,7 @@ ylim([0 1]);
 figure(all_sub_f(3));
 hold on;
 subplot(2,2,2); % plot fc_prime and pas together.
-subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '.mat']);  subs_avg = subs_avg.subs_avg;
+subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
 bar(1:4, subs_avg.pas.same * 100 / sum(subs_avg.pas.same), 'FaceColor',same_col);
 hold on;
 bar(5:8, subs_avg.pas.diff * 100 / sum(subs_avg.pas.diff), 'FaceColor',diff_col);
@@ -740,7 +763,7 @@ subplot(1,3,1);
 err_bar_type = 'se';
 for iTraj = 1:length(traj_names)
     hold on;
-    beesdata = {avg_each(iTraj).mad.same_left(p.SUBS), avg_each(iTraj).mad.diff_left(p.SUBS), avg_each(iTraj).mad.same_right(p.SUBS), avg_each(iTraj).mad.diff_right(p.SUBS)};
+    beesdata = {avg_each(iTraj).mad.same_left(good_subs), avg_each(iTraj).mad.diff_left(good_subs), avg_each(iTraj).mad.same_right(good_subs), avg_each(iTraj).mad.diff_right(good_subs)};
     yLabel = 'MAD (meter)';
     XTickLabels = [];
     colors = {same_col, diff_col, same_col, diff_col};
@@ -760,7 +783,7 @@ for iTraj = 1:length(traj_names)
     % Connect each sub's dots with lines.
     y_data = [beesdata{1} beesdata{3}; beesdata{2} beesdata{4}];
     x_data = reshape(get(gca,'XTick'), 2,[]);
-    x_data = repelem(x_data,1,p.N_SUBS);
+    x_data = repelem(x_data,1,length(good_subs));
     plot(x_data, y_data, 'color',[0.1 0.1 0.1, f_alpha]);
     h = [];
     h(1) = bar(NaN,NaN,'FaceColor',same_col);
@@ -772,34 +795,42 @@ end
 % ------- Reach Area -------
 % Area between avg left traj and avg right traj (in each condition).
 figure(all_sub_f(2));
-subplot(1,3,1);
+subplot(2,2,3);
 err_bar_type = 'se';
 for iTraj = 1:length(traj_names)
     hold on;
-    reach_area = load([p.PROC_DATA_FOLDER strrep(traj_names{iTraj}{1}, '_x','') '_' p.DAY '_reach_area.mat']);  reach_area = reach_area.reach_area;
-    beesdata = {reach_area.same(p.SUBS) reach_area.diff(p.SUBS)};
-    yLabel = 'Reach area (m^2)';
-    XTickLabels = ["Same","Diff"];
+    reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat']);  reach_area = reach_area.reach_area;
+    beesdata = {reach_area.same(good_subs) reach_area.diff(good_subs)};
+    yLabel = 'Reach area'; % 'Reach area (m^2)';
+    XTickLabels = ["Congruent","Incongruent"];
     colors = {same_col, diff_col};
-    title_char = cell2mat(['Reach Area ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
+    title_char = ''; % title_char = cell2mat(['Reach Area ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
     printBeeswarm(beesdata, yLabel, XTickLabels, colors, space, title_char, err_bar_type, alpha_size);
     % T-test
     [~, mad_p_val, ci, ~] = ttest(beesdata{1}, beesdata{2});
-    text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.0015), ['p: ' num2str(mad_p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+    text(mean(ticks(1:2)), 0, ['p: ' num2str(mad_p_val)], 'HorizontalAlignment','center', 'FontSize',14);
     % Connect each sub's dots with lines.
-    same_data = [avg_each.react(iTraj).same_left(p.SUBS), avg_each.mt(iTraj).same_left(p.SUBS), avg_each.rt(iTraj).same_left(p.SUBS);
-                 avg_each.react(iTraj).diff_left(p.SUBS), avg_each.mt(iTraj).diff_left(p.SUBS), avg_each.rt(iTraj).diff_left(p.SUBS)];
-    right_data = [avg_each.react(iTraj).same_right(p.SUBS), avg_each.mt(iTraj).same_right(p.SUBS), avg_each.rt(iTraj).same_right(p.SUBS);
-                 avg_each.react(iTraj).diff_right(p.SUBS), avg_each.mt(iTraj).diff_right(p.SUBS), avg_each.rt(iTraj).diff_right(p.SUBS)];
-    y_data = [reach_area.same(p.SUBS); reach_area.diff(p.SUBS)];
+    same_data = [avg_each.react(iTraj).same_left(good_subs), avg_each.mt(iTraj).same_left(good_subs), avg_each.rt(iTraj).same_left(good_subs);
+                 avg_each.react(iTraj).diff_left(good_subs), avg_each.mt(iTraj).diff_left(good_subs), avg_each.rt(iTraj).diff_left(good_subs)];
+    right_data = [avg_each.react(iTraj).same_right(good_subs), avg_each.mt(iTraj).same_right(good_subs), avg_each.rt(iTraj).same_right(good_subs);
+                 avg_each.react(iTraj).diff_right(good_subs), avg_each.mt(iTraj).diff_right(good_subs), avg_each.rt(iTraj).diff_right(good_subs)];
+    y_data = [reach_area.same(good_subs); reach_area.diff(good_subs)];
     x_data = reshape(get(gca,'XTick'), 2,[]);
-    x_data = repelem(x_data,1,p.N_SUBS);
-    plot(x_data, y_data, 'color',[0.1 0.1 0.1, f_alpha]);
+    x_data = repelem(x_data,1,length(good_subs));
+    for j = 1:size(x_data,2)
+        % Color line according to slope.
+        line_style = neg_slope;
+        if y_data(2,j) > y_data(1,j)
+            line_style = pos_slope;
+        end
+        plot(x_data(:,j), y_data(:,j), 'LineStyle',line_style, 'Color',[0.1 0.1 0.1 f_alpha*1.5], 'LineWidth',linewidth*0.3);
+    end
+    ylim([2 11]); % ylim([0.006 0.035])
     h = [];
     h(1) = bar(NaN,NaN,'FaceColor',same_col);
     h(2) = bar(NaN,NaN,'FaceColor',diff_col);
     h(3) = plot(NaN,NaN,'k','LineWidth',14);
-    legend(h,'Same','Diff',err_bar_type, 'Location','northwest');
+    legend(h,'Congruent','Incongruent', 'Location','northwest');%legend(h,'Same','Diff',err_bar_type, 'Location','northwest');
 end
 
 % ------- X STD -------
@@ -807,7 +838,7 @@ figure(all_sub_f(1));
 for iTraj = 1:length(traj_names)
     % Flips traj to screen since its Z values are negative.
     flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '.mat']);  subs_avg = subs_avg.subs_avg;
+    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
     % Left.
     subplot(2,3,2);
     hold on;
@@ -839,11 +870,11 @@ for iTraj = 1:length(traj_names)
     figure(all_sub_f(2));
     % Flips traj to screen since its Z values are negative.
     flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '.mat']);  subs_avg = subs_avg.subs_avg;
+    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
     % Left.
-    subplot(2,3,5);
+    subplot(2,4,7);
     hold on;
-    stdshade(avg_each.cond_diff.left(:,p.SUBS,1)', f_alpha, 'k', subs_avg.traj.same_left(:,3)*flip_traj, 0, 1,'ci', alpha_size);
+    stdshade(avg_each.cond_diff.left(:,good_subs,1)', f_alpha, 'k', subs_avg.traj.same_left(:,3)*flip_traj, 0, 1,'ci', alpha_size, linewidth);
     plot([0 p.SCREEN_DIST], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
     xlabel('Z (m)');
     ylabel('X diff (m)');
@@ -851,9 +882,9 @@ for iTraj = 1:length(traj_names)
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'same - diff');
     % Right
-    subplot(2,3,6);
+    subplot(2,4,8);
     hold on;
-    stdshade(avg_each.cond_diff.right(:,p.SUBS,1)', f_alpha, 'k', subs_avg.traj.same_right(:,3)*flip_traj, 0, 1, 'ci', alpha_size);
+    stdshade(avg_each.cond_diff.right(:,good_subs,1)', f_alpha, 'k', subs_avg.traj.same_right(:,3)*flip_traj, 0, 1, 'ci', alpha_size, linewidth);
     plot([0 p.SCREEN_DIST], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
     xlabel('Z (m)');
     ylabel('X diff (m)');
@@ -861,6 +892,112 @@ for iTraj = 1:length(traj_names)
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'same - diff');
 end
+
+% ------- Number of bad trials -------
+% Comparison of bad trials count between subs of exp2 and subs of exp 3.
+figure(all_sub_f(4));
+% Define parameters.
+exp_2_subs_string = regexprep(num2str(p.EXP_2_SUBS), '\s+', '_');
+exp_3_subs_string = regexprep(num2str(p.EXP_3_SUBS), '\s+', '_');
+n_bad_trials_exp_2 = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_2_subs_string '.mat']);  n_bad_trials_exp_2 = n_bad_trials_exp_2.n_bad_trials;
+n_bad_trials_exp_3 = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_3_subs_string '.mat']);  n_bad_trials_exp_3 = n_bad_trials_exp_3.n_bad_trials;
+good_subs_exp_2 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_2_subs_string '.mat']);  good_subs_exp_2 = good_subs_exp_2.good_subs;
+good_subs_exp_3 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_3_subs_string '.mat']);  good_subs_exp_3 = good_subs_exp_3.good_subs;
+num_reasons = size(n_bad_trials_exp_2,2);
+reasons = string(replace(n_bad_trials_exp_2.Properties.VariableNames, '_', ' '));
+% Beeswarm.
+for i_reason = 1:num_reasons
+    beesdata{:, i_reason*2 - 1} = n_bad_trials_exp_2{good_subs_exp_2, i_reason}';
+    beesdata{:, i_reason*2}     = n_bad_trials_exp_3{good_subs_exp_3, i_reason}';
+end
+yLabel = 'Number of bad trials';
+XTickLabel = [];
+colors = repmat({exp_2_color, exp_3_color},1,num_reasons);
+title_char = ["Amount of bad trials comparison between Exp 2 and Exp 3"];
+hold on;
+printBeeswarm(beesdata, yLabel, XTickLabel, colors, space, title_char, 'ci', alpha_size);
+ylim([-20 420]);
+% T-test.
+ticks = get(gca,'XTick');
+for i_reason = 1:num_reasons
+    indx = i_reason*2;
+    [~, bad_trials_p_val, ci, ~] = ttest2(beesdata{:, indx-1}, beesdata{:, indx});
+    text(mean(ticks(indx-1 : indx)), (max([beesdata{indx-1 : indx}])+10), ['p: ' num2str(bad_trials_p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+end
+% Group graphs.
+labels = {["",""]; reasons;};
+dist = [0, 15];
+font_size = [1, 12];
+groupTick(ticks, labels, dist, font_size)
+h = [];
+h(1) = bar(NaN,NaN,'FaceColor',exp_2_color);
+h(2) = bar(NaN,NaN,'FaceColor',exp_3_color);
+legend(h,'Exp 2','Exp 3', 'Location','northwest');
+
+% Num of bad trials in each reason.
+n_bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  n_bad_trials = n_bad_trials.n_bad_trials;
+figure(all_sub_f(5));
+for j = 1:num_reasons
+    subplot(3,4,j);
+    bar(1:p.N_SUBS, n_bad_trials{p.SUBS, j});
+    xticklabels(string(p.SUBS));
+    if j > 6
+        xlabel('Sub');
+    end
+    title(reasons(j));
+    set(gca,'FontSize',14);
+    ylim([0 p.NUM_TRIALS]);
+    grid on;
+end
+title("Any (total num of bad trials)");
+%% Effect size comparison to previous papers.
+% Prev exp data.
+% Xiao, K., Yamauchi, T., & Bowman, C. (2015)
+xiao_auc = struct('N',28,...
+    'mean1',3628.43,...
+    'mean2',4746.17,...
+    'sd1',3875.79,...
+    'sd2',4135.95,...
+    't',5.13,...
+    'd',1.97);
+xiao_rt = struct('N',36,... % Results of keyboard measure.
+    'mean1',733.32,...
+    'mean2',759.50,...
+    'sd1',156.28,...
+    'sd2',168.60,...
+    't',1.92,...
+    'd',0.65);
+% Effect size Cohen's dz.
+xiao_auc_dz = xiao_auc.t / sqrt(xiao_auc.N);
+xiao_rt_dz = xiao_rt.t / sqrt(xiao_rt.N);
+
+% My data.
+exp_2_subs_string = regexprep(num2str(p.EXP_2_SUBS), '\s+', '_');
+exp_3_subs_string = regexprep(num2str(p.EXP_3_SUBS), '\s+', '_');
+good_subs_exp_2 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_2_subs_string '.mat']);  good_subs_exp_2 = good_subs_exp_2.good_subs;
+good_subs_exp_3 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_3_subs_string '.mat']);  good_subs_exp_3 = good_subs_exp_3.good_subs;
+reach_area_exp_2 = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' exp_2_subs_string '.mat']);  reach_area_exp_2 = reach_area_exp_2.reach_area;
+reach_area_exp_3 = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' exp_3_subs_string '.mat']);  reach_area_exp_3 = reach_area_exp_3.reach_area;
+% T-test
+[~, mad_p_val, ci, stats_exp_2] = ttest(reach_area_exp_2.same(good_subs_exp_2), reach_area_exp_2.diff(good_subs_exp_2));
+[~, mad_p_val, ci, stats_exp_3] = ttest(reach_area_exp_3.same(good_subs_exp_3), reach_area_exp_3.diff(good_subs_exp_3));
+heller_ra_dz_exp_2 = stats_exp_2.tstat / sqrt(length(good_subs_exp_2));
+heller_ra_dz_exp_3 = stats_exp_3.tstat / sqrt(length(good_subs_exp_3));
+
+% Plot
+prev_papers_comp_f(1) = figure('Name',['Papers comparison'], 'WindowState','maximized', 'MenuBar','figure');
+bar([xiao_auc_dz, xiao_rt_dz, heller_ra_dz_exp_2, heller_ra_dz_exp_3],...
+    'FaceColor',[0.9290 0.6940 0.1250], 'FaceAlpha',0.2,...
+    'EdgeColor',[0.9290 0.6940 0.1250], 'LineWidth',3);
+ylabel('Cohen`s  d_z');
+set(gca, 'FontSize',14)
+xticklabels({'Xiao et al. (2015)',...
+    'Xiao et al. (2015)',...
+    'Pilot 1',...
+    'Pilot 2'});
+ax = gca;
+ax.Box = 'off';
+% title("Effect size comparison to previous papers.");
 %% GUI, compares proc to real traj.
 % close all;
 % warning('off','MATLAB:legend:IgnoringExtraEntries');

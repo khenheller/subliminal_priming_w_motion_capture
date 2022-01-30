@@ -9,11 +9,11 @@
 %   iter = number of bootstrap iterations.
 function [r_a_df] = fReachArea(traj_name, iter, p)
 % Get bad subs.
-bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_name{1} '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
+bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_name{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
 bad_subs = find(bad_subs.any);
 subs = p.SUBS(~ismember(p.SUBS, bad_subs));
 % Find sub with least trials.
-num_trials = load([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_name{1} '.mat'], 'num_trials');  num_trials = num_trials.num_trials;
+num_trials = load([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_name{1} '_subs_' p.SUBS_STRING '.mat'], 'num_trials');  num_trials = num_trials.num_trials;
 num_trials = cell2mat(struct2cell(num_trials)');
 num_trials(bad_subs, :) = [];
 min_amnt = min(num_trials,[], 'all');
@@ -39,7 +39,7 @@ for iSub = subs
             right_avg = mean(datasample(right_trajs, min_amnt, 2), 2);
             % Calc area.
             reach_area = calcReachArea(left_avg, right_avg);
-            if reach_area > 1
+            if reach_area > 15
                 error('Reach area is too big, check for error in analysis.');
             end
             r_a_df(j,:) = table(iSub, cond, reach_area); % has to match columns!
@@ -49,6 +49,8 @@ for iSub = subs
     disp(iSub);
 end
 
+disp("You converted Z coordinates to % of path traveled. This increased Reach area, so you had to cancel the check you put in fReachArea: if reach_area > 1.");
+disp("Establish a new limit and update that maximum thrshold.");
 %{
 % This uses a single sample (avg traj) for each sub, instead of generating many avgs with bootstrap. %
 % Reach are column.
@@ -61,7 +63,7 @@ sub = repmat(p.SUBS', p.N_CONDS,1);
 % Cond column.
 cond = repelem(p.CONDS', p.N_SUBS);
 % Num trials column.
-num_trials = load([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_name{1} '.mat'], 'num_trials');  num_trials = num_trials.num_trials;
+num_trials = load([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_name{1} '_subs_' p.SUBS_STRING '.mat'], 'num_trials');  num_trials = num_trials.num_trials;
 n_trials.same = num_trials.same_left + num_trials.same_right;
 n_trials.diff = num_trials.diff_left + num_trials.diff_right;
 n_trials.same(isnan(n_trials.same)) = [];
