@@ -22,19 +22,22 @@ function [bad_subs] = subScreening(traj_name, pas_rate, p)
         % Find good trials
         ok = ~any(bad_trials{iSub}{:, reasons}, 2); % has no timing / data issues.
         ok_pas = ok & data_table.pas == pas_rate; % And PAS rating is ok.
-        ok_pas_categ_corr = ok_pas & ~bad_trials{iSub}.incorrect; % And target categorization is correct.
+        ok_pas_categcorr = ok_pas & ~bad_trials{iSub}.incorrect; % And target categorization is correct.
         % Too much missing trials.
-        bad_subs{iSub, 'not_enough_trials'} =  sum(ok_pas_categ_corr) < p.MIN_GOOD_TRIALS;
+        bad_subs{iSub, 'not_enough_trials'} =  sum(ok_pas_categcorr) < p.MIN_GOOD_TRIALS;
         % Not enough trials in each condition.
-        ok_pas_categ_corr_same = ok_pas_categ_corr & data_table.same;
-        ok_pas_categ_corr_diff = ok_pas_categ_corr & ~data_table.same;
-        bad_subs{iSub, 'not_enough_trials_in_cond'} = sum(ok_pas_categ_corr_same) < p.MIN_AMNT_TRIALS_IN_COND |...
-                                                      sum(ok_pas_categ_corr_diff) < p.MIN_AMNT_TRIALS_IN_COND;
+        ok_pas_categcorr_same = ok_pas_categcorr & data_table.same;
+        ok_pas_categcorr_diff = ok_pas_categcorr & ~data_table.same;
+        bad_subs{iSub, 'not_enough_trials_in_cond'} = sum(ok_pas_categcorr_same) < p.MIN_AMNT_TRIALS_IN_COND |...
+                                                      sum(ok_pas_categcorr_diff) < p.MIN_AMNT_TRIALS_IN_COND;
         % Categorization is at chance level (sub is geussing).
-        bad_subs{iSub, 'categor_chance_lvl'} = myBinomTest(sum(ok_pas_categ_corr), sum(ok_pas), 0.5, 'Two') >= p.SIG_PVAL;
-        % Sub seen prime (prime recog isn't at chance).
-        ok_pas_categ_corr_diff_prime_corr = ok_pas_categ_corr_diff & data_table.prime_correct;
-        bad_subs{iSub, 'seen_prime'} = myBinomTest(sum(ok_pas_categ_corr_diff_prime_corr), sum(ok_pas_categ_corr_diff), 0.5, 'Two') < p.SIG_PVAL;
+        bad_subs{iSub, 'categor_chance_lvl'} = myBinomTest(sum(ok_pas_categcorr), sum(ok_pas), 0.5, 'Two') >= p.SIG_PVAL;
+        % Sub seen prime (prime recog isn't at chance). Looks also in "bad" trials.
+        oktiming = ~bad_trials{iSub}{:, 'bad_stim_dur'}; % All trials with good stimulus duration.
+        oktiming_pas = oktiming & data_table.pas == pas_rate;
+        oktiming_pas_diff = oktiming_pas & ~data_table.same;
+        oktiming_pas_diff_primecorr = oktiming_pas_diff & data_table.prime_correct;
+        bad_subs{iSub, 'seen_prime'} = myBinomTest(sum(oktiming_pas_diff_primecorr), sum(oktiming_pas_diff), 0.5, 'Two') < p.SIG_PVAL;
         % Any.
         bad_subs{iSub, 'any'} = any(bad_subs{iSub,1:end-1});
     end

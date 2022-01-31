@@ -23,6 +23,7 @@ function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     mad_p_col   = [strrep(traj_name{1}, '_x',''), '_mad_p'];
     % Trial types.
     bad = bad_trials{iSub}.any;
+    bad_timing = bad_trials{iSub}.bad_stim_dur;
     pas = data_table.('pas')==pas_rate;
     same = data_table.('same');
     left = data_table.(reach_dir_col);
@@ -43,8 +44,8 @@ function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     single.mt.same_right = single.rt.same_right - single.react.same_right;
     single.mt.diff_left  = single.rt.diff_left  - single.react.diff_left;
     single.mt.diff_right = single.rt.diff_right - single.react.diff_right;
-    single.fc_prime.same = data_table.prime_correct(~bad & pas & same); % forced choice.
-    single.fc_prime.diff = data_table.prime_correct(~bad & pas & ~same);
+    single.fc_prime.same = data_table.prime_correct(~bad_timing & pas & same); % forced choice.
+    single.fc_prime.diff = data_table.prime_correct(~bad_timing & pas & ~same);
     single.pas.same = data_table.pas(~bad & same);
     single.pas.diff = data_table.pas(~bad & ~same);
     single.mad.same_left  = data_table.(mad_col)(~bad & pas & same  & left); % Maximum absolute deviation.
