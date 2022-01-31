@@ -44,7 +44,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
     n_bad_trials(p.N_SUBS+1 : end, :) = [];
     bad_trials = cell(p.N_SUBS, 1); % table for each sub, each row will be a trial marked as good/bad.
     
-    too_short = load([p.PROC_DATA_FOLDER '/too_short_to_filter_' p.DAY '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat'], 'too_short_to_filter');  too_short = too_short.too_short_to_filter;
+    too_short = load([p.PROC_DATA_FOLDER '/too_short_to_filter_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'too_short_to_filter');  too_short = too_short.too_short_to_filter;
 
     for iSub = p.SUBS
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
@@ -81,7 +81,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, p)
                 success(indx.missed_target) = testMissTarget(single_traj, p);
             end
             % Check if stim display duration was bad.
-            success(indx.bad_stim_dur) = testStimDur(dev_table, iTrial);
+            success(indx.bad_stim_dur) = testStimDur(dev_table, iTrial, iSub, p);
             % Check if answer is incorrect.
             success(indx.incorrect) = trials_table.target_correct(iTrial);
             % Check if sub quit before this trial.
