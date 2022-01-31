@@ -166,6 +166,7 @@ real = h.real_traj{h.real_traj.iTrial==selected_trial, traj_col : traj_col+2};
 proc = h.proc_traj{h.proc_traj.iTrial==selected_trial, traj_col : traj_col+2};
 % Align to proc.
 last_num = find(~isnan(real(:,1)), 1, 'last');
+proc(:,3) = (proc(:,3) / 100) * (real(last_num,3) - real(1,3));% Proc is %Z, while real is in meters. We convert proc in order to align them.
 real = real - (real(last_num,:) - proc(end,:));
 % Flip
 real(:,3) = real(:,3) * -1;
