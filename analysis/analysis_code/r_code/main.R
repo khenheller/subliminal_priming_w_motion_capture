@@ -12,8 +12,13 @@ p$EXP_FOLDER <- getwd()
 p$PROC_DATA_FOLDER <- paste0(p$EXP_FOLDER, "/../../processed_data/") # Processed data.
 
 # Define.
+SORTED_SUBS <- list()
+SORTED_SUBS$EXP_1_SUBS <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) # Participated in experiment version 1.
+SORTED_SUBS$EXP_2_SUBS <- c(11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)
+SORTED_SUBS$EXP_3_SUBS <- c(26, 28, 29, 31, 32, 33, 34, 35, 37, 38, 39, 40, 42)
 p$DAY <- 'day2'
-p$SUBS <- c(26,28,29,31,32,33,34,35,37,38) # to analyze.
+p$SUBS <- SORTED_SUBS$EXP_2_SUBS # to analyze.
+p$SUBS_STRING <- paste(p$SUBS, collapse="_") # Concatenate sub's numbers with '_' between them.
 p$PICKED_TRAJS <- c(1) # traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p$NORM_FRAMES <- 200 # Length of normalized trajs.
 
@@ -29,7 +34,7 @@ print("@@@@ Make iteration for each traj. @@@@")
 # ---- Reach Area ----
 # Get data.
 # Conains many avg trajs, created with bootstrap.
-r_a_data <- read.csv(paste0(p$PROC_DATA_FOLDER,'/reach_area_',p$DAY,'_',traj_names[iTraj,1],'.csv'))
+r_a_data <- read.csv(paste0(p$PROC_DATA_FOLDER,'/reach_area_',p$DAY,'_',traj_names[iTraj,1],'_subs_',p$SUBS_STRING,'.csv'))
 r_a_data <- type.convert(r_a_data) # Convert to categor.
 r_a_data$sub <- as.factor(r_a_data$sub)
 # Standardize
@@ -38,7 +43,7 @@ sample_n(r_a_data, 20)
 # ------- MAD --------
 # Get data.
 # Single trials, not avg
-mad_data <- read.csv(paste0(p$PROC_DATA_FOLDER,'/mad_',p$DAY,'_',traj_names[iTraj,1],'.csv'))
+mad_data <- read.csv(paste0(p$PROC_DATA_FOLDER,'/mad_',p$DAY,'_',traj_names[iTraj,1],'_subs_',p$SUBS_STRING,'.csv'))
 mad_data <- type.convert(mad_data) # Convert to categor.
 mad_data$sub <- as.factor(mad_data$sub)
 # Standardize
@@ -47,7 +52,7 @@ sample_n(mad_data, 10)
 # --- X Position ----
 # Get data.
 # Single trials, not avg
-xpos_data <- read.csv(paste0(p$PROC_DATA_FOLDER,'/xpos_',p$DAY,'_',traj_names[iTraj,1],'.csv'))
+xpos_data <- read.csv(paste0(p$PROC_DATA_FOLDER,'/xpos_',p$DAY,'_',traj_names[iTraj,1],'_subs_',p$SUBS_STRING,'.csv'))
 xpos_data <- type.convert(xpos_data) # Convert to categor.
 xpos_data$sub <- as.factor(xpos_data$sub)
 xpos_data$zindex <- as.factor(xpos_data$zindex)
