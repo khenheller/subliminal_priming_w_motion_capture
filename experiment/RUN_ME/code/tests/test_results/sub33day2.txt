@@ -5,30 +5,25 @@ Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms sh
 Deviations in ms:
     <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
     <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
-
           1000               1000        0.23255               0.036425           
            270             270.01        0.30108               0.011375           
             30             29.983         0.2546              -0.016835           
             30             30.014        0.27216               0.013866           
             30             29.984        0.27785              -0.015894           
            500             446.98         117.22                -53.023           
-
 ------------------------------- Has Values -------------------------------
 prime_x_to is missing values in trials: 
    363
    371
    385
-
 prime_y_to is missing values in trials: 
    363
    371
    385
-
 prime_z_to is missing values in trials: 
    363
    371
    385
-
 ------------------------------- Relations -------------------------------
 ------------------------------- Conditions -------------------------------
 ------------------------------- Target Repeatitions -------------------------------
@@ -52,7 +47,3 @@ prime_z_to is missing values in trials:
                word_dont_repeat: 1
                     block_count: 1
                     trial_count: 1
-
-@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@
-Make a change in timingsTest.m (marked @with remove@ this) so that the time of target will also be checked.\nYou canceled its check because the getTraj.m didnt display the categor screen after 500ms of target,\n so target timing is always bad
-@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@

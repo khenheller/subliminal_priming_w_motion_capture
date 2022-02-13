@@ -1,5 +1,5 @@
 analysis/processed_data/
-experiment/RUN_ME/code/tests/test_results/
+experiment/RUN_ME/code/tests/test_results/*
 raw_data
 development/data
 *.asv

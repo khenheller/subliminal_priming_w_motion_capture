@@ -2,36 +2,29 @@
 Number of trials devaiting from desired duration:
 3
 Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
-    <strong>TrialNum</strong>    <strong>Deviation</strong>       <strong>Event</strong>    
-    <strong>________</strong>    <strong>_________</strong>    <strong>____________</strong>
-
-       1         19.954      'mask3_time'
-       2         10.043      'mask3_time'
-       4         19.961      'mask3_time'
-
+    <strong>TrialNum</strong>    <strong>Deviation</strong>        <strong>Event</strong>     
+    <strong>________</strong>    <strong>_________</strong>    <strong>______________</strong>
+       1         19.954      {'mask3_time'}
+       2         10.043      {'mask3_time'}
+       4         19.961      {'mask3_time'}
 Deviations in ms:
     <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
     <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
-
           1000               1000        0.20127               0.027922           
            270                270        0.22885              0.0047167           
             30             29.981        0.20954              -0.018647           
             30             30.219         1.9311                0.21909           
            500             429.28         135.32                -70.717           
-
 ------------------------------- Has Values -------------------------------
 target_x_from is missing values in trials: 
    159
    216
-
 target_y_from is missing values in trials: 
    159
    216
-
 target_z_from is missing values in trials: 
    159
    216
-
 ------------------------------- Relations -------------------------------
 Didnt run test
 ------------------------------- Conditions -------------------------------
@@ -53,7 +46,3 @@ Didnt run test
      word_dont_repeat: 1
           block_count: 1
           trial_count: 1
-
-@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@
-Make a change in timingsTest.m (marked @with remove@ this) so that the time of target will also be checked.\nYou canceled its check because the getTraj.m didnt display the categor screen after 500ms of target,\n so target timing is always bad
-@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@

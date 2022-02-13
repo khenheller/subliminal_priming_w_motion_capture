@@ -2,23 +2,19 @@
 Number of trials devaiting from desired duration:
 2
 Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
-    <strong>TrialNum</strong>    <strong>Deviation</strong>        <strong>Event</strong>    
-    <strong>________</strong>    <strong>_________</strong>    <strong>_____________</strong>
-
-      349        8.3673      'mask2_time' 
-       75        9.9954      'target_time'
-
+    <strong>TrialNum</strong>    <strong>Deviation</strong>         <strong>Event</strong>     
+    <strong>________</strong>    <strong>_________</strong>    <strong>_______________</strong>
+      349        8.3673      {'mask2_time' }
+       75        9.9954      {'target_time'}
 Deviations in ms:
     <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
     <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
-
           1000               1000        0.20821              0.0070568           
            270             270.02        0.23996               0.024183           
             30             30.034        0.46824               0.034322           
             30             29.964          0.267                -0.0361           
             30             30.018         0.2348               0.018035           
            500             452.37         109.04                -47.626           
-
 ------------------------------- Has Values -------------------------------
 ------------------------------- Relations -------------------------------
 ------------------------------- Conditions -------------------------------
@@ -43,7 +39,3 @@ Deviations in ms:
                word_dont_repeat: 1
                     block_count: 1
                     trial_count: 1
-
-@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@
-Make a change in timingsTest.m (marked @with remove@ this) so that the time of target will also be checked.\nYou canceled its check because the getTraj.m didnt display the categor screen after 500ms of target,\n so target timing is always bad
-@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@

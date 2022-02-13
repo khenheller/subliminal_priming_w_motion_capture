@@ -1,46 +1,252 @@
 ------------------------------- Event Durations -------------------------------
 Number of trials devaiting from desired duration:
-0
+212
 Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>         <strong>Event</strong>     
+    <strong>________</strong>    <strong>_________</strong>    <strong>_______________</strong>
+        4        129.95      {'target_time'}
+        5        69.971      {'target_time'}
+       11        58.938      {'target_time'}
+       12        49.974      {'target_time'}
+       16        10.024      {'target_time'}
+       19        100.02      {'target_time'}
+       20        80.303      {'target_time'}
+       22        90.027      {'target_time'}
+       24        39.992      {'target_time'}
+       28        239.42      {'target_time'}
+       30        8.9421      {'target_time'}
+       31        40.894      {'target_time'}
+       33        70.009      {'target_time'}
+       36        90.064      {'target_time'}
+       38        240.03      {'target_time'}
+       39        70.019      {'target_time'}
+       40        30.066      {'target_time'}
+       44        29.998      {'target_time'}
+       45        270.01      {'target_time'}
+       46           210      {'target_time'}
+       48        30.007      {'target_time'}
+       54        180.02      {'target_time'}
+       56        140.02      {'target_time'}
+       58        49.991      {'target_time'}
+       59        99.418      {'target_time'}
+       61        219.99      {'target_time'}
+       67        219.94      {'target_time'}
+       70        120.02      {'target_time'}
+       72           260      {'target_time'}
+       73        70.023      {'target_time'}
+       79        89.973      {'target_time'}
+       82        40.164      {'target_time'}
+       83        219.96      {'target_time'}
+       84        40.022      {'target_time'}
+       87        160.01      {'target_time'}
+       91        69.098      {'target_time'}
+       93        79.995      {'target_time'}
+       95        260.08      {'target_time'}
+       97        220.06      {'target_time'}
+       99        200.03      {'target_time'}
+      111        79.646      {'target_time'}
+      112        30.069      {'target_time'}
+      113        270.07      {'target_time'}
+      115        60.002      {'target_time'}
+      117        90.027      {'target_time'}
+      118        50.035      {'target_time'}
+      119        9.9873      {'target_time'}
+      121        80.046      {'target_time'}
+      124        250.01      {'target_time'}
+      125        259.99      {'target_time'}
+      126           170      {'target_time'}
+      127        170.01      {'target_time'}
+      131        199.97      {'target_time'}
+      133        80.024      {'target_time'}
+      135        230.01      {'target_time'}
+      136        160.05      {'target_time'}
+      137        190.03      {'target_time'}
+      144        90.154      {'target_time'}
+      145        120.06      {'target_time'}
+      146        210.01      {'target_time'}
+      147        40.023      {'target_time'}
+      148        70.384      {'target_time'}
+      154        29.961      {'target_time'}
+      156           120      {'target_time'}
+      157        180.02      {'target_time'}
+      158        90.067      {'target_time'}
+      159        110.01      {'target_time'}
+      160        230.03      {'target_time'}
+      162        49.991      {'target_time'}
+      163        28.817      {'target_time'}
+      164        160.01      {'target_time'}
+      165        109.96      {'target_time'}
+      166        50.043      {'target_time'}
+      167        210.32      {'target_time'}
+      168        269.99      {'target_time'}
+      169        120.01      {'target_time'}
+      170        30.058      {'target_time'}
+      172        240.04      {'target_time'}
+      173        220.02      {'target_time'}
+      174        20.011      {'target_time'}
+      177        49.942      {'target_time'}
+      179         69.98      {'target_time'}
+      180        260.06      {'target_time'}
+      182        30.005      {'target_time'}
+      183        179.74      {'target_time'}
+      184        139.78      {'target_time'}
+      185        189.95      {'target_time'}
+      187        159.99      {'target_time'}
+      188        140.04      {'target_time'}
+      189        139.18      {'target_time'}
+      191         90.06      {'target_time'}
+      198         229.8      {'target_time'}
+      201        40.014      {'target_time'}
+      202        160.01      {'target_time'}
+      203        70.238      {'target_time'}
+      204        49.979      {'target_time'}
+      205        259.07      {'target_time'}
+      207         30.03      {'target_time'}
+      208        110.01      {'target_time'}
+      211        70.007      {'target_time'}
+      213        119.98      {'target_time'}
+      214        10.438      {'target_time'}
+      215        119.98      {'target_time'}
+      216        270.02      {'target_time'}
+      222        60.041      {'target_time'}
+      224        200.02      {'target_time'}
+      225        39.526      {'target_time'}
+      226        30.025      {'target_time'}
+      227        190.16      {'target_time'}
+      228        109.99      {'target_time'}
+      229        200.01      {'target_time'}
+      230        180.03      {'target_time'}
+      231        50.002      {'target_time'}
+      232         80.01      {'target_time'}
+      233        180.04      {'target_time'}
+      235        209.99      {'target_time'}
+      236        229.92      {'target_time'}
+      237        200.02      {'target_time'}
+      238        69.993      {'target_time'}
+      242        130.01      {'target_time'}
+      244        30.103      {'target_time'}
+      246        9.9788      {'target_time'}
+      247        249.97      {'target_time'}
+      248        59.972      {'target_time'}
+      250           190      {'target_time'}
+      252        20.229      {'target_time'}
+      253        50.058      {'target_time'}
+      254        19.577      {'target_time'}
+      257        270.02      {'target_time'}
+      260        159.96      {'target_time'}
+      263          40.1      {'target_time'}
+      264        239.98      {'target_time'}
+      268        260.02      {'target_time'}
+      269        50.017      {'target_time'}
+      273        50.308      {'target_time'}
+      274        20.015      {'target_time'}
+      275        80.006      {'target_time'}
+      276        30.022      {'target_time'}
+      277        80.044      {'target_time'}
+      280        10.019      {'target_time'}
+      284        90.124      {'target_time'}
+      286        90.001      {'target_time'}
+      288        30.012      {'target_time'}
+      289         10.26      {'target_time'}
+      292        20.002      {'target_time'}
+      293        29.853      {'target_time'}
+      295        130.04      {'target_time'}
+      302        230.03      {'target_time'}
+      307        39.794      {'target_time'}
+      308        10.003      {'target_time'}
+      309        20.068      {'target_time'}
+      311          39.5      {'target_time'}
+      312        20.006      {'target_time'}
+      315           270      {'target_time'}
+      316        60.002      {'target_time'}
+      317        80.053      {'target_time'}
+      318        50.014      {'target_time'}
+      319        50.012      {'target_time'}
+      328        80.009      {'target_time'}
+      329        20.012      {'target_time'}
+      330        109.97      {'target_time'}
+      333        49.473      {'target_time'}
+      334        240.01      {'target_time'}
+      337        150.08      {'target_time'}
+      339        49.986      {'target_time'}
+      343        29.962      {'target_time'}
+      344        69.624      {'target_time'}
+      345        238.88      {'target_time'}
+      346        29.985      {'target_time'}
+      353         29.98      {'target_time'}
+      359        40.026      {'target_time'}
+      361        119.26      {'target_time'}
+      362        20.007      {'target_time'}
+      364        150.05      {'target_time'}
+      366         50.03      {'target_time'}
+      368        260.03      {'target_time'}
+      369        180.04      {'target_time'}
+      374        110.07      {'target_time'}
+      377        80.001      {'target_time'}
+      381        9.9542      {'target_time'}
+      386        9.9465      {'target_time'}
+      388        50.085      {'target_time'}
+      390        230.03      {'target_time'}
+      391        220.01      {'target_time'}
+      397        20.014      {'target_time'}
+      402        29.714      {'target_time'}
+      404        130.04      {'target_time'}
+      406        9.9799      {'target_time'}
+      410        20.009      {'target_time'}
+      411        59.958      {'target_time'}
+      414        19.987      {'target_time'}
+      421        49.383      {'target_time'}
+      428        50.024      {'target_time'}
+      430        150.02      {'target_time'}
+      432         30.02      {'target_time'}
+      433        170.02      {'target_time'}
+      435        120.03      {'target_time'}
+      436        100.06      {'target_time'}
+      438        180.06      {'target_time'}
+      442        60.012      {'target_time'}
+      443        60.024      {'target_time'}
+      444        90.011      {'target_time'}
+      450        30.011      {'target_time'}
+      451        180.03      {'target_time'}
+      452         60.04      {'target_time'}
+      456        40.026      {'target_time'}
+      457        9.9942      {'target_time'}
+      459        79.989      {'target_time'}
+      463        9.9996      {'target_time'}
+      468        60.004      {'target_time'}
+      471        80.052      {'target_time'}
+      479        10.009      {'target_time'}
 Deviations in ms:
     <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
     <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
-
           1000               1000        0.20772               0.038902           
            270             270.03        0.28864               0.026925           
             30             30.008        0.30707              0.0077793           
             30             29.963        0.27788              -0.036815           
             30             30.035        0.28321               0.035192           
            500             491.66         123.59                -8.3353           
-
 ------------------------------- Has Values -------------------------------
 prime_x_to is missing values in trials: 
     84
     91
    420
-
 prime_y_to is missing values in trials: 
     84
     91
    420
-
 prime_z_to is missing values in trials: 
     84
     91
    420
-
 prime_x_from is missing values in trials: 
    223
    343
-
 prime_y_from is missing values in trials: 
    223
    343
-
 prime_z_from is missing values in trials: 
    223
    343
-
 ------------------------------- Relations -------------------------------
 ------------------------------- Conditions -------------------------------
 ------------------------------- Target Repeatitions -------------------------------
@@ -50,7 +256,7 @@ prime_z_from is missing values in trials:
 ------------------------------------------------------------------------------------------------
 ------------------------------- Test results (0=didnt pass test) -------------------------------
 ------------------------------------------------------------------------------------------------
-                     deviations: 1
+                     deviations: 0
               deviation_of_mean: 0
                             std: 0
                     prime_alter: 1
@@ -64,7 +270,3 @@ prime_z_from is missing values in trials:
                word_dont_repeat: 1
                     block_count: 1
                     trial_count: 1
-
-@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@
-Make a change in timingsTest.m (marked @with remove@ this) so that the time of target will also be checked.\nYou canceled its check because the getTraj.m didnt display the categor screen after 500ms of target,\n so target timing is always bad
-@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@

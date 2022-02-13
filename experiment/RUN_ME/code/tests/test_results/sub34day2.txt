@@ -5,106 +5,12 @@ Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms sh
 Deviations in ms:
     <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
     <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
-
           1000               1000        0.25702               0.044605           
            270                270        0.31956              0.0017039           
             30             30.007        0.28101              0.0065229           
             30              29.97        0.27845               -0.03018           
             30             30.052        0.29006               0.051753           
            500             473.53         95.702                 -26.47           
-
-------------------------------- Has Values -------------------------------
-------------------------------- Relations -------------------------------
-------------------------------- Conditions -------------------------------
-{Reference to non-existent field 'N_COND'.
-
-Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('tests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\tests.m', 70)" style="font-weight:bold">tests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\tests.m',70,0)">line 70</a>)
-    num_cond = p.N_COND * p.N_CATEGOR; % Num conditions.
-
-Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('runTests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m', 66)" style="font-weight:bold">runTests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m',66,0)">line 66</a>)
-    [pass_test, test_res] = tests(trials, trials_traj, test_type, events, desired_durations,
-    test_day, p);
-} 
-p.CONDS = ["same" "diff"];
-    p.N_COND = length(p.CONDS); % Conditions: Same/Diff.
-runTests
-[Warning: File not found or permission denied] 
-[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('runTests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m', 62)" style="font-weight:bold">runTests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m',62,0)">line 62</a>)] 
-------------------------------- Event Durations -------------------------------
-Number of trials devaiting from desired duration:
-0
-Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
-Deviations in ms:
-    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
-    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
-
-          1000               1000        0.25702               0.044605           
-           270                270        0.31956              0.0017039           
-            30             30.007        0.28101              0.0065229           
-            30              29.97        0.27845               -0.03018           
-            30             30.052        0.29006               0.051753           
-           500             473.53         95.702                 -26.47           
-
-------------------------------- Has Values -------------------------------
-------------------------------- Relations -------------------------------
-------------------------------- Conditions -------------------------------
-{Reference to non-existent field 'N_COND'.
-
-Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('tests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\tests.m', 70)" style="font-weight:bold">tests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\tests.m',70,0)">line 70</a>)
-    num_cond = p.N_COND * p.N_CATEGOR; % Num conditions.
-
-Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('runTests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m', 66)" style="font-weight:bold">runTests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m',66,0)">line 66</a>)
-    [pass_test, test_res] = tests(trials, trials_traj, test_type, events, desired_durations,
-    test_day, p);
-} 
-runTests
-[Warning: File not found or permission denied] 
-[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('runTests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m', 62)" style="font-weight:bold">runTests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m',62,0)">line 62</a>)] 
-------------------------------- Event Durations -------------------------------
-Number of trials devaiting from desired duration:
-0
-Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
-Deviations in ms:
-    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
-    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
-
-          1000               1000        0.25702               0.044605           
-           270                270        0.31956              0.0017039           
-            30             30.007        0.28101              0.0065229           
-            30              29.97        0.27845               -0.03018           
-            30             30.052        0.29006               0.051753           
-           500             473.53         95.702                 -26.47           
-
-------------------------------- Has Values -------------------------------
-------------------------------- Relations -------------------------------
-------------------------------- Conditions -------------------------------
-{Reference to non-existent field 'N_CATEGOR'.
-
-Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('tests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\tests.m', 70)" style="font-weight:bold">tests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\tests.m',70,0)">line 70</a>)
-    num_cond = p.N_COND * p.N_CATEGOR; % Num conditions.
-
-Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('runTests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m', 70)" style="font-weight:bold">runTests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m',70,0)">line 70</a>)
-    [pass_test, test_res] = tests(trials, trials_traj, test_type, events, desired_durations,
-    test_day, p);
-} 
-runTests
-[Warning: File not found or permission denied] 
-[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('runTests', 'D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m', 62)" style="font-weight:bold">runTests</a> (<a href="matlab: opentoline('D:\university\mudrick_lab\subliminal_priming_w_motion_capture\experiment\RUN_ME\code\tests\runTests.m',62,0)">line 62</a>)] 
-------------------------------- Event Durations -------------------------------
-Number of trials devaiting from desired duration:
-0
-Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
-Deviations in ms:
-    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
-    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
-
-          1000               1000        0.25702               0.044605           
-           270                270        0.31956              0.0017039           
-            30             30.007        0.28101              0.0065229           
-            30              29.97        0.27845               -0.03018           
-            30             30.052        0.29006               0.051753           
-           500             473.53         95.702                 -26.47           
-
 ------------------------------- Has Values -------------------------------
 ------------------------------- Relations -------------------------------
 ------------------------------- Conditions -------------------------------
@@ -129,4 +35,3 @@ Deviations in ms:
                word_dont_repeat: 1
                     block_count: 1
                     trial_count: 1
-
