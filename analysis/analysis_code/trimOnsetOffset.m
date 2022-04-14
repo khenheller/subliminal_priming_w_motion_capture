@@ -33,10 +33,10 @@ function [trajs_mat, onsets, offsets] = trimOnsetOffset(trajs_mat, time_mat, p)
         % Can't calc direction if traj len is 1.
         if last_sample > 1
             dist_from_end = abs(trial_traj(last_sample, 3) - trial_traj(1:last_sample, 3));
-            direction = dist_from_end(1:end-1) < dist_from_end(2:end);
-            direction = direction * -1;
-            direction(direction == 0) = 1;
-            direction(end+1:height(trial_vel), :) = 1;
+            direction = dist_from_end(1:end-1) < dist_from_end(2:end); % Dist from end at t=i is smaller than t=i+1, than moving backwords.
+            direction = direction * -1; % Backwords = negative velocity.
+            direction(direction == 0) = 1; % Forward, positive vel.
+            direction(end+1:height(trial_vel), :) = 1; % Positive vel in last samples.
             % Apply direction to vel.
             trial_vel = trial_vel(1:length(direction)) .* direction;
         end

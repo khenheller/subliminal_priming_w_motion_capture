@@ -12,6 +12,12 @@ function [bad_subs] = subScreening(traj_name, pas_rate, p)
         'VariableTypes', repmat({'double'}, length(screen_reasons), 1),...
         'VariableNames', screen_reasons);
     
+    % Counts and prints good trials.
+    avg_same = 0;
+    avg_diff = 0;
+    disp(['Trials with correct timing, pas=' num2str(pas_rate) ' and correct categorization'])
+    
+
     for iSub = p.SUBS
         data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data_proc.mat']);  data_table = data_table.data_table;
         % Remove practice.
@@ -30,7 +36,14 @@ function [bad_subs] = subScreening(traj_name, pas_rate, p)
         ok_pas_categcorr_diff = ok_pas_categcorr & ~data_table.same;
         bad_subs{iSub, 'not_enough_trials_in_cond'} = sum(ok_pas_categcorr_same) < p.MIN_AMNT_TRIALS_IN_COND |...
                                                       sum(ok_pas_categcorr_diff) < p.MIN_AMNT_TRIALS_IN_COND;
-        % Categorization is at chance level (sub is geussing).
+        % Counts good trials.
+        disp(['Sub ', num2str(iSub)]);
+        disp(['Same: ' num2str(sum(ok_pas_categcorr_same))])
+        disp(['Diff: ' num2str(sum(ok_pas_categcorr_diff))])
+        avg_same = avg_same + sum(ok_pas_categcorr_same);
+        avg_diff = avg_diff + sum(ok_pas_categcorr_diff);
+
+        % Categorization performance isn't good enough.
         bad_subs{iSub, 'categor_chance_lvl'} = myBinomTest(sum(ok_pas_categcorr), sum(ok_pas), 0.5, 'Two') >= p.SIG_PVAL;
         % Sub seen prime (prime recog isn't at chance). Looks also in "bad" trials.
         oktiming = ~bad_trials{iSub}{:, 'bad_stim_dur'}; % All trials with good stimulus duration.
@@ -41,4 +54,8 @@ function [bad_subs] = subScreening(traj_name, pas_rate, p)
         % Any.
         bad_subs{iSub, 'any'} = any(bad_subs{iSub,1:end-1});
     end
+    
+    % Prints good trials.
+    disp(['Avg Same: ' num2str(avg_same/length(p.SUBS))]);
+    disp(['Avg Diff: ' num2str(avg_diff/length(p.SUBS))]);
 end
