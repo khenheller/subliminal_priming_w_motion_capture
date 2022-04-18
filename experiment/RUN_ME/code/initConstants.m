@@ -121,7 +121,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.BLOCK_SIZE = 40; % has to be a multiple of 4.
     p.NUM_TRIALS = p.NUM_BLOCKS*p.BLOCK_SIZE;
     p.N_CATEGOR = 2; % Num of word categories (2 = natural / artificial).
-    p.CONDS = ["same" "diff"];
+    p.CONDS = ["con" "incon"];
     p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
     
     % duration in sec

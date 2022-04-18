@@ -55,20 +55,20 @@ disp("Establish a new limit and update that maximum thrshold.");
 % This uses a single sample (avg traj) for each sub, instead of generating many avgs with bootstrap. %
 % Reach are column.
 reach_area = load([p.PROC_DATA_FOLDER strrep(traj_name{1}, '_x','') '_'  p.DAY '_reach_area.mat']); reach_area = reach_area.reach_area;
-reach_area.same(isnan(reach_area.same)) = [];
-reach_area.diff(isnan(reach_area.diff)) = [];
-reach_area = [reach_area.same reach_area.diff]';
+reach_area.con(isnan(reach_area.con)) = [];
+reach_area.incon(isnan(reach_area.incon)) = [];
+reach_area = [reach_area.con reach_area.incon]';
 % Sub num column.
 sub = repmat(p.SUBS', p.N_CONDS,1);
 % Cond column.
 cond = repelem(p.CONDS', p.N_SUBS);
 % Num trials column.
 num_trials = load([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_name{1} '_subs_' p.SUBS_STRING '.mat'], 'num_trials');  num_trials = num_trials.num_trials;
-n_trials.same = num_trials.same_left + num_trials.same_right;
-n_trials.diff = num_trials.diff_left + num_trials.diff_right;
-n_trials.same(isnan(n_trials.same)) = [];
-n_trials.diff(isnan(n_trials.diff)) = [];
-n_trials = [n_trials.same; n_trials.diff];
+n_trials.con = num_trials.con_left + num_trials.con_right;
+n_trials.incon = num_trials.incon_left + num_trials.incon_right;
+n_trials.con(isnan(n_trials.con)) = [];
+n_trials.incon(isnan(n_trials.incon)) = [];
+n_trials = [n_trials.con; n_trials.incon];
 % Reach area dataframe.
 r_a_df = table(sub,cond,reach_area,n_trials);
 %}

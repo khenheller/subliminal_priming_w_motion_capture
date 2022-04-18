@@ -89,6 +89,10 @@ disp('Creating processing data files for sub:');
 for iSub = p.SUBS
     traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
     data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
+    % Change 'same' column to 'con'.
+    if any(contains(data_table.Properties.VariableNames, 'same'))
+        data_table.Properties.VariableNames{'same'} = 'con';
+    end
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.mat'], 'traj_table'); % '.mat' is faster to read than '.csv'.
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.mat'], 'data_table');
     disp(num2str(iSub));
@@ -344,12 +348,6 @@ for iSub = p.SUBS
         avg_each.mt(iTraj).con_right(iSub) = avg.mt.con_right;
         avg_each.mt(iTraj).incon_left(iSub)  = avg.mt.incon_left;
         avg_each.mt(iTraj).incon_right(iSub) = avg.mt.incon_right;
-        avg_each.rt(iTraj).con(iSub)  = [avg.rt.con_left; avg.rt.con_right];
-        avg_each.rt(iTraj).incon(iSub)  = [avg.rt.incon_left; avg.rt.incon_right];
-        avg_each.react(iTraj).con(iSub)  = [avg.react.con_left; avg.react.con_right];
-        avg_each.react(iTraj).incon(iSub)  = [avg.react.incon_left; avg.react.incon_right];
-        avg_each.mt(iTraj).con(iSub)  = [avg.mt.con_left; avg.mt.con_right];
-        avg_each.mt(iTraj).incon(iSub)  = [avg.mt.incon_left; avg.mt.incon_right];
         avg_each.mad(iTraj).con_left(iSub)  = avg.mad.con_left;
         avg_each.mad(iTraj).con_right(iSub) = avg.mad.con_right;
         avg_each.mad(iTraj).incon_left(iSub)  = avg.mad.incon_left;
@@ -790,8 +788,8 @@ for iTraj = 1:length(traj_names)
     legend(h,'Con','Incon', 'Location','northwest');
 
     % T-test
-    [~, p_val_rt] = ttest(avg_each.react(iTraj).con, avg_each.react(iTraj).incon);
-    disp(['Diff between congruent and incongruent rt: ' num2str()])
+%     [~, p_val_rt] = ttest(avg_each.react(iTraj).con, avg_each.react(iTraj).incon);
+%     disp(['Diff between congruent and incongruent rt: ' num2str()])
 end
 
 % ------- Prime Forced choice -------
