@@ -167,8 +167,9 @@ function [p] = initConstants(psychtoolbox_active, p)
     %% Analysis params.
     % Missing data restrictions.
     p.MIN_SAMP_LEN = 0.1; % in sec.
-    p.MAX_MISSING_DATA = 0.1; % in sec.
-    p.MAX_BAD_TRIALS = p.NUM_TRIALS - 60; % sub with more bad trials is disqualified.
+    p.MAX_MISSIN_DATA = 0.1; % in sec.
+    p.MIN_GOOD_TRIALS = 60; % Total, across conditions.
+    p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
     p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition is disqualified.
     p.SIG_PVAL = 0.05; % Significance threshold for P-values (smaller p-vals are significant).
     
@@ -184,7 +185,7 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.VEL_FILTER_CUTOFF = 10;% in Hz.
     
     % Reach distance.
-    p.MAX_DIST_FROM_SCREEN = 0.03; %that is still considered as "touch" in analysis. in meter.
+    p.MAX_DIST_FROM_SCREEN = 0.03; %that is still considered as "touch" in analysis. in meter. This compensates for inaccuracies in the setup (if the startpoint isn't exactly 35cm fomr the screen).
     p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN; % trials with shorter reaches will be discarded.
     p.DIST_BETWEEN_TARGETS = 0.20; % In meter.
     p.TARGET_MISS_RANGE = 0.12; %Touches outside this radius of the target (circle flat on screen, centered on target),

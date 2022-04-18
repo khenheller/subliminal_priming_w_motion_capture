@@ -1,6 +1,11 @@
+% Some parameters might change between running the exp and analyzing its results.
+% This function loads the parameters values that were set when the exp was run and adjusts some of them for the analysis to work.
 % SORTED_SUBS - subjects sorted according to the version of the experiment they participated in.
 function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     p.DATA_FOLDER = '../../raw_data/';
+
+    % Save prev num of trials.
+    OLD_NUM_BLOCKS = p.NUM_BLOCKS;
 
     p = load([p.DATA_FOLDER '/sub' num2str(iSub) DAY '_' 'p.mat']); p = p.p;
     % Paths.
@@ -50,22 +55,31 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
         error('Please analyze subs 1-10, 11-25 and 26-... seperatly.');
     end
     p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
+    % Distances.
     p.DIST_BETWEEN_TARGETS = 0.20; % In meter.
     p.TARGET_MISS_RANGE = 0.12; % In meter.
+
+    % Recording length.
     p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
     p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
     p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
-    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
-    p.PROC_DATA_FOLDER = '../processed_data/';
-    p.TESTS_FOLDER = '../../experiment/RUN_ME/code/tests/test_results/';
+    
+    % RT lmitations.
     p.MIN_REACT_TIME_SAMPLES = 10;
-    p.MIN_GOOD_TRIALS = 60;
-    p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
-    p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.
     p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
     p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
-    p.SIG_PVAL = 0.05;
+
+    % Number of trials.
+    p.NUM_BLOCKS = OLD_NUM_BLOCKS;
+    p.NUM_TRIALS = p.NUM_BLOCKS * p.BLOCK_SIZE;
+    p.MIN_GOOD_TRIALS = 60; % Total, regardless of condition.
+    p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
+    p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.
+
+    % Conditions.
     p.CONDS = ["same" "diff"];
     p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
-    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@remove
+
+    % Hypothesis testing.
+    p.SIG_PVAL = 0.05;
 end

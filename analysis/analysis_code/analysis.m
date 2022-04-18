@@ -37,6 +37,51 @@ traj_types = reshape(traj_types, [], length(traj_names));
 traj_types = traj_types(1,:);
 traj_types = replace(traj_types, '_x', '');
 disp("Done setting params.");
+%% Simulates an exp with less trials for each sub.
+simulate = 1;
+gen_files = 0; % Generate a new file for each sub. Use 0 only if you already generated in prev run.
+new_num_bloks = 6;
+idx_shift = 200; % data will be saved in a sub num = iSub + idx_shift.
+
+if simulate
+    % Set new number of blocks.
+    p.NUM_BLOCKS = new_num_bloks;
+    p.NUM_TRIALS = p.NUM_BLOCKS * p.BLOCK_SIZE;
+
+    if all(p.SUBS <= 10)
+        n_practice_blocks = 1;
+    else
+        n_practice_blocks = 2;
+    end
+    new_traj_table_size = n_practice_blocks * p.BLOCK_SIZE * p.MAX_CAP_LENGTH + p.NUM_TRIALS * p.MAX_CAP_LENGTH;
+    new_data_table_size = n_practice_blocks * p.BLOCK_SIZE + p.NUM_TRIALS;
+
+    if gen_files
+        tic
+        disp('Creating reduced data files for sub:');
+        for iSub = p.SUBS
+            % Delete file if already exists.
+            delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'traj.csv']);
+            delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'data.csv']);
+            % Reduces num of trials for each sub and saves it as a new sub.
+            traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
+            data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
+            traj_table = traj_table(1:min(new_traj_table_size, height(traj_table)), :);
+            data_table = data_table(1:min(new_data_table_size, height(data_table)), :);
+            writetable(traj_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'traj.csv']);
+            writetable(data_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'data.csv']);
+            % Copy p.mat and start_end_point to new sub.
+            copyfile([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'start_end_points.mat'], [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'start_end_points.mat'], 'f');
+            copyfile([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'p.mat'], [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'p.mat'], 'f');
+            disp(num2str(iSub));
+        end
+        timing = num2str(toc);
+        disp(['Done Creating reduced subs. ' timing 'Sec'])
+    end
+    p.SUBS = p.SUBS + idx_shift;
+    p = defineParams(p, p.SUBS, DAY, p.SUBS(1), SORTED_SUBS);
+    disp("Done Simulating less trials.");
+end
 %% Create proc data file
 % Copy the real data to a new file, to keep the original data safe.
 tic
@@ -51,9 +96,9 @@ end
 timing = num2str(toc);
 disp(['Done Creating processing data files. ' timing 'Sec'])
 %% Add fields
-% Adds missing fields.
-% (late_res and slow_mvmnt fields to sub 1-14).
-% (quit to sub 1-38).
+% Adds missing fields:
+% late_res and slow_mvmnt fields to sub 1-14.
+% quit to sub 1-38.
 tic
 disp('Adding missing fields to sub:');
 for iSub = p.SUBS
@@ -113,7 +158,7 @@ too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
     'VariableNames', traj_types);
 disp('Preprocessing done for subject:');
 for iSub = p.SUBS
-    p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS);
+    p = defineParams(p, p.SUBS, DAY, iSub, SORTED_SUBS);
     traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_traj.mat']);  traj_table = traj_table.traj_table;
     data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
     
@@ -275,6 +320,8 @@ neg_slope = '--';
 pos_slope = '-';
 exp_2_color = [225 225 225] / 255; % used when comparing exp 2 and 3.
 exp_3_color = [0 146 146] / 255;
+first_practice_color = [125 255 0] / 255;
+second_practice_color = [0 125 0] / 255;
 
 % Unite all subs to one variable.
 for iSub = p.SUBS
@@ -296,6 +343,12 @@ for iSub = p.SUBS
         avg_each.mt(iTraj).same_right(iSub) = avg.mt.same_right;
         avg_each.mt(iTraj).diff_left(iSub)  = avg.mt.diff_left;
         avg_each.mt(iTraj).diff_right(iSub) = avg.mt.diff_right;
+        avg_each.rt(iTraj).same(iSub)  = [avg.rt.same_left; avg.rt.same_right];
+        avg_each.rt(iTraj).diff(iSub)  = [avg.rt.diff_left; avg.rt.diff_right];
+        avg_each.react(iTraj).same(iSub)  = [avg.react.same_left; avg.react.same_right];
+        avg_each.react(iTraj).diff(iSub)  = [avg.react.diff_left; avg.react.diff_right];
+        avg_each.mt(iTraj).same(iSub)  = [avg.mt.same_left; avg.mt.same_right];
+        avg_each.mt(iTraj).diff(iSub)  = [avg.mt.diff_left; avg.mt.diff_right];
         avg_each.mad(iTraj).same_left(iSub)  = avg.mad.same_left;
         avg_each.mad(iTraj).same_right(iSub) = avg.mad.same_right;
         avg_each.mad(iTraj).diff_left(iSub)  = avg.mad.diff_left;
@@ -345,6 +398,7 @@ for iSub = p.SUBS
         plot(avg.traj.same_right(:,1), avg.traj.same_right(:,3) * flip_traj, same_avg_col, 'LineWidth',avg_plot_width);
         plot(avg.traj.diff_left(:,1),  avg.traj.diff_left(:,3) * flip_traj,  diff_avg_col, 'LineWidth',avg_plot_width);
         plot(avg.traj.diff_right(:,1), avg.traj.diff_right(:,3) * flip_traj, diff_avg_col, 'LineWidth',avg_plot_width);
+
         % plot's description.
         h = [];
         h(1) = plot(nan,nan,'Color',same_col);
@@ -354,6 +408,7 @@ for iSub = p.SUBS
         legend(h, 'Same', 'Diff', 'Same avg', 'Diff avg', 'Location','southeast');
         xlabel('X'); xlim([-0.12, 0.12]);
         ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
+        ylabel('Y');
         title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
         set(gca, 'FontSize',14);
     end
@@ -381,7 +436,7 @@ for iSub = p.SUBS
         h(2) = plot(nan,nan,'Color',diff_col);
         legend(h, 'Same', 'Diff', 'Location','southeast');
         xlabel('X'); xlim([-0.12, 0.12]);
-        ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
+        ylabel('Z Axis (to screen)');
         title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
         set(gca, 'FontSize',14);
     end
@@ -587,7 +642,7 @@ for iSub = p.SUBS
     end
 end
 
-% ------- X Deviation -------
+% % ------- X Standard Deviation -------
 % for iSub = p.SUBS
 %     figure(sub_f(iSub,3));
 %     for iTraj = 1:length(traj_names)
@@ -655,7 +710,7 @@ for iTraj = 1:length(traj_names)
     h(2) = plot(nan,nan,'Color',diff_col, 'LineWidth',linewidth);
     legend(h, 'Congruent', 'Incongruent', 'Location','southeast');
     xlabel('X'); xlim([-0.105, 0.105]);
-    ylabel('% path traveled'); %ylim([0, p.SCREEN_DIST]);
+    ylabel('% path traveled');
 %     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
     set(gca, 'FontSize',14);
 %     title('Avg trajectory');
@@ -845,7 +900,7 @@ for iTraj = 1:length(traj_names)
     plot(subs_avg.traj.same_left(:,3)*flip_traj,  subs_avg.x_std.same_left, 'color',same_col);
     plot(subs_avg.traj.diff_left(:,3)*flip_traj,  subs_avg.x_std.diff_left, 'color',diff_col);
     ylabel('X STD');
-    xlim([0 p.SCREEN_DIST]);
+%     xlim([0 p.SCREEN_DIST]);
     set(gca,'FontSize',14);
     title('STD in X Axis, Left');
     h = [];
@@ -859,7 +914,7 @@ for iTraj = 1:length(traj_names)
     plot(subs_avg.traj.diff_right(:,3)*flip_traj, subs_avg.x_std.diff_right, 'color',diff_col);
     ylabel('X STD');
     xlabel('Z (m)');
-    xlim([0 p.SCREEN_DIST]);
+%     xlim([0 p.SCREEN_DIST]);
     set(gca,'FontSize',14);
     title('STD in X Axis, Right');
 end
@@ -874,10 +929,11 @@ for iTraj = 1:length(traj_names)
     % Left.
     subplot(2,4,7);
     hold on;
-    stdshade(avg_each.cond_diff.left(:,good_subs,1)', f_alpha, 'k', subs_avg.traj.same_left(:,3)*flip_traj, 0, 1,'ci', alpha_size, linewidth);
-    plot([0 p.SCREEN_DIST], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
+    stdshade(avg_each.cond_diff.left(:,good_subs,1)'*flip_traj*-1, f_alpha, 'k', subs_avg.traj.same_left(:,3)*flip_traj, 0, 1,'ci', alpha_size, linewidth);
+    plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
     xlabel('Z (m)');
     ylabel('X diff (m)');
+    ylim([-0.005 0.02]);
     title('TrajSame_x - TrajDiff_x, Left');
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'same - diff');
@@ -885,9 +941,10 @@ for iTraj = 1:length(traj_names)
     subplot(2,4,8);
     hold on;
     stdshade(avg_each.cond_diff.right(:,good_subs,1)', f_alpha, 'k', subs_avg.traj.same_right(:,3)*flip_traj, 0, 1, 'ci', alpha_size, linewidth);
-    plot([0 p.SCREEN_DIST], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
+    plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
     xlabel('Z (m)');
     ylabel('X diff (m)');
+    ylim([-0.005 0.02]);
     title('TrajSame_x - TrajDiff_x, Right');
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'same - diff');
@@ -993,15 +1050,23 @@ finkbeiner_maxcurv2_dz = finkbeiner_maxcurv2.t / sqrt(finkbeiner_maxcurv2.N);
 % My data.
 exp_2_subs_string = regexprep(num2str(p.EXP_2_SUBS), '\s+', '_');
 exp_3_subs_string = regexprep(num2str(p.EXP_3_SUBS), '\s+', '_');
+sim_subs_string = regexprep(num2str(p.SUBS), '\s+', '_'); % Simulated subs, created from origin subs but with less trials.
+
 good_subs_exp_2 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_2_subs_string '.mat']);  good_subs_exp_2 = good_subs_exp_2.good_subs;
 good_subs_exp_3 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_3_subs_string '.mat']);  good_subs_exp_3 = good_subs_exp_3.good_subs;
+good_sim_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' sim_subs_string '.mat']);  good_sim_subs = good_sim_subs.good_subs;
+
 reach_area_exp_2 = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' exp_2_subs_string '.mat']);  reach_area_exp_2 = reach_area_exp_2.reach_area;
 reach_area_exp_3 = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' exp_3_subs_string '.mat']);  reach_area_exp_3 = reach_area_exp_3.reach_area;
+reach_area_sim_subs = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' sim_subs_string '.mat']);  reach_area_sim_subs = reach_area_sim_subs.reach_area;
+
 % T-test
 [~, mad_p_val, ci, stats_exp_2] = ttest(reach_area_exp_2.same(good_subs_exp_2), reach_area_exp_2.diff(good_subs_exp_2));
 [~, mad_p_val, ci, stats_exp_3] = ttest(reach_area_exp_3.same(good_subs_exp_3), reach_area_exp_3.diff(good_subs_exp_3));
+[~, mad_p_val, ci, stats_sim_subs] = ttest(reach_area_sim_subs.same(good_sim_subs), reach_area_sim_subs.diff(good_sim_subs));
 heller_ra_dz_exp_2 = stats_exp_2.tstat / sqrt(length(good_subs_exp_2));
 heller_ra_dz_exp_3 = stats_exp_3.tstat / sqrt(length(good_subs_exp_3));
+heller_ra_dz_sim_subs = stats_sim_subs.tstat / sqrt(length(good_sim_subs));
 
 % Plot
 prev_papers_comp_f(1) = figure('Name',['Papers comparison'], 'WindowState','maximized', 'MenuBar','figure');
@@ -1011,7 +1076,8 @@ bar([xiao_auc_dz,...
     finkbeiner_maxcurv1_dz,...
     finkbeiner_maxcurv2_dz,...
     heller_ra_dz_exp_2,...
-    heller_ra_dz_exp_3],...
+    heller_ra_dz_exp_3,...
+    heller_ra_dz_sim_subs],...
     'FaceColor',[0.9290 0.6940 0.1250], 'FaceAlpha',0.2,...
     'EdgeColor',[0.9290 0.6940 0.1250], 'LineWidth',3);
 ylabel('Cohen`s  d_z');
@@ -1021,11 +1087,12 @@ xticklabels({'Xiao et al. (2015)',...
     'Almeida et al. (2014)',...
     'Finkbeiner et al. (2008) Exp 1',...
     'Finkbeiner et al. (2008) Exp 2',...
-    'Pilot 1',...
-    'Pilot 2'});
+    'Exp 2',...
+    'Exp 3',...
+    ['Exp 2 ' num2str(p.NUM_TRIALS) ' Trials']});
 ax = gca;
 ax.Box = 'off';
-% title("Effect size comparison to previous papers.");
+title("Reach area / area under the curve");
 %% GUI, compares proc to real traj.
 % close all;
 % warning('off','MATLAB:legend:IgnoringExtraEntries');

@@ -42,7 +42,7 @@ function trials = newTrials(draw_stats, practice, p)
     [art_words_to_use, art_i] = datasample(p.WORD_LIST{:,'artificial'}, n_words_to_use, 'Replace',false);
     chosen_words  = [nat_words_to_use; art_words_to_use];
     words = table(chosen_words, NaN(length(chosen_words),1), ones(length(chosen_words),1),...
-        'VariableNames',{'word', 'last_block', 'available'});
+        'VariableNames',{'word', 'last_block', 'available'}); % Word, the number of the last block it apeared at, and whether it is avialable (wasn't already selected).
     
     % for each prime, lists all targets it can precede (doesn't share lettes with).
     possible_targets = [table2cell(p.ART_TARGETS(:,nat_i)) table2cell(p.NAT_TARGETS(:,art_i))];
@@ -63,7 +63,7 @@ function trials = newTrials(draw_stats, practice, p)
         words.last_block(iWord) = current_block;
         words.available(iWord) = 0;
         trials.target(iTrial) = target;
-        trials.target_natural(iTrial) = iWord <= height(words)/2; % first half are natural.
+        trials.target_natural(iTrial) = iWord <= height(words)/2; % first half in "words" list are natural.
         
         % Adds Masks.
         masks = datasample(1:p.NUM_MASKS, 3, 'Replace',false);
