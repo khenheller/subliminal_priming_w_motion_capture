@@ -642,38 +642,38 @@ for iSub = p.SUBS
     end
 end
 
-% % ------- X Standard Deviation -------
-% for iSub = p.SUBS
-%     figure(sub_f(iSub,3));
-%     for iTraj = 1:length(traj_names)
-%         % Flips traj to screen since its Z values are negative.
-%         flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-%         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-%         % Left.
-%         subplot(4,2,6);
-%         hold on;
-%         plot(avg.traj.same_left(:,3)*flip_traj,  avg.x_std.same_left,  'color',same_col);
-%         plot(avg.traj.diff_left(:,3)*flip_traj,  avg.x_std.diff_left,  'color',diff_col);
-%         ylabel('X std');
-%         xlim([0 p.SCREEN_DIST]);
-%         set(gca,'FontSize',14);
-%         title('STD in X Axis, Left');
-%         h = [];
-%         h(1) = bar(NaN,NaN,'FaceColor',same_col);
-%         h(2) = bar(NaN,NaN,'FaceColor',diff_col);
-%         legend(h,'Same','Diff', 'Location','northwest');
-%         % Right
-%         subplot(4,2,8);
-%         hold on;
-%         plot(avg.traj.same_right(:,3)*flip_traj, avg.x_std.same_right, 'color',same_col);
-%         plot(avg.traj.diff_right(:,3)*flip_traj, avg.x_std.diff_right, 'color',diff_col);
-%         ylabel('X std');
-%         xlabel('Z (m)');
-%         xlim([0 p.SCREEN_DIST]);
-%         set(gca,'FontSize',14);
-%         title('STD in X Axis, Right');
-%     end
-% end
+% ------- X Standard Deviation -------
+for iSub = p.SUBS
+    figure(sub_f(iSub,3));
+    for iTraj = 1:length(traj_names)
+        % Flips traj to screen since its Z values are negative.
+        flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
+        % Left.
+        subplot(4,2,6);
+        hold on;
+        plot(avg.traj.same_left(:,3)*flip_traj,  avg.x_std.same_left,  'color',same_col);
+        plot(avg.traj.diff_left(:,3)*flip_traj,  avg.x_std.diff_left,  'color',diff_col);
+        ylabel('X std');
+        xlim([0 p.SCREEN_DIST]);
+        set(gca,'FontSize',14);
+        title('STD in X Axis, Left');
+        h = [];
+        h(1) = bar(NaN,NaN,'FaceColor',same_col);
+        h(2) = bar(NaN,NaN,'FaceColor',diff_col);
+        legend(h,'Same','Diff', 'Location','northwest');
+        % Right
+        subplot(4,2,8);
+        hold on;
+        plot(avg.traj.same_right(:,3)*flip_traj, avg.x_std.same_right, 'color',same_col);
+        plot(avg.traj.diff_right(:,3)*flip_traj, avg.x_std.diff_right, 'color',diff_col);
+        ylabel('X std');
+        xlabel('Z (m)');
+        xlim([0 p.SCREEN_DIST]);
+        set(gca,'FontSize',14);
+        title('STD in X Axis, Right');
+    end
+end
 %% Multiple subs average plots.
 % Create figures.
 all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
@@ -714,6 +714,18 @@ for iTraj = 1:length(traj_names)
 %     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
     set(gca, 'FontSize',14);
 %     title('Avg trajectory');
+
+    subplot(2,2,2);
+    hold on;
+    % Avg Y as func of X.
+    stdshade(avg_each.traj(iTraj).same_left(:,good_subs,1)',  f_alpha*0.3, same_col, subs_avg .traj.same_left(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+    stdshade(avg_each.traj(iTraj).same_right(:,good_subs,1)', f_alpha*0.3, same_col, subs_avg.traj.same_right(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+    stdshade(avg_each.traj(iTraj).diff_left(:,good_subs,1)',  f_alpha*0.3, diff_col, subs_avg.traj.diff_left(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+    stdshade(avg_each.traj(iTraj).diff_right(:,good_subs,1)', f_alpha*0.3, diff_col, subs_avg.traj.diff_right(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
+    xlabel('X'); xlim([-0.105, 0.105]);
+    ylabel('Y');
+%     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
+    set(gca, 'FontSize',14);
 end
 % annotation('textbox',[0.4 0.9 0.1 0.1], 'String','Avg across Subs', 'FontSize',40, 'LineStyle','none', 'FitBoxToText','on');
 
@@ -775,6 +787,10 @@ for iTraj = 1:length(traj_names)
     h(1) = bar(NaN,NaN,'FaceColor',same_col);
     h(2) = bar(NaN,NaN,'FaceColor',diff_col);
     legend(h,'Same','Diff', 'Location','northwest');
+
+    % T-test
+    [~, p_val_rt] = ttest(avg_each.react(iTraj).same, avg_each.react(iTraj).diff);
+    disp(['Diff between congruent and incongruent rt: ' num2str()])
 end
 
 % ------- Prime Forced choice -------
@@ -1093,6 +1109,45 @@ xticklabels({'Xiao et al. (2015)',...
 ax = gca;
 ax.Box = 'off';
 title("Reach area / area under the curve");
+%% RT comparison between 1st and 2nd practice blocks.
+% Compares n trials from the end of each practice block.
+n_comp_trials = 10;
+% Reation, movement, response times.
+rt = nan(p.MAX_SUB, 2); % 2 =  for 2 practice blocks.
+
+% Get data of each sub.
+for iSub = p.SUBS
+    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
+    first_block = data_table.target_rt(data_table.practice == 1);
+    second_block = data_table.target_rt(data_table.practice == 2);
+    % If subject performed both practices.
+    if ~prod(isnan(first_block)) && ~prod(isnan(second_block))
+        rt(iSub, :) = mean([first_block(end-n_comp_trials+1 : end), second_block(end-n_comp_trials+1 : end)], 1, 'omitnan');
+    end
+end
+
+% Remove empty slots.
+rt(any(isnan(rt),2), :) = [];
+% Convert to ms.
+rt = rt * 1000;
+
+% Check significance.
+[~, p_value] = ttest(rt(:,1), rt(:,2));
+
+% Plot difference.
+fig = figure('Name',"RT comparison between practice blocks");
+beesdata = {rt(:,1), rt(:,2)};
+yLabel = 'Time (milisec)';
+XTickLabel = ["1_s_t", "2_n_d"];
+colors = {first_practice_color, second_practice_color};
+title_char = "RT comparison between practice blocks";
+printBeeswarm(beesdata, yLabel, XTickLabel, colors, space, title_char, 'ci', alpha_size);
+h = [];
+h(1) = bar(NaN,NaN,'FaceColor',first_practice_color);
+h(2) = bar(NaN,NaN,'FaceColor',second_practice_color);
+legend(h,'First practice','Second practice', 'Location','southwest');
+ax = gca;
+text(mean(ax.XTick), max(rt(:))+10, ['p = ' num2str(p_value)], 'FontSize',14, 'HorizontalAlignment','center');
 %% GUI, compares proc to real traj.
 % close all;
 % warning('off','MATLAB:legend:IgnoringExtraEntries');
