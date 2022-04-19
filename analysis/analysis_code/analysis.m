@@ -283,6 +283,7 @@ end
 timing = num2str(toc);
 disp(['Counting trials in each condition done. ' timing 'Sec']);
 %% Format to R
+% You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
 % Convert matlab data to a format suitable for R dataframes.
 tic
 for iTraj = 1:length(traj_names)
@@ -321,8 +322,6 @@ con_col = [0 0.35294 0.7098];%[0 0.4470 0.7410 f_f_alpha];
 con_avg_col = 'b';
 incon_col = [0.86275 0.19608 0.12549];%[0.6350 0.0780 0.1840 f_f_alpha];
 incon_avg_col = 'r';
-neg_slope = '--';
-pos_slope = '-';
 exp_2_color = [225 225 225] / 255; % used when comparing exp 2 and 3.
 exp_3_color = [0 146 146] / 255;
 first_practice_color = [125 255 0] / 255;
@@ -356,8 +355,22 @@ for iSub = p.SUBS
         avg_each.x_std(iTraj).con_right(:,iSub) = avg.x_std.con_right;
         avg_each.x_std(iTraj).incon_left(:,iSub)  = avg.x_std.incon_left;
         avg_each.x_std(iTraj).incon_right(:,iSub) = avg.x_std.incon_right;
-        avg_each.cond_incon(iTraj).left(:,iSub,:)  = avg.cond_incon.left;
-        avg_each.cond_incon(iTraj).right(:,iSub,:) = avg.cond_incon.right;
+        avg_each.cond_diff(iTraj).left(:,iSub,:)  = avg.cond_diff.left;
+        avg_each.cond_diff(iTraj).right(:,iSub,:) = avg.cond_diff.right;
+        avg_each.rt(iTraj).diff(iSub)  = mean([avg.rt.con_left - avg.rt.incon_left,...
+                                                avg.rt.con_right - avg.rt.incon_right]);
+        avg_each.react(iTraj).diff(iSub)  = mean([avg.react.con_left - avg.react.incon_left,...
+                                                avg.react.con_right - avg.react.incon_right]);
+        avg_each.mt(iTraj).diff(iSub)  = mean([avg.mt.con_left - avg.mt.incon_left,...
+                                                avg.mt.con_right - avg.mt.incon_right]);
+        avg_each.mad(iTraj).diff(iSub)  = mean([avg.mad.con_left - avg.mad.incon_left,...
+                                                avg.mad.con_right - avg.mad.incon_right]);
+        avg_each.x_dev(iTraj).diff(:,iSub) = mean([avg.traj.con_left(:,1) - avg.traj.incon_left(:,1),...
+                                                    -1 * (avg.traj.con_right(:,1) - avg.traj.incon_right(:,1))],...
+                                                    2);
+        avg_each.x_std(iTraj).diff(:,iSub) = mean([avg.x_std.con_left - avg.x_std.incon_left,...
+                                                    avg.x_std.con_right - avg.x_std.incon_right],...
+                                                    2);
     end
     avg_each.fc_prime.con(iSub) = avg.fc_prime.con;
     avg_each.fc_prime.incon(iSub) = avg.fc_prime.incon;
@@ -787,9 +800,17 @@ for iTraj = 1:length(traj_names)
     h(2) = bar(NaN,NaN,'FaceColor',incon_col);
     legend(h,'Con','Incon', 'Location','northwest');
 
-    % T-test
-%     [~, p_val_rt] = ttest(avg_each.react(iTraj).con, avg_each.react(iTraj).incon);
-%     disp(['Diff between congruent and incongruent rt: ' num2str()])
+    % T-test and Cohen's dz
+    [~, p_val_react, ~, stats_react] = ttest(avg_each.react(iTraj).diff(good_subs));
+    [~, p_val_mt, ~, stats_mt] = ttest(avg_each.mt(iTraj).diff(good_subs));
+    [~, p_val_rt, ~, stats_rt] = ttest(avg_each.rt(iTraj).diff(good_subs));
+    cohens_dz_react = stats_react.tstat / sqrt(length(good_subs));
+    cohens_dz_mt = stats_mt.tstat / sqrt(length(good_subs));
+    cohens_dz_rt = stats_rt.tstat / sqrt(length(good_subs));
+    disp('Diff between congruent and incongruent:');
+    disp(['Reaction time: ' num2str(mean(avg_each.react(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_react) ', Cohens d_z=' num2str(cohens_dz_react)]);
+    disp(['Movement time: ' num2str(mean(avg_each.mt(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_mt) ', Cohens d_z=' num2str(cohens_dz_mt)]);
+    disp(['Response time: ' num2str(mean(avg_each.rt(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_rt) ', Cohens d_z=' num2str(cohens_dz_rt)]);
 end
 
 % ------- Prime Forced choice -------
@@ -846,26 +867,33 @@ for iTraj = 1:length(traj_names)
     font_size = [1, 15];
     groupTick(ticks, labels, dist, font_size)
     % T-test
-    [~, mad_p_val, ci, ~] = ttest(beesdata{1}, beesdata{2});
-    text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(mad_p_val)], 'HorizontalAlignment','center', 'FontSize',14);
-    [~, mad_p_val, ci, ~] = ttest(beesdata{3}, beesdata{4});
-    text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(mad_p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+    [~, p_val_mad, ci, ~] = ttest(beesdata{1}, beesdata{2});
+    text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
+    [~, p_val_mad, ci, ~] = ttest(beesdata{3}, beesdata{4});
+    text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
     % Connect each sub's dots with lines.
     y_data = [beesdata{1} beesdata{3}; beesdata{2} beesdata{4}];
     x_data = reshape(get(gca,'XTick'), 2,[]);
     x_data = repelem(x_data,1,length(good_subs));
-    plot(x_data, y_data, 'color',[0.1 0.1 0.1, f_alpha]);
+    connect_dots(x_data, y_data);
     h = [];
     h(1) = bar(NaN,NaN,'FaceColor',con_col);
     h(2) = bar(NaN,NaN,'FaceColor',incon_col);
     h(3) = plot(NaN,NaN,'k','LineWidth',14);
     legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
+    % T-test and Cohen's dz
+    [~, p_val_mad, ~, stats_mad] = ttest(avg_each.mad(iTraj).diff(good_subs));
+    cohens_dz_mad = stats_mad.tstat / sqrt(length(good_subs));
+    text(mean(ticks(1:2)), 0.035, ['p-value: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
+    text(mean(ticks(1:2)), 0.030, ['Cohens d_z: ' num2str(cohens_dz_mad)], 'HorizontalAlignment','center', 'FontSize',14);
+    disp('Diff between congruent and incongruent:');
+    disp(['MAD: ' num2str(mean(avg_each.mad(iTraj).diff(good_subs))) ', p-value=' num2str(p_val_mad)]);
 end
 
 % ------- Reach Area -------
 % Area between avg left traj and avg right traj (in each condition).
 figure(all_sub_f(2));
-subplot(2,2,3);
+subplot(2,4,5);
 err_bar_type = 'se';
 for iTraj = 1:length(traj_names)
     hold on;
@@ -876,31 +904,23 @@ for iTraj = 1:length(traj_names)
     colors = {con_col, incon_col};
     title_char = ''; % title_char = cell2mat(['Reach Area ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
     printBeeswarm(beesdata, yLabel, XTickLabels, colors, space, title_char, err_bar_type, alpha_size);
-    % T-test
-    [~, mad_p_val, ci, ~] = ttest(beesdata{1}, beesdata{2});
-    text(mean(ticks(1:2)), 0, ['p: ' num2str(mad_p_val)], 'HorizontalAlignment','center', 'FontSize',14);
     % Connect each sub's dots with lines.
-    con_data = [avg_each.react(iTraj).con_left(good_subs), avg_each.mt(iTraj).con_left(good_subs), avg_each.rt(iTraj).con_left(good_subs);
-                 avg_each.react(iTraj).incon_left(good_subs), avg_each.mt(iTraj).incon_left(good_subs), avg_each.rt(iTraj).incon_left(good_subs)];
-    right_data = [avg_each.react(iTraj).con_right(good_subs), avg_each.mt(iTraj).con_right(good_subs), avg_each.rt(iTraj).con_right(good_subs);
-                 avg_each.react(iTraj).incon_right(good_subs), avg_each.mt(iTraj).incon_right(good_subs), avg_each.rt(iTraj).incon_right(good_subs)];
     y_data = [reach_area.con(good_subs); reach_area.incon(good_subs)];
     x_data = reshape(get(gca,'XTick'), 2,[]);
     x_data = repelem(x_data,1,length(good_subs));
-    for j = 1:size(x_data,2)
-        % Color line according to slope.
-        line_style = neg_slope;
-        if y_data(2,j) > y_data(1,j)
-            line_style = pos_slope;
-        end
-        plot(x_data(:,j), y_data(:,j), 'LineStyle',line_style, 'Color',[0.1 0.1 0.1 f_alpha*1.5], 'LineWidth',linewidth*0.3);
-    end
+    connect_dots(x_data, y_data);
     ylim([2 11]); % ylim([0.006 0.035])
     h = [];
     h(1) = bar(NaN,NaN,'FaceColor',con_col);
     h(2) = bar(NaN,NaN,'FaceColor',incon_col);
     h(3) = plot(NaN,NaN,'k','LineWidth',14);
-    legend(h,'Congruent','Incongruent', 'Location','northwest');%legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
+    legend(h,'Congruent','Incongruent', 'Location','northwest');
+    ticks = get(gca,'XTick');
+    % T-test and Cohen's dz
+    [~, p_val_ra, ~, stats_ra] = ttest(reach_area.con(good_subs), reach_area.incon(good_subs));
+    cohens_dz_ra = stats_ra.tstat / sqrt(length(good_subs));
+    text(mean(ticks(1:2)), 1, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
+    text(mean(ticks(1:2)), 0, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
 end
 
 % ------- X STD -------
@@ -925,13 +945,24 @@ for iTraj = 1:length(traj_names)
     % Right
     subplot(2,3,3);
     hold on;
-    plot(subs_avg.traj.con_right(:,3)*flip_traj, subs_avg.x_std.con_right, 'color',con_col);
-    plot(subs_avg.traj.incon_right(:,3)*flip_traj, subs_avg.x_std.incon_right, 'color',incon_col);
+    plot(subs_avg.traj.con_right(:,3), subs_avg.x_std.con_right, 'color',con_col);
+    plot(subs_avg.traj.incon_right(:,3), subs_avg.x_std.incon_right, 'color',incon_col);
     ylabel('X STD');
     xlabel('Z (m)');
 %     xlim([0 p.SCREEN_DIST]);
     set(gca,'FontSize',14);
     title('STD in X Axis, Right');
+    % Combined (left and right).
+    subplot(2,3,5);
+    hold on;
+    stdshade(avg_each.x_std.diff(:,good_subs)', f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'ci', alpha_size, linewidth); % Use flip traj?
+    plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
+    xlabel('Proportion of Z');
+    ylabel('X STD difference');
+    ylim([-0.005 0.02]);
+    title('Diff between con and incon in "X STD", combined left and right');
+    set(gca,'FontSize',14);
+    legend(['CI, \alpha=' num2str(alpha_size)], 'con - incon');
 end
 
 % ------- Condition Diff -------
@@ -942,25 +973,36 @@ for iTraj = 1:length(traj_names)
     flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
     subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
     % Left.
-    subplot(2,4,7);
+    subplot(2,4,6);
     hold on;
-    stdshade(avg_each.cond_incon.left(:,good_subs,1)'*flip_traj*-1, f_alpha, 'k', subs_avg.traj.con_left(:,3)*flip_traj, 0, 1,'ci', alpha_size, linewidth);
+    stdshade(avg_each.cond_diff.left(:,good_subs,1)'*-1, f_alpha, 'k', subs_avg.traj.con_left(:,3), 0, 1,'ci', alpha_size, linewidth);
     plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
     xlabel('Z (m)');
     ylabel('X incon (m)');
-    ylim([-0.005 0.02]);
+    ylim([-0.015 0.015]);
     title('TrajCon_x - TrajIncon_x, Left');
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'con - incon');
     % Right
-    subplot(2,4,8);
+    subplot(2,4,7);
     hold on;
-    stdshade(avg_each.cond_incon.right(:,good_subs,1)', f_alpha, 'k', subs_avg.traj.con_right(:,3)*flip_traj, 0, 1, 'ci', alpha_size, linewidth);
+    stdshade(avg_each.cond_diff.right(:,good_subs,1)', f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'ci', alpha_size, linewidth);
     plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
     xlabel('Z (m)');
     ylabel('X incon (m)');
-    ylim([-0.005 0.02]);
+    ylim([-0.015 0.015]);
     title('TrajCon_x - TrajIncon_x, Right');
+    set(gca,'FontSize',14);
+    legend(['CI, \alpha=' num2str(alpha_size)], 'con - incon');
+    % Combined (left and right).
+    subplot(2,4,8);
+    hold on;
+    stdshade(avg_each.x_dev.diff(:,good_subs)', f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'ci', alpha_size, linewidth);
+    plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
+    xlabel('Z (m)');
+    ylabel('X dev difference (m)');
+    ylim([-0.015 0.015]);
+    title('Diff between con and incon in "X Deviation from center", combined left and right');
     set(gca,'FontSize',14);
     legend(['CI, \alpha=' num2str(alpha_size)], 'con - incon');
 end
@@ -1076,9 +1118,9 @@ reach_area_exp_3 = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '
 reach_area_sim_subs = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' sim_subs_string '.mat']);  reach_area_sim_subs = reach_area_sim_subs.reach_area;
 
 % T-test
-[~, mad_p_val, ci, stats_exp_2] = ttest(reach_area_exp_2.con(good_subs_exp_2), reach_area_exp_2.incon(good_subs_exp_2));
-[~, mad_p_val, ci, stats_exp_3] = ttest(reach_area_exp_3.con(good_subs_exp_3), reach_area_exp_3.incon(good_subs_exp_3));
-[~, mad_p_val, ci, stats_sim_subs] = ttest(reach_area_sim_subs.con(good_sim_subs), reach_area_sim_subs.incon(good_sim_subs));
+[~, ~, ~, stats_exp_2] = ttest(reach_area_exp_2.con(good_subs_exp_2), reach_area_exp_2.incon(good_subs_exp_2));
+[~, ~, ~, stats_exp_3] = ttest(reach_area_exp_3.con(good_subs_exp_3), reach_area_exp_3.incon(good_subs_exp_3));
+[~, ~, ~, stats_sim_subs] = ttest(reach_area_sim_subs.con(good_sim_subs), reach_area_sim_subs.incon(good_sim_subs));
 heller_ra_dz_exp_2 = stats_exp_2.tstat / sqrt(length(good_subs_exp_2));
 heller_ra_dz_exp_3 = stats_exp_3.tstat / sqrt(length(good_subs_exp_3));
 heller_ra_dz_sim_subs = stats_sim_subs.tstat / sqrt(length(good_sim_subs));

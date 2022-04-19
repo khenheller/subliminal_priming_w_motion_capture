@@ -77,7 +77,7 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.
 
     % Conditions.
-    p.CONDS = ["same" "diff"];
+    p.CONDS = ["con" "incon"];
     p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
 
     % Hypothesis testing.

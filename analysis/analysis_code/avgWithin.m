@@ -91,8 +91,8 @@ function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     avg.x_avg_std.con_right = mean(avg.x_std.con_right);
     avg.x_avg_std.incon_left  = mean(avg.x_std.incon_left);
     avg.x_avg_std.incon_right = mean(avg.x_std.incon_right);
-    avg.cond_incon.left  = avg.traj.con_left  - avg.traj.incon_left;
-    avg.cond_incon.right = avg.traj.con_right - avg.traj.incon_right;
+    avg.cond_diff.left  = avg.traj.con_left  - avg.traj.incon_left;
+    avg.cond_diff.right = avg.traj.con_right - avg.traj.incon_right;
     % Count pas ratings.
     for i = 1:4
         avg.pas.con(i) = sum(single.pas.con == i); 
