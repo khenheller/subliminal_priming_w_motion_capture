@@ -38,6 +38,7 @@ traj_types = traj_types(1,:);
 traj_types = replace(traj_types, '_x', '');
 disp("Done setting params.");
 %% Simulates an exp with less trials for each sub.
+% You have to run this before the rest of the analysis if you wish to use simulated subs.
 simulate = 1;
 gen_files = 0; % Generate a new file for each sub. Use 0 only if you already generated in prev run.
 new_num_bloks = 6;
@@ -284,6 +285,7 @@ timing = num2str(toc);
 disp(['Counting trials in each condition done. ' timing 'Sec']);
 %% Format to R
 % You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
+% You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
 % Convert matlab data to a format suitable for R dataframes.
 tic
 for iTraj = 1:length(traj_names)
@@ -327,6 +329,9 @@ exp_3_color = [0 146 146] / 255;
 first_practice_color = [125 255 0] / 255;
 second_practice_color = [0 125 0] / 255;
 
+% Load reach area.
+reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{1}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat']);  reach_area = reach_area.reach_area;
+
 % Unite all subs to one variable.
 for iSub = p.SUBS
     for iTraj = 1:length(traj_names)
@@ -357,6 +362,8 @@ for iSub = p.SUBS
         avg_each.x_std(iTraj).incon_right(:,iSub) = avg.x_std.incon_right;
         avg_each.cond_diff(iTraj).left(:,iSub,:)  = avg.cond_diff.left;
         avg_each.cond_diff(iTraj).right(:,iSub,:) = avg.cond_diff.right;
+        avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
+        avg_each.ra(iTraj).incon(iSub) = reach_area.incon(iSub);
         avg_each.rt(iTraj).diff(iSub)  = mean([avg.rt.con_left - avg.rt.incon_left,...
                                                 avg.rt.con_right - avg.rt.incon_right]);
         avg_each.react(iTraj).diff(iSub)  = mean([avg.react.con_left - avg.react.incon_left,...
@@ -365,16 +372,18 @@ for iSub = p.SUBS
                                                 avg.mt.con_right - avg.mt.incon_right]);
         avg_each.mad(iTraj).diff(iSub)  = mean([avg.mad.con_left - avg.mad.incon_left,...
                                                 avg.mad.con_right - avg.mad.incon_right]);
-        avg_each.x_dev(iTraj).diff(:,iSub) = mean([avg.traj.con_left(:,1) - avg.traj.incon_left(:,1),...
-                                                    -1 * (avg.traj.con_right(:,1) - avg.traj.incon_right(:,1))],...
+        avg_each.x_dev(iTraj).diff(:,iSub) = mean([-1 * (avg.traj.con_left(:,1) - avg.traj.incon_left(:,1)),...
+                                                    (avg.traj.con_right(:,1) - avg.traj.incon_right(:,1))],...
                                                     2);
         avg_each.x_std(iTraj).diff(:,iSub) = mean([avg.x_std.con_left - avg.x_std.incon_left,...
                                                     avg.x_std.con_right - avg.x_std.incon_right],...
                                                     2);
+        avg_each.ra(iTraj).diff(iSub) = reach_area.con(iSub) - reach_area.incon(iSub);
     end
     avg_each.fc_prime.con(iSub) = avg.fc_prime.con;
     avg_each.fc_prime.incon(iSub) = avg.fc_prime.incon;
 end
+save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'avg_each');
 disp("Done setting plotting params.");
 %% Single Sub plots.
 % Create figure for each sub.
@@ -897,8 +906,7 @@ subplot(2,4,5);
 err_bar_type = 'se';
 for iTraj = 1:length(traj_names)
     hold on;
-    reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat']);  reach_area = reach_area.reach_area;
-    beesdata = {reach_area.con(good_subs) reach_area.incon(good_subs)};
+    beesdata = {avg_each.ra.con(good_subs) avg_each.ra.incon(good_subs)};
     yLabel = 'Reach area'; % 'Reach area (m^2)';
     XTickLabels = ["Congruent","Incongruent"];
     colors = {con_col, incon_col};
@@ -1096,57 +1104,56 @@ finkbeiner_maxcurv2 = struct('N',7,... % Average of results of SOA=30 and SOA=40
     'sem',NaN,...
     't',(4.57 + 3.55)/2,...
     'd',NaN);
-% Effect size Cohen's dz.
-xiao_auc_dz = xiao_auc.t / sqrt(xiao_auc.N);
-xiao_rt_dz = xiao_rt.t / sqrt(xiao_rt.N);
-almeida_auc_dz = almeida_auc.t / sqrt(almeida_auc.N);
-finkbeiner_maxcurv1_dz = finkbeiner_maxcurv1.t / sqrt(finkbeiner_maxcurv1.N);
-finkbeiner_maxcurv2_dz = finkbeiner_maxcurv2.t / sqrt(finkbeiner_maxcurv2.N);
-
-
 % My data.
-exp_2_subs_string = regexprep(num2str(p.EXP_2_SUBS), '\s+', '_');
-exp_3_subs_string = regexprep(num2str(p.EXP_3_SUBS), '\s+', '_');
-sim_subs_string = regexprep(num2str(p.SUBS), '\s+', '_'); % Simulated subs, created from origin subs but with less trials.
+good_subs_exp_2 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.EXP_2_SUBS), '\s+', '_') '.mat']);  good_subs_exp_2 = good_subs_exp_2.good_subs;
+good_subs_exp_3 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.EXP_3_SUBS), '\s+', '_') '.mat']);  good_subs_exp_3 = good_subs_exp_3.good_subs;
+good_subs_sim = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat']);  good_subs_sim = good_subs_sim.good_subs;
+avg_each_exp_2 = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.EXP_2_SUBS), '\s+', '_') '.mat']);  avg_each_exp_2 = avg_each_exp_2.avg_each;
+avg_each_exp_3 = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.EXP_3_SUBS), '\s+', '_') '.mat']);  avg_each_exp_3 = avg_each_exp_3.avg_each;
+avg_each_sim = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat']);  avg_each_sim = avg_each_sim.avg_each;
 
-good_subs_exp_2 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_2_subs_string '.mat']);  good_subs_exp_2 = good_subs_exp_2.good_subs;
-good_subs_exp_3 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_3_subs_string '.mat']);  good_subs_exp_3 = good_subs_exp_3.good_subs;
-good_sim_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' sim_subs_string '.mat']);  good_sim_subs = good_sim_subs.good_subs;
+% Stack all experiments.
+exps_table = table('VariableNames',["name","data","n_subs","t_test","cohens_dz"],...
+                    'VariableTypes',["string","double","double","double","double"],...
+                    'Size',[1,5]);
+exps_table(1,:) = table("xiao_auc", nan, xiao_auc.N, xiao_auc.t, nan);
+exps_table(end+1,:) = table("xiao_rt", nan, xiao_rt.N, xiao_rt.t, nan);
+exps_table(end+1,:) = table("almeida_auc", nan, almeida_auc.N, almeida_auc.t, nan);
+exps_table(end+1,:) = table("finkbeiner_maxcurv1", nan, finkbeiner_maxcurv1.N, finkbeiner_maxcurv1.t, nan);
+exps_table(end+1,:) = table("finkbeiner_maxcurv2", nan, finkbeiner_maxcurv2.N, finkbeiner_maxcurv2.t, nan);
+exps_table(end+1,:) = table("ra_exp2", avg_each_exp_2.ra.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("ra_exp3", avg_each_exp_3.ra.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("ra_sim", avg_each_sim.ra.diff(good_subs_sim), length(good_subs_sim), nan, nan);
+exps_table(end+1,:) = table("mad_exp2", avg_each_exp_2.mad.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("mad_exp3", avg_each_exp_3.mad.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("mad_sim", avg_each_sim.mad.diff(good_subs_sim), length(good_subs_sim), nan, nan);
+exps_table(end+1,:) = table("react_exp2", avg_each_exp_2.react.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("react_exp3", avg_each_exp_3.react.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("react_sim", avg_each_sim.react.diff(good_subs_sim), length(good_subs_sim), nan, nan);
+exps_table(end+1,:) = table("mt_exp2", avg_each_exp_2.mt.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("mt_exp3", avg_each_exp_3.mt.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("mt_sim", avg_each_sim.mt.diff(good_subs_sim), length(good_subs_sim), nan, nan);
+exps_table(end+1,:) = table("rt_exp2", avg_each_exp_2.rt.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("rt_exp3", avg_each_exp_3.rt.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("rt_sim", avg_each_sim.rt.diff(good_subs_sim), length(good_subs_sim), nan, nan);
 
-reach_area_exp_2 = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' exp_2_subs_string '.mat']);  reach_area_exp_2 = reach_area_exp_2.reach_area;
-reach_area_exp_3 = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' exp_3_subs_string '.mat']);  reach_area_exp_3 = reach_area_exp_3.reach_area;
-reach_area_sim_subs = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' sim_subs_string '.mat']);  reach_area_sim_subs = reach_area_sim_subs.reach_area;
+% T-test my data.
+for iRow = 6:height(exps_table)
+    [~, ~, ~, stats] = ttest(exps_table.data(iRow));
+    exps_table.t_test(iRow) = stats.tstat;
+end
 
-% T-test
-[~, ~, ~, stats_exp_2] = ttest(reach_area_exp_2.con(good_subs_exp_2), reach_area_exp_2.incon(good_subs_exp_2));
-[~, ~, ~, stats_exp_3] = ttest(reach_area_exp_3.con(good_subs_exp_3), reach_area_exp_3.incon(good_subs_exp_3));
-[~, ~, ~, stats_sim_subs] = ttest(reach_area_sim_subs.con(good_sim_subs), reach_area_sim_subs.incon(good_sim_subs));
-heller_ra_dz_exp_2 = stats_exp_2.tstat / sqrt(length(good_subs_exp_2));
-heller_ra_dz_exp_3 = stats_exp_3.tstat / sqrt(length(good_subs_exp_3));
-heller_ra_dz_sim_subs = stats_sim_subs.tstat / sqrt(length(good_sim_subs));
+% Cohen's dz.
+for iRow = 1:height(exps_table)
+    exps_table.cohens_dz(iRow) = exps_table.t_test(iRow) / sqrt(exps_table.n_subs(iRow));
+end
 
 % Plot
-prev_papers_comp_f(1) = figure('Name',['Papers comparison'], 'WindowState','maximized', 'MenuBar','figure');
-bar([xiao_auc_dz,...
-    xiao_rt_dz,...
-    almeida_auc_dz,...
-    finkbeiner_maxcurv1_dz,...
-    finkbeiner_maxcurv2_dz,...
-    heller_ra_dz_exp_2,...
-    heller_ra_dz_exp_3,...
-    heller_ra_dz_sim_subs],...
-    'FaceColor',[0.9290 0.6940 0.1250], 'FaceAlpha',0.2,...
-    'EdgeColor',[0.9290 0.6940 0.1250], 'LineWidth',3);
+prev_papers_comp_f(1) = figure('Name','Papers comparison', 'WindowState','maximized', 'MenuBar','figure');
+bar(exps_table.cohens_dz, 'FaceColor',[0.9290 0.6940 0.1250], 'FaceAlpha',0.2, 'EdgeColor',[0.9290 0.6940 0.1250], 'LineWidth',3);
 ylabel('Cohen`s  d_z');
 set(gca, 'FontSize',14)
-xticklabels({'Xiao et al. (2015)',...
-    'Xiao et al. (2015)',...
-    'Almeida et al. (2014)',...
-    'Finkbeiner et al. (2008) Exp 1',...
-    'Finkbeiner et al. (2008) Exp 2',...
-    'Exp 2',...
-    'Exp 3',...
-    ['Exp 2 ' num2str(p.NUM_TRIALS) ' Trials']});
+xticklabels({exps_table.name});
 ax = gca;
 ax.Box = 'off';
 title("Reach area / area under the curve");
