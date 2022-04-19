@@ -40,7 +40,7 @@ disp("Done setting params.");
 %% Simulates an exp with less trials for each sub.
 % You have to run this before the rest of the analysis if you wish to use simulated subs.
 simulate = 1;
-gen_files = 0; % Generate a new file for each sub. Use 0 only if you already generated in prev run.
+gen_files = 0; % Generates a new file for each sub. Use 0 only if you already generated in prev run.
 new_num_bloks = 6;
 idx_shift = 200; % data will be saved in a sub num = iSub + idx_shift.
 
@@ -1074,8 +1074,7 @@ end
 title("Any (total num of bad trials)");
 %% Effect size comparison to previous papers.
 % Prev exp data.
-% Xiao, K., Yamauchi, T., & Bowman, C. (2015)
-xiao_auc = struct('N',28,...
+xiao_auc = struct('N',28,...% Xiao, K., Yamauchi, T., & Bowman, C. (2015)
     'mean1',3628.43,...
     'mean2',4746.17,...
     'sd1',3875.79,...
@@ -1089,57 +1088,57 @@ xiao_rt = struct('N',36,... % Results of keyboard measure.
     'sd2',168.60,...
     't',1.92,...
     'd',0.65);
-almeida_auc = struct('N',37,... % Average of results between 3 conditions
+almeida_auc = struct('N',37,... % Almeida, Mahon, Zapater-Raberov, Dziuba, et al., (2014) - This is an average of results between 3 conditions
     'mean_incon',2.56,...
     'sem',1.3,...
     't',2.32,...
     'd',NaN);
-finkbeiner_maxcurv1 = struct('N',7,...
+finkbeiner_maxcurv1 = struct('N',7,... % Finkbeiner, M., Song, J. H., Nakayama, K., & Caramazza, A. (2008)
     'mean_incon',NaN,...
     'sem',NaN,...
     't',4.23,...
     'd',NaN);
-finkbeiner_maxcurv2 = struct('N',7,... % Average of results of SOA=30 and SOA=40
+finkbeiner_maxcurv2 = struct('N',7,... %This is the 2nd experiment. Average of results of SOA=30 and SOA=40
     'mean_incon',NaN,...
     'sem',NaN,...
     't',(4.57 + 3.55)/2,...
     'd',NaN);
 % My data.
-good_subs_exp_2 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.EXP_2_SUBS), '\s+', '_') '.mat']);  good_subs_exp_2 = good_subs_exp_2.good_subs;
-good_subs_exp_3 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.EXP_3_SUBS), '\s+', '_') '.mat']);  good_subs_exp_3 = good_subs_exp_3.good_subs;
-good_subs_sim = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat']);  good_subs_sim = good_subs_sim.good_subs;
-avg_each_exp_2 = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.EXP_2_SUBS), '\s+', '_') '.mat']);  avg_each_exp_2 = avg_each_exp_2.avg_each;
-avg_each_exp_3 = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.EXP_3_SUBS), '\s+', '_') '.mat']);  avg_each_exp_3 = avg_each_exp_3.avg_each;
-avg_each_sim = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat']);  avg_each_sim = avg_each_sim.avg_each;
+good_subs_exp_2 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' regexprep(num2str(p.EXP_2_SUBS), '\s+', '_') '.mat']);  good_subs_exp_2 = good_subs_exp_2.good_subs;
+good_subs_exp_3 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' regexprep(num2str(p.EXP_3_SUBS), '\s+', '_') '.mat']);  good_subs_exp_3 = good_subs_exp_3.good_subs;
+good_subs_sim = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat']);  good_subs_sim = good_subs_sim.good_subs;
+avg_each_exp_2 = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{1}{1} '_subs_' regexprep(num2str(p.EXP_2_SUBS), '\s+', '_') '.mat']);  avg_each_exp_2 = avg_each_exp_2.avg_each;
+avg_each_exp_3 = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{1}{1} '_subs_' regexprep(num2str(p.EXP_3_SUBS), '\s+', '_') '.mat']);  avg_each_exp_3 = avg_each_exp_3.avg_each;
+avg_each_sim = load([p.PROC_DATA_FOLDER 'avg_each_' p.DAY '_' traj_names{1}{1} '_subs_' regexprep(num2str(p.SUBS), '\s+', '_') '.mat']);  avg_each_sim = avg_each_sim.avg_each;
 
 % Stack all experiments.
 exps_table = table('VariableNames',["name","data","n_subs","t_test","cohens_dz"],...
-                    'VariableTypes',["string","double","double","double","double"],...
+                    'VariableTypes',["string","cell","double","double","double"],...
                     'Size',[1,5]);
-exps_table(1,:) = table("xiao_auc", nan, xiao_auc.N, xiao_auc.t, nan);
-exps_table(end+1,:) = table("xiao_rt", nan, xiao_rt.N, xiao_rt.t, nan);
-exps_table(end+1,:) = table("almeida_auc", nan, almeida_auc.N, almeida_auc.t, nan);
-exps_table(end+1,:) = table("finkbeiner_maxcurv1", nan, finkbeiner_maxcurv1.N, finkbeiner_maxcurv1.t, nan);
-exps_table(end+1,:) = table("finkbeiner_maxcurv2", nan, finkbeiner_maxcurv2.N, finkbeiner_maxcurv2.t, nan);
-exps_table(end+1,:) = table("ra_exp2", avg_each_exp_2.ra.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
-exps_table(end+1,:) = table("ra_exp3", avg_each_exp_3.ra.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
-exps_table(end+1,:) = table("ra_sim", avg_each_sim.ra.diff(good_subs_sim), length(good_subs_sim), nan, nan);
-exps_table(end+1,:) = table("mad_exp2", avg_each_exp_2.mad.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
-exps_table(end+1,:) = table("mad_exp3", avg_each_exp_3.mad.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
-exps_table(end+1,:) = table("mad_sim", avg_each_sim.mad.diff(good_subs_sim), length(good_subs_sim), nan, nan);
-exps_table(end+1,:) = table("react_exp2", avg_each_exp_2.react.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
-exps_table(end+1,:) = table("react_exp3", avg_each_exp_3.react.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
-exps_table(end+1,:) = table("react_sim", avg_each_sim.react.diff(good_subs_sim), length(good_subs_sim), nan, nan);
-exps_table(end+1,:) = table("mt_exp2", avg_each_exp_2.mt.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
-exps_table(end+1,:) = table("mt_exp3", avg_each_exp_3.mt.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
-exps_table(end+1,:) = table("mt_sim", avg_each_sim.mt.diff(good_subs_sim), length(good_subs_sim), nan, nan);
-exps_table(end+1,:) = table("rt_exp2", avg_each_exp_2.rt.diff(good_subs_exp_2), length(good_subs_exp_2), nan, nan);
-exps_table(end+1,:) = table("rt_exp3", avg_each_exp_3.rt.diff(good_subs_exp_3), length(good_subs_exp_3), nan, nan);
-exps_table(end+1,:) = table("rt_sim", avg_each_sim.rt.diff(good_subs_sim), length(good_subs_sim), nan, nan);
+exps_table(1,:) = table("xiao_auc", {nan}, xiao_auc.N, xiao_auc.t, nan);
+exps_table(end+1,:) = table("xiao_rt", {nan}, xiao_rt.N, xiao_rt.t, nan);
+exps_table(end+1,:) = table("almeida_auc", {nan}, almeida_auc.N, almeida_auc.t, nan);
+exps_table(end+1,:) = table("finkbeiner_maxcurv1", {nan}, finkbeiner_maxcurv1.N, finkbeiner_maxcurv1.t, nan);
+exps_table(end+1,:) = table("finkbeiner_maxcurv2", {nan}, finkbeiner_maxcurv2.N, finkbeiner_maxcurv2.t, nan);
+exps_table(end+1,:) = table("ra_exp2", {avg_each_exp_2.ra.diff(good_subs_exp_2)}, length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("ra_exp3", {avg_each_exp_3.ra.diff(good_subs_exp_3)}, length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("ra_sim", {avg_each_sim.ra.diff(good_subs_sim)}, length(good_subs_sim), nan, nan);
+exps_table(end+1,:) = table("mad_exp2", {avg_each_exp_2.mad.diff(good_subs_exp_2)}, length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("mad_exp3", {avg_each_exp_3.mad.diff(good_subs_exp_3)}, length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("mad_sim", {avg_each_sim.mad.diff(good_subs_sim)}, length(good_subs_sim), nan, nan);
+exps_table(end+1,:) = table("react_exp2", {avg_each_exp_2.react.diff(good_subs_exp_2)}, length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("react_exp3", {avg_each_exp_3.react.diff(good_subs_exp_3)}, length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("react_sim", {avg_each_sim.react.diff(good_subs_sim)}, length(good_subs_sim), nan, nan);
+exps_table(end+1,:) = table("mt_exp2", {avg_each_exp_2.mt.diff(good_subs_exp_2)}, length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("mt_exp3", {avg_each_exp_3.mt.diff(good_subs_exp_3)}, length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("mt_sim", {avg_each_sim.mt.diff(good_subs_sim)}, length(good_subs_sim), nan, nan);
+exps_table(end+1,:) = table("rt_exp2", {avg_each_exp_2.rt.diff(good_subs_exp_2)}, length(good_subs_exp_2), nan, nan);
+exps_table(end+1,:) = table("rt_exp3", {avg_each_exp_3.rt.diff(good_subs_exp_3)}, length(good_subs_exp_3), nan, nan);
+exps_table(end+1,:) = table("rt_sim", {avg_each_sim.rt.diff(good_subs_sim)}, length(good_subs_sim), nan, nan);
 
 % T-test my data.
 for iRow = 6:height(exps_table)
-    [~, ~, ~, stats] = ttest(exps_table.data(iRow));
+    [~, ~, ~, stats] = ttest(exps_table.data{iRow});
     exps_table.t_test(iRow) = stats.tstat;
 end
 
@@ -1152,10 +1151,13 @@ end
 prev_papers_comp_f(1) = figure('Name','Papers comparison', 'WindowState','maximized', 'MenuBar','figure');
 bar(exps_table.cohens_dz, 'FaceColor',[0.9290 0.6940 0.1250], 'FaceAlpha',0.2, 'EdgeColor',[0.9290 0.6940 0.1250], 'LineWidth',3);
 ylabel('Cohen`s  d_z');
-set(gca, 'FontSize',14)
-xticklabels({exps_table.name});
+set(gca, 'FontSize',14);
+set(gca, 'TickLabelInterpreter','none')';
+xticks([1:height(exps_table)]);
+xticklabels([exps_table.name]);
 ax = gca;
 ax.Box = 'off';
+grid on;
 title("Reach area / area under the curve");
 %% RT comparison between 1st and 2nd practice blocks.
 % Compares n trials from the end of each practice block.
