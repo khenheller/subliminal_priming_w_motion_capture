@@ -1159,6 +1159,19 @@ ax = gca;
 ax.Box = 'off';
 grid on;
 title("Reach area / area under the curve");
+
+% Store my effect sizes in a table.
+effects_table = array2table([exps_table.cohens_dz(contains(exps_table.name, 'exp2'))';...
+                            exps_table.cohens_dz(contains(exps_table.name, 'exp3'))';...
+                            exps_table.cohens_dz(contains(exps_table.name, 'sim'))']);
+% Add names as column of table.
+effects_names = regexp(exps_table.name', '(.+)_exp2', 'tokens','once');
+effects_names = [effects_names{:}];
+effects_table.Properties.VariableNames = effects_names;
+% Identify the simulated exp according to sub nums.
+sim_exp = isequal(p.SUBS-200, SORTED_SUBS.EXP_1_SUBS) * 1 + isequal(p.SUBS-200, SORTED_SUBS.EXP_2_SUBS) * 2 + isequal(p.SUBS-200, SORTED_SUBS.EXP_3_SUBS) * 3;
+effects_table.exp_name = ["exp2"; "exp3"; string(['exp' num2str(sim_exp) ' sim ' num2str(p.NUM_TRIALS) ' trials'])];
+writetable(effects_table, [p.PROC_DATA_FOLDER 'effects_table.csv'], 'WriteMode','append');
 %% RT comparison between 1st and 2nd practice blocks.
 % Compares n trials from the end of each practice block.
 n_comp_trials = 10;
