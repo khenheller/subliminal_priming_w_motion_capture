@@ -1,12 +1,19 @@
 % Appends a trial to subject's trials file.
 % If file doesn't exist, creates it.
-function [] = saveToFile(trial, p)
-    temp_data_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_data_temp.csv'];
-    temp_traj_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_traj_temp.csv'];
-    data_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_data.csv'];
-    traj_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_traj.csv'];
-    both_data_files = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_data*.csv'];
-    both_traj_files = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_traj*.csv'];
+% is_reach - 1=sub responds with reaching , 0=responds with keybaord.
+function [] = saveToFile(trial, is_reach, p)
+    if is_reach
+        session_type = 'reach';
+    else
+        session_type = 'keyboard';
+    end
+
+    temp_data_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_' session_type '_data_temp.csv'];
+    temp_traj_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_' session_type '_traj_temp.csv'];
+    data_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_' session_type '_data.csv'];
+    traj_file = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_' session_type '_traj.csv'];
+    both_data_files = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_' session_type '_data*.csv'];
+    both_traj_files = [p.DATA_FOLDER_WIN '\sub' num2str(trial.sub_num) p.DAY '_' session_type '_traj*.csv'];
     
     % seperates data (1 row) from trajectories (many rows).
     trial_data = trial(1,p.ONE_ROW_VARS_I);
@@ -28,11 +35,15 @@ function [] = saveToFile(trial, p)
     
     % saves to temporary file.
     writetable(trial_data, temp_data_file, 'WriteVariableNames', file_doesnt_exist);
-    writetable(trial_traj, temp_traj_file, 'WriteVariableNames', file_doesnt_exist);
-    
+
     % merges existing file with new temp file.
     cmd=['copy ' both_data_files ' ' data_file];
     system(cmd); % submit to OS.
-    cmd=['copy ' both_traj_files ' ' traj_file];
-    system(cmd);
+
+    % Does the same for the traj table, but only in the reaching condition.
+    if is_reach
+        writetable(trial_traj, temp_traj_file, 'WriteVariableNames', file_doesnt_exist);
+        cmd=['copy ' both_traj_files ' ' traj_file];
+        system(cmd);
+    end
 end

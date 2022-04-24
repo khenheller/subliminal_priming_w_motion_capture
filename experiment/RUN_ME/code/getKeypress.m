@@ -59,6 +59,7 @@ function [key, keypress_time, categor_time, late_res, early_res] = getKeypress(t
     end
 
     % Response was too late.
+    key = NaN;
     keypress_time = curr_time;
     late_res = 1;
     showTexture(p.LATE_RES_SCREEN, p);

@@ -23,9 +23,12 @@ function [p] = main(p)
         
         % Generates trials.
         showTexture(p.LOADING_SCREEN, p);
-        trials = getTrials('test', p);
-        practice_wo_prime_trials = getTrials('practice_wo_prime', p);
-        practice_trials = getTrials('practice', p);
+        reach_trials = getTrials('test', p);
+        reach_practice_wo_prime_trials = getTrials('practice_wo_prime', p);
+        reach_practice_trials = getTrials('practice', p);
+        keyboard_trials = getTrials('test', p);
+        keyboard_practice_wo_prime_trials = getTrials('practice_wo_prime', p);
+        keyboard_practice_trials = getTrials('practice', p);
         
         % Start,end points calibration.
         if ~p.DEBUG
@@ -37,10 +40,26 @@ function [p] = main(p)
         % Save 'p' snapshot.
         save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) p.DAY '_p.mat'], 'p');
         
+        % Choose first session.
+        reach_first = randi(2) - 1;
+
         % Experiment
         showTexture(p.WELCOME_SCREEN, p);
         getInput('instruction', p);
-        p = runExperiment(trials, practice_trials, practice_wo_prime_trials, p);
+        switch reach_first
+            % Reaching and then keyboard.
+            case 1
+                p = runExperiment(reach_trials, reach_practice_trials, reach_practice_wo_prime_trials, 1, p);
+                showTexture(p.BETWEEN_SESSIONS_SCREEN, p);
+                getInput('instruction', p);
+                p = runExperiment(keyboard_trials, keyboard_practice_trials, keyboard_practice_wo_prime_trials, 0, p);
+            % Keyboard and then reaching.
+            case 0
+                p = runExperiment(keyboard_trials, keyboard_practice_trials, keyboard_practice_wo_prime_trials, 0, p);
+                showTexture(p.BETWEEN_SESSIONS_SCREEN, p);
+                getInput('instruction', p);
+                p = runExperiment(reach_trials, reach_practice_trials, reach_practice_wo_prime_trials, 1, p);
+        end
         
         % Save 'p' snapshot.
         save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) p.DAY '_p.mat'], 'p');
