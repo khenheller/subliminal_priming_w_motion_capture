@@ -114,6 +114,12 @@ function [p] = runTrials(trials, include_prime, is_reach, p)
             
             % Close mask textures.
             Screen('close',[mask1 mask2 mask3]);
+
+            % Pause until sub is ready (in training only).
+            if trials.practice{1} > 0
+                showTexture(p.PRESS_SPACE_TO_CONTINUE, p);
+                getInput('instruction', p);
+            end
         end
     catch e % if error occured, saves data before exit.
         fixOutput(p);
