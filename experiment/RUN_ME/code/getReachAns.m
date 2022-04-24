@@ -1,9 +1,14 @@
-% Gets question traj_type ('recog','categor').
-% returns sub's answer: 1=left, 0=right. For pas ans are: 1/2/3/4.
-function [output] = getAns(traj_type, p)
+% Gets the answer with reaching.
+% task_type - 'recog','categor'.
+% p - all experiment's parameters.
+% output - sub's ans (left/right),
+%           categor_time - the time at which the presented word was removed.
+%           late_res/early_res/slow_mvmnt - was response time good?
+%           traj/timecourse - trajectory and timecourse of response.
+function [output] = getReachAns(task_type, p)
     
-    [traj_to, timecourse_to, categor_time, late_res, early_res, slow_mvmnt] = getTraj('to_screen', traj_type, p);
-    [traj_from, timecourse_from, ~, ~, ~, ~] = getTraj('from_screen', traj_type, p);   
+    [traj_to, timecourse_to, categor_time, late_res, early_res, slow_mvmnt] = getTraj('to_screen', task_type, p);
+    [traj_from, timecourse_from, ~, ~, ~, ~] = getTraj('from_screen', task_type, p);   
     
     answer_left = NaN;
     

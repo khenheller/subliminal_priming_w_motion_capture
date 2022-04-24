@@ -5,8 +5,8 @@
 function [p] = runTrials(trials, include_prime, p)
 
     % Assigned to prime ans on block w/o prime.
-    default_prime_ans = struct('answer_left',NaN, 'traj_to',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_to',NaN(p.MAX_CAP_LENGTH,1),...
-        'traj_from',NaN(p.MAX_CAP_LENGTH, 3), 'timecourse_from',NaN(p.MAX_CAP_LENGTH,1), 'categor_time',NaN);
+    default_prime_ans = struct('answer_left',NaN, 'traj_to',NaN(p.REACH_MAX_RT_LIMIT, 3), 'timecourse_to',NaN(p.REACH_MAX_RT_LIMIT,1),...
+        'traj_from',NaN(p.REACH_MAX_RT_LIMIT, 3), 'timecourse_from',NaN(p.REACH_MAX_RT_LIMIT,1), 'categor_time',NaN);
     
     % Shorter durations to avoide missing the screen flip.
     fix_duration = p.FIX_DURATION - p.REF_RATE_SEC * 3 / 4;
@@ -63,7 +63,7 @@ function [p] = runTrials(trials, include_prime, p)
             times(6) = showWord(trials(1,:), 'target', times(5) + mask3_duration, p);
             
             % Target categorization.
-            target_ans = getAns('categor', p);
+            target_ans = getReachAns('categor', p);
             
             % Check answer.
             trials.target_ans_left(1) = target_ans.answer_left;
@@ -77,7 +77,7 @@ function [p] = runTrials(trials, include_prime, p)
             % Prime recognition.
             if include_prime
                 times(8) = showRecog(trials(1,:), p);
-                prime_ans = getAns('recog', p);
+                prime_ans = getReachAns('recog', p);
             else
                 times(4) = times(5);
                 prime_ans = default_prime_ans;

@@ -32,22 +32,27 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.TESTS_FOLDER = [p.EXP_FOLDER '/./tests/test_results/'];
     
     if psychtoolbox_active
+        % Response time constraints of reaching.
         p.REACT_TIME = 0.320; % Maximal allowed time to movement onset (in sec).
         p.MIN_REACT_TIME = 0.100; % Faster mvmnts are considered predictive (planned before target display).
         p.MOVE_TIME = 0.420; % Maximal allowed movement time (in sec).
-        p.RECOG_CAP_LENGTH_SEC = 7; % Trajectory recording length in sec.
-        p.CATEGOR_CAP_LENGTH_SEC = p.REACT_TIME + p.MOVE_TIME; % in sec.
-        p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
-        p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
-        p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
+        p.REACH_RECOG_RT_LIMIT_SEC = 7; % Trajectory recording length in sec.
+        p.REACH_CATEGOR_RT_LIMIT_SEC = p.REACT_TIME + p.MOVE_TIME; % in sec.
+        p.REACH_RECOG_RT_LIMIT = p.REACH_RECOG_RT_LIMIT_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
+        p.REACH_CATEGOR_RT_LIMIT = p.REACH_CATEGOR_RT_LIMIT_SEC * p.REF_RATE_HZ;
+        p.REACH_MAX_RT_LIMIT = max(p.REACH_RECOG_RT_LIMIT, p.REACH_CATEGOR_RT_LIMIT);
         p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
         p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
         p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
+        % Reponse time constraints of keyboard.
+        p.KEYBOARD_MIN_RT_LIMIT_SEC = 0.250; % In seconds.
+        p.KEYBOARD_RECOG_RT_LIMIT_SEC = 7; % RT limit for recognition task.
+        p.KEYBOARD_CATEGOR_RT_LIMIT_SEC = 4; % RT limit for categorization task.
         
         % Response keys.
         KbName('UnifyKeyNames');
-        p.RIGHT_KEY      =  KbName('RightArrow');
-        p.LEFT_KEY       =  KbName('LeftArrow');
+        p.RIGHT_KEY      =  KbName('J');
+        p.LEFT_KEY       =  KbName('F');
         p.ABORT_KEY1     =  KbName('ESCAPE'); % ESC + q aborts experiment
         p.ABORT_KEY2     =  KbName('Q'); % ESC + q aborts experiment
         p.ONE           =  KbName('1!');  % I did not see the phrase

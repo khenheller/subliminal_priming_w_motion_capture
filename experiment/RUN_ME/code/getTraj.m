@@ -2,15 +2,18 @@
 % For categorization question:
 %   waits until target display time passes and then shows categor screen.
 % traj_type - 'to_screen', 'from_screen'
-% ques_type - question type ('recog','categor').
-function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = getTraj(traj_type, ques_type, p)
+% task_type - question type ('recog','categor').
+% p - all experiment's parameters.
+% Output:
+% categor_time - time at which the presented word was removed.
+function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = getTraj(traj_type, task_type, p)
     
     % Sample length is different for recog/categor questions.
-    sample_length = strcmp(ques_type, 'recog') * p.RECOG_CAP_LENGTH + ...
-        strcmp(ques_type, 'categor') * p.CATEGOR_CAP_LENGTH;
+    sample_length = strcmp(task_type, 'recog') * p.REACH_RECOG_RT_LIMIT + ...
+        strcmp(task_type, 'categor') * p.REACH_CATEGOR_RT_LIMIT;
     
-    traj = NaN(p.MAX_CAP_LENGTH, 3); % 3 cordinates (x,y,z).
-    timecourse = NaN(p.MAX_CAP_LENGTH,1);
+    traj = NaN(p.REACH_MAX_RT_LIMIT, 3); % 3 cordinates (x,y,z).
+    timecourse = NaN(p.REACH_MAX_RT_LIMIT,1);
     categor_time = NaN;
     curDistance = NaN;
     late_res = 0;
@@ -48,7 +51,7 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
             end
         end
         
-        if ((ques_type == "categor") && to_screen)
+        if ((task_type == "categor") && to_screen)
             % sub didn't move.
             if sqrt(sum((traj(frame_i,:)-p.START_POINT).^2)) < p.START_POINT_RANGE
                 % Movement onset passed.
