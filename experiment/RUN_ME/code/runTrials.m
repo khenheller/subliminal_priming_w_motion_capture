@@ -39,7 +39,7 @@ function [p] = runTrials(trials, include_prime, is_reach, p)
             Screen('TextSize', p.w, p.HAND_FONT_SIZE);
             
             % Fixation
-            times(1) = showFixation(p);
+            times(1) = showFixation(is_reach, p);
             
             % Mask 1
             times(2) = showMask(mask1, times(1) + fix_duration, p);

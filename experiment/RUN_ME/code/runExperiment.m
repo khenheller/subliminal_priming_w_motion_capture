@@ -13,7 +13,7 @@ function [p] = runExperiment(trials, practice_trials, practice_wo_prime_trials, 
             % Example trial.
             showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
             getInput('instruction', p);
-            exampleTrial(trials, 0, p);
+            exampleTrial(trials, 0, is_reach, p);
             
             % test.
             showTexture(p.TEST_SCREEN, p);
@@ -32,7 +32,7 @@ function [p] = runExperiment(trials, practice_trials, practice_wo_prime_trials, 
             % Example trial.
             showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
             getInput('instruction', p);
-            exampleTrial(trials, 1, p);
+            exampleTrial(trials, 1, is_reach, p);
 
             % practice with prime.
             showTexture(p.PRACTICE_SCREEN, p);
