@@ -25,6 +25,12 @@ function [output] = getReachAns(task_type, p)
     else % right half.
         answer_left = 0;
     end
+
+    % Notify subject if he moved too slowly.
+    if slow_mvmnt
+        showTexture(p.SLOW_MVMNT_SCREEN, p);
+        WaitSecs(p.MSG_DURATION);
+    end
     
     output = struct('answer_left',answer_left, 'categor_time',categor_time,...
         'late_res',late_res, 'early_res', early_res, 'slow_mvmnt',slow_mvmnt,...

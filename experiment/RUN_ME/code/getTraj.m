@@ -8,10 +8,6 @@
 % categor_time - time at which the presented word was removed.
 function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = getTraj(traj_type, task_type, p)
     
-    % Sample length is different for recog/categor questions.
-    sample_length = strcmp(task_type, 'recog') * p.REACH_RECOG_RT_LIMIT + ...
-        strcmp(task_type, 'categor') * p.REACH_CATEGOR_RT_LIMIT;
-    
     traj = NaN(p.REACH_MAX_RT_LIMIT, 3); % 3 cordinates (x,y,z).
     timecourse = NaN(p.REACH_MAX_RT_LIMIT,1);
     categor_time = NaN;
@@ -24,7 +20,7 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
     mvmnt_dur = 0; % Counts time from mvmnt onset.
     
     % records trajectory upto screen.
-    for frame_i = 1:sample_length
+    for frame_i = 1:p.REACH_MAX_RT_LIMIT
 
         % syncs trajectory sampling to screen refRate.
         [~,timecourse(frame_i)] = Screen('Flip',p.w,0,to_screen); % when retracting, clear screen.
@@ -51,6 +47,7 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
             end
         end
         
+        % Check response timing.
         if ((task_type == "categor") && to_screen)
             % sub didn't move.
             if sqrt(sum((traj(frame_i,:)-p.START_POINT).^2)) < p.START_POINT_RANGE
@@ -75,10 +72,8 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
             % Slow movement.
             if mvmnt_dur >= p.MOVE_TIME_SAMPLES % '>=': when dur==max_mvmnt_time, it means move time passed and sub didn't reach screen.
                 slow_mvmnt = 1;
-                showTexture(p.SLOW_MVMNT_SCREEN, p);
-                WaitSecs(p.MSG_DURATION);
-                return;
             end
+            
             % Target duration passed, remove it and show only categorization screen.
             if (frame_i+1 >= p.TARGET_DURATION_SAMPLES && isnan(categor_time))
                 Screen('DrawTexture',p.w, p.CATEGOR_TXTR);
