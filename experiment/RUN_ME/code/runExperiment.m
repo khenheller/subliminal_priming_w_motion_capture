@@ -4,10 +4,6 @@
 % is_reach - 1=sub responds with reaching , 0=responds with keybaord.
 % p - all experiment's parameters.
 function [p] = runExperiment(trials, practice_trials, practice_wo_prime_trials, is_reach, p)
-    % 1st instructions.
-    showTexture(p.FIRST_INSTRUCTIONS_SCREEN, p);
-    getInput('instruction', p);
-    
     switch p.DAY
         case 'day1'
             % Example trial.
@@ -20,6 +16,21 @@ function [p] = runExperiment(trials, practice_trials, practice_wo_prime_trials, 
             getInput('instruction', p);
             p = runTrials(trials, 0, is_reach, p);
         case 'day2'
+
+            % Response method explanation.
+            if is_reach
+                showTexture(p.REACH_RESPONSE_EXPLANATION, p);
+                getInput('instruction', p);
+            else
+                showTexture(p.KEYBOARD_RESPONSE_EXPLANATION, p);
+                getInput('instruction', p);
+            end
+
+            % Example trial.
+            showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
+            getInput('instruction', p);
+            exampleTrial(trials, 0, is_reach, p);
+
             % practice w/o prime.
             showTexture(p.SPEED_PRACTICE_SCREEN, p);
             getInput('instruction', p);
@@ -29,7 +40,7 @@ function [p] = runExperiment(trials, practice_trials, practice_wo_prime_trials, 
             showTexture(p.SECOND_INSTRUCTIONS_SCREEN, p);
             getInput('instruction', p);
 
-            % Example trial.
+            % Example trial with prime.
             showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
             getInput('instruction', p);
             exampleTrial(trials, 1, is_reach, p);
@@ -46,9 +57,5 @@ function [p] = runExperiment(trials, practice_trials, practice_wo_prime_trials, 
     end
     
     showTexture(p.SAVING_DATA_SCREEN, p);
-    
     fixOutput(p);
-    
-    showTexture(p.END_SCREEN, p);
-    getInput('instruction', p);
 end

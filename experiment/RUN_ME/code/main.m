@@ -46,6 +46,9 @@ function [p] = main(p)
         % Experiment
         showTexture(p.WELCOME_SCREEN, p);
         getInput('instruction', p);
+        % 1st instructions.
+        showTexture(p.FIRST_INSTRUCTIONS_SCREEN, p);
+        getInput('instruction', p);
         switch reach_first
             % Reaching and then keyboard.
             case 1
@@ -60,6 +63,9 @@ function [p] = main(p)
                 getInput('instruction', p);
                 p = runExperiment(reach_trials, reach_practice_trials, reach_practice_wo_prime_trials, 1, p);
         end
+
+        showTexture(p.END_SCREEN, p);
+        getInput('instruction', p);
         
         % Save 'p' snapshot.
         save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) p.DAY '_p.mat'], 'p');
