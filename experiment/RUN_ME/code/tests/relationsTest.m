@@ -3,8 +3,7 @@
 % rel_type: relation type.
 %           'prime-target': check prime categor is different from target.
 %           'prime-dist': check prime categor is same as distractor.
-% test_type - what are you checking: 'data', 'trials_list', 'practice_trials_list'.
-function pass_test = relationsTest (list_a, list_b, rel_type, test_type, p)
+function pass_test = relationsTest (list_a, list_b, rel_type, p)
     pass_test.common_letters = 1;
     pass_test.categor = 1;
     
@@ -22,8 +21,8 @@ function pass_test = relationsTest (list_a, list_b, rel_type, test_type, p)
     end
     
     
-    categor_a = getCategor(list_a, test_type, p);
-    categor_b = getCategor(list_b, test_type, p);
+    categor_a = getCategor(list_a, p);
+    categor_b = getCategor(list_b, p);
     if strcmp(rel_type,'prime_target') % checks if prime & target from same categor.
         bad_categor = categor_a == categor_b;
         bad_categor(same_word) = 0; % Ignore same word instances.
@@ -37,16 +36,12 @@ function pass_test = relationsTest (list_a, list_b, rel_type, test_type, p)
 end
 
 % Gets word list, returns category (natural/artificial) of each word.
-function categor = getCategor(words, test_type, p)
+function categor = getCategor(words, p)
     categor = strings(size(words,1), 1);
     % locate word in each list.
-    if isequal(test_type, 'practice_trials_list')
-        nat_words = ismember(words, p.PRACTICE_WORD_LIST.natural);
-        art_words = ismember(words, p.PRACTICE_WORD_LIST.artificial);
-    else
-        nat_words = ismember(words, p.WORD_LIST.natural);
-        art_words = ismember(words, p.WORD_LIST.artificial);
-    end
+    nat_words = ismember(words, p.WORD_LIST.natural);
+    art_words = ismember(words, p.WORD_LIST.artificial);
+    
     categor(nat_words) = 'natural';
     categor(art_words) = 'artificial';
 end

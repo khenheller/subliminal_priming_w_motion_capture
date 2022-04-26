@@ -4,7 +4,7 @@
 function [] = makeMasks(num_masks, p, side)
 
     p = initPsychtoolbox(p);
-    p = initConstants(0, p);
+    p = initConstants(0, 'test', p);
     
     % closes psychtoolbox window
     Priority(0);

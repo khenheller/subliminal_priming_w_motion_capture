@@ -19,7 +19,7 @@ function [p] = main(p)
         
         % Initialize params.
         p = initPsychtoolbox(p);
-        p = initConstants(1, p);
+        p = initConstants(1, 'test', p);
         
         % Generates trials.
         showTexture(p.LOADING_SCREEN, p);

@@ -1,5 +1,6 @@
 % psychtoolbox_active - Some parameters can only be initiated after psychtoolbox was activated.    
-function [p] = initConstants(psychtoolbox_active, p)
+% list_type - 'practice'/'test'. Used when generating new trials lists. Default is 'test'.
+function [p] = initConstants(psychtoolbox_active, list_type, p)
 
     % Setup
     p.SITTING_DISTANCE = 60; % in cm.
@@ -127,6 +128,9 @@ function [p] = initConstants(psychtoolbox_active, p)
         otherwise
             error(['p.DAY has wrong value: ' p.DAY]);
     end
+    if isequal(list_type, 'practice') % The is relevant when generating a practice block.
+        p.NUM_BLOCKS = 1;
+    end
     p.BLOCK_SIZE = 40; % has to be a multiple of 4.
     p.NUM_TRIALS = p.NUM_BLOCKS*p.BLOCK_SIZE;
     p.N_CATEGOR = 2; % Num of word categories (2 = natural / artificial).
@@ -146,14 +150,12 @@ function [p] = initConstants(psychtoolbox_active, p)
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
     % word lists.
-    p.NAT_TARGETS = readtable([p.STIM_FOLDER '/word_lists/nat_targets_' p.DAY '.xlsx']);
-    p.ART_TARGETS = readtable([p.STIM_FOLDER '/word_lists/art_targets_' p.DAY '.xlsx']);
-    p.ART_PRIMES = readtable([p.STIM_FOLDER '/word_lists/art_primes_' p.DAY '.xlsx']);
-    p.NAT_PRIMES = readtable([p.STIM_FOLDER '/word_lists/nat_primes_' p.DAY '.xlsx']);
-    p.WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/word_freq_list_' p.DAY '.xlsx']);
+    p.NAT_TARGETS = readtable([p.STIM_FOLDER '/word_lists/' list_type '_nat_targets_' p.DAY '.xlsx']);
+    p.ART_TARGETS = readtable([p.STIM_FOLDER '/word_lists/' list_type '_art_targets_' p.DAY '.xlsx']);
+    p.ART_PRIMES = readtable([p.STIM_FOLDER '/word_lists/' list_type '_art_primes_' p.DAY '.xlsx']);
+    p.NAT_PRIMES = readtable([p.STIM_FOLDER '/word_lists/' list_type '_nat_primes_' p.DAY '.xlsx']);
+    p.WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/' list_type '_word_freq_list_' p.DAY '.xlsx']);
     p.WORD_LIST = p.WORD_LIST(:,[1,3]); % Remove word frequencies.
-    p.PRACTICE_WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/word_freq_list_practice.xlsx']);
-    p.PRACTICE_WORD_LIST  = p.PRACTICE_WORD_LIST (:,[1,3]); % Remove word frequencies.
     
     if height(p.WORD_LIST)*2 < p.BLOCK_SIZE % *2 because we have 2 comulns in word_list file.
         error('Word list must be at least as big as block size to prevent words from repeting in the same block');

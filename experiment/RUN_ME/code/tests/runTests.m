@@ -19,28 +19,34 @@ desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
 % To test sub data enter his number.
 sub_num = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25] + 200;
 % To test word list enter its name.
-word_list = 'trials1day1.xlsx';
-% Are you testing 'data' of a subject, or just a 'trials_list', or a 'practice_trials_list'.
-test_type = 'data';
+word_list = 'practice_trials2day2.xlsx';
+list_type = 'practice';
+% Are you testing 'data' of a subject, or just a 'trials_list'.
+test_type = 'trials_list';
 % Day: 'day1' or 'day2'.
 test_day = 'day2';
 
+if isequal(test_type, 'trials_list')
+    sub_num = 1;
+end
+
 for iSub = sub_num
-    file_name = ['sub' num2str(iSub) test_day];
     % Get data.
     if isequal(test_type, 'data')
+        file_name = ['sub' num2str(iSub) test_day];
         trials = readtable([DATA_FOLDER file_name '_data.csv']);
         trials_traj = readtable([DATA_FOLDER file_name '_traj.csv']);
         diary_name = [TEST_RES_FOLDER file_name '.txt'];
         p = load([DATA_FOLDER file_name '_p.mat']); p = p.p;
     % Get trial_list.
     else
+        file_name = word_list;
         trials = readtable([TRIALS_LISTS_FOLDER word_list]);
         trials_traj = [];
         diary_name = [TEST_RES_FOLDER strrep(word_list,'.xlsx','') '.txt'];
         p = load('p.mat'); p = p.p;
-        p.DAY = 'day1'; disp('@@@Dont need this line after having a p.mat from sub 26 and higher@@@');
-        p = initConstants(0,p);
+        p.DAY = 'day2'; disp('@@@Dont need this line after having a p.mat from sub 26 and higher@@@');
+        p = initConstants(0, list_type, p);
     end
     
     % Day1 has no prime, so remove it's columns.
