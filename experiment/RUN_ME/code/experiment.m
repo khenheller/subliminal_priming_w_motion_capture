@@ -20,9 +20,10 @@ p = main(p);
 save('p.mat', 'p');
 %% -------------------------- Generate trial lists ------------------------
 % p = load('./p.mat'); p = p.p;
-% p.DAY = 'day1';
-% num_trial_lists = 10;
-% genTrialLists(num_trial_lists, p);
+% p.DAY = 'day2';
+% num_trial_lists = 20;
+% list_type = 'test';
+% genTrialLists(num_trial_lists, list_type, p);
 %% -------------------------- Generate Masks ------------------------------
 % @@@@@@@@ Make new masks if sitting distance changes @@@@@@@@@@@@@@
 % n_masks = 3;
