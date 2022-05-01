@@ -59,6 +59,7 @@ function [p] = runTrials(trials, is_reach, p)
                 target_ans = getReachAns('categor', p);
             else
                 target_ans = getKeyboardAns('categor', times(6), p);
+                KbWait([], 1); % wait for key release.
             end
             
             % Check answer.
@@ -76,6 +77,7 @@ function [p] = runTrials(trials, is_reach, p)
                 prime_ans = getReachAns('recog', p);
             else
                 prime_ans = getKeyboardAns('recog', times(8), p);
+                KbWait([], 1); % wait for key release.
             end
             
             % PAS
@@ -85,18 +87,18 @@ function [p] = runTrials(trials, is_reach, p)
             % Assigns collected data to trials.
             trials = assignToTrials(trials, times, target_ans, prime_ans, pas, pas_time);
             
+            % Pause until sub is ready (in training only).
+            if trials.practice(1) > 0
+                showTexture(p.PRESS_SPACE_TO_CONTINUE, p);
+                getInput('instruction', p);
+            end
+            
             % Save trial to file and removes it from list.
             saveToFile(trials(1,:), is_reach, p);
             trials(1,:) = [];
             
             % Close mask textures.
             Screen('close',[mask1 mask2 mask3]);
-
-            % Pause until sub is ready (in training only).
-            if trials.practice{1} > 0
-                showTexture(p.PRESS_SPACE_TO_CONTINUE, p);
-                getInput('instruction', p);
-            end
         end
     catch e % if error occured, saves data before exit.
         fixOutput(p);

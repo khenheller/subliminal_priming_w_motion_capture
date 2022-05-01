@@ -13,13 +13,12 @@ function [output] = getKeyboardAns(task_type, stim_disp_time, p)
     
     % Check selected side.
     answer_left = NaN;
-    switch key
-        case p.LEFT_KEY
-            answer_left = 1;
-        case p.RIGHT_KEY
-            answer_left = 0;
+    if find(key) == p.LEFT_KEY
+        answer_left = 1;
+    elseif find(key) == p.RIGHT_KEY
+        answer_left = 0;
     end
-    
+       
     output = struct('answer_left',answer_left, 'categor_time',categor_time,...
         'late_res',late_res, 'early_res', early_res, 'slow_mvmnt',0,...
         'traj_to',nan(1,3), 'timecourse_to',[stim_disp_time; keypress_time],...

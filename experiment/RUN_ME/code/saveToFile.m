@@ -17,20 +17,22 @@ function [] = saveToFile(trial, is_reach, p)
     
     % seperates data (1 row) from trajectories (many rows).
     trial_data = trial(1,p.ONE_ROW_VARS_I);
-    trial_traj = trial(:,p.MULTI_ROW_VARS_I);
-    trial_traj_matrix = cell2mat(trial_traj{:,:}(:,:)); % convert to matrix to unpack x,y and z cells.
-    trial_num_vec = ones(length(trial_traj_matrix),1) * trial.iTrial;
-    block_num_vec = ones(length(trial_traj_matrix),1) * trial.iBlock(1);
-    sub_num_vec = ones(length(trial_traj_matrix),1) * trial.sub_num;
-    practice_vec = ones(length(trial_traj_matrix),1) * trial.practice;
-    trial_traj_matrix = [sub_num_vec, block_num_vec, trial_num_vec, practice_vec, trial_traj_matrix]; % add trial and block num column.
-    trial_traj = array2table(trial_traj_matrix, 'VariableNames',['sub_num' 'iBlock' 'iTrial' 'practice' p.MULTI_ROW_VARS]);
+    if is_reach
+        trial_traj = trial(:,p.MULTI_ROW_VARS_I);
+        trial_traj_matrix = cell2mat(trial_traj{:,:}(:,:)); % convert to matrix to unpack x,y and z cells.
+        trial_num_vec = ones(length(trial_traj_matrix),1) * trial.iTrial;
+        block_num_vec = ones(length(trial_traj_matrix),1) * trial.iBlock(1);
+        sub_num_vec = ones(length(trial_traj_matrix),1) * trial.sub_num;
+        practice_vec = ones(length(trial_traj_matrix),1) * trial.practice;
+        trial_traj_matrix = [sub_num_vec, block_num_vec, trial_num_vec, practice_vec, trial_traj_matrix]; % add trial and block num column.
+        trial_traj = array2table(trial_traj_matrix, 'VariableNames',['sub_num' 'iBlock' 'iTrial' 'practice' p.MULTI_ROW_VARS]);
+    end
     
     % on first trial there isn't a file yet. So we add headers.
     if p.DAY == 'day1'
         file_doesnt_exist = trial.iTrial==1;
     else
-        file_doesnt_exist = trial.iTrial==1 & trial.practice==2; % practice=2 is practice block w/o prime.
+        file_doesnt_exist = trial.iTrial==1 & trial.practice==1;
     end
     
     % saves to temporary file.

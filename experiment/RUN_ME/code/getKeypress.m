@@ -23,7 +23,7 @@ function [key, keypress_time, categor_time, late_res, early_res] = getKeypress(t
     early_res = 0;
 
     % Get current time.
-    curr_time = getSecs();
+    curr_time = GetSecs();
 
     % Loops until max rt passes.
     while curr_time < max_rt_limit

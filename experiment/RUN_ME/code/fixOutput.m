@@ -21,6 +21,7 @@ function [] = fixOutput(p)
         read_range = [2 file_length];
         opts = detectImportOptions(reach_data_file);
         opts.DataLines = read_range;
+        opts.VariableTypes{1} = 'char'; % If left as double, the bad char is read as Nan and cant be removed.
         results = readtable(reach_data_file, opts);
         results{:,1} = replace(results{:,1}, '','');
         writetable(results, reach_data_file);
@@ -34,6 +35,7 @@ function [] = fixOutput(p)
         read_range = [2 file_length];
         opts = detectImportOptions(keyboard_data_file);
         opts.DataLines = read_range;
+        opts.VariableTypes{1} = 'char';
         results = readtable(keyboard_data_file, opts);
         results{:,1} = replace(results{:,1}, '','');
         writetable(results, keyboard_data_file);

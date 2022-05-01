@@ -34,7 +34,7 @@ function [p] = main(p)
         end
         
         % Save code snapshot.
-        saveCode(trials.list_id{1}, p);
+        saveCode(reach_trials, reach_practice_trials, keyboard_trials, keyboard_practice_trials, p);
         % Save 'p' snapshot.
         save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) p.DAY '_p.mat'], 'p');
         

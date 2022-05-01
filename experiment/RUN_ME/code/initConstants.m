@@ -7,7 +7,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
     p.SCREEN_DIST = 0.35; %from start point, in meter.
     p.VIEW_ANGLE_X = 2.5; % in deg.
     p.VIEW_ANGLE_Y = 1;
-    p.FINGER_SIZE = 0.015; %in meter.
+    p.FINGER_SIZE = 0.007; %in meter.
     p.START_POINT_RANGE = 0.01; %3D distance (in meter) from start point which counts as finger in start point.
     
     % TEXT
@@ -106,10 +106,10 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         p.SLOW_MVMNT_SCREEN = 'slow_mvmnt_screen.jpg';
         p.EARLY_RES_SCREEN = 'early_res_screen.jpg';
         p.WRONG_ANS_SCREEN = 'wrong_ans_screen.jpg';
-        p.BETWEEN_SESSIONS_SCREEN = 'between_sessions.jpg';
-        p.PRESS_SPACE_TO_CONTINUE = 'press_space_to_continue.jpg';
-        p.REACH_RESPONSE_EXPLANATION = 'reach_response_explanation';
-        p.KEYBOARD_RESPONSE_EXPLANATION = 'keyboard_response_explanation';
+        p.BETWEEN_SESSIONS_SCREEN = 'between_sessions_screen.jpg';
+        p.PRESS_SPACE_TO_CONTINUE = 'press_space_to_continue_screen.jpg';
+        p.REACH_RESPONSE_EXPLANATION = 'reach_response_explanation_screen.jpg';
+        p.KEYBOARD_RESPONSE_EXPLANATION = 'keyboard_response_explanation_screen.jpg';
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));
@@ -124,7 +124,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         case 'day1'
             p.NUM_BLOCKS = 6;
         case 'day2'
-            p.NUM_BLOCKS = 12;
+            p.NUM_BLOCKS = 6;
         otherwise
             error(['p.DAY has wrong value: ' p.DAY]);
     end
@@ -145,7 +145,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
     p.MASK3_DURATION = 0.03;
     p.TARGET_DURATION = 0.5;
     p.TARGET_DURATION_SAMPLES = p.TARGET_DURATION * p.REF_RATE_HZ;
-    p.MSG_DURATION = 0.9;
+    p.MSG_DURATION = 0.7;
     
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
