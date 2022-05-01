@@ -1,39 +1,31 @@
-% for practice: loads practice_trials list.
-% for test: Randomly selects a trial list from unused_lists.
-%           When unused_lists empties, refills it.
-%           This makes sure that one list doesn't repeat more than others.
-% type: 'practice' / 'test' / 'practice_wo_prime'
+% Randomly selects a trial list from unused_lists.
+% When unused_lists empties, refills it.
+% This makes sure that one list doesn't repeat more than others.
+% type: 'practice' / 'test'
 function [trials] = getTrials(trial_type, p)
-    switch trial_type
-        case 'test'
-            unused_lists_path = [p.TRIALS_FOLDER '/unused_lists_' p.DAY '.mat'];
-            unused_lists = [];
+    unused_lists_path = [p.TRIALS_FOLDER '/' trial_type '_unused_lists_' p.DAY '.mat'];
+    unused_lists = [];
 
-            % If file exists, loads it.
-            if isfile(unused_lists_path)
-                unused_lists = load(unused_lists_path);
-                unused_lists = unused_lists.unused_lists;
-            end
-
-            % If used all trials, refills.
-            if isempty(unused_lists)
-                lists = cellstr(ls(p.TRIALS_FOLDER));
-                % Keep only trial lists files.
-                lists = regexp(lists, ['trials\d+' p.DAY '.xlsx'], 'match');
-                lists(cellfun(@isempty, lists)) = [];
-                unused_lists = vertcat(lists{:});
-            end
-
-            % Samples a list randomly.
-            [list, list_index] = datasample(unused_lists,1);
-
-            unused_lists(list_index) = [];
-            save(unused_lists_path, 'unused_lists');
-        case 'practice_wo_prime'
-            list = {'practice_wo_prime_trials.xlsx'};
-        case 'practice'
-            list = {'practice_trials.xlsx'};
+    % If file exists, loads it.
+    if isfile(unused_lists_path)
+        unused_lists = load(unused_lists_path);
+        unused_lists = unused_lists.unused_lists;
     end
+
+    % If used all trials, refills.
+    if isempty(unused_lists)
+        lists = cellstr(ls(p.TRIALS_FOLDER));
+        % Keep only trial lists files.
+        lists = regexp(lists, [trial_type '_trials\d+' p.DAY '.xlsx'], 'match');
+        lists(cellfun(@isempty, lists)) = [];
+        unused_lists = vertcat(lists{:});
+    end
+
+    % Samples a list randomly.
+    [list, list_index] = datasample(unused_lists,1);
+
+    unused_lists(list_index) = [];
+    save(unused_lists_path, 'unused_lists');
     
     trials = readtable([p.TRIALS_FOLDER '/' list{:}]);
     % List ID.

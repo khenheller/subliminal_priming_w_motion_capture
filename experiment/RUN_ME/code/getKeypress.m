@@ -53,7 +53,7 @@ function [key, keypress_time, categor_time, late_res, early_res] = getKeypress(t
             if (curr_time >= target_disp_time) && isnan(categor_time)
                 Screen('DrawTexture',p.w, p.CATEGOR_TXTR);
                 Screen('Flip',p.w,0,0,1);
-                categor_time = curr_time + p.REF_RATE_SEC; % Might cause iaccuracy in target display time, but since we dont want to wait for a flip, we have no other way to estimate when was the categorization screen diplayed.
+                categor_time = curr_time + p.REF_RATE_SEC; % Might cause iaccuracy in estimated target display time, but since we dont want to wait for a flip, we have no other way to estimate when was the categorization screen diplayed.
             end
         end
     end
