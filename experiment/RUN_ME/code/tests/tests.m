@@ -3,8 +3,10 @@
 % events - names of the columns containing the event's timestamps.
 % desired_durations - of each event, in sec.
 % test_day - 'day1', 'day2'.
-function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, desired_durations, test_day, p)
+% is_reach - testing a reaching session (1) or a keyboard response sesssion (0).
+function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, desired_durations, test_day, is_reach, p)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
+    traj_end = [];
     test_res = [];
     
     % Initialize parameters.
@@ -14,15 +16,19 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, 
     pass_test.prime_alter = NaN;
     
     if strcmp(test_type, 'data')
-        % Remove practice trials only if its data list.
+        % Remove practice from data.
         trials(trials.practice > 0, :) = [];
-        trials_traj(trials_traj.practice > 0, :) = [];
         
-        % Get last timestamp in every reach to target.
-        for j = 1:max(trials.iTrial)
-            timecourse = trials_traj.target_timecourse_to(trials_traj.iTrial == j);
-            last_sample_indx = find(~isnan(timecourse), 1, 'last');
-            traj_end(j) = timecourse(last_sample_indx);
+        if is_reach
+            % Remove practice drom traj.
+            trials_traj(trials_traj.practice > 0, :) = [];
+            
+            % Get last timestamp in every reach to target.
+            for j = 1:max(trials.iTrial)
+                timecourse = trials_traj.target_timecourse_to(trials_traj.iTrial == j);
+                last_sample_indx = find(~isnan(timecourse), 1, 'last');
+                traj_end(j) = timecourse(last_sample_indx);
+            end
         end
     else
         disp('Didnt run test');
@@ -32,7 +38,7 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, 
     if strcmp(test_type, 'data')
         disp('------------------------------- Event Durations -------------------------------');
         timestamps = trials(:,events);
-        [pass_timings , test_res.dev_table] = timingsTest(events, timestamps, traj_end, desired_durations);
+        [pass_timings , test_res.dev_table] = timingsTest(events, timestamps, traj_end, desired_durations, trials.target_rt, is_reach);
         pass_test.deviations = pass_timings.deviations;
         pass_test.deviation_of_mean = pass_timings.deviation_of_mean;
         pass_test.std = pass_timings.std;
@@ -44,7 +50,12 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, 
     if strcmp(test_type, 'data')
         disp('------------------------------- Has Values -------------------------------');
         [pass_test.data_values ~] = hasValuesTest(trials, 'iTrial');
-        [pass_test.traj_values test_res.miss_data] = hasValuesTest(trials_traj, 'iTrial');
+        % Tests traj only in reach session.
+        if is_reach
+            [pass_test.traj_values test_res.miss_data] = hasValuesTest(trials_traj, 'iTrial');
+        else
+            pass_test.traj_values = 1;
+        end
     else
         disp('Didnt run test');
     end
@@ -66,7 +77,7 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, 
     disp('------------------------------- Conditions -------------------------------');
     var_names = {'target_natural','same'};
     vars = trials(:,var_names);
-    lvls = table([1;1;0;0],[1;0;1;0], 'VariableNames',var_names);
+    lvls = table([1;1;0;0],[1;0;1;0], 'VariableNames',var_names); % All possible cominations of conditions.
     num_cond = p.N_CONDS * p.N_CATEGOR; % Num conditions.
     reps = (p.NUM_TRIALS / num_cond) * ones(1,num_cond);
     pass_test.conditions = conditionTests(vars, lvls, reps); 

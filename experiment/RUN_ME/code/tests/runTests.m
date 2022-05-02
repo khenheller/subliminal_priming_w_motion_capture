@@ -12,17 +12,14 @@ addpath('.\tests');
 events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
 % desired_durations - of each event, in sec.
 desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
-%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-% READ ME: if you aren't Khen, set i_m_khen in timingTest.m to 0!
-%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 % To test sub data enter his number.
-sub_num = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25] + 200;
+sub_num = [1028];
 % To test word list enter its name.
-word_list = 'practice_trials2day2.xlsx';
-list_type = 'practice';
+word_list = 'test_trials20day2.xlsx';
+list_type = 'test';
 % Are you testing 'data' of a subject, or just a 'trials_list'.
-test_type = 'trials_list';
+test_type = 'data';
 % Day: 'day1' or 'day2'.
 test_day = 'day2';
 
@@ -34,14 +31,15 @@ for iSub = sub_num
     % Get data.
     if isequal(test_type, 'data')
         file_name = ['sub' num2str(iSub) test_day];
-        trials = readtable([DATA_FOLDER file_name '_data.csv']);
-        trials_traj = readtable([DATA_FOLDER file_name '_traj.csv']);
+        reach_trials = readtable([DATA_FOLDER file_name '_reach_data.csv']);
+        reach_trials_traj = readtable([DATA_FOLDER file_name '_reach_traj.csv']);
+        keyboard_trials = readtable([DATA_FOLDER file_name '_keyboard_data.csv']);
         diary_name = [TEST_RES_FOLDER file_name '.txt'];
         p = load([DATA_FOLDER file_name '_p.mat']); p = p.p;
     % Get trial_list.
     else
         file_name = word_list;
-        trials = readtable([TRIALS_LISTS_FOLDER word_list]);
+        reach_trials = readtable([TRIALS_LISTS_FOLDER word_list]);
         trials_traj = [];
         diary_name = [TEST_RES_FOLDER strrep(word_list,'.xlsx','') '.txt'];
         p = load('p.mat'); p = p.p;
@@ -69,13 +67,21 @@ for iSub = sub_num
     
     % Log results to file.
     diary(diary_name);
-    % @@@@@@@@@@@@@@ For old subs you might need to add this @@@@@@@@@@@@@@
-    p.N_CATEGOR = 2; % Num of word categories (2 = natural / artificial).
-    p.CONDS = ["same" "diff"];
-    p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
-    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    [pass_test, test_res] = tests(trials, trials_traj, test_type, events, desired_durations, test_day, p);
+    
+    % Old subs don't have correct parameters.
+    if any(sub_num < 26)
+        p.N_CATEGOR = 2; % Num of word categories (2 = natural / artificial).
+        p.CONDS = ["same" "diff"];
+        p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
+    end
+    
+    % Tests reaching session.
+    disp('@@@@@@@@@@@@@@@@@@@@@@@@@ Testing Reaching session @@@@@@@@@@@@@@@@@@@@@@@@@');
+    [reach_pass_test, reach_test_res] = tests(reach_trials, reach_trials_traj, test_type, events, desired_durations, test_day, 1, p);
+    % Tests keyboard session.
+    disp('@@@@@@@@@@@@@@@@@@@@@@@@@ Testing Keyboard session @@@@@@@@@@@@@@@@@@@@@@@@@');
+    [keyboard_pass_test, keyboard_test_res] = tests(keyboard_trials, [], test_type, events, desired_durations, test_day, 0, p);
     diary off;
 
-    save([TEST_RES_FOLDER file_name '.mat'], 'test_res');
+    save([TEST_RES_FOLDER file_name '.mat'], 'reach_test_res','keyboard_test_res');
 end

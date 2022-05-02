@@ -9,48 +9,55 @@
 % prints results as text and histograms.
 % Input: events - cell array of chars.
 %       timestamps - table, each column is an event, each row is a timestamp.
-%       traj_end - double vec, last timestamp in each reach to target. Remove if you'r not khen.
-%       desired_durations - vector of doubles.
+%       traj_end - double vec, last timestamp in each reach to target.
+%       desired_durations - vector of doubles
+%       is_reach - testing a reaching session (1) or a keyboard response sesssion (0).
+%       target_rt - RT to target on each trial.
 % Output: dev_table - Contains all the trials with deviating stimuli duration.
 %                   3 col:Trial number, deviation and event type.
-function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desired_durations)
-
+function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desired_durations, target_rt, is_reach)
     max_dev = 2; % max deviation in ms.
     desired_std = 2;
     
-    % @@@@@@@@@@@@@@@@ Specific for Khen's experiment @@@@@@@@@@@@@@@@
-    i_m_khen = 1;
     target_col = find(ismember(events, 'target_time'));
-    % Calc RT = delay between target disp and end of traj.
-    resp_time = traj_end' - timestamps{:,target_col};
-    resp_time = resp_time * 1000; % convert to ms.
-    resp_time = resp_time + 10;
-    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    % Calc RT.
+    if is_reach
+        % RT = delay between target disp and end of traj.
+        resp_time = traj_end' - timestamps{:,target_col};
+        resp_time = resp_time * 1000; % convert to ms.
+        resp_time = resp_time + 10;
+    else
+        resp_time = target_rt * 1000;
+    end
     
     % Calc deviations.
     durations = timestamps{:, 2:end} - timestamps{:, 1:end-1};
     durations = durations * 1000; % convert to ms.
-    desired_durations = desired_durations * 1000;
     durations_mean = mean(durations,1, 'omitnan');
     durations_std = std(durations,1, 'omitnan');
+    desired_durations = desired_durations * 1000;
     deviations = durations - desired_durations;
     deviations_abs = abs(deviations);
     deviating_trials = deviations_abs > max_dev;
-    if i_m_khen
-        % Ignore cases when sub responded before target duration passed.
-        sub_res_quickly = (ceil(durations(:, target_col)) == ceil(resp_time)) & (resp_time <= desired_durations(target_col));
-        deviating_trials(:, target_col) = deviating_trials(:, target_col) & ~sub_res_quickly;
-        bad_deviations_index = find(deviating_trials);
-    else
-        bad_deviations_index = find(deviating_trials);
-    end
+    
+    % Ignore cases when sub responded before target duration passed.
+    sub_res_quickly = (ceil(durations(:, target_col)) == ceil(resp_time)) & (resp_time <= desired_durations(target_col));
+    deviating_trials(:, target_col) = deviating_trials(:, target_col) & ~sub_res_quickly;
+    bad_deviations_index = find(deviating_trials);
+    
     [bad_deviations_trial,~] = ind2sub(size(deviations_abs), bad_deviations_index);
     bad_deviations = deviations(bad_deviations_index);
     
+    % Compute duration mean (ignoring cases when response came before the target disp time passed).
+    durations_wo_fast_res = durations;
+    durations_wo_fast_res(sub_res_quickly, target_col) = NaN;
+    durations_mean_wo_fast_res = mean(durations_wo_fast_res,1, 'omitnan');
+    durations_std_wo_fast_res = std(durations_wo_fast_res,1, 'omitnan');
+    
     % Checks if passed tests.
     pass_test.deviations = isempty(bad_deviations);
-    pass_test.deviation_of_mean = ~any(abs(durations_mean - desired_durations) > max_dev);
-    pass_test.std = ~any(durations_std > desired_std);
+    pass_test.deviation_of_mean = ~any(abs(durations_mean_wo_fast_res - desired_durations) > max_dev);
+    pass_test.std = ~any(durations_std_wo_fast_res > desired_std);
         
     
     % replicates names for later printing.
