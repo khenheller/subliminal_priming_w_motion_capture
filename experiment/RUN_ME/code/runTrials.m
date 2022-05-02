@@ -66,9 +66,12 @@ function [p] = runTrials(trials, is_reach, p)
             trials.target_ans_left(1) = target_ans.answer_left;
             trials(1,:) = checkAns(trials(1,:), 'categor');
             sub_answered_intime = ~(target_ans.late_res | target_ans.slow_mvmnt | target_ans.early_res);
-            if ~trials.target_correct(1) && sub_answered_intime
-                showTexture(p.WRONG_ANS_SCREEN, p);
-                WaitSecs(p.MSG_DURATION);
+            % Alert of wrong answer.
+            if sub_answered_intime
+                if ~trials.target_correct(1)
+                    showTexture(p.WRONG_ANS_SCREEN, p);
+                    WaitSecs(p.MSG_DURATION);
+                end
             end
             
             % Prime recognition.
