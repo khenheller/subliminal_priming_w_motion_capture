@@ -41,7 +41,8 @@ function [pass_test, dev_table] = timingsTest(events, timestamps, traj_end, desi
     deviating_trials = deviations_abs > max_dev;
     
     % Ignore cases when sub responded before target duration passed.
-    sub_res_quickly = (ceil(durations(:, target_col)) == ceil(resp_time)) & (resp_time <= desired_durations(target_col));
+    rt_equal_duration = abs(ceil(durations(:, target_col)) - ceil(resp_time)) <= 1; % Equal up to 1ms difference.
+    sub_res_quickly = rt_equal_duration & (resp_time <= desired_durations(target_col));
     deviating_trials(:, target_col) = deviating_trials(:, target_col) & ~sub_res_quickly;
     bad_deviations_index = find(deviating_trials);
     
