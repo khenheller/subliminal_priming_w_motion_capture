@@ -1,5 +1,6 @@
 % Generates trials list.
-% practice: 0 for test, 1 for practice trials, 2 for practice trials w/o prime.
+% practice: 0 for test, 1 for practice trials.
+%           practice lists' length is one block.
 % draw_stats: 1=yes, 0=nope.
 function trials = newTrials(draw_stats, practice, p)
     
@@ -26,6 +27,8 @@ function trials = newTrials(draw_stats, practice, p)
     trials.prime_duration = ones(height(trials),1) * p.PRIME_DURATION;
     trials.mask3_duration = ones(height(trials),1) * p.MASK3_DURATION;
     trials.target_duration = ones(height(trials),1) * p.TARGET_DURATION;
+    % Assign 'quit'.
+    trials.quit = zeros(height(trials),1);
     
     % sample words to use as targets (See main.docx for explanation on this calc).
     divisors = 1:height(p.WORD_LIST);
@@ -40,7 +43,7 @@ function trials = newTrials(draw_stats, practice, p)
     [art_words_to_use, art_i] = datasample(p.WORD_LIST{:,'artificial'}, n_words_to_use, 'Replace',false);
     chosen_words  = [nat_words_to_use; art_words_to_use];
     words = table(chosen_words, NaN(length(chosen_words),1), ones(length(chosen_words),1),...
-        'VariableNames',{'word', 'last_block', 'available'});
+        'VariableNames',{'word', 'last_block', 'available'}); % Word, the number of the last block it apeared at, and whether it is avialable (wasn't already selected).
     
     % for each prime, lists all targets it can precede (doesn't share lettes with).
     possible_targets = [table2cell(p.ART_TARGETS(:,nat_i)) table2cell(p.NAT_TARGETS(:,art_i))];
@@ -61,7 +64,7 @@ function trials = newTrials(draw_stats, practice, p)
         words.last_block(iWord) = current_block;
         words.available(iWord) = 0;
         trials.target(iTrial) = target;
-        trials.target_natural(iTrial) = iWord <= height(words)/2; % first half are natural.
+        trials.target_natural(iTrial) = iWord <= height(words)/2; % first half in "words" list are natural.
         
         % Adds Masks.
         masks = datasample(1:p.NUM_MASKS, 3, 'Replace',false);
@@ -72,10 +75,12 @@ function trials = newTrials(draw_stats, practice, p)
     
     % Add same / diff condition.
     if practice > 0
-        trials.same(:) = randerr(1, height(trials), height(trials)/2)'; % half 1 half 0.
+        trials.same(trials.target_natural == 1) = randerr(1, height(trials)/2, height(trials)/4)'; % half of nat targets are in congruent condition.
+        trials.same(trials.target_natural == 0) = randerr(1, height(trials)/2, height(trials)/4)'; % half of art targets are in congruent condition.
     else
+        % Each target apears equally in the congruent / incngruent conditions.
         for word = words.word'
-            word_is_target = ismember(trials.target, word);
+            word_is_target = ismember(trials.target, word); % All locations of the target word.
             num_instances = sum(word_is_target);
             trials.same(word_is_target) = randerr(1,num_instances, num_instances/2); % half 1 half 0.
         end
@@ -90,12 +95,12 @@ function trials = newTrials(draw_stats, practice, p)
     % Add primes.
     % Tries until succeed filling all primes.
     while sum(cellfun(@isempty, trials.prime)) > 0
-        trials.prime = cell(height(trials), 1);
+        trials.prime = cell(height(trials), 1); % Delete all assigned primes.
         trials.prime(trials.same==1) = trials.target(trials.same==1);
         % Iterate over primes randomly.
         for i = randperm(size(possible_targets, 2))
-            indices = ismember(trials.target, possible_targets(:,i)); % all indices of possible targets.
-            indices = indices & cellfun(@isempty, trials.prime); % only empty primes.
+            indices = ismember(trials.target, possible_targets(:,i)); % Take all indices of possible targets.
+            indices = indices & cellfun(@isempty, trials.prime); % That have no prime yet.
             indices = find(indices);
             if length(indices) < word_repetitions % doesn't have enough places to put prime.
                 break;
@@ -106,13 +111,14 @@ function trials = newTrials(draw_stats, practice, p)
     end
     
     % Add distractors.
+    word_repetitions = word_repetitions * 2; % Primes are identical to targets in half of the trials, but distractors must be found for every trial, thus '*2'.
     % Tries until succeed filling all dist.
     while sum(cellfun(@isempty, trials.distractor)) > 0
         trials.distractor = cell(height(trials), 1);
-        % Iterate over primes randomly.
+        % Iterate over distractors randomly.
         for i = randperm(size(possible_targets, 2))
-            indices = ismember(trials.prime, possible_primes(:,i)); % all indices of possible primes.
-            indices = indices & cellfun(@isempty, trials.distractor); % only empty dist.
+            indices = ismember(trials.prime, possible_primes(:,i)); % Take all indices of possible primes.
+            indices = indices & cellfun(@isempty, trials.distractor); % that have no dist yet.
             indices = find(indices);
             if length(indices) < word_repetitions % doesn't have enough places to put dist.
                 break;
@@ -137,38 +143,10 @@ function trials = newTrials(draw_stats, practice, p)
         % plot results.
         words.word = categorical(words.word, words.word);
         figure('Name','Primes');
-        bar(words.word, freq.prime); title('Primes', 'FontSize',14); ylim([0 (max(freq.prime) + 1)]);
+        bar(words.word, freq.prime); title('Primes', 'FontSize',14); ylim([0 (max(freq.prime) + 1)]); ylabel('Number of appearances');
         figure('Name','Targets');
-        bar(words.word, freq.target); title('Targets', 'FontSize',14); ylim([0 (max(freq.target) + 1)]);
+        bar(words.word, freq.target); title('Targets', 'FontSize',14); ylim([0 (max(freq.target) + 1)]); ylabel('Number of appearances');
         figure('Name','Distractors');
-        bar(words.word, freq.dist); title('Distractors', 'FontSize',14); ylim([0 (max(freq.dist) + 1)]);
+        bar(words.word, freq.dist); title('Distractors', 'FontSize',14); ylim([0 (max(freq.dist) + 1)]); ylabel('Number of appearances');
     end
-end
-
-% recieves list of words.
-% samples randomly a word from the list.
-% erases that word from the list.
-function [word_list, word] = getWord(word_list, word_index)
-    success = 0;
-    if ~isEmptyCell(word_list(:,word_index))
-        while ~success
-            [word, erase_i] = datasample(word_list(:,word_index), 1);
-            success = ~isEmptyCell(word);
-        end
-        word_list(erase_i, :) = table('Size',[1 1], 'VariableTypes',{'char'});
-    end
-end
-
-function trials = setDefault(trials)
-    trials.prime_natural = zeros(height(trials),1);
-    trials.target_natural = zeros(height(trials),1);
-    trials.prime_left = zeros(height(trials),1);
-    trials.same = zeros(height(trials),1);
-    trials.target_ans_nat = zeros(height(trials),1);
-    trials.target_correct = zeros(height(trials),1);
-    trials.prime_correct = zeros(height(trials),1);
-end
-
-function empty = isEmptyCell(cell_array)
-    empty = isequal(cell_array, cell(size(cell_array)));
 end

@@ -1,0 +1,50 @@
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+3
+Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>       <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>____________</strong>
+
+      175        2.4539      'mask1_time'
+      175        -2.467      'mask2_time'
+      441        10.019      'mask2_time'
+
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>       <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>________</strong>    <strong>______________________________</strong>
+
+          1000               1000        0.077355              0.0066706           
+           270             270.01         0.14891               0.014674           
+            30             30.011          0.4816               0.010692           
+            30             29.991        0.091378              -0.008725           
+            30             30.006        0.087377              0.0058274           
+           500             555.33          86.307                 55.333           
+
+------------------------------- Has Values -------------------------------
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 0
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 1
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1
+
+@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@
+Make a change in timingsTest.m (marked @with remove@ this) so that the time of target will also be checked.\nYou canceled its check because the getTraj.m didnt display the categor screen after 500ms of target,\n so target timing is always bad
+@@@@@@@@@@@@@@@@@ Look Here! @@@@@@@@@@@@@@@@@

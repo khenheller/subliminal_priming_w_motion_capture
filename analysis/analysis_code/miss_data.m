@@ -22,7 +22,7 @@ function varargout = miss_data(varargin)
 
 % Edit the above text to modify the response to help miss_data
 
-% Last Modified by GUIDE v2.5 17-Jun-2021 16:32:28
+% Last Modified by GUIDE v2.5 18-Aug-2021 16:50:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -99,11 +99,11 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in Load.
-function Load_Callback(hObject, eventdata, h)
+% --- Executes on button press in Load_miss_data.
+function Load_miss_data_Callback(hObject, eventdata, h)
 % Get sub data.
-real_traj = load(['../processed_data/sub' h.sub.String{:} 'traj.mat']);  real_traj = real_traj.traj_table;
-proc_traj = load(['../processed_data/sub' h.sub.String{:} 'traj_proc.mat']);  proc_traj = proc_traj.traj_table;
+real_traj = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_' 'traj.mat']);  real_traj = real_traj.traj_table;
+proc_traj = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_' 'traj_proc.mat']);  proc_traj = proc_traj.traj_table;
 % Remove practice
 real_traj(real_traj.practice > 0, :) = [];
 proc_traj(proc_traj.practice > 0, :) = [];
@@ -111,7 +111,7 @@ h.real_traj = real_traj;
 h.proc_traj = proc_traj;
 % Get missing data trials.
 var_names = real_traj.Properties.VariableNames;
-miss_data = load([h.p.TESTS_FOLDER '/sub' h.sub.String{:} '.mat']);  miss_data = miss_data.test_res.miss_data;
+miss_data = load([h.p.TESTS_FOLDER '/sub' h.sub.String{:} h.p.DAY '.mat']);  miss_data = miss_data.test_res.miss_data;
 % Keep only trajectories.
 miss_data = miss_data(:, contains(var_names, ["_x_" "_y_" "_z_"]));
 % Select one traj, according to selected var.
@@ -166,7 +166,11 @@ real = h.real_traj{h.real_traj.iTrial==selected_trial, traj_col : traj_col+2};
 proc = h.proc_traj{h.proc_traj.iTrial==selected_trial, traj_col : traj_col+2};
 % Align to proc.
 last_num = find(~isnan(real(:,1)), 1, 'last');
+proc(:,3) = (proc(:,3) / 100) * (real(last_num,3) - real(1,3));% Proc is %Z, while real is in meters. We convert proc in order to align them.
 real = real - (real(last_num,:) - proc(end,:));
+% Flip
+real(:,3) = real(:,3) * -1;
+proc(:,3) = proc(:,3) * -1;
 % Plot
 hold off;
 plot(proc(:,1),proc(:,3), 'Color', proc_color, 'LineWidth',2);
@@ -197,7 +201,13 @@ while ~isempty(real)
     real = real(first_num : end, :);
     proc = proc(finish : end, :);
 end
-legend('proc', 'original', 'nans', 'Location','northeastoutside');
+% Plot Target.
+target_pos = h.p.DIST_BETWEEN_TARGETS/2;
+limx = target_pos + target_pos/4;
+plot([-target_pos target_pos], [h.p.SCREEN_DIST h.p.SCREEN_DIST], 'bo', 'LineWidth',6);
+legend('proc', 'original', 'nans', 'Target', 'Location','northeastoutside');
+xlim([-limx  limx]);
+ylim([0 h.p.SCREEN_DIST]);
 title(['Sub ' h.sub.String{:} ', Trial: ' h.trials.String{h.trials.Value} ', Var: ' h.vars.String{h.vars.Value}]);
 set(gca,'FontSize',14);
 
@@ -258,3 +268,19 @@ function Pause_Callback(hObject, eventdata, handles)
 % hObject    handle to Pause (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in Load_all.
+function Load_all_Callback(hObject, eventdata, h)
+% Get sub data.
+real_traj = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_' 'traj.mat']);  real_traj = real_traj.traj_table;
+proc_traj = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_' 'traj_proc.mat']);  proc_traj = proc_traj.traj_table;
+% Remove practice
+real_traj(real_traj.practice > 0, :) = [];
+proc_traj(proc_traj.practice > 0, :) = [];
+h.real_traj = real_traj;
+h.proc_traj = proc_traj;
+% Get trials nums.
+h.trials.String = [' '; string(1:h.p.NUM_TRIALS)'];
+% Stores updated h.
+guidata(hObject, h);

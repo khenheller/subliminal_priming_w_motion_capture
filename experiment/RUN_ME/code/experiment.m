@@ -1,15 +1,16 @@
 % prevents display of some warnings.
 warning('off','MATLAB:table:PreallocateCharWarning');
 warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
-
-clc; 
+ 
+clc;
 clear all;
 close all;
 addpath('.\NatNetSDK');
 
-% Parameter definit1ion.
-p.SUB_NUM = 12;
-  
+% Parameter definition.
+p.SUB_NUM = 999;
+p.DAY = 'day1';
+
 p.FULLSCREEN = 1;
 p.DEBUG = 0;
 %% -------------------------- Align screen --------------------------------
@@ -18,8 +19,11 @@ p.DEBUG = 0;
 p = main(p);
 save('p.mat', 'p');
 %% -------------------------- Generate trial lists ------------------------
-% num_trial_lists = 1;
-% genTrialLists(num_trial_lists, p);
+% p = load('./p.mat'); p = p.p;
+% p.DAY = 'day2';
+% num_trial_lists = 20;
+% list_type = 'test';
+% genTrialLists(num_trial_lists, list_type, p);
 %% -------------------------- Generate Masks ------------------------------
 % @@@@@@@@ Make new masks if sitting distance changes @@@@@@@@@@@@@@
 % n_masks = 3;

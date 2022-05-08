@@ -9,7 +9,7 @@ function [] = alignScreen(p)
     
     [p.TOUCH_PLANE_INFO, p.NATNETCLIENT] = touch_plane_setup();
     p = initPsychtoolbox(p);
-    p = initConstants(1, p);
+    p = initConstants(1, 'test', p);
     
     txtr_num = getTextureFromHD(p.ALIGNMENT_SCREEN, p);
     

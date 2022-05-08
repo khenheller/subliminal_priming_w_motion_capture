@@ -1,0 +1,581 @@
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+419
+Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>         <strong>Event</strong>     
+    <strong>________</strong>    <strong>_________</strong>    <strong>_______________</strong>
+      442        10.045      {'mask2_time' }
+        1        60.025      {'target_time'}
+        2        180.55      {'target_time'}
+        3           260      {'target_time'}
+        4        59.984      {'target_time'}
+        5        219.68      {'target_time'}
+        6           180      {'target_time'}
+        7        89.964      {'target_time'}
+        8        70.726      {'target_time'}
+        9        109.89      {'target_time'}
+       10        90.796      {'target_time'}
+       11        79.908      {'target_time'}
+       12        170.01      {'target_time'}
+       13        80.152      {'target_time'}
+       14        21.089      {'target_time'}
+       15        19.478      {'target_time'}
+       16        210.06      {'target_time'}
+       17        69.965      {'target_time'}
+       18        220.02      {'target_time'}
+       19        229.99      {'target_time'}
+       20        210.01      {'target_time'}
+       21        259.98      {'target_time'}
+       22           180      {'target_time'}
+       23        260.02      {'target_time'}
+       24        30.002      {'target_time'}
+       25        99.641      {'target_time'}
+       26        110.86      {'target_time'}
+       27        170.05      {'target_time'}
+       28        259.97      {'target_time'}
+       29        260.06      {'target_time'}
+       30        30.202      {'target_time'}
+       31        260.01      {'target_time'}
+       32        109.95      {'target_time'}
+       33        130.03      {'target_time'}
+       34        79.474      {'target_time'}
+       35           230      {'target_time'}
+       36        260.59      {'target_time'}
+       37        99.977      {'target_time'}
+       38        160.01      {'target_time'}
+       39         259.8      {'target_time'}
+       40        99.879      {'target_time'}
+       41        70.219      {'target_time'}
+       42        19.992      {'target_time'}
+       43         60.03      {'target_time'}
+       44        10.027      {'target_time'}
+       46        170.04      {'target_time'}
+       47        119.98      {'target_time'}
+       48        160.05      {'target_time'}
+       49        40.008      {'target_time'}
+       50        89.964      {'target_time'}
+       51        99.654      {'target_time'}
+       52        99.964      {'target_time'}
+       53        50.639      {'target_time'}
+       54        119.95      {'target_time'}
+       56        129.58      {'target_time'}
+       57        110.05      {'target_time'}
+       59        99.985      {'target_time'}
+       60        101.01      {'target_time'}
+       61        49.952      {'target_time'}
+       62        120.02      {'target_time'}
+       63        59.052      {'target_time'}
+       64        10.639      {'target_time'}
+       65        59.992      {'target_time'}
+       66        90.065      {'target_time'}
+       67        39.998      {'target_time'}
+       68        69.691      {'target_time'}
+       70        30.005      {'target_time'}
+       71        40.031      {'target_time'}
+       72        110.06      {'target_time'}
+       73        159.95      {'target_time'}
+       74        150.04      {'target_time'}
+       75        250.55      {'target_time'}
+       76        110.04      {'target_time'}
+       77        30.004      {'target_time'}
+       78        70.746      {'target_time'}
+       79        159.99      {'target_time'}
+       80        40.012      {'target_time'}
+       81        239.96      {'target_time'}
+       82        70.004      {'target_time'}
+       83        260.02      {'target_time'}
+       84        109.99      {'target_time'}
+       85        199.98      {'target_time'}
+       86        179.42      {'target_time'}
+       87        229.97      {'target_time'}
+       88        159.99      {'target_time'}
+       89        260.32      {'target_time'}
+       90        250.03      {'target_time'}
+       91           260      {'target_time'}
+       92        119.89      {'target_time'}
+       93            60      {'target_time'}
+       94        130.01      {'target_time'}
+       95        30.003      {'target_time'}
+       96        80.054      {'target_time'}
+       97        150.02      {'target_time'}
+       99        180.03      {'target_time'}
+      100        150.01      {'target_time'}
+      101         89.96      {'target_time'}
+      102        110.03      {'target_time'}
+      103        180.01      {'target_time'}
+      104        80.302      {'target_time'}
+      105        220.59      {'target_time'}
+      106        80.002      {'target_time'}
+      107        140.71      {'target_time'}
+      108        149.99      {'target_time'}
+      109        110.02      {'target_time'}
+      110        110.01      {'target_time'}
+      111        40.007      {'target_time'}
+      112        50.109      {'target_time'}
+      113        199.98      {'target_time'}
+      114        39.996      {'target_time'}
+      115        69.992      {'target_time'}
+      116        140.99      {'target_time'}
+      117        230.01      {'target_time'}
+      118        79.982      {'target_time'}
+      119         210.2      {'target_time'}
+      120        80.009      {'target_time'}
+      121        70.044      {'target_time'}
+      122        50.012      {'target_time'}
+      123        220.04      {'target_time'}
+      125            70      {'target_time'}
+      126        99.884      {'target_time'}
+      127        10.699      {'target_time'}
+      128        59.498      {'target_time'}
+      129        260.03      {'target_time'}
+      131        20.041      {'target_time'}
+      132        259.99      {'target_time'}
+      133        39.993      {'target_time'}
+      135        30.224      {'target_time'}
+      136        100.01      {'target_time'}
+      137        30.015      {'target_time'}
+      138        39.981      {'target_time'}
+      139        160.03      {'target_time'}
+      140        49.877      {'target_time'}
+      141        90.086      {'target_time'}
+      142        180.01      {'target_time'}
+      143        49.963      {'target_time'}
+      144        260.03      {'target_time'}
+      145           120      {'target_time'}
+      146        40.002      {'target_time'}
+      147        48.911      {'target_time'}
+      150        260.04      {'target_time'}
+      151        119.86      {'target_time'}
+      152        250.02      {'target_time'}
+      153        129.96      {'target_time'}
+      154        120.05      {'target_time'}
+      155        140.02      {'target_time'}
+      156        80.009      {'target_time'}
+      157        129.99      {'target_time'}
+      158        100.02      {'target_time'}
+      159        139.95      {'target_time'}
+      160        29.277      {'target_time'}
+      161        259.95      {'target_time'}
+      162        70.174      {'target_time'}
+      164        10.015      {'target_time'}
+      166        100.01      {'target_time'}
+      169        109.95      {'target_time'}
+      171        110.18      {'target_time'}
+      173        79.993      {'target_time'}
+      176        49.561      {'target_time'}
+      178        80.083      {'target_time'}
+      179        90.924      {'target_time'}
+      180        50.036      {'target_time'}
+      181        80.004      {'target_time'}
+      182        99.987      {'target_time'}
+      183        80.442      {'target_time'}
+      184        110.03      {'target_time'}
+      186        21.129      {'target_time'}
+      187         40.01      {'target_time'}
+      188        100.07      {'target_time'}
+      189        119.98      {'target_time'}
+      190        160.05      {'target_time'}
+      191        50.011      {'target_time'}
+      192        69.967      {'target_time'}
+      194        119.33      {'target_time'}
+      195        19.951      {'target_time'}
+      196        70.014      {'target_time'}
+      197        110.42      {'target_time'}
+      198        40.587      {'target_time'}
+      199        59.991      {'target_time'}
+      200        140.03      {'target_time'}
+      202        60.025      {'target_time'}
+      204        190.45      {'target_time'}
+      205        80.034      {'target_time'}
+      206        69.997      {'target_time'}
+      207         40.01      {'target_time'}
+      208        80.065      {'target_time'}
+      210        10.033      {'target_time'}
+      211        170.01      {'target_time'}
+      212        19.981      {'target_time'}
+      213        89.518      {'target_time'}
+      214        230.15      {'target_time'}
+      215        260.01      {'target_time'}
+      216        10.974      {'target_time'}
+      217        259.21      {'target_time'}
+      220           260      {'target_time'}
+      221        50.037      {'target_time'}
+      222        110.02      {'target_time'}
+      223        9.9856      {'target_time'}
+      224        69.925      {'target_time'}
+      226        110.03      {'target_time'}
+      229        109.72      {'target_time'}
+      230        90.007      {'target_time'}
+      231        19.983      {'target_time'}
+      232        10.017      {'target_time'}
+      233        39.999      {'target_time'}
+      234        130.02      {'target_time'}
+      235        129.92      {'target_time'}
+      237        260.03      {'target_time'}
+      239        39.999      {'target_time'}
+      240        20.013      {'target_time'}
+      241        49.976      {'target_time'}
+      242         20.02      {'target_time'}
+      243        40.088      {'target_time'}
+      245           190      {'target_time'}
+      246        180.01      {'target_time'}
+      247        260.01      {'target_time'}
+      249        259.98      {'target_time'}
+      250        119.91      {'target_time'}
+      251        30.002      {'target_time'}
+      252        120.02      {'target_time'}
+      253        59.995      {'target_time'}
+      255        19.995      {'target_time'}
+      256        90.006      {'target_time'}
+      257        50.013      {'target_time'}
+      258        60.008      {'target_time'}
+      259        10.057      {'target_time'}
+      261        9.7875      {'target_time'}
+      262        139.99      {'target_time'}
+      263        18.888      {'target_time'}
+      265        20.204      {'target_time'}
+      266        40.022      {'target_time'}
+      269        159.96      {'target_time'}
+      270        10.033      {'target_time'}
+      271        30.009      {'target_time'}
+      272        259.55      {'target_time'}
+      274         40.62      {'target_time'}
+      275        129.98      {'target_time'}
+      276        129.99      {'target_time'}
+      277        140.01      {'target_time'}
+      278        9.2894      {'target_time'}
+      279           120      {'target_time'}
+      281        190.11      {'target_time'}
+      284        20.034      {'target_time'}
+      286        10.029      {'target_time'}
+      287        230.06      {'target_time'}
+      288        60.036      {'target_time'}
+      289        9.9719      {'target_time'}
+      290        180.04      {'target_time'}
+      291         80.84      {'target_time'}
+      292        10.092      {'target_time'}
+      293        79.503      {'target_time'}
+      294        49.958      {'target_time'}
+      295        50.034      {'target_time'}
+      296        60.007      {'target_time'}
+      297        60.003      {'target_time'}
+      298         79.98      {'target_time'}
+      299        79.994      {'target_time'}
+      300        260.25      {'target_time'}
+      301        60.668      {'target_time'}
+      302        60.011      {'target_time'}
+      303        79.998      {'target_time'}
+      304        69.835      {'target_time'}
+      306        89.968      {'target_time'}
+      307        40.011      {'target_time'}
+      308        90.007      {'target_time'}
+      309        150.63      {'target_time'}
+      310        159.51      {'target_time'}
+      311        40.026      {'target_time'}
+      312        70.061      {'target_time'}
+      313        80.061      {'target_time'}
+      314        69.962      {'target_time'}
+      315        50.003      {'target_time'}
+      316        59.969      {'target_time'}
+      317        19.964      {'target_time'}
+      318        60.144      {'target_time'}
+      319        160.74      {'target_time'}
+      320        150.03      {'target_time'}
+      321        30.012      {'target_time'}
+      324        80.013      {'target_time'}
+      325           170      {'target_time'}
+      326        190.01      {'target_time'}
+      327        180.02      {'target_time'}
+      328        129.98      {'target_time'}
+      329           110      {'target_time'}
+      330         50.02      {'target_time'}
+      333        60.002      {'target_time'}
+      334        140.05      {'target_time'}
+      336        159.84      {'target_time'}
+      337        140.11      {'target_time'}
+      338        129.87      {'target_time'}
+      339        190.01      {'target_time'}
+      340        9.9979      {'target_time'}
+      341        119.94      {'target_time'}
+      342        30.017      {'target_time'}
+      343        40.026      {'target_time'}
+      344        9.9996      {'target_time'}
+      345        60.005      {'target_time'}
+      347        110.72      {'target_time'}
+      348        29.979      {'target_time'}
+      349        140.05      {'target_time'}
+      350        209.97      {'target_time'}
+      351        180.05      {'target_time'}
+      352        79.982      {'target_time'}
+      353        69.994      {'target_time'}
+      354        260.01      {'target_time'}
+      355        60.011      {'target_time'}
+      356           260      {'target_time'}
+      357        100.42      {'target_time'}
+      358        130.03      {'target_time'}
+      359        50.011      {'target_time'}
+      360        99.976      {'target_time'}
+      361         9.997      {'target_time'}
+      362        149.98      {'target_time'}
+      363        39.949      {'target_time'}
+      364        20.015      {'target_time'}
+      365        70.005      {'target_time'}
+      366        130.04      {'target_time'}
+      367        200.01      {'target_time'}
+      368        170.02      {'target_time'}
+      369        9.9828      {'target_time'}
+      370        209.98      {'target_time'}
+      371           110      {'target_time'}
+      372           150      {'target_time'}
+      373        10.003      {'target_time'}
+      374        250.01      {'target_time'}
+      376        30.058      {'target_time'}
+      377        149.98      {'target_time'}
+      378           110      {'target_time'}
+      379        170.02      {'target_time'}
+      380        260.04      {'target_time'}
+      381        50.019      {'target_time'}
+      383           150      {'target_time'}
+      384        169.97      {'target_time'}
+      385        50.663      {'target_time'}
+      386        250.04      {'target_time'}
+      387        250.01      {'target_time'}
+      388         59.83      {'target_time'}
+      389        160.26      {'target_time'}
+      390        39.992      {'target_time'}
+      391        209.99      {'target_time'}
+      392        169.95      {'target_time'}
+      393        59.983      {'target_time'}
+      394        259.99      {'target_time'}
+      395        130.01      {'target_time'}
+      397        110.05      {'target_time'}
+      400        79.947      {'target_time'}
+      401        259.98      {'target_time'}
+      402        69.993      {'target_time'}
+      403        119.93      {'target_time'}
+      404        59.928      {'target_time'}
+      405        109.98      {'target_time'}
+      407        139.96      {'target_time'}
+      408        200.02      {'target_time'}
+      409         69.98      {'target_time'}
+      410        110.02      {'target_time'}
+      411        69.989      {'target_time'}
+      413        119.99      {'target_time'}
+      414        29.961      {'target_time'}
+      415           160      {'target_time'}
+      416        30.022      {'target_time'}
+      417        130.03      {'target_time'}
+      418           100      {'target_time'}
+      419        140.03      {'target_time'}
+      420        20.018      {'target_time'}
+      421        80.023      {'target_time'}
+      422        90.008      {'target_time'}
+      423        120.01      {'target_time'}
+      424        129.99      {'target_time'}
+      425        209.99      {'target_time'}
+      426        70.071      {'target_time'}
+      427        40.028      {'target_time'}
+      428        89.968      {'target_time'}
+      429        10.017      {'target_time'}
+      430        129.99      {'target_time'}
+      431        110.05      {'target_time'}
+      432        69.996      {'target_time'}
+      433        130.12      {'target_time'}
+      434        50.012      {'target_time'}
+      435        50.001      {'target_time'}
+      436        179.97      {'target_time'}
+      437        29.539      {'target_time'}
+      438         90.19      {'target_time'}
+      439        70.012      {'target_time'}
+      440        50.053      {'target_time'}
+      442        160.03      {'target_time'}
+      443        110.16      {'target_time'}
+      444        60.029      {'target_time'}
+      445        30.027      {'target_time'}
+      446        70.498      {'target_time'}
+      447        149.98      {'target_time'}
+      448        49.856      {'target_time'}
+      449        100.02      {'target_time'}
+      450        219.98      {'target_time'}
+      451        60.013      {'target_time'}
+      453        140.06      {'target_time'}
+      454           130      {'target_time'}
+      456        179.72      {'target_time'}
+      457           120      {'target_time'}
+      458        50.003      {'target_time'}
+      459        59.949      {'target_time'}
+      460        141.16      {'target_time'}
+      461        170.01      {'target_time'}
+      462        89.263      {'target_time'}
+      463        69.053      {'target_time'}
+      464        49.886      {'target_time'}
+      465        79.988      {'target_time'}
+      467        80.008      {'target_time'}
+      468        209.98      {'target_time'}
+      469        129.99      {'target_time'}
+      470        150.28      {'target_time'}
+      471        79.966      {'target_time'}
+      472        200.37      {'target_time'}
+      473        120.01      {'target_time'}
+      474        250.02      {'target_time'}
+      475        39.935      {'target_time'}
+      476        90.277      {'target_time'}
+      477        110.03      {'target_time'}
+      479        119.99      {'target_time'}
+      480        20.036      {'target_time'}
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>_______</strong>    <strong>______________________________</strong>
+          1000               1000        0.24713                0.024907          
+           270                270        0.27715              -0.0027145          
+            30             30.028        0.52863                0.028184          
+            30             29.978        0.22476               -0.022363          
+            30             30.008        0.22572               0.0081247          
+           500             589.45         89.256                  89.445          
+------------------------------- Has Values -------------------------------
+target_x_from is missing values in trials: 
+     2
+    16
+    20
+    43
+    55
+    57
+    84
+   102
+   111
+   114
+   116
+   120
+   121
+   127
+   143
+   164
+   165
+   179
+   184
+   258
+   284
+   297
+   307
+   312
+   324
+   420
+   422
+   424
+   427
+   437
+   466
+   476
+target_y_from is missing values in trials: 
+     2
+    16
+    20
+    43
+    55
+    57
+    84
+   102
+   111
+   114
+   116
+   120
+   121
+   127
+   143
+   164
+   165
+   179
+   184
+   258
+   284
+   297
+   307
+   312
+   324
+   420
+   422
+   424
+   427
+   437
+   466
+   476
+target_z_from is missing values in trials: 
+     2
+    16
+    20
+    43
+    55
+    57
+    84
+   102
+   111
+   114
+   116
+   120
+   121
+   127
+   143
+   164
+   165
+   179
+   184
+   258
+   284
+   297
+   307
+   312
+   324
+   420
+   422
+   424
+   427
+   437
+   466
+   476
+prime_x_to is missing values in trials: 
+    99
+   435
+   455
+prime_y_to is missing values in trials: 
+    99
+   435
+   455
+prime_z_to is missing values in trials: 
+    99
+   435
+   455
+prime_x_from is missing values in trials: 
+   352
+   414
+   439
+prime_y_from is missing values in trials: 
+   352
+   414
+   439
+prime_z_from is missing values in trials: 
+   352
+   414
+   439
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 0
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 0
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1

@@ -4,8 +4,8 @@
 % single - struct, each field contains one condition's trials, that were good and had "pas_rate".
 function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     % Get sub data.
-    traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'traj_proc.mat']);  traj_table = traj_table.traj_table;
-    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) 'data_proc.mat']);  data_table = data_table.data_table;
+    traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj_proc.mat']);  traj_table = traj_table.traj_table;
+    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data_proc.mat']);  data_table = data_table.data_table;
 
     % remove practice.
     traj_table(traj_table{:,'practice'} >= 1, :) = [];
@@ -23,78 +23,79 @@ function [avg, single] = avgWithin(iSub, traj_name, bad_trials, pas_rate, p)
     mad_p_col   = [strrep(traj_name{1}, '_x',''), '_mad_p'];
     % Trial types.
     bad = bad_trials{iSub}.any;
+    bad_timing_or_quit = bad_trials{iSub}.bad_stim_dur | bad_trials{iSub}.quit;
     pas = data_table.('pas')==pas_rate;
-    same = data_table.('same');
+    con = data_table.('con');
     left = data_table.(reach_dir_col);
     % Sort trials and calc avg.
-    single.trajs.same_left  = traj_mat(:, ~bad & pas & same  & left, :);
-    single.trajs.same_right = traj_mat(:, ~bad & pas & same  & ~left, :);
-    single.trajs.diff_left  = traj_mat(:, ~bad & pas & ~same & left, :);
-    single.trajs.diff_right = traj_mat(:, ~bad & pas & ~same & ~left, :);
-    single.rt.same_left  = data_table.(offset_col)(~bad & pas & same  & left);
-    single.rt.same_right = data_table.(offset_col)(~bad & pas & same  & ~left);
-    single.rt.diff_left  = data_table.(offset_col)(~bad & pas & ~same & left);
-    single.rt.diff_right = data_table.(offset_col)(~bad & pas & ~same & ~left);
-    single.react.same_left  = data_table.(onset_col)(~bad & pas & same  & left); % Reaction time.
-    single.react.same_right = data_table.(onset_col)(~bad & pas & same  & ~left);
-    single.react.diff_left  = data_table.(onset_col)(~bad & pas & ~same & left);
-    single.react.diff_right = data_table.(onset_col)(~bad & pas & ~same & ~left);
-    single.mt.same_left  = single.rt.same_left  - single.react.same_left; % Movement time.
-    single.mt.same_right = single.rt.same_right - single.react.same_right;
-    single.mt.diff_left  = single.rt.diff_left  - single.react.diff_left;
-    single.mt.diff_right = single.rt.diff_right - single.react.diff_right;
-    single.fc.same = data_table.prime_correct(~bad & pas & same); % forced choice.
-    single.fc.diff = data_table.prime_correct(~bad & pas & ~same);
-    single.pas.same = data_table.pas(~bad & same);
-    single.pas.diff = data_table.pas(~bad & ~same);
-    single.mad.same_left  = data_table.(mad_col)(~bad & pas & same  & left); % Maximum absolute deviation.
-    single.mad.same_right = data_table.(mad_col)(~bad & pas & same  & ~left);
-    single.mad.diff_left  = data_table.(mad_col)(~bad & pas & ~same & left);
-    single.mad.diff_right = data_table.(mad_col)(~bad & pas & ~same & ~left);
-    single.mad_p.same_left  = data_table.(mad_p_col)(~bad & pas & same  & left, :); % Maximally deviating point.
-    single.mad_p.same_right = data_table.(mad_p_col)(~bad & pas & same  & ~left, :);
-    single.mad_p.diff_left  = data_table.(mad_p_col)(~bad & pas & ~same & left, :);
-    single.mad_p.diff_right = data_table.(mad_p_col)(~bad & pas & ~same & ~left, :);
+    single.trajs.con_left  = traj_mat(:, ~bad & pas & con  & left, :);
+    single.trajs.con_right = traj_mat(:, ~bad & pas & con  & ~left, :);
+    single.trajs.incon_left  = traj_mat(:, ~bad & pas & ~con & left, :);
+    single.trajs.incon_right = traj_mat(:, ~bad & pas & ~con & ~left, :);
+    single.rt.con_left  = data_table.(offset_col)(~bad & pas & con  & left);
+    single.rt.con_right = data_table.(offset_col)(~bad & pas & con  & ~left);
+    single.rt.incon_left  = data_table.(offset_col)(~bad & pas & ~con & left);
+    single.rt.incon_right = data_table.(offset_col)(~bad & pas & ~con & ~left);
+    single.react.con_left  = data_table.(onset_col)(~bad & pas & con  & left); % Reaction time.
+    single.react.con_right = data_table.(onset_col)(~bad & pas & con  & ~left);
+    single.react.incon_left  = data_table.(onset_col)(~bad & pas & ~con & left);
+    single.react.incon_right = data_table.(onset_col)(~bad & pas & ~con & ~left);
+    single.mt.con_left  = single.rt.con_left  - single.react.con_left; % Movement time.
+    single.mt.con_right = single.rt.con_right - single.react.con_right;
+    single.mt.incon_left  = single.rt.incon_left  - single.react.incon_left;
+    single.mt.incon_right = single.rt.incon_right - single.react.incon_right;
+    single.fc_prime.con = data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
+    single.fc_prime.incon = data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
+    single.pas.con = data_table.pas(~bad & con);
+    single.pas.incon = data_table.pas(~bad & ~con);
+    single.mad.con_left  = data_table.(mad_col)(~bad & pas & con  & left); % Maximum absolute deviation.
+    single.mad.con_right = data_table.(mad_col)(~bad & pas & con  & ~left);
+    single.mad.incon_left  = data_table.(mad_col)(~bad & pas & ~con & left);
+    single.mad.incon_right = data_table.(mad_col)(~bad & pas & ~con & ~left);
+    single.mad_p.con_left  = data_table.(mad_p_col)(~bad & pas & con  & left, :); % Maximally deviating point.
+    single.mad_p.con_right = data_table.(mad_p_col)(~bad & pas & con  & ~left, :);
+    single.mad_p.incon_left  = data_table.(mad_p_col)(~bad & pas & ~con & left, :);
+    single.mad_p.incon_right = data_table.(mad_p_col)(~bad & pas & ~con & ~left, :);
     % Average.
-    avg.traj.same_left   = squeeze(mean(single.trajs.same_left , 2));
-    avg.traj.same_right  = squeeze(mean(single.trajs.same_right, 2));
-    avg.traj.diff_left   = squeeze(mean(single.trajs.diff_left , 2));
-    avg.traj.diff_right  = squeeze(mean(single.trajs.diff_right, 2));
-    avg.rt.same_left     = mean(single.rt.same_left);
-    avg.rt.same_right    = mean(single.rt.same_right);
-    avg.rt.diff_left     = mean(single.rt.diff_left);
-    avg.rt.diff_right    = mean(single.rt.diff_right);
-    avg.react.same_left  = mean(single.react.same_left);
-    avg.react.same_right = mean(single.react.same_right);
-    avg.react.diff_left  = mean(single.react.diff_left);
-    avg.react.diff_right = mean(single.react.diff_right);
-    avg.mt.same_left     = mean(single.mt.same_left);
-    avg.mt.same_right    = mean(single.mt.same_right);
-    avg.mt.diff_left     = mean(single.mt.diff_left);
-    avg.mt.diff_right    = mean(single.mt.diff_right);
-    avg.fc.same          = mean(single.fc.same);
-    avg.fc.diff          = mean(single.fc.diff);
-    avg.mad.same_left    = mean(single.mad.same_left);
-    avg.mad.same_right   = mean(single.mad.same_right);
-    avg.mad.diff_left    = mean(single.mad.diff_left);
-    avg.mad.diff_right   = mean(single.mad.diff_right);
-    avg.mad_p.same_left  = mean(single.mad_p.same_left, 1);
-    avg.mad_p.same_right = mean(single.mad_p.same_right, 1);
-    avg.mad_p.diff_left  = mean(single.mad_p.diff_left, 1);
-    avg.mad_p.diff_right = mean(single.mad_p.diff_right, 1);
-    avg.x_std.same_left  = std(single.trajs.same_left (:,:,1), 0, 2); % std between trials.
-    avg.x_std.same_right = std(single.trajs.same_right(:,:,1), 0, 2);
-    avg.x_std.diff_left  = std(single.trajs.diff_left (:,:,1), 0, 2);
-    avg.x_std.diff_right = std(single.trajs.diff_right(:,:,1), 0, 2);
-    avg.x_avg_std.same_left  = mean(avg.x_std.same_left); % avg across time. one value for whole traj.
-    avg.x_avg_std.same_right = mean(avg.x_std.same_right);
-    avg.x_avg_std.diff_left  = mean(avg.x_std.diff_left);
-    avg.x_avg_std.diff_right = mean(avg.x_std.diff_right);
-    avg.cond_diff.left  = avg.traj.same_left  - avg.traj.diff_left;
-    avg.cond_diff.right = avg.traj.same_right - avg.traj.diff_right;
+    avg.traj.con_left   = squeeze(mean(single.trajs.con_left , 2));
+    avg.traj.con_right  = squeeze(mean(single.trajs.con_right, 2));
+    avg.traj.incon_left   = squeeze(mean(single.trajs.incon_left , 2));
+    avg.traj.incon_right  = squeeze(mean(single.trajs.incon_right, 2));
+    avg.rt.con_left     = mean(single.rt.con_left);
+    avg.rt.con_right    = mean(single.rt.con_right);
+    avg.rt.incon_left     = mean(single.rt.incon_left);
+    avg.rt.incon_right    = mean(single.rt.incon_right);
+    avg.react.con_left  = mean(single.react.con_left);
+    avg.react.con_right = mean(single.react.con_right);
+    avg.react.incon_left  = mean(single.react.incon_left);
+    avg.react.incon_right = mean(single.react.incon_right);
+    avg.mt.con_left     = mean(single.mt.con_left);
+    avg.mt.con_right    = mean(single.mt.con_right);
+    avg.mt.incon_left     = mean(single.mt.incon_left);
+    avg.mt.incon_right    = mean(single.mt.incon_right);
+    avg.fc_prime.con    = mean(single.fc_prime.con);
+    avg.fc_prime.incon    = mean(single.fc_prime.incon);
+    avg.mad.con_left    = mean(single.mad.con_left);
+    avg.mad.con_right   = mean(single.mad.con_right);
+    avg.mad.incon_left    = mean(single.mad.incon_left);
+    avg.mad.incon_right   = mean(single.mad.incon_right);
+    avg.mad_p.con_left  = mean(single.mad_p.con_left, 1);
+    avg.mad_p.con_right = mean(single.mad_p.con_right, 1);
+    avg.mad_p.incon_left  = mean(single.mad_p.incon_left, 1);
+    avg.mad_p.incon_right = mean(single.mad_p.incon_right, 1);
+    avg.x_std.con_left  = std(single.trajs.con_left (:,:,1), 0, 2); % std between trials.
+    avg.x_std.con_right = std(single.trajs.con_right(:,:,1), 0, 2);
+    avg.x_std.incon_left  = std(single.trajs.incon_left (:,:,1), 0, 2);
+    avg.x_std.incon_right = std(single.trajs.incon_right(:,:,1), 0, 2);
+    avg.x_avg_std.con_left  = mean(avg.x_std.con_left); % avg across time. one value for whole traj.
+    avg.x_avg_std.con_right = mean(avg.x_std.con_right);
+    avg.x_avg_std.incon_left  = mean(avg.x_std.incon_left);
+    avg.x_avg_std.incon_right = mean(avg.x_std.incon_right);
+    avg.cond_diff.left  = avg.traj.con_left  - avg.traj.incon_left;
+    avg.cond_diff.right = avg.traj.con_right - avg.traj.incon_right;
     % Count pas ratings.
     for i = 1:4
-        avg.pas.same(i) = sum(single.pas.same == i); 
-        avg.pas.diff(i) = sum(single.pas.diff == i);
+        avg.pas.con(i) = sum(single.pas.con == i); 
+        avg.pas.incon(i) = sum(single.pas.incon == i);
     end
 end

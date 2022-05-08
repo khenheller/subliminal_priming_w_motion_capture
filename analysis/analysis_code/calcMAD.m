@@ -1,4 +1,5 @@
-% Calc maximum absolute deviation for each trial and assignes to new column in data table.
+% Calc maximum absolute deviation (from line between start and end points) for each trial
+% and assignes to new column in data table.
 % We find the point furthest away from the line connecting the start and end points,
 % and calc its distance from that line.
 function data_table = calcMAD(traj_table, data_table, traj_name, p)

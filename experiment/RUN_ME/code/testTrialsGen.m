@@ -6,7 +6,7 @@ function [freq] = testTrialsGen(nSets, p)
     
     p.FULLSCREEN = true; % default = true
     p = initPsychtoolbox();
-    p = initConstants(1, p);
+    p = initConstants(1, 'test', p);
     
     % closes psychtoolbox window
     Priority(0);

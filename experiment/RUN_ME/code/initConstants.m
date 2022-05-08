@@ -1,13 +1,14 @@
 % psychtoolbox_active - Some parameters can only be initiated after psychtoolbox was activated.    
-function [p] = initConstants(psychtoolbox_active, p)
+% list_type - 'practice'/'test'. Used when generating new trials lists. Default is 'test'.
+function [p] = initConstants(psychtoolbox_active, list_type, p)
 
     % Setup
     p.SITTING_DISTANCE = 60; % in cm.
     p.SCREEN_DIST = 0.35; %from start point, in meter.
     p.VIEW_ANGLE_X = 2.5; % in deg.
     p.VIEW_ANGLE_Y = 1;
-    p.FINGER_SIZE = 0.03; %in meter.
-    p.START_POINT_RANGE = 0.02; %3D distance (in meter) from start point which counts as finger in start point.
+    p.FINGER_SIZE = 0.007; %in meter.
+    p.START_POINT_RANGE = 0.01; %3D distance (in meter) from start point which counts as finger in start point.
     
     % TEXT
     p.FONT_TYPE = 'Arial Bold'; %font name e.g. 'David';
@@ -23,27 +24,38 @@ function [p] = initConstants(psychtoolbox_active, p)
     % Paths
     [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
     curr_path = replace(curr_path, '\', '/');
-    p.STIM_FOLDER = [curr_path '/../stimuli/'];
-    p.DATA_FOLDER = [curr_path '/../../../raw_data/'];
-    p.PROC_DATA_FOLDER = [curr_path '/../../../analysis/processed_data/']; % preprocessed data folder.
+    p.EXP_FOLDER = [curr_path];
+    p.STIM_FOLDER = [p.EXP_FOLDER '/../stimuli/'];
+    p.DATA_FOLDER = [p.EXP_FOLDER '/../../../raw_data/'];
+    p.PROC_DATA_FOLDER = [p.EXP_FOLDER '/../../../analysis/processed_data/']; % preprocessed data folder.
     p.TRIALS_FOLDER = [p.STIM_FOLDER '/trial_lists/'];
     p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
-    p.TESTS_FOLDER = [curr_path '/./tests/test_results/'];
+    p.TESTS_FOLDER = [p.EXP_FOLDER '/./tests/test_results/'];
     
     if psychtoolbox_active
+        % Response time constraints of reaching.
         p.REACT_TIME = 0.320; % Maximal allowed time to movement onset (in sec).
+        p.MIN_REACT_TIME = 0.100; % Faster mvmnts are considered predictive (planned before target display).
         p.MOVE_TIME = 0.420; % Maximal allowed movement time (in sec).
-        p.RECOG_CAP_LENGTH_SEC = 7; % Trajectory recording length in sec.
-        p.CATEGOR_CAP_LENGTH_SEC = p.REACT_TIME + p.MOVE_TIME; % in sec.
-        p.RECOG_CAP_LENGTH = p.RECOG_CAP_LENGTH_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
-        p.CATEGOR_CAP_LENGTH = p.CATEGOR_CAP_LENGTH_SEC * p.REF_RATE_HZ;
-        p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
+        p.REACH_RECOG_RT_LIMIT_SEC = 7; % Trajectory recording length in sec.
+        p.REACH_CATEGOR_RT_LIMIT_SEC = p.REACT_TIME + p.MOVE_TIME; % in sec.
+        p.REACH_RECOG_RT_LIMIT = p.REACH_RECOG_RT_LIMIT_SEC * p.REF_RATE_HZ; % Trajectory capture length (num of samples).
+        p.REACH_CATEGOR_RT_LIMIT = p.REACH_CATEGOR_RT_LIMIT_SEC * p.REF_RATE_HZ;
+        p.REACH_MAX_RT_LIMIT = max(p.REACH_RECOG_RT_LIMIT, p.REACH_CATEGOR_RT_LIMIT); % In samples.
+        p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
+        p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
+        p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
+        % Reponse time constraints of keyboard.
+        p.KEYBOARD_MIN_RT_LIMIT_SEC = 0.250; % In seconds.
+        p.KEYBOARD_RECOG_RT_LIMIT_SEC = 7; % RT limit for recognition task.
+        p.KEYBOARD_CATEGOR_RT_LIMIT_SEC = 4; % RT limit for categorization task.
         
         % Response keys.
         KbName('UnifyKeyNames');
-        p.RIGHT_KEY      =  KbName('RightArrow');
-        p.LEFT_KEY       =  KbName('LeftArrow');
-        p.ABORT_KEY      =  KbName('ESCAPE'); % ESC aborts experiment
+        p.RIGHT_KEY      =  KbName('J');
+        p.LEFT_KEY       =  KbName('F');
+        p.ABORT_KEY1     =  KbName('ESCAPE'); % ESC + q aborts experiment
+        p.ABORT_KEY2     =  KbName('Q'); % ESC + q aborts experiment
         p.ONE           =  KbName('1!');  % I did not see the phrase
         p.TWO           =  KbName('2@');  % I had a vague perception, but I don?t know what it was
         p.THREE         =  KbName('3#');  % I saw a clear part of the phrase
@@ -90,8 +102,14 @@ function [p] = initConstants(psychtoolbox_active, p)
         p.PAS_SCREEN = 'pas_screen.jpg';
         p.RECOG_SCREEN = 'recog_screen.jpg';
         p.RTRN_START_POINT_SCREEN = 'return_start_point_screen.jpg';
-        p.LATE_MOVE_ONSET_TXTR = 'late_move_onset_screen.jpg';
-        p.MISS_RESPONSE_WINDOW_TXTR = 'miss_response_window_screen.jpg';
+        p.LATE_RES_SCREEN = 'late_res_screen.jpg';
+        p.SLOW_MVMNT_SCREEN = 'slow_mvmnt_screen.jpg';
+        p.EARLY_RES_SCREEN = 'early_res_screen.jpg';
+        p.WRONG_ANS_SCREEN = 'wrong_ans_screen.jpg';
+        p.BETWEEN_SESSIONS_SCREEN = 'between_sessions_screen.jpg';
+        p.PRESS_SPACE_TO_CONTINUE = 'press_space_to_continue_screen.jpg';
+        p.REACH_RESPONSE_EXPLANATION = 'reach_response_explanation_screen.jpg';
+        p.KEYBOARD_RESPONSE_EXPLANATION = 'keyboard_response_explanation_screen.jpg';
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));
@@ -102,31 +120,44 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.NUMBER_OF_ERRORS_PROMPT = 3;
     p.TIME_SHOW_PROMPT = 1; % seconds
     
-    p.NUM_BLOCKS = 12;
+    switch p.DAY
+        case 'day1'
+            p.NUM_BLOCKS = 6;
+        case 'day2'
+            p.NUM_BLOCKS = 6;
+        otherwise
+            error(['p.DAY has wrong value: ' p.DAY]);
+    end
+    if isequal(list_type, 'practice') % The is relevant when generating a practice block.
+        p.NUM_BLOCKS = 1;
+    end
     p.BLOCK_SIZE = 40; % has to be a multiple of 4.
     p.NUM_TRIALS = p.NUM_BLOCKS*p.BLOCK_SIZE;
+    p.N_CATEGOR = 2; % Num of word categories (2 = natural / artificial).
+    p.CONDS = ["con" "incon"];
+    p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
     
     % duration in sec
-    p.FIX_DURATION = 1 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK1_DURATION = 0.27 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK2_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.PRIME_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.MASK3_DURATION = 0.03 - p.REF_RATE_SEC * 3 / 4;
-    p.TARGET_DURATION = 0.5 - p.REF_RATE_SEC * 3 / 4;
+    p.FIX_DURATION = 1;
+    p.MASK1_DURATION = 0.27;
+    p.MASK2_DURATION = 0.03;
+    p.PRIME_DURATION = 0.03;
+    p.MASK3_DURATION = 0.03;
+    p.TARGET_DURATION = 0.5;
+    p.TARGET_DURATION_SAMPLES = p.TARGET_DURATION * p.REF_RATE_HZ;
+    p.MSG_DURATION = 0.7;
     
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
     % word lists.
-    p.NAT_TARGETS = readtable([p.STIM_FOLDER '/word_lists/nat_targets.xlsx']);
-    p.ART_TARGETS = readtable([p.STIM_FOLDER '/word_lists/art_targets.xlsx']);
-    p.ART_PRIMES = readtable([p.STIM_FOLDER '/word_lists/art_primes.xlsx']);
-    p.NAT_PRIMES = readtable([p.STIM_FOLDER '/word_lists/nat_primes.xlsx']);
-    p.WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/word_freq_list.xlsx']);
+    p.NAT_TARGETS = readtable([p.STIM_FOLDER '/word_lists/' list_type '_nat_targets_' p.DAY '.xlsx']);
+    p.ART_TARGETS = readtable([p.STIM_FOLDER '/word_lists/' list_type '_art_targets_' p.DAY '.xlsx']);
+    p.ART_PRIMES = readtable([p.STIM_FOLDER '/word_lists/' list_type '_art_primes_' p.DAY '.xlsx']);
+    p.NAT_PRIMES = readtable([p.STIM_FOLDER '/word_lists/' list_type '_nat_primes_' p.DAY '.xlsx']);
+    p.WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/' list_type '_word_freq_list_' p.DAY '.xlsx']);
     p.WORD_LIST = p.WORD_LIST(:,[1,3]); % Remove word frequencies.
-    p.PRACTICE_WORD_LIST = readtable([p.STIM_FOLDER '/word_lists/practice_word_freq_list.xlsx']);
-    p.PRACTICE_WORD_LIST  = p.PRACTICE_WORD_LIST (:,[1,3]); % Remove word frequencies.
     
-    if height(p.WORD_LIST)*2 < p.BLOCK_SIZE % *2 because we have 2 comulns.
+    if height(p.WORD_LIST)*2 < p.BLOCK_SIZE % *2 because we have 2 comulns in word_list file.
         error('Word list must be at least as big as block size to prevent words from repeting in the same block');
     end    
     
@@ -147,11 +178,11 @@ function [p] = initConstants(psychtoolbox_active, p)
     %% Analysis params.
     % Missing data restrictions.
     p.MIN_SAMP_LEN = 0.1; % in sec.
-    p.MAX_MISSING_DATA = 0.1; % in sec.
-    p.MAX_BAD_TRIALS = p.NUM_TRIALS / 2; % sub with more bad trials is disqualified.
-    p.MIN_AMNT_TRIALS_IN_COND = 100; % sub with less good trials in each condition is disqualified.
-    p.MIN_CORRECT_ANS = ceil(p.NUM_TRIALS * 0.7); % sub with less amnt of good answeres is disqualified.
-    
+    p.MAX_MISSIN_DATA = 0.1; % in sec.
+    p.MIN_GOOD_TRIALS = 60; % Total, across conditions.
+    p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
+    p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition is disqualified.
+    p.SIG_PVAL = 0.05; % Significance threshold for P-values (smaller p-vals are significant).
     
     % Cameras
     p.SAMPLE_RATE_HZ = p.REF_RATE_HZ; % Camera sample rate in Hz.
@@ -165,8 +196,9 @@ function [p] = initConstants(psychtoolbox_active, p)
     p.VEL_FILTER_CUTOFF = 10;% in Hz.
     
     % Reach distance.
-    p.MAX_DIST_FROM_SCREEN = 0.05; %that is still considered as "touch" in analysis. in meter.
+    p.MAX_DIST_FROM_SCREEN = 0.03; %that is still considered as "touch" in analysis. in meter. This compensates for inaccuracies in the setup (if the startpoint isn't exactly 35cm fomr the screen).
     p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN; % trials with shorter reaches will be discarded.
-    p.TARGET_MISS_RANGE = 0.03; %Touches outside this radius of the target (circle flat on screen, centered on target),
+    p.DIST_BETWEEN_TARGETS = 0.20; % In meter.
+    p.TARGET_MISS_RANGE = 0.12; %Touches outside this radius of the target (circle flat on screen, centered on target),
                                 % are disqualified from analysis.
 end

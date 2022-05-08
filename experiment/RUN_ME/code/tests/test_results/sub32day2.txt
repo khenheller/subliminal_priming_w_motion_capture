@@ -1,0 +1,47 @@
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+2
+Deviating trials and their deviation (in ms, exmaple: -10 = stimuli was 10 ms shorter than desired):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>         <strong>Event</strong>     
+    <strong>________</strong>    <strong>_________</strong>    <strong>_______________</strong>
+       29        29.949      {'mask3_time' }
+       56        10.006      {'target_time'}
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>      <strong>STD</strong>       <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>________</strong>    <strong>______________________________</strong>
+          1000             999.96         0.22206               -0.040964          
+           270             270.01         0.10476               0.0052973          
+            30             29.999         0.11448             -0.00093417          
+            30             29.993        0.092178              -0.0070091          
+            30              30.08          1.3713                0.079807          
+           500              373.1          158.24                  -126.9          
+------------------------------- Has Values -------------------------------
+prime_x_to is missing values in trials: 
+   183
+prime_y_to is missing values in trials: 
+   183
+prime_z_to is missing values in trials: 
+   183
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 0
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 0
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1

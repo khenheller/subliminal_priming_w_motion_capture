@@ -1,7 +1,13 @@
 % Receives single sub's data and runs various tests on it.
-% test_type - 'data', 'trials_list', 'practice_trials_list', each runs different set of tests.
-function [pass_test, test_res] = tests (trials, trials_traj, test_type, p)
+% test_type - 'data', 'trials_list', each runs different set of tests.
+% events - names of the columns containing the event's timestamps.
+% desired_durations - of each event, in sec.
+% test_day - 'day1', 'day2'.
+% is_reach - testing a reaching session (1) or a keyboard response sesssion (0).
+function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, desired_durations, test_day, is_reach, p)
     warning('off','MATLAB:table:ModifiedAndSavedVarnames');
+    traj_end = [];
+    test_res = [];
     
     % Initialize parameters.
     pass_test.deviations = NaN;
@@ -9,55 +15,71 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, p)
     pass_test.std = NaN;
     pass_test.prime_alter = NaN;
     
-    % Remove practice trials, unless testing practice trials.
-    if ~strcmp(test_type, 'practice_trials_list')
+    if strcmp(test_type, 'data')
+        % Remove practice from data.
         trials(trials.practice > 0, :) = [];
-        trials_traj(trials_traj.practice > 0, :) = [];
+        
+        if is_reach
+            % Remove practice drom traj.
+            trials_traj(trials_traj.practice > 0, :) = [];
+            
+            % Get last timestamp in every reach to target.
+            for j = 1:max(trials.iTrial)
+                timecourse = trials_traj.target_timecourse_to(trials_traj.iTrial == j);
+                last_sample_indx = find(~isnan(timecourse), 1, 'last');
+                traj_end(j) = timecourse(last_sample_indx);
+            end
+        end
+    else
+        disp('Didnt run test');
     end
-    
-    % @@@@@@@@@@@@@@@@ Specific for Khen's experiment @@@@@@@@@@@@@@@@
-    % Get last tiemstamp in every reach to target.
-    for j = 1:max(trials.iTrial)
-        timecourse = trials_traj.target_timecourse_to(trials_traj.iTrial == j);
-        last_sample_indx = find(~isnan(timecourse), 1, 'last');
-        traj_end(j) = timecourse(last_sample_indx);
-    end
-    % @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     
     % Test event durations.
     if strcmp(test_type, 'data')
         disp('------------------------------- Event Durations -------------------------------');
-        events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target_time','categor_time'};
         timestamps = trials(:,events);
-        desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
-        [pass_timings , test_res.dev_table] = timingsTest(events, timestamps, traj_end, desired_durations);
+        [pass_timings , test_res.dev_table] = timingsTest(events, timestamps, traj_end, desired_durations, trials.target_rt, is_reach);
         pass_test.deviations = pass_timings.deviations;
         pass_test.deviation_of_mean = pass_timings.deviation_of_mean;
         pass_test.std = pass_timings.std;
+    else
+        disp('Didnt run test');
     end
     
     % Test output has values for all fields.
     if strcmp(test_type, 'data')
         disp('------------------------------- Has Values -------------------------------');
         [pass_test.data_values ~] = hasValuesTest(trials, 'iTrial');
-        [pass_test.traj_values test_res.miss_data] = hasValuesTest(trials_traj, 'iTrial');
+        % Tests traj only in reach session.
+        if is_reach
+            [pass_test.traj_values test_res.miss_data] = hasValuesTest(trials_traj, 'iTrial');
+        else
+            pass_test.traj_values = 1;
+        end
+    else
+        disp('Didnt run test');
     end
     
     % Test prime-target-distractor relations (don't share letters, are from same/diff categor).
     disp('------------------------------- Relations -------------------------------');
-    pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target), 'prime_target', test_type, p);
-    pass_relations.prime_dist = relationsTest(cell2mat(trials.prime), cell2mat(trials.distractor), 'prime_dist', test_type, p);
-    pass_test.prime_target_common_letters = pass_relations.prime_target.common_letters;
-    pass_test.prime_target_categor = pass_relations.prime_target.categor;
-    pass_test.prime_dist_common_letters = pass_relations.prime_dist.common_letters;
-    pass_test.prime_dist_categor = pass_relations.prime_dist.categor;
+    if test_day == 'day2'
+        pass_relations.prime_target = relationsTest(cell2mat(trials.prime), cell2mat(trials.target), 'prime_target', p);
+        pass_relations.prime_dist = relationsTest(cell2mat(trials.prime), cell2mat(trials.distractor), 'prime_dist', p);
+        pass_test.prime_target_common_letters = pass_relations.prime_target.common_letters;
+        pass_test.prime_target_categor = pass_relations.prime_target.categor;
+        pass_test.prime_dist_common_letters = pass_relations.prime_dist.common_letters;
+        pass_test.prime_dist_categor = pass_relations.prime_dist.categor;
+    else
+        disp('Didnt run test');
+    end
     
     % Test conditions count.
     disp('------------------------------- Conditions -------------------------------');
     var_names = {'target_natural','same'};
     vars = trials(:,var_names);
-    lvls = table([1;1;0;0],[1;0;1;0], 'VariableNames',var_names);
-    reps = [120 120 120 120];
+    lvls = table([1;1;0;0],[1;0;1;0], 'VariableNames',var_names); % All possible cominations of conditions.
+    num_cond = p.N_CONDS * p.N_CATEGOR; % Num conditions.
+    reps = (p.NUM_TRIALS / num_cond) * ones(1,num_cond);
     pass_test.conditions = conditionTests(vars, lvls, reps); 
     
     % Test target doesn't repeat in block.
@@ -66,12 +88,16 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, p)
     
     % Test prime alternates between left and right in recog equally.
     disp('------------------------------- Prime right/left alternations -------------------------------');
-    if sum(trials.prime_left) ~= p.NUM_TRIALS / 2
-        disp(['Prime is on left side in categor question: ' num2str(sum(trials.prime_left))...
-            ' times, instead of: ' num2str(p.NUM_TRIALS/2)]);
-        pass_test.prime_alter = 0;
+    if test_day == 'day2'
+        if sum(trials.prime_left) ~= p.NUM_TRIALS / 2
+            disp(['Prime is on left side in categor question: ' num2str(sum(trials.prime_left))...
+                ' times, instead of: ' num2str(p.NUM_TRIALS/2)]);
+            pass_test.prime_alter = 0;
+        else
+            pass_test.prime_alter = 1;
+        end
     else
-        pass_test.prime_alter = 1;
+        disp('Didnt run test');
     end
     
     % Test there are enough trials and blocks.

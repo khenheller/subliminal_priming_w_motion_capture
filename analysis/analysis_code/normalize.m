@@ -15,6 +15,7 @@ function [traj_mat, time_mat] = normalize(traj_mat, p)
             [norm_traj, norm_time] = normalizeFDA({current_traj}, 1, p.NORM_FRAMES, p.NORM_TYPE, p.SAMPLE_RATE_HZ);
             traj_mat(:, iTrial, :) = NaN;
             traj_mat(1:p.NORM_FRAMES, iTrial, :) = norm_traj{1}(:, 1:3); %1:3 are position, 4:6 are velocity
+            traj_mat(1:p.NORM_FRAMES, iTrial, 3) = 100 * (1:p.NORM_FRAMES) / p.NORM_FRAMES; % We normalize to Z so Z values should be % of trajectory traveled, instead of actual Z coordinate.
             time_mat(1:p.NORM_FRAMES, iTrial) = norm_time;
         end
     end

@@ -1,0 +1,288 @@
+------------------------------- Event Durations -------------------------------
+Number of trials devaiting from desired duration:
+223
+Deviating trials and their deviation (in ms, exmple: -10 = stimuli was 10 ms shorter than desired):
+    <strong>TrialNum</strong>    <strong>Deviation</strong>        <strong>Event</strong>    
+    <strong>________</strong>    <strong>_________</strong>    <strong>_____________</strong>
+
+      133        -309.92     'fix_time'   
+      134         69.955     'fix_time'   
+      271         10.072     'fix_time'   
+      272        -60.038     'fix_time'   
+      317        -240.01     'fix_time'   
+      342        -530.03     'fix_time'   
+      367        -170.27     'fix_time'   
+      392        -580.15     'fix_time'   
+      404         10.027     'fix_time'   
+      447        -580.01     'fix_time'   
+      454        -230.04     'fix_time'   
+      133           -270     'mask1_time' 
+      173        -179.94     'mask1_time' 
+      204           -200     'mask1_time' 
+      272           -270     'mask1_time' 
+      317           -270     'mask1_time' 
+      342           -270     'mask1_time' 
+      367           -270     'mask1_time' 
+      392           -270     'mask1_time' 
+      399        -180.02     'mask1_time' 
+      447           -270     'mask1_time' 
+      454           -270     'mask1_time' 
+      456           -220     'mask1_time' 
+      133            -30     'mask2_time' 
+      173            -30     'mask2_time' 
+      204            -30     'mask2_time' 
+      272            -30     'mask2_time' 
+      317            -30     'mask2_time' 
+      342            -30     'mask2_time' 
+      367            -30     'mask2_time' 
+      392            -30     'mask2_time' 
+      399            -30     'mask2_time' 
+      447            -30     'mask2_time' 
+      454            -30     'mask2_time' 
+      456            -30     'mask2_time' 
+      133            -30     'prime_time' 
+      173            -30     'prime_time' 
+      204            -30     'prime_time' 
+      272            -30     'prime_time' 
+      317            -30     'prime_time' 
+      342            -30     'prime_time' 
+      367            -30     'prime_time' 
+      392            -30     'prime_time' 
+      399            -30     'prime_time' 
+      447            -30     'prime_time' 
+      454            -30     'prime_time' 
+      456            -30     'prime_time' 
+      133            -30     'mask3_time' 
+      173            -30     'mask3_time' 
+      204            -30     'mask3_time' 
+      272            -30     'mask3_time' 
+      317            -30     'mask3_time' 
+      342            -30     'mask3_time' 
+      367            -30     'mask3_time' 
+      392            -30     'mask3_time' 
+      399            -30     'mask3_time' 
+      447            -30     'mask3_time' 
+      454            -30     'mask3_time' 
+      456            -30     'mask3_time' 
+       38        -180.04     'target_time'
+       45        -179.99     'target_time'
+       49        -179.99     'target_time'
+       54         -179.9     'target_time'
+       56           -180     'target_time'
+       58        -19.967     'target_time'
+       67        -40.028     'target_time'
+       68        -70.028     'target_time'
+       77        -179.99     'target_time'
+       78        -179.42     'target_time'
+       79        -179.67     'target_time'
+       80        -180.36     'target_time'
+       81        -29.946     'target_time'
+       83        -10.014     'target_time'
+       86        -29.995     'target_time'
+       87        -69.972     'target_time'
+       89        -180.02     'target_time'
+       94        -179.92     'target_time'
+       95           -170     'target_time'
+       96        -50.003     'target_time'
+      105        -89.993     'target_time'
+      109        -20.032     'target_time'
+      116        -10.469     'target_time'
+      120        -69.984     'target_time'
+      133           -500     'target_time'
+      143        -179.97     'target_time'
+      144        -279.64     'target_time'
+      145         -90.14     'target_time'
+      147        -9.9782     'target_time'
+      161         -29.99     'target_time'
+      163        -68.853     'target_time'
+      164           -120     'target_time'
+      167        -179.95     'target_time'
+      171        -180.42     'target_time'
+      173           -500     'target_time'
+      175        -109.99     'target_time'
+      184        -9.9887     'target_time'
+      185        -70.016     'target_time'
+      186        -139.99     'target_time'
+      189        -9.9668     'target_time'
+      190        -59.988     'target_time'
+      192        -19.999     'target_time'
+      194          -10.1     'target_time'
+      204           -500     'target_time'
+      207        -9.5773     'target_time'
+      212        -9.9659     'target_time'
+      217        -120.03     'target_time'
+      223        -29.957     'target_time'
+      224        -10.025     'target_time'
+      229        -49.996     'target_time'
+      233        -9.9998     'target_time'
+      234        -40.004     'target_time'
+      235        -49.984     'target_time'
+      237         -40.11     'target_time'
+      238        -40.001     'target_time'
+      241        -50.009     'target_time'
+      243        -179.92     'target_time'
+      249        -60.005     'target_time'
+      251        -29.875     'target_time'
+      252        -89.943     'target_time'
+      254        -180.03     'target_time'
+      255        -30.029     'target_time'
+      256        -40.279     'target_time'
+      257        -70.006     'target_time'
+      267        -180.05     'target_time'
+      268        -39.962     'target_time'
+      269        -19.562     'target_time'
+      270        -80.063     'target_time'
+      272           -500     'target_time'
+      273        -20.633     'target_time'
+      277         -9.971     'target_time'
+      281        -50.041     'target_time'
+      282        -39.997     'target_time'
+      296        -40.065     'target_time'
+      299        -150.05     'target_time'
+      303        -10.029     'target_time'
+      304        -29.941     'target_time'
+      305        -409.96     'target_time'
+      306        -181.08     'target_time'
+      307        -40.113     'target_time'
+      308        -69.967     'target_time'
+      310        -209.99     'target_time'
+      313        -49.994     'target_time'
+      316        -69.946     'target_time'
+      317           -500     'target_time'
+      318        -79.986     'target_time'
+      323        -9.9927     'target_time'
+      329        -70.643     'target_time'
+      331        -29.999     'target_time'
+      333        -80.036     'target_time'
+      342           -500     'target_time'
+      344           -180     'target_time'
+      345           -180     'target_time'
+      346        -179.97     'target_time'
+      348        -59.986     'target_time'
+      349        -59.859     'target_time'
+      350        -90.066     'target_time'
+      351        -60.003     'target_time'
+      352        -28.876     'target_time'
+      353        -120.27     'target_time'
+      354        -90.156     'target_time'
+      355        -209.98     'target_time'
+      357        -69.131     'target_time'
+      358        -60.272     'target_time'
+      359           -100     'target_time'
+      362        -209.96     'target_time'
+      363           -190     'target_time'
+      364        -229.99     'target_time'
+      365        -19.996     'target_time'
+      366        -130.02     'target_time'
+      367           -500     'target_time'
+      368        -140.23     'target_time'
+      369           -180     'target_time'
+      370        -109.98     'target_time'
+      371        -19.947     'target_time'
+      372        -110.02     'target_time'
+      373        -19.992     'target_time'
+      379        -109.21     'target_time'
+      384         -19.96     'target_time'
+      386        -29.988     'target_time'
+      388        -30.025     'target_time'
+      389        -309.98     'target_time'
+      390           -110     'target_time'
+      392           -500     'target_time'
+      397        -10.361     'target_time'
+      399           -500     'target_time'
+      401         -19.94     'target_time'
+      403        -160.01     'target_time'
+      404        -10.029     'target_time'
+      410        -50.016     'target_time'
+      411        -9.9864     'target_time'
+      413        -49.951     'target_time'
+      414        -50.168     'target_time'
+      416        -10.278     'target_time'
+      417        -59.992     'target_time'
+      419        -170.03     'target_time'
+      420        -59.974     'target_time'
+      425        -79.985     'target_time'
+      428        -149.99     'target_time'
+      431        -39.985     'target_time'
+      432        -119.99     'target_time'
+      435           -460     'target_time'
+      438        -80.017     'target_time'
+      439        -9.9887     'target_time'
+      440        -10.023     'target_time'
+      441        -110.03     'target_time'
+      443        -69.845     'target_time'
+      444        -19.967     'target_time'
+      447           -500     'target_time'
+      450        -49.454     'target_time'
+      452        -40.021     'target_time'
+      453        -9.9069     'target_time'
+      454           -500     'target_time'
+      456           -500     'target_time'
+      457        -29.941     'target_time'
+      460         -29.97     'target_time'
+      461        -59.941     'target_time'
+      463        -19.946     'target_time'
+      465        -19.728     'target_time'
+      472        -39.049     'target_time'
+      474        -219.97     'target_time'
+      475        -19.994     'target_time'
+      476        -109.99     'target_time'
+      478        -49.999     'target_time'
+
+Deviations in ms:
+    <strong>Desired_duration</strong>    <strong>Mean_duration</strong>     <strong>STD</strong>      <strong>Deviation_of_mean_from_desired</strong>
+    <strong>________________</strong>    <strong>_____________</strong>    <strong>______</strong>    <strong>______________________________</strong>
+
+          1000             994.58        49.668                -5.4193           
+           270             263.88        38.687                -6.1233           
+            30             29.257        4.6892               -0.74335           
+            30             29.248        4.6885               -0.75239           
+            30             29.252        4.6879               -0.74803           
+           500             459.79         94.89                -40.207           
+
+------------------------------- Has Values -------------------------------
+target_x_from is missing values in trials: 
+   133
+
+target_y_from is missing values in trials: 
+   133
+
+target_z_from is missing values in trials: 
+   133
+
+prime_x_to is missing values in trials: 
+    65
+   107
+
+prime_y_to is missing values in trials: 
+    65
+   107
+
+prime_z_to is missing values in trials: 
+    65
+   107
+
+------------------------------- Relations -------------------------------
+------------------------------- Conditions -------------------------------
+------------------------------- Target Repeatitions -------------------------------
+------------------------------- Prime right/left alternations -------------------------------
+------------------------------- Count trials and blocks -------------------------------
+------------------------------- Trial Lists -------------------------------
+------------------------------------------------------------------------------------------------
+------------------------------- Test results (0=didnt pass test) -------------------------------
+------------------------------------------------------------------------------------------------
+                     deviations: 0
+              deviation_of_mean: 0
+                            std: 0
+                    prime_alter: 1
+                    data_values: 1
+                    traj_values: 0
+    prime_target_common_letters: 1
+           prime_target_categor: 1
+      prime_dist_common_letters: 1
+             prime_dist_categor: 1
+                     conditions: 1
+               word_dont_repeat: 1
+                    block_count: 1
+                    trial_count: 1
+

@@ -1,7 +1,7 @@
 % Sets up the limits of the screen in space.
 function [touch_plane_info, natnetclient] = touch_plane_setup(varargin)
 
-calibrations_path = 'D:\khen_heller\calibrations\';
+calibrations_path = 'C:\khen_heller\exp\calibrations\';
 %This gives an error (freezes) if the NET assembly is already loaded.  In
 %that case you need to quit Matlab and start over
 
