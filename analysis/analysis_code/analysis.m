@@ -11,7 +11,7 @@ addpath(genpath('./imported_code'));
 SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
 SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
-SUBS = SORTED_SUBS.EXP_2_SUBS; % to analyze.
+SUBS = SORTED_SUBS.EXP_3_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -243,8 +243,8 @@ for iTraj = 1:length(traj_names)
     
     for iSub = good_subs
         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-        reach_area.con(iSub) = calcReachArea(avg.traj.con_left, avg.traj.con_right);
-        reach_area.incon(iSub) = calcReachArea(avg.traj.incon_left, avg.traj.incon_right);
+        reach_area.con(iSub) = calcReachArea(avg.traj.con_left, avg.traj.con_right, p);
+        reach_area.incon(iSub) = calcReachArea(avg.traj.incon_left, avg.traj.incon_right, p);
     end
     save([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'reach_area');
 end
@@ -328,6 +328,7 @@ exp_2_color = [225 225 225] / 255; % used when comparing exp 2 and 3.
 exp_3_color = [0 146 146] / 255;
 first_practice_color = [125 255 0] / 255;
 second_practice_color = [0 125 0] / 255;
+test_color = [240 240 30] / 255;
 
 % Load reach area.
 reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{1}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat']);  reach_area = reach_area.reach_area;
@@ -907,7 +908,7 @@ err_bar_type = 'se';
 for iTraj = 1:length(traj_names)
     hold on;
     beesdata = {avg_each.ra.con(good_subs) avg_each.ra.incon(good_subs)};
-    yLabel = 'Reach area'; % 'Reach area (m^2)';
+    yLabel = 'Reach area (m^2)'; % 'Reach area (m^2)';
     XTickLabels = ["Congruent","Incongruent"];
     colors = {con_col, incon_col};
     title_char = ''; % title_char = cell2mat(['Reach Area ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
@@ -917,7 +918,7 @@ for iTraj = 1:length(traj_names)
     x_data = reshape(get(gca,'XTick'), 2,[]);
     x_data = repelem(x_data,1,length(good_subs));
     connect_dots(x_data, y_data);
-    ylim([2 11]); % ylim([0.006 0.035])
+    ylim([0.01 0.04]);
     h = [];
     h(1) = bar(NaN,NaN,'FaceColor',con_col);
     h(2) = bar(NaN,NaN,'FaceColor',incon_col);
@@ -1176,16 +1177,18 @@ writetable(effects_table, [p.PROC_DATA_FOLDER 'effects_table.csv'], 'WriteMode',
 % Compares n trials from the end of each practice block.
 n_comp_trials = 10;
 % Reation, movement, response times.
-rt = nan(p.MAX_SUB, 2); % 2 =  for 2 practice blocks.
+rt = nan(p.MAX_SUB, 3); % 3 =  for 2 practice blocks and 1 for avg of all test blocks.
 
 % Get data of each sub.
 for iSub = p.SUBS
     data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
     first_block = data_table.target_rt(data_table.practice == 1);
     second_block = data_table.target_rt(data_table.practice == 2);
+    test_blocks = data_table.target_rt(data_table.practice == 0);
     % If subject performed both practices.
     if ~prod(isnan(first_block)) && ~prod(isnan(second_block))
-        rt(iSub, :) = mean([first_block(end-n_comp_trials+1 : end), second_block(end-n_comp_trials+1 : end)], 1, 'omitnan');
+        rt(iSub, 1:2) = mean([first_block(end-n_comp_trials+1 : end), second_block(end-n_comp_trials+1 : end)], 1, 'omitnan');
+        rt(iSub, 3) = mean(test_blocks, 'omitnan');
     end
 end
 
@@ -1198,19 +1201,21 @@ rt = rt * 1000;
 [~, p_value] = ttest(rt(:,1), rt(:,2));
 
 % Plot inconerence.
-fig = figure('Name',"RT comparison between practice blocks");
-beesdata = {rt(:,1), rt(:,2)};
+fig = figure('Name',"RT comparison between practice blocks and also test blocks");
+beesdata = {rt(:,1), rt(:,2), rt(:,3)};
 yLabel = 'Time (milisec)';
-XTickLabel = ["1_s_t", "2_n_d"];
-colors = {first_practice_color, second_practice_color};
-title_char = "RT comparison between practice blocks";
+XTickLabel = ["1_s_t", "2_n_d", "Test"];
+colors = {first_practice_color, second_practice_color, test_color};
+title_char = "RT comparison between practice blocks and also test blocks";
 printBeeswarm(beesdata, yLabel, XTickLabel, colors, space, title_char, 'ci', alpha_size);
 h = [];
 h(1) = bar(NaN,NaN,'FaceColor',first_practice_color);
 h(2) = bar(NaN,NaN,'FaceColor',second_practice_color);
-legend(h,'First practice','Second practice', 'Location','southwest');
+h(3) = bar(NaN,NaN,'FaceColor',test_color);
+legend(h,'First practice','Second practice', 'Avg of test blocks', 'Location','southwest');
 ax = gca;
-text(mean(ax.XTick), max(rt(:))+10, ['p = ' num2str(p_value)], 'FontSize',14, 'HorizontalAlignment','center');
+ylim([350 750]);
+text(mean(ax.XTick(1:2)), max(rt(1:2))+10, ['p = ' num2str(p_value)], 'FontSize',14, 'HorizontalAlignment','center');
 %% GUI, compares proc to real traj.
 % close all;
 % warning('off','MATLAB:legend:IgnoringExtraEntries');

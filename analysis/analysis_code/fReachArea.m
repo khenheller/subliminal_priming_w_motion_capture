@@ -38,7 +38,7 @@ for iSub = subs
             left_avg = mean(datasample(left_trajs, min_amnt, 2), 2);
             right_avg = mean(datasample(right_trajs, min_amnt, 2), 2);
             % Calc area.
-            reach_area = calcReachArea(left_avg, right_avg);
+            reach_area = calcReachArea(left_avg, right_avg, p);
             if reach_area > 15
                 error('Reach area is too big, check for error in analysis.');
             end
