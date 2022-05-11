@@ -48,7 +48,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         % Reponse time constraints of keyboard.
         p.KEYBOARD_MIN_RT_LIMIT_SEC = 0.250; % In seconds.
         p.KEYBOARD_RECOG_RT_LIMIT_SEC = 7; % RT limit for recognition task.
-        p.KEYBOARD_CATEGOR_RT_LIMIT_SEC = 4; % RT limit for categorization task.
+        p.KEYBOARD_CATEGOR_RT_LIMIT_SEC = 0.740; % RT limit for categorization task.
         
         % Response keys.
         KbName('UnifyKeyNames');
