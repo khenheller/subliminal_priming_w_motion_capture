@@ -14,10 +14,10 @@ events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target
 desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
 
 % To test sub data enter his number.
-sub_num = [1028];
+sub_num = [43 44];
 % To test word list enter its name.
 word_list = 'test_trials20day2.xlsx';
-list_type = 'test';
+list_type = 'test'; % 'practice' / 'test' list.
 % Are you testing 'data' of a subject, or just a 'trials_list'.
 test_type = 'data';
 % Day: 'day1' or 'day2'.

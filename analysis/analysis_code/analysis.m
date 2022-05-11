@@ -11,7 +11,8 @@ addpath(genpath('./imported_code'));
 SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
 SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
-SUBS = SORTED_SUBS.EXP_3_SUBS; % to analyze.
+SORTED_SUBS.EXP_4_SUBS = [43 44];
+SUBS = SORTED_SUBS.EXP_4_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -39,7 +40,7 @@ traj_types = replace(traj_types, '_x', '');
 disp("Done setting params.");
 %% Simulates an exp with less trials for each sub.
 % You have to run this before the rest of the analysis if you wish to use simulated subs.
-simulate = 1;
+simulate = 0;
 gen_files = 0; % Generates a new file for each sub. Use 0 only if you already generated in prev run.
 new_num_bloks = 6;
 idx_shift = 200; % data will be saved in a sub num = iSub + idx_shift.
@@ -65,12 +66,12 @@ if simulate
             delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'traj.csv']);
             delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'data.csv']);
             % Reduces num of trials for each sub and saves it as a new sub.
-            traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
-            data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
-            traj_table = traj_table(1:min(new_traj_table_size, height(traj_table)), :);
-            data_table = data_table(1:min(new_data_table_size, height(data_table)), :);
-            writetable(traj_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'traj.csv']);
-            writetable(data_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'data.csv']);
+            reach_traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
+            reach_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
+            reach_traj_table = reach_traj_table(1:min(new_traj_table_size, height(reach_traj_table)), :);
+            reach_data_table = reach_data_table(1:min(new_data_table_size, height(reach_data_table)), :);
+            writetable(reach_traj_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'traj.csv']);
+            writetable(reach_data_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'data.csv']);
             % Copy p.mat and start_end_point to new sub.
             copyfile([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'start_end_points.mat'], [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'start_end_points.mat'], 'f');
             copyfile([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'p.mat'], [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'p.mat'], 'f');
@@ -88,14 +89,17 @@ end
 tic
 disp('Creating processing data files for sub:');
 for iSub = p.SUBS
-    traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
-    data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
+    reach_traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.csv']);
+    reach_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.csv']);
+    keyboard_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.csv']);
     % Change 'same' column to 'con'.
-    if any(contains(data_table.Properties.VariableNames, 'same'))
-        data_table.Properties.VariableNames{'same'} = 'con';
+    if any(contains(reach_data_table.Properties.VariableNames, 'same'))
+        reach_data_table.Properties.VariableNames{'same'} = 'con';
+        keyboard_data_table.Properties.VariableNames{'same'} = 'con';
     end
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.mat'], 'traj_table'); % '.mat' is faster to read than '.csv'.
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.mat'], 'data_table');
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat'], 'reach_traj_table'); % '.mat' is faster to read than '.csv'.
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat'], 'reach_data_table');
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.mat'], 'keyboard_data_table');
     disp(num2str(iSub));
 end
 timing = num2str(toc);
@@ -108,26 +112,26 @@ tic
 disp('Adding missing fields to sub:');
 for iSub = p.SUBS
     % Checks if the fields were already added.
-    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
-    fields = data_table.Properties.VariableNames;
+    reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat']);  reach_data_table = reach_data_table.reach_data_table;
+    fields = reach_data_table.Properties.VariableNames;
     has_t_fields = any(contains(fields, 'late_res')) &...
         any(contains(fields, 'slow_mvmnt')) &...
         any(contains(fields, 'early_res'));
     has_q_field = any(contains(fields, 'quit'));
     % If fields don't exist, add them.
     if ~has_t_fields || ~has_q_field
-        traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_traj.mat']);  traj_table = traj_table.traj_table;
+        reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  reach_traj_table = reach_traj_table.traj_table;
         if ~has_t_fields
             start_end_points = load([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'start_end_points.mat']);
             p.START_POINT = start_end_points.p.START_POINT;
-            data_table = addFields(data_table, traj_table, p);
+            reach_data_table = addFields(reach_data_table, reach_traj_table, p);
             disp([num2str(iSub) ' timing fields']);
         end
         if ~has_q_field
-            data_table.quit(:) = 0;
+            reach_data_table.quit(:) = 0;
             disp([num2str(iSub) ' quit field']);
         end
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.mat'], 'data_table');
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat'], 'reach_data_table');
     end
 end
 timing = num2str(toc);
@@ -136,20 +140,26 @@ disp(['Done Adding missing fields. ' timing 'Sec'])
 % Adds trials to subjects who quit before the experiment ended.
 tic
 for iSub = p.SUBS
-    traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_traj.mat']);  traj_table = traj_table.traj_table;
-    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
+    reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat']);  reach_data_table = reach_data_table.reach_data_table;
+    keyboard_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.mat']);  keyboard_data_table = keyboard_data_table.keyboard_data_table;
     % Remove practice
-    traj_table(traj_table.practice > 0, :) = [];
-    data_table(data_table.practice > 0, :) = [];
+    reach_traj_table(reach_traj_table.practice > 0, :) = [];
+    reach_data_table(reach_data_table.practice > 0, :) = [];
+    keyboard_data_table(keyboard_data_table.practice > 0, :) = [];
     % Fill missing trials.
-    last_trial = height(data_table);
-    if last_trial < p.NUM_TRIALS
-        data_table{last_trial+1 : p.NUM_TRIALS, 'iTrial'} = nan;
-        traj_table{last_trial*p.MAX_CAP_LENGTH+1 : p.NUM_TRIALS*p.MAX_CAP_LENGTH, 'iTrial'} = nan;
+    reach_last_trial = height(reach_data_table);
+    keyboard_last_trial = height(keyboard_data_table);
+    if reach_last_trial < p.NUM_TRIALS || keyboard_last_trial < p.NUM_TRIALS
+        reach_traj_table{reach_last_trial*p.MAX_CAP_LENGTH+1 : p.NUM_TRIALS*p.MAX_CAP_LENGTH, 'iTrial'} = nan;
+        reach_data_table{reach_last_trial+1 : p.NUM_TRIALS, 'iTrial'} = nan;
+        keyboard_data_table{keyboard_last_trial+1 : p.NUM_TRIALS, 'iTrial'} = nan;
         % Mark missing trials.
-        data_table{last_trial+1 : end, 'quit'} = 1;
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat'], 'data_table');
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_traj.mat'], 'traj_table');
+        reach_data_table{reach_last_trial+1 : end, 'quit'} = 1;
+        reach_data_table{keyboard_last_trial+1 : end, 'quit'} = 1;
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat'], 'reach_data_table');
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat'], 'reach_traj_table');
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.mat'], 'keyboard_data_table');
         disp(['Added missing trials to sub' num2str(iSub)]);
     end
 end
@@ -164,25 +174,27 @@ too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
 disp('Preprocessing done for subject:');
 for iSub = p.SUBS
     p = defineParams(p, p.SUBS, DAY, iSub, SORTED_SUBS);
-    traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_traj.mat']);  traj_table = traj_table.traj_table;
-    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
+    reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat']);  reach_data_table = reach_data_table.reach_data_table;
+    keyboard_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.mat']);  keyboard_data_table = keyboard_data_table.keyboard_data_table;
     
     % remove practice.
-    traj_table(traj_table{:,'practice'} > 0, :) = [];
-    data_table(data_table{:,'practice'} > 0, :) = [];
+    reach_traj_table(reach_traj_table{:,'practice'} > 0, :) = [];
+    reach_data_table(reach_data_table{:,'practice'} > 0, :) = [];
     
     % Preprocessing and normalization.
     for iTraj = 1:length(traj_names)
-        [traj_table, data_table, too_short_to_filter{iSub, iTraj}{:}] = preproc(traj_table, data_table, traj_names{iTraj}, p);
+        [reach_traj_table, reach_data_table, too_short_to_filter{iSub, iTraj}{:}] = preproc(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
     end
     % Trim to normalized length (=p.norm_frames).
-    matrix = reshape(traj_table{:,:}, p.MAX_CAP_LENGTH, p.NUM_TRIALS, width(traj_table));
+    matrix = reshape(reach_traj_table{:,:}, p.MAX_CAP_LENGTH, p.NUM_TRIALS, width(reach_traj_table));
     matrix = matrix(1:p.NORM_FRAMES, :, :);
-    traj_table = traj_table(1 : p.NORM_FRAMES * p.NUM_TRIALS, :);
-    traj_table{:,:} = reshape(matrix, p.NORM_FRAMES * p.NUM_TRIALS, width(traj_table));
+    reach_traj_table = reach_traj_table(1 : p.NORM_FRAMES * p.NUM_TRIALS, :);
+    reach_traj_table{:,:} = reshape(matrix, p.NORM_FRAMES * p.NUM_TRIALS, width(reach_traj_table));
     % Save
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj_proc.mat'], 'traj_table');
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data_proc.mat'], 'data_table');
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data_proc.mat'], 'keyboard_data_table'); % Keyboard data isn't pre-processed because there is no need for that.
     disp(num2str(iSub));
 end
 disp('Following trials where too short to filter:');
@@ -193,17 +205,20 @@ disp(['Preprocessing done. ' timing 'Sec']);
 %% Trial Screening
 tic
 for iTraj = 1:length(traj_names)
-    [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_names{iTraj}, p);
-    save([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_trials', 'n_bad_trials', 'bad_trials_i');
+    [reach_bad_trials, reach_n_bad_trials, reach_bad_trials_i] = trialScreen(traj_names{iTraj}, 'reach', p);
+    [keyboard_bad_trials, keyboard_n_bad_trials, keyboard_bad_trials_i] = trialScreen(traj_names{iTraj}, 'keyboard', p);
+    save([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_bad_trials', 'reach_n_bad_trials', 'reach_bad_trials_i', 'keyboard_bad_trials', 'keyboard_n_bad_trials', 'keyboard_bad_trials_i');
 end
 timing = num2str(toc);
 disp(['Trial screening done. ' timing 'Sec']);
 %% Subject screening
 tic
 for iTraj = 1:length(traj_names')
-    bad_subs = subScreening(traj_names{iTraj}, pas_rate, p);
+    reach_bad_subs = subScreening(traj_names{iTraj}, pas_rate, 'reach', p);
+    keyboard_bad_subs = subScreening(traj_names{iTraj}, pas_rate, 'keyboard', p);
+    bad_subs = array2table(reach_bad_subs{:,:} | keyboard_bad_subs{:,:}, 'VariableNames',reach_bad_subs.Properties.VariableNames);
     good_subs = p.SUBS(~ismember(p.SUBS, find(bad_subs.any)));
-    save([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');
+    save([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs', 'reach_bad_subs', 'keyboard_bad_subs');
     save([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'good_subs');
 end
 timing = num2str(toc);
@@ -212,10 +227,10 @@ disp(['Sub screening done. ' timing 'Sec']);
 tic
 for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
-        traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_' 'traj_proc.mat']);  traj_table = traj_table.traj_table;
-        data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_' 'data_proc.mat']);  data_table = data_table.data_table;
-        data_table = calcMAD(traj_table, data_table, traj_names{iTraj}, p);
-        save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_' 'data_proc.mat'], 'data_table');
+        reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+        reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
+        reach_data_table = calcMAD(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
+        save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
     end
 end
 timing = num2str(toc);
@@ -223,11 +238,13 @@ disp(['MAD calc done. ' timing 'Sec']);
 %% Sorting and averaging (within subject)
 tic
 for iTraj = 1:length(traj_names)
-    bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_trials');  bad_trials = bad_trials.bad_trials;
+    bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);
+    reach_bad_trials = bad_trials.reach_bad_trials;
+    keyboard_bad_trials = bad_trials.keyboard_bad_trials;
     for iSub = p.SUBS
-        [avg, single] = avgWithin(iSub, traj_names{iTraj}, bad_trials, pas_rate, p);
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat'], 'single');
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat'], 'avg');
+        [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iSub, traj_names{iTraj}, reach_bad_trials, keyboard_bad_trials, pas_rate, p);
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat'], 'reach_single', 'keyboard_single');
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat'], 'reach_avg', 'keyboard_avg');
     end
 end
 timing = num2str(toc);
@@ -242,9 +259,9 @@ for iTraj = 1:length(traj_names)
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
     
     for iSub = good_subs
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-        reach_area.con(iSub) = calcReachArea(avg.traj.con_left, avg.traj.con_right, p);
-        reach_area.incon(iSub) = calcReachArea(avg.traj.incon_left, avg.traj.incon_right, p);
+        reach_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  reach_avg = reach_avg.reach_avg;
+        reach_area.con(iSub) = calcReachArea(reach_avg.traj.con_left, reach_avg.traj.con_right, p);
+        reach_area.incon(iSub) = calcReachArea(reach_avg.traj.incon_left, reach_avg.traj.incon_right, p);
     end
     save([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'reach_area');
 end
@@ -253,8 +270,8 @@ disp(['Reach area calc done. ' timing 'Sec']);
 %% Sorting and averaging (between subjects)
 tic
 for iTraj = 1:length(traj_names)
-    subs_avg = avgBetween(traj_names{iTraj}, p);
-    save([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'subs_avg');
+    [reach_subs_avg, keyboard_subs_avg] = avgBetween(traj_names{iTraj}, p);
+    save([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_subs_avg', 'keyboard_subs_avg');
 end
 timing = num2str(toc);
 disp(['Sorting and avging between sub done. ' timing 'Sec']);
@@ -273,62 +290,67 @@ for iTraj = 1:length(traj_names)
         'incon_left',NaN(p.MAX_SUB,1), 'incon_right',NaN(p.MAX_SUB,1));
     for iSub = p.SUBS
         % Get trials stats for this sub.
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']); single = single.single;
-        num_trials.con_left(iSub)  = size(single.rt.con_left, 1);
-        num_trials.con_right(iSub) = size(single.rt.con_right, 1);
-        num_trials.incon_left(iSub)  = size(single.rt.incon_left, 1);
-        num_trials.incon_right(iSub) = size(single.rt.incon_right, 1);
+        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);
+        reach_single = single.reach_single;
+        keyboard_single = single.keyboard_single;
+        reach_num_trials.con_left(iSub)  = size(reach_single.rt.con_left, 1);
+        reach_num_trials.con_right(iSub) = size(reach_single.rt.con_right, 1);
+        reach_num_trials.incon_left(iSub)  = size(reach_single.rt.incon_left, 1);
+        reach_num_trials.incon_right(iSub) = size(reach_single.rt.incon_right, 1);
+        keyboard_num_trials.con_left(iSub)  = size(keyboard_single.rt.con_left, 1);
+        keyboard_num_trials.con_right(iSub) = size(keyboard_single.rt.con_right, 1);
+        keyboard_num_trials.incon_left(iSub)  = size(keyboard_single.rt.incon_left, 1);
+        keyboard_num_trials.incon_right(iSub) = size(keyboard_single.rt.incon_right, 1);
     end
-    save([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'num_trials');
+    save([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_num_trials', 'keyboard_num_trials');
 end
 timing = num2str(toc);
 disp(['Counting trials in each condition done. ' timing 'Sec']);
 %% Format to R
+% % Convert matlab data to a format suitable for R dataframes.
 % You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
-% You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
-% Convert matlab data to a format suitable for R dataframes.
-tic
-for iTraj = 1:length(traj_names)
-    % Get bad subs.
-    bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
-    bad_subs_numbers = find(bad_subs.any);
-    
-    % Reach Area.
-    reach_area = fReachArea(traj_names{iTraj}, bs_iter, p);
-    writetable(reach_area, [p.PROC_DATA_FOLDER '/reach_area_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-
-    % MAD
-    mad = fMAD(traj_names{iTraj}, p);
-    mad(ismember(mad.sub, bad_subs_numbers), :) = [];
-    writetable(mad, [p.PROC_DATA_FOLDER '/mad_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-
-    % Traj
-    traj = fTraj(traj_names{iTraj}, p);
-    traj(ismember(traj.sub, bad_subs_numbers), :) = [];
-    writetable(traj, [p.PROC_DATA_FOLDER '/xpos_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-end
-timing = num2str(toc);
-disp(['Formating to R done. ' timing 'Sec']);
-% You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
+% tic
+% for iTraj = 1:length(traj_names)
+%     % Get bad subs.
+%     bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
+%     bad_subs_numbers = find(bad_subs.any);
+%     
+%     % Reach Area.
+%     reach_area = fReachArea(traj_names{iTraj}, bs_iter, p);
+%     writetable(reach_area, [p.PROC_DATA_FOLDER '/reach_area_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+% 
+%     % MAD
+%     mad = fMAD(traj_names{iTraj}, p);
+%     mad(ismember(mad.sub, bad_subs_numbers), :) = [];
+%     writetable(mad, [p.PROC_DATA_FOLDER '/mad_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+% 
+%     % Traj
+%     traj = fTraj(traj_names{iTraj}, p);
+%     traj(ismember(traj.sub, bad_subs_numbers), :) = [];
+%     writetable(traj, [p.PROC_DATA_FOLDER '/xpos_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+% end
+% timing = num2str(toc);
+% disp(['Formating to R done. ' timing 'Sec']);
+% % You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
 %% Plotting params
 disp("Started setting plotting params.");
 close all;
 
-avg_plot_width = 4;
-alpha_size = 0.05; % For confidence interval.
-space = 4; % between beeswarm graphs.
+plt_p.avg_plot_width = 4;
+plt_p.alpha_size = 0.05; % For confidence interval.
+plt_p.space = 4; % between beeswarm graphs.
 % Color of plots.
-f_alpha = 0.2; % transperacy of shading.
-linewidth = 4; % Used for some graphs.
-con_col = [0 0.35294 0.7098];%[0 0.4470 0.7410 f_f_alpha];
-con_avg_col = 'b';
-incon_col = [0.86275 0.19608 0.12549];%[0.6350 0.0780 0.1840 f_f_alpha];
-incon_avg_col = 'r';
-exp_2_color = [225 225 225] / 255; % used when comparing exp 2 and 3.
-exp_3_color = [0 146 146] / 255;
-first_practice_color = [125 255 0] / 255;
-second_practice_color = [0 125 0] / 255;
-test_color = [240 240 30] / 255;
+plt_p.f_alpha = 0.2; % transperacy of shading.
+plt_p.linewidth = 4; % Used for some graphs.
+plt_p.con_col = [0 0.35294 0.7098];%[0 0.4470 0.7410 f_f_alpha];
+plt_p.con_avg_col = 'b';
+plt_p.incon_col = [0.86275 0.19608 0.12549];%[0.6350 0.0780 0.1840 f_f_alpha];
+plt_p.incon_avg_col = 'r';
+plt_p.reach_color = [225 225 225] / 255; % used when comparing exp 2 and 3.
+plt_p.keyboard_color = [0 146 146] / 255;
+plt_p.first_practice_color = [125 255 0] / 255;
+plt_p.second_practice_color = [0 125 0] / 255;
+plt_p.test_color = [240 240 30] / 255;
 
 % Load reach area.
 reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{1}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat']);  reach_area = reach_area.reach_area;
@@ -336,62 +358,73 @@ reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{1}{1} '_' p.DAY '
 % Unite all subs to one variable.
 for iSub = p.SUBS
     for iTraj = 1:length(traj_names)
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-        avg_each.traj(iTraj).con_left(:,iSub,:) = avg.traj.con_left;
-        avg_each.traj(iTraj).con_right(:,iSub,:) = avg.traj.con_right;
-        avg_each.traj(iTraj).incon_left(:,iSub,:) = avg.traj.incon_left;
-        avg_each.traj(iTraj).incon_right(:,iSub,:) = avg.traj.incon_right;
-        avg_each.rt(iTraj).con_left(iSub)  = avg.rt.con_left;
-        avg_each.rt(iTraj).con_right(iSub) = avg.rt.con_right;
-        avg_each.rt(iTraj).incon_left(iSub)  = avg.rt.incon_left;
-        avg_each.rt(iTraj).incon_right(iSub) = avg.rt.incon_right;
-        avg_each.react(iTraj).con_left(iSub)  = avg.react.con_left;
-        avg_each.react(iTraj).con_right(iSub) = avg.react.con_right;
-        avg_each.react(iTraj).incon_left(iSub)  = avg.react.incon_left;
-        avg_each.react(iTraj).incon_right(iSub) = avg.react.incon_right;
-        avg_each.mt(iTraj).con_left(iSub)  = avg.mt.con_left;
-        avg_each.mt(iTraj).con_right(iSub) = avg.mt.con_right;
-        avg_each.mt(iTraj).incon_left(iSub)  = avg.mt.incon_left;
-        avg_each.mt(iTraj).incon_right(iSub) = avg.mt.incon_right;
-        avg_each.mad(iTraj).con_left(iSub)  = avg.mad.con_left;
-        avg_each.mad(iTraj).con_right(iSub) = avg.mad.con_right;
-        avg_each.mad(iTraj).incon_left(iSub)  = avg.mad.incon_left;
-        avg_each.mad(iTraj).incon_right(iSub) = avg.mad.incon_right;
-        avg_each.x_std(iTraj).con_left(:,iSub)  = avg.x_std.con_left;
-        avg_each.x_std(iTraj).con_right(:,iSub) = avg.x_std.con_right;
-        avg_each.x_std(iTraj).incon_left(:,iSub)  = avg.x_std.incon_left;
-        avg_each.x_std(iTraj).incon_right(:,iSub) = avg.x_std.incon_right;
-        avg_each.cond_diff(iTraj).left(:,iSub,:)  = avg.cond_diff.left;
-        avg_each.cond_diff(iTraj).right(:,iSub,:) = avg.cond_diff.right;
-        avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
-        avg_each.ra(iTraj).incon(iSub) = reach_area.incon(iSub);
-        avg_each.rt(iTraj).diff(iSub)  = mean([avg.rt.con_left - avg.rt.incon_left,...
-                                                avg.rt.con_right - avg.rt.incon_right]);
-        avg_each.react(iTraj).diff(iSub)  = mean([avg.react.con_left - avg.react.incon_left,...
-                                                avg.react.con_right - avg.react.incon_right]);
-        avg_each.mt(iTraj).diff(iSub)  = mean([avg.mt.con_left - avg.mt.incon_left,...
-                                                avg.mt.con_right - avg.mt.incon_right]);
-        avg_each.mad(iTraj).diff(iSub)  = mean([avg.mad.con_left - avg.mad.incon_left,...
-                                                avg.mad.con_right - avg.mad.incon_right]);
-        avg_each.x_dev(iTraj).diff(:,iSub) = mean([-1 * (avg.traj.con_left(:,1) - avg.traj.incon_left(:,1)),...
-                                                    (avg.traj.con_right(:,1) - avg.traj.incon_right(:,1))],...
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);
+        reach_avg = avg.reach_avg;
+        keyboard_avg = avg.keyboard_avg;
+        reach_avg_each.traj(iTraj).con_left(:,iSub,:) = reach_avg.traj.con_left;
+        reach_avg_each.traj(iTraj).con_right(:,iSub,:) = reach_avg.traj.con_right;
+        reach_avg_each.traj(iTraj).incon_left(:,iSub,:) = reach_avg.traj.incon_left;
+        reach_avg_each.traj(iTraj).incon_right(:,iSub,:) = reach_avg.traj.incon_right;
+        reach_avg_each.rt(iTraj).con_left(iSub)  = reach_avg.rt.con_left;
+        reach_avg_each.rt(iTraj).con_right(iSub) = reach_avg.rt.con_right;
+        reach_avg_each.rt(iTraj).incon_left(iSub)  = reach_avg.rt.incon_left;
+        reach_avg_each.rt(iTraj).incon_right(iSub) = reach_avg.rt.incon_right;
+        reach_avg_each.react(iTraj).con_left(iSub)  = reach_avg.react.con_left;
+        reach_avg_each.react(iTraj).con_right(iSub) = reach_avg.react.con_right;
+        reach_avg_each.react(iTraj).incon_left(iSub)  = reach_avg.react.incon_left;
+        reach_avg_each.react(iTraj).incon_right(iSub) = reach_avg.react.incon_right;
+        reach_avg_each.mt(iTraj).con_left(iSub)  = reach_avg.mt.con_left;
+        reach_avg_each.mt(iTraj).con_right(iSub) = reach_avg.mt.con_right;
+        reach_avg_each.mt(iTraj).incon_left(iSub)  = reach_avg.mt.incon_left;
+        reach_avg_each.mt(iTraj).incon_right(iSub) = reach_avg.mt.incon_right;
+        reach_avg_each.mad(iTraj).con_left(iSub)  = reach_avg.mad.con_left;
+        reach_avg_each.mad(iTraj).con_right(iSub) = reach_avg.mad.con_right;
+        reach_avg_each.mad(iTraj).incon_left(iSub)  = reach_avg.mad.incon_left;
+        reach_avg_each.mad(iTraj).incon_right(iSub) = reach_avg.mad.incon_right;
+        reach_avg_each.x_std(iTraj).con_left(:,iSub)  = reach_avg.x_std.con_left;
+        reach_avg_each.x_std(iTraj).con_right(:,iSub) = reach_avg.x_std.con_right;
+        reach_avg_each.x_std(iTraj).incon_left(:,iSub)  = reach_avg.x_std.incon_left;
+        reach_avg_each.x_std(iTraj).incon_right(:,iSub) = reach_avg.x_std.incon_right;
+        reach_avg_each.cond_diff(iTraj).left(:,iSub,:)  = reach_avg.cond_diff.left;
+        reach_avg_each.cond_diff(iTraj).right(:,iSub,:) = reach_avg.cond_diff.right;
+        reach_avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
+        reach_avg_each.ra(iTraj).incon(iSub) = reach_area.incon(iSub);
+        keyboard_avg_each.rt(iTraj).con_left(iSub)  = keyboard_avg.rt.con_left;
+        keyboard_avg_each.rt(iTraj).con_right(iSub) = keyboard_avg.rt.con_right;
+        keyboard_avg_each.rt(iTraj).incon_left(iSub)  = keyboard_avg.rt.incon_left;
+        keyboard_avg_each.rt(iTraj).incon_right(iSub) = keyboard_avg.rt.incon_right;
+        % Compute diff between conditions (con/incon).
+        reach_avg_each.rt(iTraj).diff(iSub)  = mean([reach_avg.rt.con_left - reach_avg.rt.incon_left,...
+                                                reach_avg.rt.con_right - reach_avg.rt.incon_right]);
+        reach_avg_each.react(iTraj).diff(iSub)  = mean([reach_avg.react.con_left - reach_avg.react.incon_left,...
+                                                reach_avg.react.con_right - reach_avg.react.incon_right]);
+        reach_avg_each.mt(iTraj).diff(iSub)  = mean([reach_avg.mt.con_left - reach_avg.mt.incon_left,...
+                                                reach_avg.mt.con_right - reach_avg.mt.incon_right]);
+        reach_avg_each.mad(iTraj).diff(iSub)  = mean([reach_avg.mad.con_left - reach_avg.mad.incon_left,...
+                                                reach_avg.mad.con_right - reach_avg.mad.incon_right]);
+        reach_avg_each.x_dev(iTraj).diff(:,iSub) = mean([-1 * (reach_avg.traj.con_left(:,1) - reach_avg.traj.incon_left(:,1)),...
+                                                    (reach_avg.traj.con_right(:,1) - reach_avg.traj.incon_right(:,1))],...
                                                     2);
-        avg_each.x_std(iTraj).diff(:,iSub) = mean([avg.x_std.con_left - avg.x_std.incon_left,...
-                                                    avg.x_std.con_right - avg.x_std.incon_right],...
+        reach_avg_each.x_std(iTraj).diff(:,iSub) = mean([reach_avg.x_std.con_left - reach_avg.x_std.incon_left,...
+                                                    reach_avg.x_std.con_right - reach_avg.x_std.incon_right],...
                                                     2);
-        avg_each.ra(iTraj).diff(iSub) = reach_area.con(iSub) - reach_area.incon(iSub);
+        reach_avg_each.ra(iTraj).diff(iSub) = reach_area.con(iSub) - reach_area.incon(iSub);
+        keyboard_avg_each.rt(iTraj).diff(iSub)  = mean([keyboard_avg.rt.con_left - keyboard_avg.rt.incon_left,...
+                                                keyboard_avg.rt.con_right - keyboard_avg.rt.incon_right]);
     end
-    avg_each.fc_prime.con(iSub) = avg.fc_prime.con;
-    avg_each.fc_prime.incon(iSub) = avg.fc_prime.incon;
+    reach_avg_each.fc_prime.con(iSub) = reach_avg.fc_prime.con;
+    reach_avg_each.fc_prime.incon(iSub) = reach_avg.fc_prime.incon;
+    keyboard_avg_each.fc_prime.con(iSub) = keyboard_avg.fc_prime.con;
+    keyboard_avg_each.fc_prime.incon(iSub) = keyboard_avg.fc_prime.incon;
 end
-save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'avg_each');
+save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_avg_each', 'keyboard_avg_each');
 disp("Done setting plotting params.");
 %% Single Sub plots.
 % Create figure for each sub.
 for iSub = p.SUBS
     sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
     sub_f(iSub,2) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
-%     sub_f(iSub,3) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
+    sub_f(iSub,3) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
     % Add title.
     figure(sub_f(iSub,1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
     figure(sub_f(iSub,2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
@@ -400,202 +433,44 @@ end
 
 % ------- Traj of each trial -------
 for iSub = p.SUBS
-%     figure('Name',['sub' num2str(iSub) ' traj'],'WindowState','maximized', 'MenuBar','figure');
     figure(sub_f(iSub,1));
     subplot(2,3,1);
-    for iTraj = 1:length(traj_names)
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-        % Flips traj to screen since its Z values are negative.
-        flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-%         subplot(2,2,iTraj);
-        hold on;
-        % single trial.
-        p1 = plot(single.trajs.con_left(:,:,1),  single.trajs.con_left(:,:,3)*flip_traj,  'Color',[con_col f_alpha]);
-        p2 = plot(single.trajs.con_right(:,:,1), single.trajs.con_right(:,:,3)*flip_traj, 'Color',[con_col f_alpha]);
-        p3 = plot(single.trajs.incon_left(:,:,1),  single.trajs.incon_left(:,:,3)*flip_traj,  'Color',[incon_col f_alpha]);
-        p4 = plot(single.trajs.incon_right(:,:,1), single.trajs.incon_right(:,:,3)*flip_traj, 'Color',[incon_col f_alpha]);
-        % Averages.
-        plot(avg.traj.con_left(:,1),  avg.traj.con_left(:,3) * flip_traj,  con_avg_col, 'LineWidth',avg_plot_width);
-        plot(avg.traj.con_right(:,1), avg.traj.con_right(:,3) * flip_traj, con_avg_col, 'LineWidth',avg_plot_width);
-        plot(avg.traj.incon_left(:,1),  avg.traj.incon_left(:,3) * flip_traj,  incon_avg_col, 'LineWidth',avg_plot_width);
-        plot(avg.traj.incon_right(:,1), avg.traj.incon_right(:,3) * flip_traj, incon_avg_col, 'LineWidth',avg_plot_width);
-
-        % plot's description.
-        h = [];
-        h(1) = plot(nan,nan,'Color',con_col);
-        h(2) = plot(nan,nan,'Color',incon_col);
-        h(3) = plot(nan,nan,con_avg_col);
-        h(4) = plot(nan,nan,incon_avg_col);
-        legend(h, 'Con', 'Incon', 'Con avg', 'Incon avg', 'Location','southeast');
-        xlabel('X'); xlim([-0.12, 0.12]);
-        ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
-        ylabel('Y');
-        title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
-        set(gca, 'FontSize',14);
-    end
+    plotAllTrajs(iSub, traj_names, plt_p, p);
 end
 
 % ------- Avg traj with shade -------
 for iSub = p.SUBS
-%     figure('Name',['sub' num2str(iSub) p.DAY '_' ' traj'],'WindowState','maximized', 'MenuBar','figure');
     figure(sub_f(iSub,1));
     subplot(2,3,2);
-    for iTraj = 1:length(traj_names)
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-        % Flips traj to screen since its Z values are negative.
-        flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-%         subplot(2,2,iTraj);
-        hold on;
-        % Avg with var shade.
-        stdshade(single.trajs.con_left(:,:,1)',  f_alpha, con_col, avg.traj.con_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-        stdshade(single.trajs.con_right(:,:,1)', f_alpha, con_col, avg.traj.con_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-        stdshade(single.trajs.incon_left(:,:,1)',  f_alpha, incon_col, avg.traj.incon_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-        stdshade(single.trajs.incon_right(:,:,1)', f_alpha, incon_col, avg.traj.incon_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-        h = [];
-        h(1) = plot(nan,nan,'Color',con_col);
-        h(2) = plot(nan,nan,'Color',incon_col);
-        legend(h, 'Con', 'Incon', 'Location','southeast');
-        xlabel('X'); xlim([-0.12, 0.12]);
-        ylabel('Z Axis (to screen)');
-        title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
-        set(gca, 'FontSize',14);
-    end
+    plotAvgTrajWithShade(iSub, traj_names, plt_p, p);
 end
 
 % ------- React + Movement + Response Times -------
 for iSub = p.SUBS
     figure(sub_f(iSub,1));
     subplot(2,1,2);
-    for iTraj = 1:length(traj_names)
-        hold on;
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-        beesdata = {single.react.con_left,  single.react.incon_left,...
-                    single.mt.con_left,     single.mt.incon_left,...
-                    single.rt.con_left,     single.rt.incon_left,...
-                    single.react.con_right, single.react.incon_right,...
-                    single.mt.con_right,    single.mt.incon_right,...
-                    single.rt.con_right,    single.rt.incon_right};
-        yLabel = 'Time (Sec)';
-        XTickLabel = [];
-        colors = repmat({con_col, incon_col},1,6);
-        title_char = cell2mat(['Time ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
-        printBeeswarm(beesdata, yLabel, XTickLabel, colors, space, title_char, 'ci', alpha_size);
-        % Group graphs.
-        ticks = get(gca,'XTick');
-        labels = {["",""]; ["React","MT","RT"]; ["Left","Right"]};
-        dist = [0, 0.15, 0.4];
-        font_size = [1, 15, 20];
-        groupTick(ticks, labels, dist, font_size)
-        h = [];
-        h(1) = bar(NaN,NaN,'FaceColor',con_col);
-        h(2) = bar(NaN,NaN,'FaceColor',incon_col);
-        legend(h,'Con','Incon', 'Location','northwest');
-    end
+    plotReactMtRt(iSub, traj_names, plt_p, p);
 end
 
-% ------- Reaction Time -------
-% for iSub = p.SUBS
-%     figure(sub_f(iSub));
-%     subplot(2,1,2);
-%     for iTraj = 1:length(traj_names)
-%         hold on;
-%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-%         beesdata = {single.react.con_left, single.react.incon_left, single.react.con_right, single.react.incon_right};
-%         yLabel = 'Reaction Time (Sec)';
-%         XTickLabels = {'Con left', 'Incon left', 'Con right', 'Incon right'};%cellstr(strrep(fieldnames(single.rt), '_',' '))'; % remove '_' from names.
-%         colors = {con_col, incon_col, con_col, incon_col};
-%         title_char = cell2mat(['Reaction Time ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
-%         printBeeswarm(beesdata, yLabel, XTickLabels, colors, space, title_char, 'ci', alpha_size);
-%     end
-% end
-
-% ------- Movement Time -------
-% for iSub = p.SUBS
-%     figure(sub_f(iSub));
-%     subplot(2,1,2);
-%     for iTraj = 1:length(traj_names)
-%         hold on;
-%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-%         beesdata = {single.mt.con_left, single.mt.incon_left, single.mt.con_right, single.mt.incon_right};
-%         XTickLabels = {'Con left', 'Incon left', 'Con right', 'Incon right'};%cellstr(strrep(fieldnames(single.rt), '_',' '))'; % remove '_' from names.
-%         yLabel = 'Movement Time (Sec)';
-%         colors = {con_col, incon_col, con_col, incon_col};
-%         title_char = cell2mat(['Movement Time ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
-%         printBeeswarm(beesdata, yLabel, XTickLabels, colors, space, title_char, 'ci', alpha_size);
-%     end
-% end
-
-% ------- RT -------
-% for iSub = p.SUBS
-%     figure(sub_f(iSub));
-%     subplot(2,1,2);
-%     for iTraj = 1:length(traj_names)
-%         hold on;
-%         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-%         beesdata = {single.rt.con_left, single.rt.incon_left, single.rt.con_right, single.rt.incon_right};
-%         XTickLabels = {'Con left', 'Incon left', 'Con right', 'Incon right'};%cellstr(strrep(fieldnames(single.rt), '_',' '))'; % remove '_' from names.
-%         yLabel = 'RT (Sec)';
-%         colors = {con_col, incon_col, con_col, incon_col};
-%         title_char = cell2mat(['RT ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
-%         printBeeswarm(beesdata, yLabel, XTickLabels, colors, space, title_char, 'ci', alpha_size);
-%     end
-% end
+% ------- Keyboard Response Times -------
+for iSub = p.SUBS
+    figure(sub_f(iSub,3));
+    subplot(1,1,1);
+    plotKeyboardRt(iSub, traj_names{1}{1}, plt_p, p);
+end
 
 % ------- PAS -------
 for iSub = p.SUBS
-%     figure('Name',['sub' num2str(iSub) p.DAY '_' ' PAS']);
     figure(sub_f(iSub,1));
     subplot(2,6,5);
-    avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-    bar(1:4, avg.pas.con * 100 / sum(avg.pas.con), 'FaceColor',con_col);
-    hold on;
-    bar(5:8, avg.pas.incon * 100 / sum(avg.pas.incon), 'FaceColor',incon_col);
-    xticks(1:8);
-    yticks(0:10:100);
-    xticklabels({1:4 1:4});
-    legend('Con','Incon');
-    xlabel('PAS');
-    ylabel('%', 'FontWeight','bold');
-    ylim([0 100]);
-    title(['PAS']);
-    set(gca,'FontSize',14);
-    ax = gca;
-    ax.YGrid = 'on';
+    plotPas(iSub, traj_names{1}{1}, plt_p, p);
 end
 
 % ------- Prime Forced Choice -------
 for iSub = p.SUBS
-%     figure('Name',['sub' num2str(iSub) p.DAY '_' ' Forced Choice']);
     figure(sub_f(iSub,1));
     subplot(2,6,6);
-    avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-    single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-    fc_con = avg.fc_prime.con * 100; % percentage.
-    fc_incon = avg.fc_prime.incon * 100;
-    bar(1, fc_con, 'FaceColor',con_col);
-    hold on;
-    bar(2, fc_incon, 'FaceColor',incon_col);
-    xticks(1:2);
-    xticklabels({[num2str(round(fc_con,1)) '%'] [num2str(round(fc_incon,1)) '%']});
-    yticks(0:10:100);
-    plot([0 4], [50 50], '--k');
-    legend('Con','Incon');
-    xlabel('Con / Incon');
-    ylabel('%Correct', 'FontWeight','bold');
-    ylim([0 100]);
-    title(['Prime Forced Choice (PAS=1)']);
-    set(gca,'FontSize',14);
-    ax = gca;
-    ax.YGrid = 'on';
-    % Binomial test.
-    n_con_trials = size(single.fc_prime.con,1);
-    n_incon_trials = size(single.fc_prime.incon,1);
-    binom_con = round(myBinomTest(sum(single.fc_prime.con), n_con_trials, 0.5, 'Two'), 3);
-    binom_incon = round(myBinomTest(sum(single.fc_prime.incon), n_incon_trials, 0.5, 'Two'), 3);
-    text(1, fc_con+5, ['p_{bin}=' num2str(binom_con)], 'HorizontalAlignment','center');
-    text(2, fc_incon+5, ['p_{bin}=' num2str(binom_incon)], 'HorizontalAlignment','center');
+    plotRecognition(iSub, pas_rate, traj_names{1}{1}, plt_p, p);
 end
 
 % ------- MAD -------
@@ -603,98 +478,22 @@ end
 for iSub = p.SUBS
     figure(sub_f(iSub,2));
     subplot(1,2,1);
-    for iTraj = 1:length(traj_names)
-        hold on;
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-        beesdata = {single.mad.con_left, single.mad.incon_left, single.mad.con_right, single.mad.incon_right};
-        yLabel = 'MAD (meter)';
-        XTickLabels = [];
-        colors = {con_col, incon_col, con_col, incon_col};
-        title_char = cell2mat(['Maximum Absolute Deviation ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
-        printBeeswarm(beesdata, yLabel, XTickLabels, colors, space, title_char, 'ci', alpha_size);
-        % Group graphs.
-        ticks = get(gca,'XTick');
-        labels = {["",""]; ["Left","Right"]};
-        dist = [0, 0.01];
-        font_size = [1, 15];
-        groupTick(ticks, labels, dist, font_size)
-        h = [];
-        h(1) = bar(NaN,NaN,'FaceColor',con_col);
-        h(2) = bar(NaN,NaN,'FaceColor',incon_col);
-        legend(h,'Con','Incon', 'Location','northwest');
-    end
+    plotMad(iSub, traj_names, plt_p, p);
 end
 
 % ------- MAD Point -------
 % Maximally absolute deviating point.
 for iSub = p.SUBS
     figure(sub_f(iSub,2));
-    for iTraj = 1:length(traj_names)
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  single = single.single;
-        % Flips traj to screen since its Z values are negative.
-        flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-        traj_con = {single.trajs.con_left, single.trajs.con_right};
-        traj_incon = {single.trajs.incon_left, single.trajs.incon_right};
-        mad_p_con = {single.mad_p.con_left, single.mad_p.con_right};
-        mad_p_incon = {single.mad_p.incon_left, single.mad_p.incon_right};
-        % 2 plots: left, right.
-        for side = 1:2
-            % draw traj of a trial.
-            subplot(2,2,2*side); hold on;
-            p1 = plot(traj_con{side}(:,:,1),  traj_con{side}(:,:,3)*flip_traj,  'Color',[con_col f_alpha]);
-            p3 = plot(traj_incon{side}(:,:,1),  traj_incon{side}(:,:,3)*flip_traj,  'Color',[incon_col f_alpha]);
-            xlabel('X'); xlim([-0.12, 0.12]);
-            ylabel('Z Axis (to screen)'); ylim([0, p.SCREEN_DIST]);
-            title('Maximally deviating point');
-            set(gca, 'FontSize',14);
-            % Draw MAD point.
-            plot(mad_p_con{side}(:,1),  mad_p_con{side}(:,3)*flip_traj, 'o','color',con_col);
-            plot(mad_p_incon{side}(:,1),  mad_p_incon{side}(:,3)*flip_traj, 'o','color',incon_col);
-            % Draw target.
-            target_pos = p.DIST_BETWEEN_TARGETS/2;
-            plot([-target_pos target_pos], [p.SCREEN_DIST p.SCREEN_DIST], 'bo', 'LineWidth',6);
-            h = [];
-            h(1) = bar(NaN,NaN,'FaceColor',con_col);
-            h(2) = bar(NaN,NaN,'FaceColor',incon_col);
-            h(3) = plot(NaN,NaN,'ko');
-            h(4) = plot(NaN,NaN,'bo','LineWidth',6);
-            legend(h, 'Con', 'Incon', 'MAD','Target', 'Location','southeast');
-            xlim([-0.11 0.11]);
-        end
-    end
+    subplot_p = [2,2,2; 2,2,4]; % Params for 1st and 2nd subplots.
+    plotMadPoint(iSub, traj_names, subplot_p, plt_p, p);
 end
 
 % ------- X Standard Deviation -------
 for iSub = p.SUBS
     figure(sub_f(iSub,3));
-    for iTraj = 1:length(traj_names)
-        % Flips traj to screen since its Z values are negative.
-        flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);  avg = avg.avg;
-        % Left.
-        subplot(4,2,6);
-        hold on;
-        plot(avg.traj.con_left(:,3)*flip_traj,  avg.x_std.con_left,  'color',con_col);
-        plot(avg.traj.incon_left(:,3)*flip_traj,  avg.x_std.incon_left,  'color',incon_col);
-        ylabel('X std');
-        xlim([0 p.SCREEN_DIST]);
-        set(gca,'FontSize',14);
-        title('STD in X Axis, Left');
-        h = [];
-        h(1) = bar(NaN,NaN,'FaceColor',con_col);
-        h(2) = bar(NaN,NaN,'FaceColor',incon_col);
-        legend(h,'Con','Incon', 'Location','northwest');
-        % Right
-        subplot(4,2,8);
-        hold on;
-        plot(avg.traj.con_right(:,3)*flip_traj, avg.x_std.con_right, 'color',con_col);
-        plot(avg.traj.incon_right(:,3)*flip_traj, avg.x_std.incon_right, 'color',incon_col);
-        ylabel('X std');
-        xlabel('Z (m)');
-        xlim([0 p.SCREEN_DIST]);
-        set(gca,'FontSize',14);
-        title('STD in X Axis, Right');
-    end
+    subplot_p = [2,2,1; 2,2,2]; % Params for 1st and 2nd subplots.
+    plotXStd(iSub, traj_names, subplot_p, plt_p, p);
 end
 %% Multiple subs average plots.
 % Create figures.
@@ -702,377 +501,71 @@ all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-figure(all_sub_f(5)); annotation('textbox',[0.41 0.915 0.1 0.1], 'String','Number of bad trials', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-
-good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
 
 % ------- Avg traj with shade -------
-for iTraj = 1:length(traj_names)
-%     traj_fda_f(iTraj) = figure('Name','avg_traj','WindowState','maximized', 'MenuBar','figure');
-    figure(all_sub_f(2));
-    subplot(2,2,1); % Avg traj and FDA in con figure.
-    hold on;
-    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
-    % Flips traj to screen since its Z values are negative.
-%     flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-    flip_traj = 1; % Canceled flipping when changed to %Z (instead of actual Z value).
-    % Avg with var shade.
-    stdshade(avg_each.traj(iTraj).con_left(:,good_subs,1)',  f_alpha*0.3, con_col, subs_avg .traj.con_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-    stdshade(avg_each.traj(iTraj).con_right(:,good_subs,1)', f_alpha*0.3, con_col, subs_avg.traj.con_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-    stdshade(avg_each.traj(iTraj).incon_left(:,good_subs,1)',  f_alpha*0.3, incon_col, subs_avg.traj.incon_left(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-    stdshade(avg_each.traj(iTraj).incon_right(:,good_subs,1)', f_alpha*0.3, incon_col, subs_avg.traj.incon_right(:,3)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-    h = [];
-    h(1) = plot(nan,nan,'Color',con_col, 'LineWidth',linewidth);
-    h(2) = plot(nan,nan,'Color',incon_col, 'LineWidth',linewidth);
-    legend(h, 'Congruent', 'Incongruent', 'Location','southeast');
-    xlabel('X'); xlim([-0.105, 0.105]);
-    ylabel('% path traveled');
-%     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
-    set(gca, 'FontSize',14);
-%     title('Avg trajectory');
-
-    subplot(2,2,2);
-    hold on;
-    % Avg Y as func of X.
-    stdshade(avg_each.traj(iTraj).con_left(:,good_subs,1)',  f_alpha*0.3, con_col, subs_avg .traj.con_left(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-    stdshade(avg_each.traj(iTraj).con_right(:,good_subs,1)', f_alpha*0.3, con_col, subs_avg.traj.con_right(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-    stdshade(avg_each.traj(iTraj).incon_left(:,good_subs,1)',  f_alpha*0.3, incon_col, subs_avg.traj.incon_left(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-    stdshade(avg_each.traj(iTraj).incon_right(:,good_subs,1)', f_alpha*0.3, incon_col, subs_avg.traj.incon_right(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
-    xlabel('X'); xlim([-0.105, 0.105]);
-    ylabel('Y');
-%     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
-    set(gca, 'FontSize',14);
-end
-% annotation('textbox',[0.4 0.9 0.1 0.1], 'String','Avg across Subs', 'FontSize',40, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(2));
+subplot(2,2,1);
+plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
 % ------- FDA -------
-% fda_f = figure('Name','FDA','WindowState','maximized', 'MenuBar','figure');
-f_alpha = 0.05;
-for iTraj = 1:length(traj_names)
-%     figure(traj_fda_f(iTraj));
-    figure(all_sub_f(1));
-    p_val = load([p.PROC_DATA_FOLDER '/fda_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'p_val');  p_val = p_val.p_val;
-    subplot(2,3,6);
-    hold on;
-    plot(1/p.NORM_FRAMES : 1/p.NORM_FRAMES : 1, p_val.x(1,:), 'k', 'LineWidth',2); % 1=con/incon index in p_val.
-    plot([0 1], [f_alpha f_alpha], 'r');
-    xlabel('Percent of Z movement');
-    ylabel('P value');
-    set(gca,'FontSize',14);
-    ylim([0 1]);
-    xlim([0 1]);
-    title('FDA - Significance of inconerence between\newlineconditions (trajCon_x,trajIncon_x)');
-end
-% annotation('textbox',[0 0.91 1 0.1], 'String','X deviation between con and incon', 'FontSize',40, 'LineStyle','none', 'FitBoxToText','on', 'HorizontalAlignment','center');
+figure(all_sub_f(1));
+subplot(2,3,6);
+plotMultiFda(traj_names, plt_p, p);
 
-% ------- React + Movement + Response Times -------
-f_alpha = 0.5;
+% ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(3));
-for iTraj = 1:length(traj_names)
-    % Beeswarm.
-    beesdata = {avg_each.react(iTraj).con_left(good_subs),      avg_each.react(iTraj).incon_left(good_subs),...
-                    avg_each.mt(iTraj).con_left(good_subs),     avg_each.mt(iTraj).incon_left(good_subs),...
-                    avg_each.rt(iTraj).con_left(good_subs),     avg_each.rt(iTraj).incon_left(good_subs),...
-                    avg_each.react(iTraj).con_right(good_subs), avg_each.react(iTraj).incon_right(good_subs),...
-                    avg_each.mt(iTraj).con_right(good_subs),    avg_each.mt(iTraj).incon_right(good_subs),...
-                    avg_each.rt(iTraj).con_right(good_subs),    avg_each.rt(iTraj).incon_right(good_subs)};
-    beesdata = cellfun(@times,beesdata,repmat({1000},size(beesdata)),'UniformOutput',false); % convert to ms.
-    yLabel = 'Time (Sec)';
-    XTickLabel = [];
-    colors = repmat({con_col, incon_col},1,6);
-    title_char = cell2mat(['Time ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
-    subplot(2,1,2);
-    hold on;
-    printBeeswarm(beesdata, yLabel, XTickLabel, colors, space, title_char, 'ci', alpha_size);
-    % Group graphs.
-    ticks = get(gca,'XTick');
-    labels = {["",""]; ["React","MT","RT"]; ["Left","Right"]};
-    dist = [0, 80, 160];
-    font_size = [1, 15, 20];
-    groupTick(ticks, labels, dist, font_size)
-    % Connect each sub's dots with lines.
-    left_data = [avg_each.react(iTraj).con_left(good_subs), avg_each.mt(iTraj).con_left(good_subs), avg_each.rt(iTraj).con_left(good_subs);
-                 avg_each.react(iTraj).incon_left(good_subs), avg_each.mt(iTraj).incon_left(good_subs), avg_each.rt(iTraj).incon_left(good_subs)];
-    right_data = [avg_each.react(iTraj).con_right(good_subs), avg_each.mt(iTraj).con_right(good_subs), avg_each.rt(iTraj).con_right(good_subs);
-                 avg_each.react(iTraj).incon_right(good_subs), avg_each.mt(iTraj).incon_right(good_subs), avg_each.rt(iTraj).incon_right(good_subs)];
-    y_data = [left_data right_data] * 1000; % turn to ms.
-    x_data = reshape(get(gca,'XTick'), 2,[]);
-    x_data = repelem(x_data,1,length(good_subs));
-    plot(x_data, y_data, 'color',[0.1 0.1 0.1, f_alpha]);
-    h = [];
-    h(1) = bar(NaN,NaN,'FaceColor',con_col);
-    h(2) = bar(NaN,NaN,'FaceColor',incon_col);
-    legend(h,'Con','Incon', 'Location','northwest');
+subplot(2,1,1);
+plotMultiReactMtRt(traj_names, plt_p, p);
 
-    % T-test and Cohen's dz
-    [~, p_val_react, ~, stats_react] = ttest(avg_each.react(iTraj).diff(good_subs));
-    [~, p_val_mt, ~, stats_mt] = ttest(avg_each.mt(iTraj).diff(good_subs));
-    [~, p_val_rt, ~, stats_rt] = ttest(avg_each.rt(iTraj).diff(good_subs));
-    cohens_dz_react = stats_react.tstat / sqrt(length(good_subs));
-    cohens_dz_mt = stats_mt.tstat / sqrt(length(good_subs));
-    cohens_dz_rt = stats_rt.tstat / sqrt(length(good_subs));
-    disp('Diff between congruent and incongruent:');
-    disp(['Reaction time: ' num2str(mean(avg_each.react(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_react) ', Cohens d_z=' num2str(cohens_dz_react)]);
-    disp(['Movement time: ' num2str(mean(avg_each.mt(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_mt) ', Cohens d_z=' num2str(cohens_dz_mt)]);
-    disp(['Response time: ' num2str(mean(avg_each.rt(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_rt) ', Cohens d_z=' num2str(cohens_dz_rt)]);
-end
+% ------- Response Times Keyboard -------
+figure(all_sub_f(3));
+subplot(2,1,2);
+plotMultiKeyboardRt(traj_names, plt_p, p);
 
 % ------- Prime Forced choice -------
-% fc_pas_f = figure('Name','Forced choice','Units','normalized','OuterPosition',[0.25 0.25 0.5 0.5]);
-figure(all_sub_f(3));
-subplot(2,2,1); % plot fc_prime and pas together.
-beesdata = {avg_each.fc_prime.con(good_subs), avg_each.fc_prime.incon(good_subs)};
-[h, fc_p_val(1) , ci, stats] = ttest(avg_each.fc_prime.con(good_subs), 0.5);
-[h, fc_p_val(2) , ci, stats] = ttest(avg_each.fc_prime.incon(good_subs), 0.5);
-fc_p_val = round(fc_p_val, 2);
-XTickLabel = {'Con', 'Incon'};
-colors = {con_col, incon_col};
-title_char = ['Prime Forced response (PAS = ' num2str(pas_rate) ')'];
-printBeeswarm(beesdata, [], XTickLabel, colors, space, title_char, 'ci', alpha_size);
-plot([-20 20], [0.5 0.5], '--', 'color',[0.3 0.3 0.3 f_alpha], 'LineWidth',2); % Line at 50%.
-text(get(gca, 'xTick'),[0.1 0.1], {['p = ' num2str(fc_p_val(1))], ['p = ' num2str(fc_p_val(2))]}, 'FontSize',14, 'HorizontalAlignment','center');
-ylabel('% Correct', 'FontWeight','bold');
-ylim([0 1]);
+figure(all_sub_f(2));
+subplot(2,4,3);
+plotMultiRecognition(pas_rate, traj_names{1}{1}, plt_p, p);
 
 % ------- PAS -------
-figure(all_sub_f(3));
+figure(all_sub_f(2));
 hold on;
-subplot(2,2,2); % plot fc_prime and pas together.
-subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
-bar(1:4, subs_avg.pas.con * 100 / sum(subs_avg.pas.con), 'FaceColor',con_col);
-hold on;
-bar(5:8, subs_avg.pas.incon * 100 / sum(subs_avg.pas.incon), 'FaceColor',incon_col);
-xticks(1:8);
-xticklabels({1:4 1:4});
-xlabel('PAS');
-ylabel('% Trials', 'FontWeight','bold');
-ylim([0 100]);
-title('PAS');
-legend('Con','Incon');
-set(gca,'FontSize',14);
+subplot(2,4,4);
+plotMultiPas(traj_names{1}{1}, plt_p, p);
 
 % ------- MAD -------
 % Maximum absolute deviation.
 figure(all_sub_f(1));
 subplot(1,3,1);
-err_bar_type = 'se';
-for iTraj = 1:length(traj_names)
-    hold on;
-    beesdata = {avg_each(iTraj).mad.con_left(good_subs), avg_each(iTraj).mad.incon_left(good_subs), avg_each(iTraj).mad.con_right(good_subs), avg_each(iTraj).mad.incon_right(good_subs)};
-    yLabel = 'MAD (meter)';
-    XTickLabels = [];
-    colors = {con_col, incon_col, con_col, incon_col};
-    title_char = cell2mat(['Maximum Absolute Deviation ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
-    printBeeswarm(beesdata, yLabel, XTickLabels, colors, space, title_char, err_bar_type, alpha_size);
-    % Group graphs.
-    ticks = get(gca,'XTick');
-    labels = {["",""]; ["Left","Right"]};
-    dist = [0, 0.005];
-    font_size = [1, 15];
-    groupTick(ticks, labels, dist, font_size)
-    % T-test
-    [~, p_val_mad, ci, ~] = ttest(beesdata{1}, beesdata{2});
-    text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
-    [~, p_val_mad, ci, ~] = ttest(beesdata{3}, beesdata{4});
-    text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
-    % Connect each sub's dots with lines.
-    y_data = [beesdata{1} beesdata{3}; beesdata{2} beesdata{4}];
-    x_data = reshape(get(gca,'XTick'), 2,[]);
-    x_data = repelem(x_data,1,length(good_subs));
-    connect_dots(x_data, y_data);
-    h = [];
-    h(1) = bar(NaN,NaN,'FaceColor',con_col);
-    h(2) = bar(NaN,NaN,'FaceColor',incon_col);
-    h(3) = plot(NaN,NaN,'k','LineWidth',14);
-    legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
-    % T-test and Cohen's dz
-    [~, p_val_mad, ~, stats_mad] = ttest(avg_each.mad(iTraj).diff(good_subs));
-    cohens_dz_mad = stats_mad.tstat / sqrt(length(good_subs));
-    text(mean(ticks(1:2)), 0.035, ['p-value: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
-    text(mean(ticks(1:2)), 0.030, ['Cohens d_z: ' num2str(cohens_dz_mad)], 'HorizontalAlignment','center', 'FontSize',14);
-    disp('Diff between congruent and incongruent:');
-    disp(['MAD: ' num2str(mean(avg_each.mad(iTraj).diff(good_subs))) ', p-value=' num2str(p_val_mad)]);
-end
+plotMultiMad(traj_names, plt_p, p);
 
 % ------- Reach Area -------
 % Area between avg left traj and avg right traj (in each condition).
 figure(all_sub_f(2));
 subplot(2,4,5);
-err_bar_type = 'se';
-for iTraj = 1:length(traj_names)
-    hold on;
-    beesdata = {avg_each.ra.con(good_subs) avg_each.ra.incon(good_subs)};
-    yLabel = 'Reach area (m^2)'; % 'Reach area (m^2)';
-    XTickLabels = ["Congruent","Incongruent"];
-    colors = {con_col, incon_col};
-    title_char = ''; % title_char = cell2mat(['Reach Area ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
-    printBeeswarm(beesdata, yLabel, XTickLabels, colors, space, title_char, err_bar_type, alpha_size);
-    % Connect each sub's dots with lines.
-    y_data = [reach_area.con(good_subs); reach_area.incon(good_subs)];
-    x_data = reshape(get(gca,'XTick'), 2,[]);
-    x_data = repelem(x_data,1,length(good_subs));
-    connect_dots(x_data, y_data);
-    ylim([0.01 0.04]);
-    h = [];
-    h(1) = bar(NaN,NaN,'FaceColor',con_col);
-    h(2) = bar(NaN,NaN,'FaceColor',incon_col);
-    h(3) = plot(NaN,NaN,'k','LineWidth',14);
-    legend(h,'Congruent','Incongruent', 'Location','northwest');
-    ticks = get(gca,'XTick');
-    % T-test and Cohen's dz
-    [~, p_val_ra, ~, stats_ra] = ttest(reach_area.con(good_subs), reach_area.incon(good_subs));
-    cohens_dz_ra = stats_ra.tstat / sqrt(length(good_subs));
-    text(mean(ticks(1:2)), 1, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
-    text(mean(ticks(1:2)), 0, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
-end
+plotMultiReachArea(traj_names, plt_p, p);
 
 % ------- X STD -------
 figure(all_sub_f(1));
-for iTraj = 1:length(traj_names)
-    % Flips traj to screen since its Z values are negative.
-    flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
-    % Left.
-    subplot(2,3,2);
-    hold on;
-    plot(subs_avg.traj.con_left(:,3)*flip_traj,  subs_avg.x_std.con_left, 'color',con_col);
-    plot(subs_avg.traj.incon_left(:,3)*flip_traj,  subs_avg.x_std.incon_left, 'color',incon_col);
-    ylabel('X STD');
-%     xlim([0 p.SCREEN_DIST]);
-    set(gca,'FontSize',14);
-    title('STD in X Axis, Left');
-    h = [];
-    h(1) = bar(NaN,NaN,'FaceColor',con_col);
-    h(2) = bar(NaN,NaN,'FaceColor',incon_col);
-    legend(h,'Con','Incon', 'Location','northwest');
-    % Right
-    subplot(2,3,3);
-    hold on;
-    plot(subs_avg.traj.con_right(:,3), subs_avg.x_std.con_right, 'color',con_col);
-    plot(subs_avg.traj.incon_right(:,3), subs_avg.x_std.incon_right, 'color',incon_col);
-    ylabel('X STD');
-    xlabel('Z (m)');
-%     xlim([0 p.SCREEN_DIST]);
-    set(gca,'FontSize',14);
-    title('STD in X Axis, Right');
-    % Combined (left and right).
-    subplot(2,3,5);
-    hold on;
-    stdshade(avg_each.x_std.diff(:,good_subs)', f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'ci', alpha_size, linewidth); % Use flip traj?
-    plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
-    xlabel('Proportion of Z');
-    ylabel('X STD difference');
-    ylim([-0.005 0.02]);
-    title('Diff between con and incon in "X STD", combined left and right');
-    set(gca,'FontSize',14);
-    legend(['CI, \alpha=' num2str(alpha_size)], 'con - incon');
-end
+subplot_p = [2,3,2; 2,3,3; 2,3,5];
+plotMultiXStd(traj_names, subplot_p, plt_p, p);
 
 % ------- Condition Diff -------
 % Difference between avg traj in each condition.
-for iTraj = 1:length(traj_names)
-    figure(all_sub_f(2));
-    % Flips traj to screen since its Z values are negative.
-    flip_traj = 1 + contains(traj_names{iTraj}{1}, '_to') * -2; % if contains: -1, else: 1.
-    subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.subs_avg;
-    % Left.
-    subplot(2,4,6);
-    hold on;
-    stdshade(avg_each.cond_diff.left(:,good_subs,1)'*-1, f_alpha, 'k', subs_avg.traj.con_left(:,3), 0, 1,'ci', alpha_size, linewidth);
-    plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
-    xlabel('Z (m)');
-    ylabel('X incon (m)');
-    ylim([-0.015 0.015]);
-    title('TrajCon_x - TrajIncon_x, Left');
-    set(gca,'FontSize',14);
-    legend(['CI, \alpha=' num2str(alpha_size)], 'con - incon');
-    % Right
-    subplot(2,4,7);
-    hold on;
-    stdshade(avg_each.cond_diff.right(:,good_subs,1)', f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'ci', alpha_size, linewidth);
-    plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
-    xlabel('Z (m)');
-    ylabel('X incon (m)');
-    ylim([-0.015 0.015]);
-    title('TrajCon_x - TrajIncon_x, Right');
-    set(gca,'FontSize',14);
-    legend(['CI, \alpha=' num2str(alpha_size)], 'con - incon');
-    % Combined (left and right).
-    subplot(2,4,8);
-    hold on;
-    stdshade(avg_each.x_dev.diff(:,good_subs)', f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'ci', alpha_size, linewidth);
-    plot([0 100], [0 0], '--', 'LineWidth',3, 'color',[0.15 0.15 0.15 f_alpha]);
-    xlabel('Z (m)');
-    ylabel('X dev difference (m)');
-    ylim([-0.015 0.015]);
-    title('Diff between con and incon in "X Deviation from center", combined left and right');
-    set(gca,'FontSize',14);
-    legend(['CI, \alpha=' num2str(alpha_size)], 'con - incon');
-end
+figure(all_sub_f(2));
+subplot_p = [2,4,6; 2,4,7; 2,4,8];
+plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p)
 
 % ------- Number of bad trials -------
 % Comparison of bad trials count between subs of exp2 and subs of exp 3.
 figure(all_sub_f(4));
-% Define parameters.
-exp_2_subs_string = regexprep(num2str(p.EXP_2_SUBS), '\s+', '_');
-exp_3_subs_string = regexprep(num2str(p.EXP_3_SUBS), '\s+', '_');
-n_bad_trials_exp_2 = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_2_subs_string '.mat']);  n_bad_trials_exp_2 = n_bad_trials_exp_2.n_bad_trials;
-n_bad_trials_exp_3 = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_3_subs_string '.mat']);  n_bad_trials_exp_3 = n_bad_trials_exp_3.n_bad_trials;
-good_subs_exp_2 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_2_subs_string '.mat']);  good_subs_exp_2 = good_subs_exp_2.good_subs;
-good_subs_exp_3 = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' exp_3_subs_string '.mat']);  good_subs_exp_3 = good_subs_exp_3.good_subs;
-num_reasons = size(n_bad_trials_exp_2,2);
-reasons = string(replace(n_bad_trials_exp_2.Properties.VariableNames, '_', ' '));
-% Beeswarm.
-for i_reason = 1:num_reasons
-    beesdata{:, i_reason*2 - 1} = n_bad_trials_exp_2{good_subs_exp_2, i_reason}';
-    beesdata{:, i_reason*2}     = n_bad_trials_exp_3{good_subs_exp_3, i_reason}';
-end
-yLabel = 'Number of bad trials';
-XTickLabel = [];
-colors = repmat({exp_2_color, exp_3_color},1,num_reasons);
-title_char = ["Amount of bad trials comparison between Exp 2 and Exp 3"];
-hold on;
-printBeeswarm(beesdata, yLabel, XTickLabel, colors, space, title_char, 'ci', alpha_size);
-ylim([-20 420]);
-% T-test.
-ticks = get(gca,'XTick');
-for i_reason = 1:num_reasons
-    indx = i_reason*2;
-    [~, bad_trials_p_val, ci, ~] = ttest2(beesdata{:, indx-1}, beesdata{:, indx});
-    text(mean(ticks(indx-1 : indx)), (max([beesdata{indx-1 : indx}])+10), ['p: ' num2str(bad_trials_p_val)], 'HorizontalAlignment','center', 'FontSize',14);
-end
-% Group graphs.
-labels = {["",""]; reasons;};
-dist = [0, 15];
-font_size = [1, 12];
-groupTick(ticks, labels, dist, font_size)
-h = [];
-h(1) = bar(NaN,NaN,'FaceColor',exp_2_color);
-h(2) = bar(NaN,NaN,'FaceColor',exp_3_color);
-legend(h,'Exp 2','Exp 3', 'Location','northwest');
+plotNumBadTrials(traj_names{1}{1}, plt_p, p)
 
-% Num of bad trials in each reason.
-n_bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  n_bad_trials = n_bad_trials.n_bad_trials;
-figure(all_sub_f(5));
-for j = 1:num_reasons
-    subplot(3,4,j);
-    bar(1:p.N_SUBS, n_bad_trials{p.SUBS, j});
-    xticklabels(string(p.SUBS));
-    if j > 6
-        xlabel('Sub');
-    end
-    title(reasons(j));
-    set(gca,'FontSize',14);
-    ylim([0 p.NUM_TRIALS]);
-    grid on;
-end
-title("Any (total num of bad trials)");
 %% Effect size comparison to previous papers.
 % Prev exp data.
 xiao_auc = struct('N',28,...% Xiao, K., Yamauchi, T., & Bowman, C. (2015)
@@ -1150,7 +643,7 @@ end
 
 % Plot
 prev_papers_comp_f(1) = figure('Name','Papers comparison', 'WindowState','maximized', 'MenuBar','figure');
-bar(exps_table.cohens_dz, 'FaceColor',[0.9290 0.6940 0.1250], 'FaceAlpha',0.2, 'EdgeColor',[0.9290 0.6940 0.1250], 'LineWidth',3);
+bar(exps_table.cohens_dz, 'FaceColor',[0.9290 0.6940 0.1250], 'FaceAlpha',0.2, 'EdgeColor',[0.9290 0.6940 0.1250], 'linewidth',3);
 ylabel('Cohen`s  d_z');
 set(gca, 'FontSize',14);
 set(gca, 'TickLabelInterpreter','none')';
@@ -1181,10 +674,10 @@ rt = nan(p.MAX_SUB, 3); % 3 =  for 2 practice blocks and 1 for avg of all test b
 
 % Get data of each sub.
 for iSub = p.SUBS
-    data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  data_table = data_table.data_table;
-    first_block = data_table.target_rt(data_table.practice == 1);
-    second_block = data_table.target_rt(data_table.practice == 2);
-    test_blocks = data_table.target_rt(data_table.practice == 0);
+    reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_data.mat']);  reach_data_table = reach_data_table.reach_data_table;
+    first_block = reach_data_table.target_rt(reach_data_table.practice == 1);
+    second_block = reach_data_table.target_rt(reach_data_table.practice == 2);
+    test_blocks = reach_data_table.target_rt(reach_data_table.practice == 0);
     % If subject performed both practices.
     if ~prod(isnan(first_block)) && ~prod(isnan(second_block))
         rt(iSub, 1:2) = mean([first_block(end-n_comp_trials+1 : end), second_block(end-n_comp_trials+1 : end)], 1, 'omitnan');
@@ -1205,13 +698,13 @@ fig = figure('Name',"RT comparison between practice blocks and also test blocks"
 beesdata = {rt(:,1), rt(:,2), rt(:,3)};
 yLabel = 'Time (milisec)';
 XTickLabel = ["1_s_t", "2_n_d", "Test"];
-colors = {first_practice_color, second_practice_color, test_color};
+colors = {plt_p.first_practice_color, plt_p.second_practice_color, plt_p.test_color};
 title_char = "RT comparison between practice blocks and also test blocks";
-printBeeswarm(beesdata, yLabel, XTickLabel, colors, space, title_char, 'ci', alpha_size);
+printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
 h = [];
-h(1) = bar(NaN,NaN,'FaceColor',first_practice_color);
-h(2) = bar(NaN,NaN,'FaceColor',second_practice_color);
-h(3) = bar(NaN,NaN,'FaceColor',test_color);
+h(1) = bar(NaN,NaN,'FaceColor',plt_p.first_practice_color);
+h(2) = bar(NaN,NaN,'FaceColor',plt_p.second_practice_color);
+h(3) = bar(NaN,NaN,'FaceColor',plt_p.test_color);
 legend(h,'First practice','Second practice', 'Avg of test blocks', 'Location','southwest');
 ax = gca;
 ylim([350 750]);
