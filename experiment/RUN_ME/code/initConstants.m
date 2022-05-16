@@ -124,7 +124,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         case 'day1'
             p.NUM_BLOCKS = 6;
         case 'day2'
-            p.NUM_BLOCKS = 6;
+            p.NUM_BLOCKS = 12;
         otherwise
             error(['p.DAY has wrong value: ' p.DAY]);
     end

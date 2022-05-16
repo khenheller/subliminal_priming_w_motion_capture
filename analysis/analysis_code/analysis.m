@@ -11,7 +11,7 @@ addpath(genpath('./imported_code'));
 SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
 SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
-SUBS = SORTED_SUBS.EXP_3_SUBS; % to analyze.
+SUBS = SORTED_SUBS.EXP_2_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -39,7 +39,7 @@ traj_types = replace(traj_types, '_x', '');
 disp("Done setting params.");
 %% Simulates an exp with less trials for each sub.
 % You have to run this before the rest of the analysis if you wish to use simulated subs.
-simulate = 1;
+simulate = 0;
 gen_files = 0; % Generates a new file for each sub. Use 0 only if you already generated in prev run.
 new_num_bloks = 6;
 idx_shift = 200; % data will be saved in a sub num = iSub + idx_shift.
@@ -284,31 +284,31 @@ end
 timing = num2str(toc);
 disp(['Counting trials in each condition done. ' timing 'Sec']);
 %% Format to R
-% You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
-% You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
-% Convert matlab data to a format suitable for R dataframes.
-tic
-for iTraj = 1:length(traj_names)
-    % Get bad subs.
-    bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
-    bad_subs_numbers = find(bad_subs.any);
-    
-    % Reach Area.
-    reach_area = fReachArea(traj_names{iTraj}, bs_iter, p);
-    writetable(reach_area, [p.PROC_DATA_FOLDER '/reach_area_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-
-    % MAD
-    mad = fMAD(traj_names{iTraj}, p);
-    mad(ismember(mad.sub, bad_subs_numbers), :) = [];
-    writetable(mad, [p.PROC_DATA_FOLDER '/mad_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-
-    % Traj
-    traj = fTraj(traj_names{iTraj}, p);
-    traj(ismember(traj.sub, bad_subs_numbers), :) = [];
-    writetable(traj, [p.PROC_DATA_FOLDER '/xpos_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-end
-timing = num2str(toc);
-disp(['Formating to R done. ' timing 'Sec']);
+% % You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
+% % You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
+% % Convert matlab data to a format suitable for R dataframes.
+% tic
+% for iTraj = 1:length(traj_names)
+%     % Get bad subs.
+%     bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
+%     bad_subs_numbers = find(bad_subs.any);
+%     
+%     % Reach Area.
+%     reach_area = fReachArea(traj_names{iTraj}, bs_iter, p);
+%     writetable(reach_area, [p.PROC_DATA_FOLDER '/reach_area_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+% 
+%     % MAD
+%     mad = fMAD(traj_names{iTraj}, p);
+%     mad(ismember(mad.sub, bad_subs_numbers), :) = [];
+%     writetable(mad, [p.PROC_DATA_FOLDER '/mad_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+% 
+%     % Traj
+%     traj = fTraj(traj_names{iTraj}, p);
+%     traj(ismember(traj.sub, bad_subs_numbers), :) = [];
+%     writetable(traj, [p.PROC_DATA_FOLDER '/xpos_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+% end
+% timing = num2str(toc);
+% disp(['Formating to R done. ' timing 'Sec']);
 % You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
 %% Plotting params
 disp("Started setting plotting params.");
