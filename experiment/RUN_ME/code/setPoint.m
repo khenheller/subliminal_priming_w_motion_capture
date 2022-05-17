@@ -1,11 +1,14 @@
 % Displays a point on the screen. When user presses space his coordinates are returned.
 function [point] = setPoint(point_screen, p)
 
+    point = [];
     showTexture(point_screen, p);
     
-    % Waits for "space" press.
+    KbWait([], 1); % Waits until all keys are released.
+    
+    % Waits until space is pressed and point receives a value.
     key = zeros(1,256);
-    while ~key(p.SPACE_KEY)
+    while ~key(p.SPACE_KEY) || isempty(point) || isempty(markers(1))
         
         % sample location.
         markers = p.NATNETCLIENT.getFrame.LabeledMarker;
