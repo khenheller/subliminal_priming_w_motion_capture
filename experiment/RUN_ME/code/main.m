@@ -28,18 +28,13 @@ function [p] = main(p)
         keyboard_trials = getTrials('test', p);
         keyboard_practice_trials = getTrials('practice', p);
         
-        % Start,end points calibration.
-        if ~p.DEBUG
-            p = setPoints(p);
-        end
-        
         % Save code snapshot.
         saveCode(reach_trials, reach_practice_trials, keyboard_trials, keyboard_practice_trials, p);
         % Save 'p' snapshot.
         save([p.DATA_FOLDER 'sub' num2str(p.SUB_NUM) p.DAY '_p.mat'], 'p');
         
-        % Choose first session.
-        reach_first = randi(2) - 1;
+        % Choose first session. Changes every 2 subs.
+        reach_first = mod(p.SUB_NUM, 4) >= 2;
 
         % Experiment
         showTexture(p.WELCOME_SCREEN, p);
@@ -50,6 +45,10 @@ function [p] = main(p)
         switch reach_first
             % Reaching and then keyboard.
             case 1
+                % Start,end points calibration.
+                if ~p.DEBUG
+                    p = setPoints(p);
+                end
                 p = runExperiment(reach_trials, reach_practice_trials, 1, p);
                 showTexture(p.BETWEEN_SESSIONS_SCREEN, p);
                 getInput('instruction', p);
@@ -59,6 +58,10 @@ function [p] = main(p)
                 p = runExperiment(keyboard_trials, keyboard_practice_trials, 0, p);
                 showTexture(p.BETWEEN_SESSIONS_SCREEN, p);
                 getInput('instruction', p);
+                % Start,end points calibration.
+                if ~p.DEBUG
+                    p = setPoints(p);
+                end
                 p = runExperiment(reach_trials, reach_practice_trials, 1, p);
         end
 

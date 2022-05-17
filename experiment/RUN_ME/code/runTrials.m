@@ -68,7 +68,7 @@ function [p] = runTrials(trials, is_reach, p)
             sub_answered_intime = ~(target_ans.late_res | target_ans.slow_mvmnt | target_ans.early_res);
             % Alert of wrong answer.
             if sub_answered_intime
-                if ~trials.target_correct(1)
+                if trials.target_correct(1) == 0
                     showTexture(p.WRONG_ANS_SCREEN, p);
                     WaitSecs(p.MSG_DURATION);
                 end
