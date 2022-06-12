@@ -146,6 +146,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
     p.TARGET_DURATION = 0.5;
     p.TARGET_DURATION_SAMPLES = p.TARGET_DURATION * p.REF_RATE_HZ;
     p.MSG_DURATION = 0.7;
+    p.PAUSE_DURATION = 0.5;
     
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
