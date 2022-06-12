@@ -121,14 +121,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
     p.NUMBER_OF_ERRORS_PROMPT = 3;
     p.TIME_SHOW_PROMPT = 1; % seconds
     
-    switch p.DAY
-        case 'day1'
-            p.NUM_BLOCKS = 6;
-        case 'day2'
-            p.NUM_BLOCKS = 6;
-        otherwise
-            error(['p.DAY has wrong value: ' p.DAY]);
-    end
+    p.NUM_BLOCKS = 6;
     if isequal(list_type, 'practice') % The is relevant when generating a practice block.
         p.NUM_BLOCKS = 1;
     end
