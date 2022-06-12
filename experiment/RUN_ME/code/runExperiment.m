@@ -25,6 +25,10 @@ function [p] = runExperiment(trials, practice_trials, is_reach, p)
                 getInput('instruction', p);
             end
 
+            % Response times explanation.
+            showTexture(p.TIMING_SCREEN, p);
+            getInput('instruction', p);
+
             % Example trial.
             showTexture(p.TRIAL_EXAMPLE_SCREEN, p);
             getInput('instruction', p);

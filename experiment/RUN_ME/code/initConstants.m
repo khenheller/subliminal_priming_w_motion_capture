@@ -110,6 +110,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         p.PRESS_SPACE_TO_CONTINUE = 'press_space_to_continue_screen.jpg';
         p.REACH_RESPONSE_EXPLANATION = 'reach_response_explanation_screen.jpg';
         p.KEYBOARD_RESPONSE_EXPLANATION = 'keyboard_response_explanation_screen.jpg';
+        p.TIMING_SCREEN = 'timing_screen.jpg';
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));
