@@ -52,8 +52,8 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         
         % Response keys.
         KbName('UnifyKeyNames');
-        p.RIGHT_KEY      =  KbName('J');
-        p.LEFT_KEY       =  KbName('F');
+        p.RIGHT_KEY      =  KbName('Y');
+        p.LEFT_KEY       =  KbName('E');
         p.ABORT_KEY1     =  KbName('ESCAPE'); % ESC + q aborts experiment
         p.ABORT_KEY2     =  KbName('Q'); % ESC + q aborts experiment
         p.ONE           =  KbName('1!');  % I did not see the phrase
