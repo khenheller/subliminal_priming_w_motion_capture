@@ -54,7 +54,7 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     else
         error('Please analyze subs 1-10, 11-25 and 26-... seperatly.');
     end
-    p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN;
+    p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN; % exp2=0.3 exp3=0.32
     % Distances.
     p.DIST_BETWEEN_TARGETS = 0.20; % In meter.
     p.TARGET_MISS_RANGE = 0.12; % In meter.

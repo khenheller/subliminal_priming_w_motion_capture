@@ -11,8 +11,8 @@
 %                   row = sample, column = trial.
 % Output: onsets/offsets - index of sample of movement initiation and finish.
 function [trajs_mat, onsets, offsets] = trimOnsetOffset(trajs_mat, time_mat, p)
-    thresh.v = 0.002; % onset and offset velocity threshold (m/s).
-    thresh.a = 0.002; % onset acceleration threshold (m/s^2).
+    thresh.v = 0.02; % onset and offset velocity threshold (m/s).
+    thresh.a = 0.02; % onset acceleration threshold (m/s^2).
     
     onsets  = NaN(p.NUM_TRIALS,1);
     offsets = NaN(p.NUM_TRIALS,1);
