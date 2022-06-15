@@ -12,7 +12,8 @@ SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment ve
 SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
 SORTED_SUBS.EXP_4_SUBS = [43 44];
-SUBS = SORTED_SUBS.EXP_4_SUBS; % to analyze.
+SORTED_SUBS.EXP_4_1_SUBS = [45 47 49];
+SUBS = SORTED_SUBS.EXP_3_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -184,7 +185,7 @@ for iSub = p.SUBS
     
     % Preprocessing and normalization.
     for iTraj = 1:length(traj_names)
-        [reach_traj_table, reach_data_table, too_short_to_filter{iSub, iTraj}{:}] = preproc(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
+        [reach_traj_table, reach_data_table, too_short_to_filter{iSub, iTraj}{:}, reach_pre_norm_traj_table] = preproc(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
     end
     % Trim to normalized length (=p.norm_frames).
     matrix = reshape(reach_traj_table{:,:}, p.MAX_CAP_LENGTH, p.NUM_TRIALS, width(reach_traj_table));
@@ -192,6 +193,7 @@ for iSub = p.SUBS
     reach_traj_table = reach_traj_table(1 : p.NORM_FRAMES * p.NUM_TRIALS, :);
     reach_traj_table{:,:} = reshape(matrix, p.NORM_FRAMES * p.NUM_TRIALS, width(reach_traj_table));
     % Save
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat'], 'reach_pre_norm_traj_table');
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data_proc.mat'], 'keyboard_data_table'); % Keyboard data isn't pre-processed because there is no need for that.
@@ -710,9 +712,9 @@ ax = gca;
 ylim([350 750]);
 text(mean(ax.XTick(1:2)), max(rt(1:2))+10, ['p = ' num2str(p_value)], 'FontSize',14, 'HorizontalAlignment','center');
 %% GUI, compares proc to real traj.
-% close all;
-% warning('off','MATLAB:legend:IgnoringExtraEntries');
-% miss_data(p, traj_names); clc;
+close all;
+warning('off','MATLAB:legend:IgnoringExtraEntries');
+miss_data(p, traj_names); clc;
 %% Velocity
 %{
         % calc velocity.-----------------------------------------------

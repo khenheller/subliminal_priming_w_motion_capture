@@ -9,7 +9,7 @@
 %               Each trial has MAX_CAP_LENGTH samples.
 %           time_mat - a sub's timestamps mat. matching trajs_mat.
 %                   row = sample, column = trial.
-% Output: onsets/offsets - timestamp of movement initiation and finish.
+% Output: onsets/offsets - index of sample of movement initiation and finish.
 function [trajs_mat, onsets, offsets] = trimOnsetOffset(trajs_mat, time_mat, p)
     thresh.v = 0.002; % onset and offset velocity threshold (m/s).
     thresh.a = 0.002; % onset acceleration threshold (m/s^2).
@@ -54,8 +54,8 @@ function [trajs_mat, onsets, offsets] = trimOnsetOffset(trajs_mat, time_mat, p)
         trial_traj(offset+1 : p.MAX_CAP_LENGTH, :) = NaN;
         trajs_mat(:, iTrial, :) = trial_traj;
         
-        onsets(iTrial)  = time_mat(onset             , iTrial);
-        offsets(iTrial) = time_mat(onset + offset - 1, iTrial); % Offset is relative to onset.
+        onsets(iTrial)  = onset;
+        offsets(iTrial) = onset + offset; % Offset is relative to onset.
     end
 end
 
