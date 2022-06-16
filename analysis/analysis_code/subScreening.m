@@ -22,11 +22,11 @@ function [bad_subs] = subScreening(traj_name, pas_rate, task_type, p)
         data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' task_type '_data_proc.mat']);  data_table = data_table.([task_type '_data_table']);
         % Remove practice.
         data_table(data_table.practice>=1, :) = [];
-        % Bad trials reasons, Remove reason: "incorrect" categor.
+        % Bad trials reasons, Remove reason: "incorrect", "slow_mvmnt".
         reasons = string(bad_trials{iSub}.Properties.VariableNames);
-        reasons(reasons == "any" | reasons == "incorrect") = [];
+        reasons(reasons == "any" | reasons == "incorrect" | reasons == "slow_mvmnt") = [];
         % Find good trials
-        ok = ~any(bad_trials{iSub}{:, reasons}, 2); % has no timing / data issues.
+        ok = ~any(bad_trials{iSub}{:, reasons}, 2); % has no timing / data issues (includes "slow mvmnt", excludes "very_slow_mvmnt".
         ok_pas = ok & data_table.pas == pas_rate; % And PAS rating is ok.
         ok_pas_categcorr = ok_pas & (bad_trials{iSub}.incorrect == 0); % And target categorization is correct.
         % Too much missing trials.
@@ -44,7 +44,11 @@ function [bad_subs] = subScreening(traj_name, pas_rate, task_type, p)
         avg_incon = avg_incon + sum(ok_pas_categcorr_incon);
 
         % Categorization performance isn't good enough.
-        bad_subs{iSub, 'bad_performance'} = sum(bad_trials{iSub}.incorrect == 0) / sum(ok) < 0.7;
+        perf_reasons = reasons;
+        perf_reasons(perf_reasons == "very_slow_mvmnt" | perf_reasons == "bad_stim_dur") = [];
+        perf_trials = ~any(bad_trials{iSub}{:, perf_reasons}, 2); % No timing/data issues.
+        perf_trials_categorcorr = perf_trials & (bad_trials{iSub}.incorrect == 0); % And target categorization is correct.
+        bad_subs{iSub, 'bad_performance'} = sum(perf_trials_categorcorr) / sum(perf_trials) < 0.7;
         % Sub seen prime (prime recog isn't at chance). Looks also in "bad" trials.
         oktiming = ~bad_trials{iSub}{:, 'bad_stim_dur'}; % All trials with good stimulus duration.
         oktiming_pas = oktiming & data_table.pas == pas_rate;

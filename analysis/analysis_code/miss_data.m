@@ -167,19 +167,10 @@ selected_var = h.vars.String{h.vars.Value};
 selected_trial = str2num(h.trials.String{h.trials.Value});
 % Find the columns of traj, onset, offset.
 traj_col = find(contains(h.real_traj_table.Properties.VariableNames, selected_var));
-onset_col = find(contains(h.data_table.Properties.VariableNames, 'onset'));
-offset_col = find(contains(h.data_table.Properties.VariableNames, 'offset'));
-assert(length(onset_col) == 1, "Expected only one column name that conatins: onset")
-assert(length(offset_col) == 1, "Expected only one column name that conatins: offset")
 % Get traj.
 real = h.real_traj_table{h.real_traj_table.iTrial==selected_trial, traj_col : traj_col+2};
 pre_norm = h.pre_norm_traj_table{h.pre_norm_traj_table.iTrial==selected_trial, traj_col : traj_col+2};
 proc = h.proc_traj_table{h.proc_traj_table.iTrial==selected_trial, traj_col : traj_col+2};
-% Get onset and offset.
-onset = h.data_table{h.data_table.iTrial==selected_trial, onset_col};
-offset = h.data_table{h.data_table.iTrial==selected_trial, offset_col};
-% Remove values before and after movement onset and offset.
-% real = real(onset : onset + offset, :);
 % Set first sample of 'real' as it's axis origin.
 real = real - real(1,:);
 % is normaliztion realy across z or across time? it seems it is across time because it takes points equally spaced in tiem not in space.

@@ -27,7 +27,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
     is_reach = isequal(task_type, 'reach');
 
     screen_reasons = {'hole_in_data','missing_data','short_traj','missed_target','bad_stim_dur',...
-        'late_res', 'slow_mvmnt', 'early_res', 'incorrect', 'quit', 'any'};
+        'late_res', 'slow_mvmnt', 'very_slow_mvmnt', 'early_res', 'incorrect', 'quit', 'any'};
     % Index of each reason.
     indx.hole_in_data = ismember(screen_reasons, 'hole_in_data');
     indx.missing_data = ismember(screen_reasons, 'missing_data');
@@ -36,6 +36,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
     indx.bad_stim_dur = ismember(screen_reasons, 'bad_stim_dur');
     indx.late_res = ismember(screen_reasons, 'late_res');
     indx.slow_mvmnt = ismember(screen_reasons, 'slow_mvmnt');
+    indx.very_slow_mvmnt = ismember(screen_reasons, 'very_slow_mvmnt');
     indx.early_res = ismember(screen_reasons, 'early_res');
     indx.incorrect = ismember(screen_reasons, 'incorrect');
     indx.quit = ismember(screen_reasons, 'quit');
@@ -58,7 +59,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
         dev_table = load([p.TESTS_FOLDER '/sub' num2str(iSub) p.DAY '.mat']);  dev_table = dev_table.([task_type '_test_res']).dev_table;
         traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  traj_table = traj_table.reach_traj_table;
-        trials_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' task_type '_data.mat']);  trials_table = trials_table.([task_type '_data_table']);
+        trials_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' task_type '_data_proc.mat']);  trials_table = trials_table.([task_type '_data_table']);
         % remove practice.
         traj_table(traj_table{:,'practice'} >= 1, :) = [];
         trials_table(trials_table{:,'practice'} >= 1, :) = [];
@@ -69,6 +70,10 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
         % Reshape to convenient format.
         traj_mat = reshape(traj, p.MAX_CAP_LENGTH, p.NUM_TRIALS, 3); % 3 for (x,y,z).
 
+        % Screen result for each trial.
+        successes = ones(p.NUM_TRIALS, length(screen_reasons));
+
+        % Test every screen reason for each trial.
         for iTrial = 1:p.NUM_TRIALS
             success = ones(1, length(screen_reasons)); % 0 = bad trial.
             single_traj = squeeze(traj_mat(:,iTrial,:));
@@ -86,7 +91,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
 
             % Reaching screening.
             if is_reach
-                % Check if mvmnt time too long.
+                % Check if mvmnt time is long.
                 success(indx.slow_mvmnt) = ~trials_table.slow_mvmnt(iTrial);
                 % Check if reach distance is too short.
                 success(indx.short_traj) = testReachDist(single_traj, p);
@@ -99,12 +104,25 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
                 if contains(traj_name{1}, '_to')
                     success(indx.missed_target) = testMissTarget(single_traj, p);
                 end
-
-                % Cancel unsuccess if it is caused by other unsuccess.
-                success = cancelDuplicates(success, indx);
             end
+            % Store result.
+            successes(iTrial, :) = success;
+        end
 
-            fail = success * -1 + 1; % Can't use '~' because of nans.
+        % Check "very slow mvmnt", considering previous screen results.
+        for iTrial = 1:p.NUM_TRIALS
+            success = successes(iTrial, :);
+            
+            if is_reach
+                % Check if mvmnt time is TOO long.
+                success(indx.very_slow_mvmnt) = testVerySlowMvmnt(trials_table, successes, indx, iTrial);
+            end
+            
+            % Cancel unsuccess if it is caused by other unsuccess.
+            success = cancelDuplicates(success, indx);
+            
+            fail = success * -1 + 1; % logical not, Can't use '~' because of nans.
+            
             % Mark failed trials.
             bad_trials{iSub}{iTrial,:} = fail * iTrial;
         end
@@ -126,9 +144,11 @@ function success = cancelDuplicates(success, indx)
     success(indx.missing_data)  = success(indx.missing_data) |...
         ~(success(indx.short_traj) & success(indx.late_res) & success(indx.early_res));
     success(indx.missed_target) = success(indx.missed_target) |...
-        ~(success(indx.short_traj) & success(indx.late_res) & success(indx.early_res) & success(indx.slow_mvmnt));
+        ~(success(indx.short_traj) & success(indx.late_res) & success(indx.early_res) & success(indx.very_slow_mvmnt));
     success(indx.short_traj)    = success(indx.short_traj) |...
-        ~(success(indx.late_res) & success(indx.slow_mvmnt) & success(indx.early_res));
+        ~(success(indx.late_res) & success(indx.very_slow_mvmnt) & success(indx.early_res));
+    success(indx.slow_mvmnt)    = success(indx.slow_mvmnt) |...
+        ~success(indx.very_slow_mvmnt);
     % traj isnt full , can't tell if ans is correct or not.
     if ~success(indx.short_traj) || ~success(indx.early_res) || ~success(indx.late_res)
         success(indx.incorrect) = nan;

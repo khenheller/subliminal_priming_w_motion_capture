@@ -7,9 +7,10 @@ function [traj_table, data_table, too_short, pre_norm_traj_table] = preproc(traj
     time_name = replace(traj_name{1}, 'x', 'timecourse');
     too_short = zeros(p.NUM_TRIALS,1);
     
-    traj_type = strrep(traj_name{1}, '_x',''); % Remove 'x' from traj name.
-    onset_col  = [traj_type '_onset']; % name of time onset column.
-    offset_col = [traj_type '_offset'];
+    onset_col  = ['onset']; % name of time onset column.
+    offset_col = ['offset'];
+    onset_idx_col  = ['onset_idx'];
+    offset_idx_col = ['offset_idx'];
 
     pre_norm_traj_table = traj_table;
     
@@ -28,7 +29,7 @@ function [traj_table, data_table, too_short, pre_norm_traj_table] = preproc(traj
     % Set origin at first sample.
     [traj_mat, time_mat] = setOrigin(traj_mat, time_mat);
     % Trim to onset and offset.
-    [traj_mat, onsets, offsets] = trimOnsetOffset(traj_mat, time_mat, p);
+    [traj_mat, onsets, offsets, onsets_idx, offsets_idx] = trimOnsetOffset(traj_mat, time_mat, p);
     pre_norm_traj_mat = traj_mat;
 
     %-------- Normalization --------
@@ -41,6 +42,8 @@ function [traj_table, data_table, too_short, pre_norm_traj_table] = preproc(traj
     traj_table{:, time_name} = reshape(time_mat, p.MAX_CAP_LENGTH * p.NUM_TRIALS, 1);
     data_table{:, onset_col}  = onsets;
     data_table{:, offset_col} = offsets;
+    data_table{:, onset_idx_col}  = onsets_idx;
+    data_table{:, offset_idx_col} = offsets_idx;
     
     % Find trials that were too short to filter.
     too_short = find(~success);

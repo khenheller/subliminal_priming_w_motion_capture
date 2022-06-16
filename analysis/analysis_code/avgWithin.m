@@ -21,14 +21,17 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     % Column names in tables.
     ans_left_col   = regexprep(traj_name{1}, '_x_.+', '_ans_left'); % name of traj's ans_left column.
     rt_col          = regexprep(traj_name{1}, '_x_.+', '_rt'); % name of traj's rt column.
-    onset_col   = [strrep(traj_name{1}, '_x',''), '_onset'];
-    offset_col  = [strrep(traj_name{1}, '_x',''), '_offset'];
+    onset_col   = ['onset'];
+    offset_col  = ['offset'];
     mad_col     = [strrep(traj_name{1}, '_x',''), '_mad'];
     mad_p_col   = [strrep(traj_name{1}, '_x',''), '_mad_p'];
 
     % -------------------- Sort and avg REACH --------------------
+    % Bad trials reasons, Remove reason: "slow_mvmnt".
+    reasons = string(reach_bad_trials{iSub}.Properties.VariableNames);
+    reasons(reasons == "any" | reasons == "slow_mvmnt") = [];
     % Sorts trials.
-    bad = reach_bad_trials{iSub}.any;
+    bad = any(reach_bad_trials{iSub}{:, reasons}, 2);
     bad_timing_or_quit = reach_bad_trials{iSub}.bad_stim_dur | reach_bad_trials{iSub}.quit; % Bad stim duration, or sub quit before trial.
     pas = reach_data_table.('pas')==pas_rate;
     con = reach_data_table.('con');
@@ -52,8 +55,8 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     avg.mt = sortedAvg(single.mt, 0);
     avg.mad = sortedAvg(single.mad, 0);
     avg.mad_p = sortedAvg(single.mad_p, 0);
-    avg.fc_prime.con   = mean(single.fc_prime.con);
-    avg.fc_prime.incon = mean(single.fc_prime.incon);
+    avg.fc_prime.con   = nanmean(single.fc_prime.con);
+    avg.fc_prime.incon = nanmean(single.fc_prime.incon);
     avg.x_std.con_left    = std(single.trajs.con_left (:,:,1), 0, 2); % std between trials.
     avg.x_std.con_right   = std(single.trajs.con_right(:,:,1), 0, 2);
     avg.x_std.incon_left  = std(single.trajs.incon_left (:,:,1), 0, 2);

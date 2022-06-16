@@ -9,13 +9,16 @@
 %               Each trial has MAX_CAP_LENGTH samples.
 %           time_mat - a sub's timestamps mat. matching trajs_mat.
 %                   row = sample, column = trial.
-% Output: onsets/offsets - index of sample of movement initiation and finish.
-function [trajs_mat, onsets, offsets] = trimOnsetOffset(trajs_mat, time_mat, p)
+% Output: onsets_idx/offsets_idx - index of sample of movement initiation and finish.
+%           onsets/offsets - time of of movement initiation and finish relatively to trial onset.
+function [trajs_mat, onsets, offsets, onsets_idx, offsets_idx] = trimOnsetOffset(trajs_mat, time_mat, p)
     thresh.v = 0.02; % onset and offset velocity threshold (m/s).
     thresh.a = 0.02; % onset acceleration threshold (m/s^2).
     
     onsets  = NaN(p.NUM_TRIALS,1);
     offsets = NaN(p.NUM_TRIALS,1);
+    onsets_idx  = NaN(p.NUM_TRIALS,1);
+    offsets_idx = NaN(p.NUM_TRIALS,1);
     
     % calc velocity.
     dx = trajs_mat(2:end, :, :) - trajs_mat(1:end-1, :, :); % distance between 2 samples.
@@ -54,8 +57,10 @@ function [trajs_mat, onsets, offsets] = trimOnsetOffset(trajs_mat, time_mat, p)
         trial_traj(offset+1 : p.MAX_CAP_LENGTH, :) = NaN;
         trajs_mat(:, iTrial, :) = trial_traj;
         
-        onsets(iTrial)  = onset;
-        offsets(iTrial) = onset + offset; % Offset is relative to onset.
+        onsets(iTrial)  = time_mat(onset             , iTrial);
+        offsets(iTrial) = time_mat(onset + offset - 1, iTrial); % Offset is relative to onset.
+        onsets_idx(iTrial)  = onset;
+        offsets_idx(iTrial) = onset + offset; % Offset is relative to onset.
     end
 end
 
