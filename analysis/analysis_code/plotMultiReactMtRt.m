@@ -17,13 +17,13 @@ function [] = plotMultiReactMtRt(traj_names, plt_p, p)
         yLabel = 'Time (Sec)';
         XTickLabel = [];
         colors = repmat({plt_p.con_col, plt_p.incon_col},1,6);
-        title_char = cell2mat(['Time ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
+        title_char = 'Reaching timing';
         % Plot.
         printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
         % Group graphs.
         ticks = get(gca,'XTick');
         labels = {["",""]; ["Left","Right"]; ["React","MT","RT"]};
-        dist = [0, 40, 75];
+        dist = [0, 70, 140];
         font_size = [1, 15, 20];
         groupTick(ticks, labels, dist, font_size)
 

@@ -13,13 +13,14 @@ function [] = plotMultiKeyboardRt(traj_names, plt_p, p)
         yLabel = 'Time (Sec)';
         XTickLabel = [];
         colors = repmat({plt_p.con_col, plt_p.incon_col},1,2);
-        title_char = cell2mat(['Time ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
+        title_char = 'Keyboard timing';
         % Plot.
         printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
+        ylim([0 1000]);
         % Group graphs.
         ticks = get(gca,'XTick');
         labels = {["",""]; ["Left","Right"]};
-        dist = [0, 40];
+        dist = [0, 70];
         font_size = [1, 15];
         groupTick(ticks, labels, dist, font_size)
 
