@@ -13,7 +13,7 @@ SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
 SORTED_SUBS.EXP_4_SUBS = [43 44];
 SORTED_SUBS.EXP_4_1_SUBS = [45 47 49];
-SUBS = SORTED_SUBS.EXP_3_SUBS; % to analyze.
+SUBS = SORTED_SUBS.EXP_4_1_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -457,7 +457,7 @@ end
 % ------- Keyboard Response Times -------
 for iSub = p.SUBS
     figure(sub_f(iSub,3));
-    subplot(1,1,1);
+    subplot(2,1,2);
     plotKeyboardRt(iSub, traj_names{1}{1}, plt_p, p);
 end
 

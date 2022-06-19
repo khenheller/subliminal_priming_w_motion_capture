@@ -17,7 +17,7 @@ function [] = plotReactMtRt(iSub, traj_names, plt_p, p)
         yLabel = 'Time (Sec)';
         XTickLabel = [];
         colors = repmat({plt_p.con_col, plt_p.incon_col},1,6);
-        title_char = cell2mat(['Time ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
+        title_char = 'Reaching timing';
         % Plot.
         printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
         % Group graphs.

@@ -59,16 +59,20 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
         dev_table = load([p.TESTS_FOLDER '/sub' num2str(iSub) p.DAY '.mat']);  dev_table = dev_table.([task_type '_test_res']).dev_table;
         traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  traj_table = traj_table.reach_traj_table;
+        traj_table_pre_norm = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  traj_table_pre_norm = traj_table_pre_norm.reach_pre_norm_traj_table;
         trials_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' task_type '_data_proc.mat']);  trials_table = trials_table.([task_type '_data_table']);
         % remove practice.
         traj_table(traj_table{:,'practice'} >= 1, :) = [];
+        traj_table_pre_norm(traj_table_pre_norm{:,'practice'} >= 1, :) = [];
         trials_table(trials_table{:,'practice'} >= 1, :) = [];
         traj = traj_table{:, traj_name};
+        traj_pre_norm = traj_table_pre_norm{:, traj_name};
 
         bad_trials{iSub} = bad_trials_table;
 
         % Reshape to convenient format.
         traj_mat = reshape(traj, p.MAX_CAP_LENGTH, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+        traj_mat_pre_norm = reshape(traj_pre_norm, p.MAX_CAP_LENGTH, p.NUM_TRIALS, 3); % 3 for (x,y,z).
 
         % Screen result for each trial.
         successes = ones(p.NUM_TRIALS, length(screen_reasons));
@@ -77,6 +81,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
         for iTrial = 1:p.NUM_TRIALS
             success = ones(1, length(screen_reasons)); % 0 = bad trial.
             single_traj = squeeze(traj_mat(:,iTrial,:));
+            single_traj_pre_norm = squeeze(traj_mat_pre_norm(:,iTrial,:));
     
             % Check if reaponse was too late.
             success(indx.late_res) = ~trials_table.late_res(iTrial);
@@ -94,7 +99,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
                 % Check if mvmnt time is long.
                 success(indx.slow_mvmnt) = ~trials_table.slow_mvmnt(iTrial);
                 % Check if reach distance is too short.
-                success(indx.short_traj) = testReachDist(single_traj, p);
+                success(indx.short_traj) = testReachDist(single_traj_pre_norm, p);
                 % Check if there is a big hole in the data.
                 success(indx.hole_in_data) = testHoleData(single_traj, p);
                 % Check if too much data is missing.

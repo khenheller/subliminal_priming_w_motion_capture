@@ -14,7 +14,7 @@ function [] = plotMultiReactMtRt(traj_names, plt_p, p)
                     reach_avg_each.rt(iTraj).con_left(good_subs),     reach_avg_each.rt(iTraj).incon_left(good_subs),...
                     reach_avg_each.rt(iTraj).con_right(good_subs),    reach_avg_each.rt(iTraj).incon_right(good_subs)};
         beesdata = cellfun(@times,beesdata,repmat({1000},size(beesdata)),'UniformOutput',false); % convert to ms.
-        yLabel = 'Time (Sec)';
+        yLabel = 'Time (ms)';
         XTickLabel = [];
         colors = repmat({plt_p.con_col, plt_p.incon_col},1,6);
         title_char = 'Reaching timing';

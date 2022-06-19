@@ -23,7 +23,8 @@ function [] = plotMultiReachArea(traj_names, plt_p, p)
         connect_dots(x_data, y_data);
         
         ticks = get(gca,'XTick');
-        ylim([0.01 0.04]);
+        y_limit = [0.01 0.04];
+        ylim(y_limit);
         % Legend.
         h = [];
         h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col);
@@ -34,7 +35,8 @@ function [] = plotMultiReachArea(traj_names, plt_p, p)
         % T-test and Cohen's dz
         [~, p_val_ra, ~, stats_ra] = ttest(reach_avg_each.ra.con(good_subs), reach_avg_each.ra.incon(good_subs));
         cohens_dz_ra = stats_ra.tstat / sqrt(length(good_subs));
-        text(mean(ticks(1:2)), 1, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
-        text(mean(ticks(1:2)), 0, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
+        graph_height = y_limit(2) - y_limit(1);
+        text(mean(ticks(1:2)), graph_height/10, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
+        text(mean(ticks(1:2)), graph_height/7, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
     end
 end
