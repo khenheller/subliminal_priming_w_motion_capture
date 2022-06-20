@@ -56,7 +56,7 @@ while ~strcmpi(reply,'Y')
         end
     end
     
-    markers = natnetclient.getFrame.LabeledMarker;
+    markers = natnetclient.getFrame.LabeledMarkers;
     pDataDest = [markers(1).x markers(1).y markers(1).z];
     
     Question = {'LOWER p.LEFT pre coordinate transform:'...
@@ -109,7 +109,7 @@ while ~strcmpi(reply,'Y')
     end
 
 
-    markers = natnetclient.getFrame.LabeledMarker;
+    markers = natnetclient.getFrame.LabeledMarkers;
     pDataDest = [markers(1).x markers(1).y markers(1).z];
     
     Question = {'LOWER p.RIGHT pre coordinate transform:'...
@@ -157,7 +157,7 @@ while ~strcmpi(reply,'Y')
         end
     end
 
-    markers = natnetclient.getFrame.LabeledMarker;
+    markers = natnetclient.getFrame.LabeledMarkers;
     pDataDest = [markers(1).x markers(1).y markers(1).z];
     
     Question = {'UPPER p.LEFT pre coordinate transform:'...
@@ -207,7 +207,7 @@ while ~strcmpi(reply,'Y')
         end
     end
 
-    markers = natnetclient.getFrame.LabeledMarker;
+    markers = natnetclient.getFrame.LabeledMarkers;
     pDataDest = [markers(1).x markers(1).y markers(1).z];
     
     Question = {'UPPER p.RIGHT pre coordinate transform:'...

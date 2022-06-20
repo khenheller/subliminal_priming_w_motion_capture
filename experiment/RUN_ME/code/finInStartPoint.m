@@ -12,7 +12,7 @@ function [] = finInStartPoint(p)
         end
         
         % samples location and time.
-        markers = p.NATNETCLIENT.getFrame.LabeledMarker;
+        markers = p.NATNETCLIENT.getFrame.LabeledMarkers;
         
         % checks if there is a marker.
         if ~isempty(markers(1))

@@ -11,7 +11,7 @@ function [point] = setPoint(point_screen, p)
     while ~key(p.SPACE_KEY) || isempty(point) || isempty(markers(1))
         
         % sample location.
-        markers = p.NATNETCLIENT.getFrame.LabeledMarker;
+        markers = p.NATNETCLIENT.getFrame.LabeledMarkers;
         if ~isempty(markers(1))
             point = [markers(1).x markers(1).y markers(1).z];
             point = transform4(p.TOUCH_PLANE_INFO.T_opto_plane, point); % transform to screen related space.
