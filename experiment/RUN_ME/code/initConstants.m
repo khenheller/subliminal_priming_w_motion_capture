@@ -46,7 +46,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
         p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
         % Reponse time constraints of keyboard.
-        p.KEYBOARD_MIN_RT_LIMIT_SEC = 0.250; % In seconds.
+        p.KEYBOARD_MIN_RT_LIMIT_SEC = 0.100; % In seconds.
         p.KEYBOARD_RECOG_RT_LIMIT_SEC = 7; % RT limit for recognition task.
         p.KEYBOARD_CATEGOR_RT_LIMIT_SEC = 0.740; % RT limit for categorization task.
         
