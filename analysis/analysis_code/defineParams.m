@@ -38,6 +38,7 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     % Reach dist: Subs 1-10 = 40cm, Subs 10-25 = 35cm.
     % Recog cap length: Subs 1-10 = 5sec, Subs 10-25 = 7sec.
     % Categor cap length: Subs 1-10 = 1.5sec, Subs 10-25 = 0.75sec.
+    % React_time, Move_time doesn't exist in subs 1-10.
     % Subs 10-25 have 1 day, Subs 26 onword have 2 days of experiment.
     if all(p.SUBS <= 10)
         p.SCREEN_DIST = 0.4;
@@ -65,7 +66,12 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
     
     % RT lmitations.
-    p.MIN_REACT_TIME_SAMPLES = 10;
+    if all(p.SUBS <= 10)
+        p.REACT_TIME = 1.5;
+        p.MOVE_TIME = 1.5;
+        p.MIN_REACT_TIME = 0;
+    end
+    p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
     p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
     p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
 
