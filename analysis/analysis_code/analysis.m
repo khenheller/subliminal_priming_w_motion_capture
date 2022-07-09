@@ -11,7 +11,7 @@ addpath(genpath('./imported_code'));
 SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
 SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
-SUBS = SORTED_SUBS.EXP_2_SUBS; % to analyze.
+SUBS = SORTED_SUBS.EXP_1_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -828,17 +828,28 @@ end
 figure(all_sub_f(3));
 subplot(2,2,1); % plot fc_prime and pas together.
 beesdata = {avg_each.fc_prime.con(good_subs), avg_each.fc_prime.incon(good_subs)};
-[h, fc_p_val(1) , ci, stats] = ttest(avg_each.fc_prime.con(good_subs), 0.5);
-[h, fc_p_val(2) , ci, stats] = ttest(avg_each.fc_prime.incon(good_subs), 0.5);
-fc_p_val = round(fc_p_val, 2);
+[h, fc_p.con , fc_ci.con, fc_stats.con] = ttest(avg_each.fc_prime.con(good_subs), 0.5);
+[h, fc_p.incon , fc_ci.incon, fc_stats.incon] = ttest(avg_each.fc_prime.incon(good_subs), 0.5);
+fc_p.con = round(fc_p.con, 2);
+fc_p.incon = round(fc_p.incon, 2);
 XTickLabel = {'Con', 'Incon'};
 colors = {con_col, incon_col};
 title_char = ['Prime Forced response (PAS = ' num2str(pas_rate) ')'];
 printBeeswarm(beesdata, [], XTickLabel, colors, space, title_char, 'ci', alpha_size);
 plot([-20 20], [0.5 0.5], '--', 'color',[0.3 0.3 0.3 f_alpha], 'LineWidth',2); % Line at 50%.
-text(get(gca, 'xTick'),[0.1 0.1], {['p = ' num2str(fc_p_val(1))], ['p = ' num2str(fc_p_val(2))]}, 'FontSize',14, 'HorizontalAlignment','center');
 ylabel('% Correct', 'FontWeight','bold');
 ylim([0 1]);
+% T-test.
+disp('----Prime Recognition----');
+disp(['Con -- mean: ' num2str(mean(avg_each.fc_prime.con(good_subs))) ...
+    ' t-value: ' num2str(fc_stats.con.tstat) ...
+    ' CI: ' num2str(fc_ci.con) ...
+    ' p-value: ' num2str(fc_p.con)]);
+disp(['Incon -- mean: ' num2str(mean(avg_each.fc_prime.incon(good_subs))) ...
+    ' t-value: ' num2str(fc_stats.incon.tstat) ...
+    ' CI: ' num2str(fc_ci.incon) ...
+    ' p-value: ' num2str(fc_p.incon)]);
+text(get(gca, 'xTick'),[0.1 0.1], {['p = ' num2str(fc_p.con)], ['p = ' num2str(fc_p.incon)]}, 'FontSize',14, 'HorizontalAlignment','center');
 
 % ------- PAS -------
 figure(all_sub_f(3));
@@ -928,8 +939,8 @@ for iTraj = 1:length(traj_names)
     % T-test and Cohen's dz
     [~, p_val_ra, ~, stats_ra] = ttest(reach_area.con(good_subs), reach_area.incon(good_subs));
     cohens_dz_ra = stats_ra.tstat / sqrt(length(good_subs));
-    text(mean(ticks(1:2)), 1, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
-    text(mean(ticks(1:2)), 0, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
+    text(mean(ticks(1:2)), 0.005, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
+    text(mean(ticks(1:2)), 0.0025, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
 end
 
 % ------- X STD -------
