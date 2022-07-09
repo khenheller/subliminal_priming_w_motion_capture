@@ -735,7 +735,7 @@ for iTraj = 1:length(traj_names)
     ylabel('% path traveled');
 %     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
     set(gca, 'FontSize',14);
-%     title('Avg trajectory');
+    title("Z component of avg Traj")
 
     subplot(2,2,2);
     hold on;
@@ -746,6 +746,7 @@ for iTraj = 1:length(traj_names)
     stdshade(avg_each.traj(iTraj).incon_right(:,good_subs,1)', f_alpha*0.3, incon_col, subs_avg.traj.incon_right(:,2)*flip_traj, 0, 0, 'ci', alpha_size, linewidth);
     xlabel('X'); xlim([-0.105, 0.105]);
     ylabel('Y');
+    title("Y component of avg Traj")
 %     title(cell2mat(['Reach ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]));
     set(gca, 'FontSize',14);
 end
