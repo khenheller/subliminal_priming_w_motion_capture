@@ -5,9 +5,11 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     p.DATA_FOLDER = '../../raw_data/';
 
     % Save prev num of trials.
-    OLD_NUM_BLOCKS = p.NUM_BLOCKS;
+    SIM_NUM_BLOCKS = p.NUM_BLOCKS;
+    SIMULATE = p.SIMULATE;
 
     p = load([p.DATA_FOLDER '/sub' num2str(iSub) DAY '_' 'p.mat']); p = p.p;
+    p.SIMULATE = SIMULATE;
     % Paths.
     [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
     curr_path = replace(curr_path, '\', '/');
@@ -65,12 +67,20 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     p.MAX_CAP_LENGTH = max(p.RECOG_CAP_LENGTH, p.CATEGOR_CAP_LENGTH);
     
     % RT lmitations.
-    p.MIN_REACT_TIME_SAMPLES = 10;
+    % React_time, Move_time doesn't exist in subs 1-10.
+    if all(p.SUBS <= 10)
+        p.REACT_TIME = 1.5;
+        p.MOVE_TIME = 1.5;
+        p.MIN_REACT_TIME = 0;
+    end
+    p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
     p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
     p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
 
     % Number of trials.
-    p.NUM_BLOCKS = OLD_NUM_BLOCKS;
+    if p.SIMULATE == 1 % Use simulated num of blocks.
+        p.NUM_BLOCKS = SIM_NUM_BLOCKS;
+    end
     p.NUM_TRIALS = p.NUM_BLOCKS * p.BLOCK_SIZE;
     p.MIN_GOOD_TRIALS = 60; % Total, regardless of condition.
     p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.

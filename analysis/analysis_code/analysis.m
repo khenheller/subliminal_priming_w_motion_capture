@@ -12,12 +12,13 @@ SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment ve
 SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
 SORTED_SUBS.EXP_4_SUBS = [43 44];
-SORTED_SUBS.EXP_4_1_SUBS = [45 47 49];
-SUBS = SORTED_SUBS.EXP_4_1_SUBS; % to analyze.
+SORTED_SUBS.EXP_4_1_SUBS = [47 49 : 58];
+SUBS = SORTED_SUBS.EXP_1_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
+p.SIMULATE = 0; % Simulate less trials.
 p = defineParams(p, SUBS, DAY, SUBS(1), SORTED_SUBS);
 
 % Name of trajectory column in output data. each cell is a incon type of traj.
@@ -40,13 +41,12 @@ traj_types = traj_types(1,:);
 traj_types = replace(traj_types, '_x', '');
 disp("Done setting params.");
 %% Simulates an exp with less trials for each sub.
-% You have to run this before the rest of the analysis if you wish to use simulated subs.
-simulate = 0;
+% You have to run this before the rest of the analysis if you wish to use simulated number of trials.
 gen_files = 0; % Generates a new file for each sub. Use 0 only if you already generated in prev run.
 new_num_bloks = 6;
 idx_shift = 200; % data will be saved in a sub num = iSub + idx_shift.
 
-if simulate
+if p.SIMULATE
     % Set new number of blocks.
     p.NUM_BLOCKS = new_num_bloks;
     p.NUM_TRIALS = p.NUM_BLOCKS * p.BLOCK_SIZE;
@@ -92,7 +92,13 @@ disp('Creating processing data files for sub:');
 for iSub = p.SUBS
     reach_traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.csv']);
     reach_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.csv']);
-    keyboard_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.csv']);
+    % Fake keybaord data for Exp1,2,3.
+    if any(p.SUBS < 43)
+        keyboard_data_table = readtable([p.DATA_FOLDER '/sub49' p.DAY '_keyboard_data.csv']);
+        keyboard_data_table.sub_num = p.SUB_NUM * ones(size(keyboard_data_table.sub_num));
+    else
+        keyboard_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.csv']);
+    end
     % Change 'same' column to 'con'.
     if any(contains(reach_data_table.Properties.VariableNames, 'same'))
         reach_data_table.Properties.VariableNames{'same'} = 'con';
@@ -121,7 +127,7 @@ for iSub = p.SUBS
     has_q_field = any(contains(fields, 'quit'));
     % If fields don't exist, add them.
     if ~has_t_fields || ~has_q_field
-        reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  reach_traj_table = reach_traj_table.traj_table;
+        reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
         if ~has_t_fields
             start_end_points = load([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'start_end_points.mat']);
             p.START_POINT = start_end_points.p.START_POINT;
@@ -157,7 +163,7 @@ for iSub = p.SUBS
         keyboard_data_table{keyboard_last_trial+1 : p.NUM_TRIALS, 'iTrial'} = nan;
         % Mark missing trials.
         reach_data_table{reach_last_trial+1 : end, 'quit'} = 1;
-        reach_data_table{keyboard_last_trial+1 : end, 'quit'} = 1;
+        keyboard_data_table{keyboard_last_trial+1 : end, 'quit'} = 1;
         save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat'], 'reach_data_table');
         save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat'], 'reach_traj_table');
         save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.mat'], 'keyboard_data_table');
@@ -182,6 +188,7 @@ for iSub = p.SUBS
     % remove practice.
     reach_traj_table(reach_traj_table{:,'practice'} > 0, :) = [];
     reach_data_table(reach_data_table{:,'practice'} > 0, :) = [];
+    keyboard_data_table(keyboard_data_table{:,'practice'} > 0, :) = [];
     
     % Preprocessing and normalization.
     for iTraj = 1:length(traj_names)
@@ -208,7 +215,17 @@ disp(['Preprocessing done. ' timing 'Sec']);
 tic
 for iTraj = 1:length(traj_names)
     [reach_bad_trials, reach_n_bad_trials, reach_bad_trials_i] = trialScreen(traj_names{iTraj}, 'reach', p);
-    [keyboard_bad_trials, keyboard_n_bad_trials, keyboard_bad_trials_i] = trialScreen(traj_names{iTraj}, 'keyboard', p);
+    % Exp 1,2,3 has no keybaord session.
+    if any(p.SUBS < 43)
+        keyboard_n_bad_trials = array2table(zeros(size(reach_n_bad_trials)), 'VariableNames',reach_n_bad_trials.Properties.VariableNames);
+        keyboard_bad_trials_i = table('size',size(reach_bad_trials_i), 'variableNames',reach_bad_trials_i.Properties.VariableNames, 'VariableTypes',repmat("cell", [1, width(reach_bad_trials_i)]));
+        keyboard_bad_trials = {};
+        for iSub = p.SUBS
+            keyboard_bad_trials{iSub,1} = array2table(zeros(size(reach_bad_trials{iSub})), 'VariableNames',reach_bad_trials{iSub}.Properties.VariableNames);
+        end
+    else
+        [keyboard_bad_trials, keyboard_n_bad_trials, keyboard_bad_trials_i] = trialScreen(traj_names{iTraj}, 'keyboard', p);
+    end
     save([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_bad_trials', 'reach_n_bad_trials', 'reach_bad_trials_i', 'keyboard_bad_trials', 'keyboard_n_bad_trials', 'keyboard_bad_trials_i');
 end
 timing = num2str(toc);
@@ -218,6 +235,10 @@ tic
 for iTraj = 1:length(traj_names')
     reach_bad_subs = subScreening(traj_names{iTraj}, pas_rate, 'reach', p);
     keyboard_bad_subs = subScreening(traj_names{iTraj}, pas_rate, 'keyboard', p);
+    % Exp 1,2,3 had no keyboard task.
+    if any(p.SUBS < 43)
+        keyboard_bad_subs(:,:) = array2table(zeros(size(keyboard_bad_subs)));
+    end
     bad_subs = array2table(reach_bad_subs{:,:} | keyboard_bad_subs{:,:}, 'VariableNames',reach_bad_subs.Properties.VariableNames);
     good_subs = p.SUBS(~ismember(p.SUBS, find(bad_subs.any)));
     save([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs', 'reach_bad_subs', 'keyboard_bad_subs');
@@ -454,13 +475,6 @@ for iSub = p.SUBS
     plotReactMtRt(iSub, traj_names, plt_p, p);
 end
 
-% ------- Keyboard Response Times -------
-for iSub = p.SUBS
-    figure(sub_f(iSub,3));
-    subplot(2,1,2);
-    plotKeyboardRt(iSub, traj_names{1}{1}, plt_p, p);
-end
-
 % ------- PAS -------
 for iSub = p.SUBS
     figure(sub_f(iSub,1));
@@ -497,6 +511,15 @@ for iSub = p.SUBS
     subplot_p = [2,2,1; 2,2,2]; % Params for 1st and 2nd subplots.
     plotXStd(iSub, traj_names, subplot_p, plt_p, p);
 end
+
+% ------- Keyboard Response Times -------
+if any(p.SUBS >=43) % Only for Exp 4.
+    for iSub = p.SUBS
+        figure(sub_f(iSub,3));
+        subplot(2,1,2);
+        plotKeyboardRt(iSub, traj_names{1}{1}, plt_p, p);
+    end
+end
 %% Multiple subs average plots.
 % Create figures.
 all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
@@ -523,11 +546,6 @@ plotMultiFda(traj_names, plt_p, p);
 figure(all_sub_f(3));
 subplot(2,1,1);
 plotMultiReactMtRt(traj_names, plt_p, p);
-
-% ------- Response Times Keyboard -------
-figure(all_sub_f(3));
-subplot(2,1,2);
-plotMultiKeyboardRt(traj_names, plt_p, p);
 
 % ------- Prime Forced choice -------
 figure(all_sub_f(2));
@@ -567,6 +585,13 @@ plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p)
 % Comparison of bad trials count between subs of exp2 and subs of exp 3.
 figure(all_sub_f(4));
 plotNumBadTrials(traj_names{1}{1}, plt_p, p)
+
+% ------- Response Times Keyboard -------
+if any(p.SUBS >=43) % Only for Exp 4.
+    figure(all_sub_f(3));
+    subplot(2,1,2);
+    plotMultiKeyboardRt(traj_names, plt_p, p);
+end
 
 %% Effect size comparison to previous papers.
 % Prev exp data.

@@ -37,7 +37,7 @@ function [bad_subs] = subScreening(traj_name, pas_rate, task_type, p)
         bad_subs{iSub, 'not_enough_trials_in_cond'} = sum(ok_pas_categcorr_con) < p.MIN_AMNT_TRIALS_IN_COND |...
                                                       sum(ok_pas_categcorr_incon) < p.MIN_AMNT_TRIALS_IN_COND;
         % Counts good trials.
-        disp(['Sub ', num2str(iSub)]);
+        disp(['-- Sub ', num2str(iSub) ' --']);
         disp(['Con: ' num2str(sum(ok_pas_categcorr_con))])
         disp(['Incon: ' num2str(sum(ok_pas_categcorr_incon))])
         avg_con = avg_con + sum(ok_pas_categcorr_con);
