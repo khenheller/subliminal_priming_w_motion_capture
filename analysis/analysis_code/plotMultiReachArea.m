@@ -33,10 +33,14 @@ function [] = plotMultiReachArea(traj_names, plt_p, p)
         legend(h,'Congruent','Incongruent', 'Location','northwest');
 
         % T-test and Cohen's dz
-        [~, p_val_ra, ~, stats_ra] = ttest(reach_avg_each.ra.con(good_subs), reach_avg_each.ra.incon(good_subs));
+        [~, p_val_ra, ci_ra, stats_ra] = ttest(reach_avg_each.ra.con(good_subs), reach_avg_each.ra.incon(good_subs));
         cohens_dz_ra = stats_ra.tstat / sqrt(length(good_subs));
         graph_height = y_limit(2) - y_limit(1);
         text(mean(ticks(1:2)), graph_height/10, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
         text(mean(ticks(1:2)), graph_height/7, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
+
+        % Print stats to terminal.
+        print_stats('-----Reach Area------------', reach_avg_each.ra.con(good_subs), ...
+            reach_avg_each.ra.incon(good_subs), p_val_ra, ci_ra, stats_ra);
     end
 end

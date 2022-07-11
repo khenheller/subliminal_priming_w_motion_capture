@@ -46,15 +46,17 @@ function [] = plotMultiReactMtRt(traj_names, plt_p, p)
         legend(h,'Con','Incon', 'Location','northwest');
     
         % T-test and Cohen's dz
-        [~, p_val_react, ~, stats_react] = ttest(reach_avg_each.react(iTraj).diff(good_subs));
-        [~, p_val_mt, ~, stats_mt] = ttest(reach_avg_each.mt(iTraj).diff(good_subs));
-        [~, p_val_rt, ~, stats_rt] = ttest(reach_avg_each.rt(iTraj).diff(good_subs));
-        cohens_dz_react = stats_react.tstat / sqrt(length(good_subs));
-        cohens_dz_mt = stats_mt.tstat / sqrt(length(good_subs));
-        cohens_dz_rt = stats_rt.tstat / sqrt(length(good_subs));
-        disp('Diff between congruent and incongruent in reaching:');
-        disp(['Reaction time: ' num2str(mean(reach_avg_each.react(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_react) ', Cohens d_z=' num2str(cohens_dz_react)]);
-        disp(['Movement time: ' num2str(mean(reach_avg_each.mt(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_mt) ', Cohens d_z=' num2str(cohens_dz_mt)]);
-        disp(['Response time: ' num2str(mean(reach_avg_each.rt(iTraj).diff(good_subs))) 'ms, p-value=' num2str(p_val_rt) ', Cohens d_z=' num2str(cohens_dz_rt)]);
+        [~, p_val_react, ci_react, stats_react] = ttest(reach_avg_each.react(iTraj).con(good_subs), reach_avg_each.react(iTraj).incon(good_subs));
+        [~, p_val_mt, ci_mt, stats_mt] = ttest(reach_avg_each.mt(iTraj).con(good_subs), reach_avg_each.mt(iTraj).incon(good_subs));
+        [~, p_val_rt, ci_rt, stats_rt] = ttest(reach_avg_each.rt(iTraj).con(good_subs), reach_avg_each.rt(iTraj).incon(good_subs));
+
+        % Print stats to terminal.
+        disp('------------Reaching RTs------------');
+        print_stats('Reaction time', reach_avg_each.react(iTraj).con(good_subs), ...
+            reach_avg_each.react(iTraj).incon(good_subs), p_val_react, ci_react, stats_react);
+        print_stats('Movement time', reach_avg_each.mt(iTraj).con(good_subs), ...
+            reach_avg_each.mt(iTraj).incon(good_subs), p_val_mt, ci_mt, stats_mt);
+        print_stats('Response time', reach_avg_each.rt(iTraj).con(good_subs), ...
+            reach_avg_each.rt(iTraj).incon(good_subs), p_val_rt, ci_rt, stats_rt);
     end
 end
