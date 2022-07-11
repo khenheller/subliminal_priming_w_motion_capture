@@ -14,7 +14,7 @@ events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target
 desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
 
 % To test sub data enter his number.
-sub_num = [43 44];
+sub_num = [1 : 10];
 % To test word list enter its name.
 word_list = 'test_trials20day2.xlsx';
 list_type = 'test'; % 'practice' / 'test' list.
@@ -33,7 +33,9 @@ for iSub = sub_num
         file_name = ['sub' num2str(iSub) test_day];
         reach_trials = readtable([DATA_FOLDER file_name '_reach_data.csv']);
         reach_trials_traj = readtable([DATA_FOLDER file_name '_reach_traj.csv']);
-        keyboard_trials = readtable([DATA_FOLDER file_name '_keyboard_data.csv']);
+        if iSub >= 43 % Only Exp 4 has keyboard task
+            keyboard_trials = readtable([DATA_FOLDER file_name '_keyboard_data.csv']);
+        end
         diary_name = [TEST_RES_FOLDER file_name '.txt'];
         p = load([DATA_FOLDER file_name '_p.mat']); p = p.p;
     % Get trial_list.
@@ -79,8 +81,11 @@ for iSub = sub_num
     disp('@@@@@@@@@@@@@@@@@@@@@@@@@ Testing Reaching session @@@@@@@@@@@@@@@@@@@@@@@@@');
     [reach_pass_test, reach_test_res] = tests(reach_trials, reach_trials_traj, test_type, events, desired_durations, test_day, 1, p);
     % Tests keyboard session.
-    disp('@@@@@@@@@@@@@@@@@@@@@@@@@ Testing Keyboard session @@@@@@@@@@@@@@@@@@@@@@@@@');
-    [keyboard_pass_test, keyboard_test_res] = tests(keyboard_trials, [], test_type, events, desired_durations, test_day, 0, p);
+    keyboard_test_res = NaN;
+    if iSub >= 43 % Only Exp 4 has keyboard task
+        disp('@@@@@@@@@@@@@@@@@@@@@@@@@ Testing Keyboard session @@@@@@@@@@@@@@@@@@@@@@@@@');
+        [keyboard_pass_test, keyboard_test_res] = tests(keyboard_trials, [], test_type, events, desired_durations, test_day, 0, p);
+    end
     diary off;
 
     save([TEST_RES_FOLDER file_name '.mat'], 'reach_test_res','keyboard_test_res');
