@@ -1,7 +1,8 @@
 % Gets single sub, 
 % For each trial:
 %   Set origin as the first sample's coordinates.
-%   Rotate axes to be orthogonal to screen.
+%   Rotate axes to be orthogonal to screen --> not implemented since the calibration in the
+%       exp makes sure axes are perpendicualr to the screen.
 %   Set each trial's first timestamp as time=0.
 % Receives: trajs_mat - a subject's trajectory, of 1 type (categot_to / categor_from / recog_to / recog_from).
 %               3 Dim double matrix, row = sample, column = trial, 3rd dim = axis (x,y,z).

@@ -258,6 +258,35 @@ for iTraj = 1:length(traj_names)
 end
 timing = num2str(toc);
 disp(['MAD calc done. ' timing 'Sec']);
+%% Heading angle
+tic
+for iSub = p.SUBS
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_traj_table = calcHeadAngle(reach_traj_table, p);
+    save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
+end
+timing = num2str(toc);
+disp(['Heading angle calc done. ' timing 'Sec']);
+%% Changes of mind
+tic
+for iSub = p.SUBS
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
+    reach_data_table = countCom(reach_traj_table, reach_data_table, p);
+    save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
+end
+timing = num2str(toc);
+disp(['COM calc done. ' timing 'Sec']);
+%% Total distance traveled
+tic
+for iSub = p.SUBS
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
+    reach_data_table = calcTotDistTravel(reach_traj_table, reach_data_table, p);
+    save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
+end
+timing = num2str(toc);
+disp(['Total distance traveled calc done. ' timing 'Sec']);
 %% Sorting and averaging (within subject)
 tic
 for iTraj = 1:length(traj_names)
