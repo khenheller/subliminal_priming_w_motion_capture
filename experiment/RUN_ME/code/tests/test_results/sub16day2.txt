@@ -1,3 +1,4 @@
+@@@@@@@@@@@@@@@@@@@@@@@@@ Testing Reaching session @@@@@@@@@@@@@@@@@@@@@@@@@
 ------------------------------- Event Durations -------------------------------
 Number of trials devaiting from desired duration:
 399

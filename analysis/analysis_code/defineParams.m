@@ -72,6 +72,9 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
         p.REACT_TIME = 1.5;
         p.MOVE_TIME = 1.5;
         p.MIN_REACT_TIME = 0;
+    % Minimal react time doesn't exist in subs 11-25.
+    elseif all(p.SUBS > 10 & p.SUBS <= 25)
+        p.MIN_REACT_TIME = 0;
     end
     p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
     p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
@@ -84,7 +87,7 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     p.NUM_TRIALS = p.NUM_BLOCKS * p.BLOCK_SIZE;
     p.MIN_GOOD_TRIALS = 60; % Total, regardless of condition.
     p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
-    p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition (same/diff) is disqualified.
+    p.MIN_AMNT_TRIALS_IN_COND = 25; % sub with less good trials in each condition (same/diff) is disqualified.
 
     % Conditions.
     p.CONDS = ["con" "incon"];

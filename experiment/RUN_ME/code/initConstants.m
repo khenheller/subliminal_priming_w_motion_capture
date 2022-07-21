@@ -176,7 +176,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
     p.MAX_MISSING_DATA = 0.1; % in sec.
     p.MIN_GOOD_TRIALS = 60; % Total, across conditions.
     p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
-    p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition is disqualified.
+    p.MIN_AMNT_TRIALS_IN_COND = 25; % sub with less good trials in each condition is disqualified.
     p.SIG_PVAL = 0.05; % Significance threshold for P-values (smaller p-vals are significant).
     
     % Cameras

@@ -9,7 +9,7 @@ function [] = plotMultiReachArea(traj_names, plt_p, p)
 
         % Load data and set aparms.
         beesdata = {reach_avg_each.ra.con(good_subs) reach_avg_each.ra.incon(good_subs)};
-        yLabel = 'Reach area (m^2)'; % 'Reach area (m^2)';
+        yLabel = 'Reach area'; % Since traj is in %path_traveled, reach area has no units.
         err_bar_type = 'se';
         XTickLabels = ["Congruent","Incongruent"];
         colors = {plt_p.con_col, plt_p.incon_col};
@@ -23,7 +23,7 @@ function [] = plotMultiReachArea(traj_names, plt_p, p)
         connect_dots(x_data, y_data);
         
         ticks = get(gca,'XTick');
-        y_limit = [0.01 0.04];
+        y_limit = [0 0.0002];
         ylim(y_limit);
         % Legend.
         h = [];

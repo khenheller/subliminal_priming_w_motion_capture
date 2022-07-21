@@ -9,8 +9,8 @@ addpath(genpath('./imported_code'));
 
 % Adjustable params.
 SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
-SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 15 16 17 18 19 20 21 22 23 24 25];
-SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42];
+SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 16 17 18 19 20 21 22 23 24 25]; % Sub 15 didn't finish the experiment (pressed Esc).
+SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn't arrive to day 2.
 SORTED_SUBS.EXP_4_SUBS = [43 44];
 SORTED_SUBS.EXP_4_1_SUBS = [47 49 : 58];
 SUBS = SORTED_SUBS.EXP_1_SUBS; % to analyze.

@@ -1,4 +1,4 @@
-% Prints that desctiptive statistcs.
+% Prints the descriptive statistcs.
 % print_title - to print before the results.
 % con - congreunt condition data.
 % incon - incongreunt condition data.

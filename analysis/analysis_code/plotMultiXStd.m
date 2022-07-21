@@ -39,7 +39,7 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         hold on;
         % Plot.
         stdshade(reach_avg_each.x_std.diff(:,good_subs)', plt_p.f_alpha, 'k', reach_subs_avg.traj.con_right(:,3), 0, 1, 'ci', plt_p.alpha_size, plt_p.linewidth);
-        plot([0 100], [0 0], '--', 'linewidth',3, 'color',[0.15 0.15 0.15 plt_p.f_alpha]); % Zero line.
+        plot([0 1], [0 0], '--', 'linewidth',3, 'color',[0.15 0.15 0.15 plt_p.f_alpha]); % Zero line.
 
         xlabel('Proportion of Z');
         ylabel('X STD difference');

@@ -1,3 +1,4 @@
+@@@@@@@@@@@@@@@@@@@@@@@@@ Testing Reaching session @@@@@@@@@@@@@@@@@@@@@@@@@
 ------------------------------- Event Durations -------------------------------
 Number of trials devaiting from desired duration:
 0
@@ -22,8 +23,8 @@ Deviations in ms:
 ------------------------------- Test results (0=didnt pass test) -------------------------------
 ------------------------------------------------------------------------------------------------
                      deviations: 1
-              deviation_of_mean: 0
-                            std: 0
+              deviation_of_mean: 1
+                            std: 1
                     prime_alter: 1
                     data_values: 1
                     traj_values: 1

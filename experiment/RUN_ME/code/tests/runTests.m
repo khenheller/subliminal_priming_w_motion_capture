@@ -14,7 +14,7 @@ events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target
 desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
 
 % To test sub data enter his number.
-sub_num = [1 : 10];
+sub_num = [26 28 29 31 32 33 34 35 37 38 39 40 42];
 % To test word list enter its name.
 word_list = 'test_trials20day2.xlsx';
 list_type = 'test'; % 'practice' / 'test' list.
@@ -71,7 +71,7 @@ for iSub = sub_num
     diary(diary_name);
     
     % Old subs don't have correct parameters.
-    if any(sub_num < 26)
+    if any(sub_num < 39)
         p.N_CATEGOR = 2; % Num of word categories (2 = natural / artificial).
         p.CONDS = ["same" "diff"];
         p.N_CONDS = length(p.CONDS); % Conditions: Same/Diff.
