@@ -434,6 +434,10 @@ for iSub = p.SUBS
         reach_avg_each.mad(iTraj).con_right(iSub) = reach_avg.mad.con_right;
         reach_avg_each.mad(iTraj).incon_left(iSub)  = reach_avg.mad.incon_left;
         reach_avg_each.mad(iTraj).incon_right(iSub) = reach_avg.mad.incon_right;
+        reach_avg_each.com(iTraj).con_left(iSub)  = reach_avg.com.con_left;
+        reach_avg_each.com(iTraj).con_right(iSub) = reach_avg.com.con_right;
+        reach_avg_each.com(iTraj).incon_left(iSub)  = reach_avg.com.incon_left;
+        reach_avg_each.com(iTraj).incon_right(iSub) = reach_avg.com.incon_right;
         reach_avg_each.x_std(iTraj).con_left(:,iSub)  = reach_avg.x_std.con_left;
         reach_avg_each.x_std(iTraj).con_right(:,iSub) = reach_avg.x_std.con_right;
         reach_avg_each.x_std(iTraj).incon_left(:,iSub)  = reach_avg.x_std.incon_left;
@@ -455,6 +459,8 @@ for iSub = p.SUBS
         reach_avg_each.mt(iTraj).incon(iSub) = mean([reach_avg.mt.incon_right, reach_avg.mt.incon_left]);
         reach_avg_each.mad(iTraj).con(iSub) = mean([reach_avg.mad.con_right, reach_avg.mad.con_left]);
         reach_avg_each.mad(iTraj).incon(iSub) = mean([reach_avg.mad.incon_right, reach_avg.mad.incon_left]);
+        reach_avg_each.com(iTraj).con(iSub) = mean([reach_avg.com.con_right, reach_avg.com.con_left]);
+        reach_avg_each.com(iTraj).incon(iSub) = mean([reach_avg.com.incon_right, reach_avg.com.incon_left]);
         reach_avg_each.x_std(iTraj).con(:, iSub) = mean([reach_avg.x_std.con_right, reach_avg.x_std.con_left], 2);
         reach_avg_each.x_std(iTraj).incon(:, iSub) = mean([reach_avg.x_std.incon_right, reach_avg.x_std.incon_left], 2);
         reach_avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
@@ -571,11 +577,13 @@ all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(5)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 
 % ------- Avg traj with shade -------
 figure(all_sub_f(2));
@@ -593,12 +601,12 @@ subplot(2,1,1);
 plotMultiReactMtRt(traj_names, plt_p, p);
 
 % ------- Prime Forced choice -------
-figure(all_sub_f(2));
+figure(all_sub_f(5));
 subplot(2,4,3);
 plotMultiRecognition(pas_rate, traj_names{1}{1}, plt_p, p);
 
 % ------- PAS -------
-figure(all_sub_f(2));
+figure(all_sub_f(5));
 hold on;
 subplot(2,4,4);
 plotMultiPas(traj_names{1}{1}, plt_p, p);
@@ -624,7 +632,13 @@ plotMultiXStd(traj_names, subplot_p, plt_p, p);
 % Difference between avg traj in each condition.
 figure(all_sub_f(2));
 subplot_p = [2,4,6; 2,4,7; 2,4,8];
-plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p)
+plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
+
+% ------- COM -------
+% Number of changes of mind.
+figure(all_sub_f(2));
+subplot(2,4,3);
+plotMultiCom(traj_names, plt_p, p);
 
 % ------- Number of bad trials -------
 % Comparison of bad trials count between subs of exp2 and subs of exp 3.

@@ -1,19 +1,18 @@
-% Plots the average MAD of each subject.
 % plt_p - struct of plotting params.
 % p - struct of exp params.
-function [] = plotMultiMad(traj_names, plt_p, p)
+function [] = plotMultiCom(traj_names, plt_p, p)
     for iTraj = 1:length(traj_names)
         good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
         reach_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_avg_each = reach_avg_each.reach_avg_each;
         hold on;
 
         % Load data and set parameters.
-        beesdata = {reach_avg_each(iTraj).mad.con_left(good_subs), reach_avg_each(iTraj).mad.incon_left(good_subs), reach_avg_each(iTraj).mad.con_right(good_subs), reach_avg_each(iTraj).mad.incon_right(good_subs)};
-        yLabel = 'MAD (meter)';
+        beesdata = {reach_avg_each(iTraj).com.con_left(good_subs), reach_avg_each(iTraj).com.incon_left(good_subs), reach_avg_each(iTraj).com.con_right(good_subs), reach_avg_each(iTraj).com.incon_right(good_subs)};
+        yLabel = 'Num of COM';
         XTickLabels = [];
         err_bar_type = 'se';
         colors = {plt_p.con_col, plt_p.incon_col, plt_p.con_col, plt_p.incon_col};
-        title_char = cell2mat(['Maximum Absolute Deviation ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
+        title_char = 'Num of COMs';
         % plot.
         printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
         % Group graphs.
@@ -37,13 +36,13 @@ function [] = plotMultiMad(traj_names, plt_p, p)
         legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
         
         % T-test On plot
-        [~, p_val_mad, ci, ~] = ttest(beesdata{1}, beesdata{2});
-        text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
-        [~, p_val_mad, ci, ~] = ttest(beesdata{3}, beesdata{4});
-        text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
+        [~, p_val, ~, ~] = ttest(beesdata{1}, beesdata{2});
+        text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+        [~, p_val, ~, ~] = ttest(beesdata{3}, beesdata{4});
+        text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
         % T-test and Cohen's dz
-        [~, p_val, ci, stats] = ttest(reach_avg_each.mad(iTraj).con(good_subs), reach_avg_each.mad(iTraj).incon(good_subs));
-        print_stats('-----MAD------------', reach_avg_each.mad(iTraj).con(good_subs), ...
-            reach_avg_each.mad(iTraj).incon(good_subs), p_val, ci, stats);
+        [~, p_val, ci, stats] = ttest(reach_avg_each.com(iTraj).con(good_subs), reach_avg_each.com(iTraj).incon(good_subs));
+        print_stats('-----Num of COM------------', reach_avg_each.com(iTraj).con(good_subs), ...
+            reach_avg_each.com(iTraj).incon(good_subs), p_val, ci, stats);
     end
 end
