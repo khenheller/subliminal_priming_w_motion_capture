@@ -6,13 +6,13 @@ function [] = plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p)
     for iTraj = 1:length(traj_names)
         left_right = ["left", "right"];
         good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
-        % Avg over all subs.
-        reach_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_avg_each = reach_avg_each.reach_avg_each;
         % Avg of each sub.
+        reach_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_avg_each = reach_avg_each.reach_avg_each;
+        % Avg over all subs.
         reach_subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_subs_avg = reach_subs_avg.reach_subs_avg;
 
         % Unite sides to single var.
-        traj_con = {reach_subs_avg.traj.con_left, reach_subs_avg.traj.con_right};
+        traj_con = {reach_subs_avg.traj.con_left, reach_subs_avg.traj.con_right}; % Used only for Z values in plot.
         cond_diff = {reach_avg_each.cond_diff.left, reach_avg_each.cond_diff.right};
         % 2 plots: left, right.
         for side = 1:2

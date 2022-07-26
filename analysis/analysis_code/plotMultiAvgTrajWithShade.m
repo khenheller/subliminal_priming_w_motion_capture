@@ -2,6 +2,8 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
+    n_perm = 1000; % Num permutations when estimating significance.
+
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
     for iTraj = 1:length(traj_names)
         hold on;
@@ -26,5 +28,9 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         h(1) = plot(nan,nan,'Color',plt_p.con_col, 'linewidth',plt_p.linewidth);
         h(2) = plot(nan,nan,'Color',plt_p.incon_col, 'linewidth',plt_p.linewidth);
         legend(h, 'Congruent', 'Incongruent', 'Location','southeast');
+
+        % Permutation testing.
+        [cluster_size, p_val, cohens_dz, t_star] = permCluster(reach_avg_each.traj.con(:,good_subs,1), reach_avg_each.traj.incon(:,good_subs,1), n_perm);
+        printTsStats('----Deviation From center--------', cluster_size, p_val, cohens_dz, t_star);
     end
 end

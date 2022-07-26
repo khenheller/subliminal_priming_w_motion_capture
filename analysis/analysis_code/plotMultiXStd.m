@@ -47,5 +47,9 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         title('Diff between con and incon in "X STD", combined left and right');
         set(gca,'FontSize',14);
         legend(['CI, \alpha=' num2str(plt_p.alpha_size)], 'con - incon');
+
+        % Permutation testing.
+        [cluster_size, p_val, cohens_dz, t_star] = permCluster(reach_avg_each.x_std.con(:,good_subs,1), reach_avg_each.x_std.incon(:,good_subs,1), n_perm);
+        printTsStats('----Movement variation--------', cluster_size, p_val, cohens_dz, t_star);
     end
 end
