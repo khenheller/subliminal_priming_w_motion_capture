@@ -2,6 +2,10 @@
 function [data_table] = calcTotDistTravel(traj_table, data_table, p)
 
     data_table.tot_dist_trav = cell(p.NUM_TRIALS,1);
+    % Name of COM column in data_table.
+    tot_dist_col = 'tot_dist';
+
+    tot_dist = NaN(p.NUM_TRIALS,1);
 
     % Reshape to convinient format.
     trajs = traj_table{:,{'target_x_to', 'target_y_to', 'target_z_to'}};
@@ -13,6 +17,7 @@ function [data_table] = calcTotDistTravel(traj_table, data_table, p)
         delta = (traj(2:end, [1,3]) - traj(1:end-1, [1,3]));
         dist_between_points = sqrt(sum(delta.^2, 2));
         % Sum distances.
-        data_table.tot_dist_trav{iTrial} = sum(dist_between_points);
+        tot_dist(iTrial) = sum(dist_between_points);
     end
+    data_table.(tot_dist_col) = tot_dist;
 end

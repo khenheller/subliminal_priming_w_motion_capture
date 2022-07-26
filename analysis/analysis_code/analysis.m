@@ -438,6 +438,10 @@ for iSub = p.SUBS
         reach_avg_each.com(iTraj).con_right(iSub) = reach_avg.com.con_right;
         reach_avg_each.com(iTraj).incon_left(iSub)  = reach_avg.com.incon_left;
         reach_avg_each.com(iTraj).incon_right(iSub) = reach_avg.com.incon_right;
+        reach_avg_each.tot_dist(iTraj).con_left(iSub)  = reach_avg.tot_dist.con_left;
+        reach_avg_each.tot_dist(iTraj).con_right(iSub) = reach_avg.tot_dist.con_right;
+        reach_avg_each.tot_dist(iTraj).incon_left(iSub)  = reach_avg.tot_dist.incon_left;
+        reach_avg_each.tot_dist(iTraj).incon_right(iSub) = reach_avg.tot_dist.incon_right;
         reach_avg_each.x_std(iTraj).con_left(:,iSub)  = reach_avg.x_std.con_left;
         reach_avg_each.x_std(iTraj).con_right(:,iSub) = reach_avg.x_std.con_right;
         reach_avg_each.x_std(iTraj).incon_left(:,iSub)  = reach_avg.x_std.incon_left;
@@ -461,6 +465,8 @@ for iSub = p.SUBS
         reach_avg_each.mad(iTraj).incon(iSub) = mean([reach_avg.mad.incon_right, reach_avg.mad.incon_left]);
         reach_avg_each.com(iTraj).con(iSub) = mean([reach_avg.com.con_right, reach_avg.com.con_left]);
         reach_avg_each.com(iTraj).incon(iSub) = mean([reach_avg.com.incon_right, reach_avg.com.incon_left]);
+        reach_avg_each.tot_dist(iTraj).con(iSub) = mean([reach_avg.tot_dist.con_right, reach_avg.tot_dist.con_left]);
+        reach_avg_each.tot_dist(iTraj).incon(iSub) = mean([reach_avg.tot_dist.incon_right, reach_avg.tot_dist.incon_left]);
         reach_avg_each.x_std(iTraj).con(:, iSub) = mean([reach_avg.x_std.con_right, reach_avg.x_std.con_left], 2);
         reach_avg_each.x_std(iTraj).incon(:, iSub) = mean([reach_avg.x_std.incon_right, reach_avg.x_std.incon_left], 2);
         reach_avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
@@ -639,6 +645,12 @@ plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
 figure(all_sub_f(2));
 subplot(2,4,3);
 plotMultiCom(traj_names, plt_p, p);
+
+% ------- Total distance traveled -------
+% Total distance traveled.
+figure(all_sub_f(2));
+subplot(2,4,4);
+plotMultiTotDist(traj_names, plt_p, p);
 
 % ------- Number of bad trials -------
 % Comparison of bad trials count between subs of exp2 and subs of exp 3.

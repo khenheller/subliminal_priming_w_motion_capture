@@ -4,7 +4,7 @@
 function data_table = countCom(traj_table, data_table, p)
     assert(any(contains(traj_table.Properties.VariableNames, 'head_angle')), "Run heading angle section before COM section");
 
-    % NAme of COM column in data_table.
+    % Name of COM column in data_table.
     com_col = 'com';
 
     com = NaN(p.NUM_TRIALS,1);

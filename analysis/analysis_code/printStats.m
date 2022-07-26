@@ -5,7 +5,7 @@
 % p_val - of test.
 % ci - confidence intervals.
 % stats - output of ttest(): tstat, df, sd. 
-function print_stats(print_title, con, incon, p_val, ci, stats)
+function printStats(print_title, con, incon, p_val, ci, stats)
     cohens_dz = stats.tstat / sqrt(length(con));
     disp(['----' print_title]);
     disp(['Con: M=' num2str(mean(con)) '    STD=' num2str(std(con))]);
