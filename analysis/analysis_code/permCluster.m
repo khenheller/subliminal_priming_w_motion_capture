@@ -84,7 +84,7 @@ end
 function [avg_cohens_dz] = getCohensDz(t_values, num_subs, clusters_start)
     avg_cohens_dz = NaN(size(clusters_start));
 
-    clusters_end = [clusters_start(2 : end)-1, length(t_values)];
+    clusters_end = [clusters_start(2 : end)-1; length(t_values)];
     cohens_dz = t_values / sqrt(num_subs);
     for j = 1:length(clusters_start)
         avg_cohens_dz(j) = mean(cohens_dz(clusters_start(j) : clusters_end(j)));

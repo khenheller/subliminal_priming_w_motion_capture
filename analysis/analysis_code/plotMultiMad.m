@@ -43,7 +43,7 @@ function [] = plotMultiMad(traj_names, plt_p, p)
         text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val_mad)], 'HorizontalAlignment','center', 'FontSize',14);
         % T-test and Cohen's dz
         [~, p_val, ci, stats] = ttest(reach_avg_each.mad(iTraj).con(good_subs), reach_avg_each.mad(iTraj).incon(good_subs));
-        print_stats('-----MAD------------', reach_avg_each.mad(iTraj).con(good_subs), ...
+        printStats('-----MAD------------', reach_avg_each.mad(iTraj).con(good_subs), ...
             reach_avg_each.mad(iTraj).incon(good_subs), p_val, ci, stats);
     end
 end

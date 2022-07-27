@@ -4,6 +4,8 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
+    n_perm = 1000;
+
     for iTraj = 1:length(traj_names)
         left_right = ["left", "right"];
         good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
@@ -49,7 +51,7 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         legend(['CI, \alpha=' num2str(plt_p.alpha_size)], 'con - incon');
 
         % Permutation testing.
-        [cluster_size, p_val, cohens_dz, t_star] = permCluster(reach_avg_each.x_std.con(:,good_subs,1), reach_avg_each.x_std.incon(:,good_subs,1), n_perm);
+        [cluster_size, p_val, cohens_dz, t_star] = permCluster(reach_avg_each.x_std.con(:,good_subs), reach_avg_each.x_std.incon(:,good_subs), n_perm);
         printTsStats('----Movement variation--------', cluster_size, p_val, cohens_dz, t_star);
     end
 end

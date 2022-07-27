@@ -13,8 +13,8 @@ function [bad_subs] = subScreening(traj_name, pas_rate, task_type, p)
         'VariableNames', screen_reasons);
     
     % Counts and prints good trials.
-    avg_con = 0;
-    avg_incon = 0;
+    con = NaN(p.MAX_SUB, 1);
+    incon = NaN(p.MAX_SUB, 1);
     disp([task_type ' trials with correct timing, pas=' num2str(pas_rate) ' and correct categorization'])
     
 
@@ -40,8 +40,8 @@ function [bad_subs] = subScreening(traj_name, pas_rate, task_type, p)
         disp(['-- Sub ', num2str(iSub) ' --']);
         disp(['Con: ' num2str(sum(ok_pas_categcorr_con))])
         disp(['Incon: ' num2str(sum(ok_pas_categcorr_incon))])
-        avg_con = avg_con + sum(ok_pas_categcorr_con);
-        avg_incon = avg_incon + sum(ok_pas_categcorr_incon);
+        con(iSub) = sum(ok_pas_categcorr_con);
+        incon(iSub) = sum(ok_pas_categcorr_incon);
 
         % Categorization performance isn't good enough.
         perf_reasons = reasons;
@@ -61,7 +61,17 @@ function [bad_subs] = subScreening(traj_name, pas_rate, task_type, p)
         bad_subs{iSub, 'any'} = any(bad_subs{iSub,1:end-1});
     end
     
+    con_good_subs = con(~bad_subs{:,'any'});
+    incon_good_subs = incon(~bad_subs{:,'any'});
+
+    con(isnan(con)) = [];
+    incon(isnan(incon)) = [];
+    con_good_subs(isnan(con_good_subs)) = [];
+    incon_good_subs(isnan(incon_good_subs)) = [];
+
     % Prints good trials.
-    disp(['Avg Congurnet: ' num2str(avg_con/length(p.SUBS))]);
-    disp(['Avg Incongruent: ' num2str(avg_incon/length(p.SUBS))]);
+    disp(['Avg Congurnet: ' num2str(mean(con)) '  STD: ' num2str(std(con))]);
+    disp(['Avg Incongruent: ' num2str(mean(incon)) '  STD: ' num2str(std(incon))]);
+    disp(['Avg Congurnet, good subs: ' num2str(mean(con_good_subs)) '  STD: ' num2str(std(con_good_subs))]);
+    disp(['Avg Incongruent, good subs: ' num2str(mean(incon_good_subs)) '  STD: ' num2str(std(incon_good_subs))]);
 end

@@ -13,10 +13,12 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     reach_data_table(reach_data_table{:,'practice'} >= 1, :) = [];
     keyboard_data_table(keyboard_data_table{:,'practice'} >= 1, :) = [];
 
-    % Get traj.
+    % Get traj and heading angle.
     traj = reach_traj_table{:, traj_name};
+    head_angle = reach_traj_table{:, 'head_angle'};
     % Reshape to convenient format.
     traj_mat = reshape(traj, p.NORM_FRAMES, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+    head_angle_mat = reshape(head_angle, p.NORM_FRAMES, p.NUM_TRIALS);
 
     % Column names in tables.
     ans_left_col   = regexprep(traj_name{1}, '_x_.+', '_ans_left'); % name of traj's ans_left column.
@@ -25,6 +27,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     offset_col  = ['offset'];
     mad_col     = [strrep(traj_name{1}, '_x',''), '_mad'];
     mad_p_col   = [strrep(traj_name{1}, '_x',''), '_mad_p'];
+    head_angle_col = ['head_angle'];
     com_col = ['com'];
     tot_dist_col = ['tot_dist'];
 
@@ -41,6 +44,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
     % Sort trials and calc avg.
     single.trajs  = sortTrials(traj_mat, sorter, 1);
+    single.head_angle = sortTrials(head_angle_mat, sorter, 1);
     single.rt = sortTrials(reach_data_table.(offset_col), sorter, 0); % Response time.
     single.react = sortTrials(reach_data_table.(onset_col), sorter, 0); % Reaction time.
     single.mt = sortTrials(reach_data_table.(offset_col) - reach_data_table.(onset_col), sorter, 0); % Movement time.
@@ -54,6 +58,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     single.pas.incon = reach_data_table.pas(~bad & ~con);
     % Average.
     avg.traj = sortedAvg(single.trajs, 1);
+    avg.head_angle = sortedAvg(single.head_angle, 1);
     avg.rt = sortedAvg(single.rt, 0);
     avg.react = sortedAvg(single.react, 0);
     avg.mt = sortedAvg(single.mt, 0);

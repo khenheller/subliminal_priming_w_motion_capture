@@ -40,7 +40,7 @@ function [] = plotMultiReachArea(traj_names, plt_p, p)
         text(mean(ticks(1:2)), graph_height/7, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
 
         % Print stats to terminal.
-        print_stats('-----Reach Area------------', reach_avg_each.ra.con(good_subs), ...
+        printStats('-----Reach Area------------', reach_avg_each.ra.con(good_subs), ...
             reach_avg_each.ra.incon(good_subs), p_val_ra, ci_ra, stats_ra);
     end
 end

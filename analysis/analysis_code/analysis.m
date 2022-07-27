@@ -13,7 +13,7 @@ SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 16 17 18 19 20 21 22 23 24 25]; % Sub 15 d
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn't arrive to day 2.
 SORTED_SUBS.EXP_4_SUBS = [43 44];
 SORTED_SUBS.EXP_4_1_SUBS = [47 49 : 58];
-SUBS = SORTED_SUBS.EXP_1_SUBS; % to analyze.
+SUBS = SORTED_SUBS.EXP_3_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -418,6 +418,10 @@ for iSub = p.SUBS
         reach_avg_each.traj(iTraj).con_right(:,iSub,:) = reach_avg.traj.con_right;
         reach_avg_each.traj(iTraj).incon_left(:,iSub,:) = reach_avg.traj.incon_left;
         reach_avg_each.traj(iTraj).incon_right(:,iSub,:) = reach_avg.traj.incon_right;
+        reach_avg_each.head_angle(iTraj).con_left(:,iSub) = reach_avg.head_angle.con_left;
+        reach_avg_each.head_angle(iTraj).con_right(:,iSub) = reach_avg.head_angle.con_right;
+        reach_avg_each.head_angle(iTraj).incon_left(:,iSub) = reach_avg.head_angle.incon_left;
+        reach_avg_each.head_angle(iTraj).incon_right(:,iSub) = reach_avg.head_angle.incon_right;
         reach_avg_each.rt(iTraj).con_left(iSub)  = reach_avg.rt.con_left;
         reach_avg_each.rt(iTraj).con_right(iSub) = reach_avg.rt.con_right;
         reach_avg_each.rt(iTraj).incon_left(iSub)  = reach_avg.rt.incon_left;
@@ -453,8 +457,10 @@ for iSub = p.SUBS
         keyboard_avg_each.rt(iTraj).incon_left(iSub)  = keyboard_avg.rt.incon_left;
         keyboard_avg_each.rt(iTraj).incon_right(iSub) = keyboard_avg.rt.incon_right;
         % Combined avg of left and right.
-        reach_avg_each.traj(iTraj).con(:, iSub, :) = (reach_avg.traj.con_right + reach_avg.traj.con_left .* [-1,1,1]) / 2;
-        reach_avg_each.traj(iTraj).incon(:, iSub, :) = (reach_avg.traj.incon_right + reach_avg.traj.incon_left .* [-1,1,1]) / 2;
+        reach_avg_each.traj(iTraj).con(:, iSub, :) = (reach_avg.traj.con_right + reach_avg.traj.con_left .* [-1,1,1]) / 2; % Flip left traj.
+        reach_avg_each.traj(iTraj).incon(:, iSub, :) = (reach_avg.traj.incon_right + reach_avg.traj.incon_left .* [-1,1,1]) / 2; % Flip left traj.
+        reach_avg_each.head_angle(iTraj).con(:, iSub) = (reach_avg.head_angle.con_right + reach_avg.head_angle.con_left) / 2;
+        reach_avg_each.head_angle(iTraj).incon(:, iSub) = (reach_avg.head_angle.incon_right + reach_avg.head_angle.incon_left) / 2;
         reach_avg_each.rt(iTraj).con(iSub) = mean([reach_avg.rt.con_right, reach_avg.rt.con_left]);
         reach_avg_each.rt(iTraj).incon(iSub) = mean([reach_avg.rt.incon_right, reach_avg.rt.incon_left]);
         reach_avg_each.react(iTraj).con(iSub) = mean([reach_avg.react.con_right, reach_avg.react.con_left]);
@@ -596,10 +602,10 @@ figure(all_sub_f(2));
 subplot(2,2,1);
 plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
-% ------- FDA -------
-figure(all_sub_f(1));
-subplot(2,3,6);
-plotMultiFda(traj_names, plt_p, p);
+% % ------- FDA -------
+% figure(all_sub_f(1));
+% subplot(2,3,6);
+% plotMultiFda(traj_names, plt_p, p);
 
 % ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(3));
@@ -617,11 +623,11 @@ hold on;
 subplot(2,4,4);
 plotMultiPas(traj_names{1}{1}, plt_p, p);
 
-% ------- MAD -------
-% Maximum absolute deviation.
-figure(all_sub_f(1));
-subplot(1,3,1);
-plotMultiMad(traj_names, plt_p, p);
+% % ------- MAD -------
+% % Maximum absolute deviation.
+% figure(all_sub_f(1));
+% subplot(1,3,1);
+% plotMultiMad(traj_names, plt_p, p);
 
 % ------- Reach Area -------
 % Area between avg left traj and avg right traj (in each condition).
@@ -639,6 +645,11 @@ plotMultiXStd(traj_names, subplot_p, plt_p, p);
 figure(all_sub_f(2));
 subplot_p = [2,4,6; 2,4,7; 2,4,8];
 plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
+
+% ------- Heading angle -------
+figure(all_sub_f(5));
+subplot(2,2,1);
+plotMultiHeadAngle(traj_names, plt_p, p);
 
 % ------- COM -------
 % Number of changes of mind.

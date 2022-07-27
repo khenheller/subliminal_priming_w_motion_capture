@@ -4,6 +4,7 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
     % Init reach vars.
     r_subs_avg.traj  = struct('con_left',zeros(p.NORM_FRAMES, 3), 'con_right',zeros(p.NORM_FRAMES, 3), 'incon_left',zeros(p.NORM_FRAMES, 3), 'incon_right',zeros(p.NORM_FRAMES, 3));
     r_subs_avg.x_std = struct('con_left',zeros(p.NORM_FRAMES,1), 'con_right',zeros(p.NORM_FRAMES,1), 'incon_left',zeros(p.NORM_FRAMES,1), 'incon_right',zeros(p.NORM_FRAMES,1));
+    r_subs_avg.head_angle = struct('con_left',zeros(p.NORM_FRAMES,1), 'con_right',zeros(p.NORM_FRAMES,1), 'incon_left',zeros(p.NORM_FRAMES,1), 'incon_right',zeros(p.NORM_FRAMES,1));
     r_subs_avg.rt        = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
     r_subs_avg.react     = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
     r_subs_avg.mt        = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
@@ -30,6 +31,7 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
         % sum to calc avg between subjects.
         % Reach
         r_subs_avg.traj      = sortedSum(r_subs_avg.traj, r_avg.traj);
+        r_subs_avg.head_angle= sortedSum(r_subs_avg.head_angle, r_avg.head_angle);
         r_subs_avg.rt        = sortedSum(r_subs_avg.rt, r_avg.rt);
         r_subs_avg.react     = sortedSum(r_subs_avg.react, r_avg.react);
         r_subs_avg.mt        = sortedSum(r_subs_avg.mt, r_avg.mt);
@@ -52,6 +54,7 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
     end
     % Reach.
     r_subs_avg.traj      = divideByNumOfSubs(r_subs_avg.traj, n_good_subs);
+    r_subs_avg.head_angle= divideByNumOfSubs(r_subs_avg.head_angle, n_good_subs);
     r_subs_avg.rt        = divideByNumOfSubs(r_subs_avg.rt, n_good_subs);
     r_subs_avg.react     = divideByNumOfSubs(r_subs_avg.rt, n_good_subs);
     r_subs_avg.mt        = divideByNumOfSubs(r_subs_avg.mt, n_good_subs);
