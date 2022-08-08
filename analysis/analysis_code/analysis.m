@@ -12,8 +12,8 @@ SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment ve
 SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 16 17 18 19 20 21 22 23 24 25]; % Sub 15 didn't finish the experiment (pressed Esc).
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn't arrive to day 2.
 SORTED_SUBS.EXP_4_SUBS = [43 44];
-SORTED_SUBS.EXP_4_1_SUBS = [47 49 : 58];
-SUBS = SORTED_SUBS.EXP_3_SUBS; % to analyze.
+SORTED_SUBS.EXP_4_1_SUBS = [47, 49 : 85];
+SUBS = SORTED_SUBS.EXP_4_1_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
@@ -233,8 +233,8 @@ disp(['Trial screening done. ' timing 'Sec']);
 %% Subject screening
 tic
 for iTraj = 1:length(traj_names')
-    reach_bad_subs = subScreening(traj_names{iTraj}, pas_rate, 'reach', p);
-    keyboard_bad_subs = subScreening(traj_names{iTraj}, pas_rate, 'keyboard', p);
+    [reach_bad_subs, reach_valid_trials] = subScreening(traj_names{iTraj}, pas_rate, 'reach', p);
+    [keyboard_bad_subs, keyboard_valid_trials] = subScreening(traj_names{iTraj}, pas_rate, 'keyboard', p);
     % Exp 1,2,3 had no keyboard task.
     if any(p.SUBS < 43)
         keyboard_bad_subs(:,:) = array2table(zeros(size(keyboard_bad_subs)));
@@ -243,6 +243,7 @@ for iTraj = 1:length(traj_names')
     good_subs = p.SUBS(~ismember(p.SUBS, find(bad_subs.any)));
     save([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs', 'reach_bad_subs', 'keyboard_bad_subs');
     save([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'good_subs');
+    save([p.PROC_DATA_FOLDER '/valid_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_valid_trials', 'keyboard_valid_trials');
 end
 timing = num2str(toc);
 disp(['Sub screening done. ' timing 'Sec']);
@@ -664,7 +665,7 @@ subplot(2,4,4);
 plotMultiTotDist(traj_names, plt_p, p);
 
 % ------- Number of bad trials -------
-% Comparison of bad trials count between subs of exp2 and subs of exp 3.
+% Comparison of bad trials count between Keybaord and reaching.
 figure(all_sub_f(4));
 plotNumBadTrials(traj_names{1}{1}, plt_p, p)
 
@@ -674,7 +675,11 @@ if any(p.SUBS >=43) % Only for Exp 4.
     subplot(2,1,2);
     plotMultiKeyboardRt(traj_names, plt_p, p);
 end
-
+%% Number of bad trials, Exp 2 vs 3
+all_sub_f(length(all_sub_f)+1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% Add title.
+figure(all_sub_f(end)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+plotNumBadTrialsExp2Exp3(traj_names{1}{1}, plt_p, p);
 %% Effect size comparison to previous papers.
 % Prev exp data.
 xiao_auc = struct('N',28,...% Xiao, K., Yamauchi, T., & Bowman, C. (2015)

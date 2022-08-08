@@ -5,7 +5,7 @@
 % Input:
 %   pas_rate - double, only trials with this pas rating will be averaged.
 %   task_type - 'reach' / 'keyboard'
-function [bad_subs] = subScreening(traj_name, pas_rate, task_type, p)
+function [bad_subs, valid_trials] = subScreening(traj_name, pas_rate, task_type, p)
     bad_trials = load([p.PROC_DATA_FOLDER '/bad_trials_' p.DAY '_' traj_name{1} '_subs_' p.SUBS_STRING '.mat']); bad_trials = bad_trials.([task_type '_bad_trials']);
     screen_reasons = {'not_enough_trials','not_enough_trials_in_cond','bad_performance','seen_prime','any'};
     bad_subs = table('size',[p.MAX_SUB, length(screen_reasons)],...
@@ -63,6 +63,9 @@ function [bad_subs] = subScreening(traj_name, pas_rate, task_type, p)
     
     con_good_subs = con(~bad_subs{:,'any'});
     incon_good_subs = incon(~bad_subs{:,'any'});
+    
+    valid_trials.con = con;
+    valid_trials.incon = incon;
 
     con(isnan(con)) = [];
     incon(isnan(incon)) = [];
