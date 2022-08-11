@@ -12,7 +12,7 @@ SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment ve
 SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 16 17 18 19 20 21 22 23 24 25]; % Sub 15 didn't finish the experiment (pressed Esc).
 SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn't arrive to day 2.
 SORTED_SUBS.EXP_4_SUBS = [43 44];
-SORTED_SUBS.EXP_4_1_SUBS = [47, 49 : 85];
+SORTED_SUBS.EXP_4_1_SUBS = [47, 49:85, 87:92];
 SUBS = SORTED_SUBS.EXP_4_1_SUBS; % to analyze.
 DAY = 'day2';
 pas_rate = 1; % to analyze.
@@ -359,32 +359,6 @@ for iTraj = 1:length(traj_names)
 end
 timing = num2str(toc);
 disp(['Counting trials in each condition done. ' timing 'Sec']);
-%% Format to R
-% % Convert matlab data to a format suitable for R dataframes.
-% You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
-% tic
-% for iTraj = 1:length(traj_names)
-%     % Get bad subs.
-%     bad_subs = load([p.PROC_DATA_FOLDER '/bad_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'bad_subs');  bad_subs = bad_subs.bad_subs;
-%     bad_subs_numbers = find(bad_subs.any);
-%     
-%     % Reach Area.
-%     reach_area = fReachArea(traj_names{iTraj}, bs_iter, p);
-%     writetable(reach_area, [p.PROC_DATA_FOLDER '/reach_area_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-% 
-%     % MAD
-%     mad = fMAD(traj_names{iTraj}, p);
-%     mad(ismember(mad.sub, bad_subs_numbers), :) = [];
-%     writetable(mad, [p.PROC_DATA_FOLDER '/mad_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-% 
-%     % Traj
-%     traj = fTraj(traj_names{iTraj}, p);
-%     traj(ismember(traj.sub, bad_subs_numbers), :) = [];
-%     writetable(traj, [p.PROC_DATA_FOLDER '/xpos_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
-% end
-% timing = num2str(toc);
-% disp(['Formating to R done. ' timing 'Sec']);
-% % You are not doing things correctly. You should bootstrap subjects not trials. bootstrapping trials creates a false distribution for each subject that doens't represent his real data.
 %% Plotting params
 disp("Started setting plotting params.");
 close all;
@@ -676,9 +650,9 @@ if any(p.SUBS >=43) % Only for Exp 4.
     plotMultiKeyboardRt(traj_names, plt_p, p);
 end
 %% Number of bad trials, Exp 2 vs 3
-all_sub_f(length(all_sub_f)+1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+num_bad_trials_comp_f = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
-figure(all_sub_f(end)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(num_bad_trials_comp_f); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 plotNumBadTrialsExp2Exp3(traj_names{1}{1}, plt_p, p);
 %% Effect size comparison to previous papers.
 % Prev exp data.
@@ -868,4 +842,53 @@ miss_data(p, traj_names); clc;
         ylabel('Velocity'); ylim([0, 1]);
         title(traj_names{iTraj}{1}, 'Interpreter','none');
         set(gca, 'FontSize',14);
-        %}
+%}
+%% Format to R
+% Convert matlab data to a format suitable for R dataframes.
+
+assert(exist('reach_avg_each'), "Run Plotting params section before running this one");
+
+tic
+for iTraj = 1:length(traj_names)
+    
+    % ---- Signle value per trial ----
+    % Total traveled distance
+    tot_dist_df = fSingleVal('tot_dist', 'reach', traj_names{iTraj}{1}, p);
+    writetable(tot_dist_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__tot_dist_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+
+    % Frequency of COM
+    com_df = fSingleVal('com', 'reach', traj_names{iTraj}{1}, p);
+    writetable(com_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__com_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+
+    % Reaction time
+    react_df = fSingleVal('react', 'reach', traj_names{iTraj}{1}, p);
+    writetable(react_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__react_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+
+    % Movment time
+    mt_df = fSingleVal('mt', 'reach', traj_names{iTraj}{1}, p);
+    writetable(mt_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__mt_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+
+    % Reach Area.
+    ra_df = fReachArea(traj_names{iTraj}{1}, p);
+    writetable(ra_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__ra_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+
+    % ---- Multiple values per trial ----
+    % Heading angle
+    head_angle_df = fMultiVal('head_angle', traj_names{iTraj}{1}, p);
+    writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__head_angle_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    
+    % Deviation from center
+    x_df = fMultiVal('traj', traj_names{iTraj}{1}, p);
+    writetable(x_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+
+    % Movement variation
+    x_std_df = fMultiVal('x_std', traj_names{iTraj}{1}, p);
+    writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_std_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+
+    % ---- Keyboard ----
+    % Keyboard RT
+    rt_df = fSingleVal('rt', 'keyboard', traj_names{iTraj}{1}, p);
+    writetable(rt_df, [p.PROC_DATA_FOLDER '/format_to_r_keyboard__rt_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+end
+timing = num2str(toc);
+disp(['Formating to R done. ' timing 'Sec']);
