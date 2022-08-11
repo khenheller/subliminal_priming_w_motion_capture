@@ -1,12 +1,18 @@
 % Some parameters might change between running the exp and analyzing its results.
 % This function loads the parameters values that were set when the exp was run and adjusts some of them for the analysis to work.
-% SORTED_SUBS - subjects sorted according to the version of the experiment they participated in.
-function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
+function p = defineParams(p, iSub)
     p.DATA_FOLDER = '../../raw_data/';
 
-    % Save prev num of trials.
+    % Save prev values.
     SIM_NUM_BLOCKS = p.NUM_BLOCKS;
     SIMULATE = p.SIMULATE;
+    EXP_1_SUBS = p.EXP_1_SUBS;
+    EXP_2_SUBS = p.EXP_2_SUBS;
+    EXP_3_SUBS = p.EXP_3_SUBS;
+    EXP_4_SUBS = p.EXP_4_SUBS;
+    EXP_4_1_SUBS = p.EXP_4_1_SUBS;
+    SUBS = p.SUBS;
+    DAY = p.DAY;
 
     p = load([p.DATA_FOLDER '/sub' num2str(iSub) DAY '_' 'p.mat']); p = p.p;
     p.SIMULATE = SIMULATE;
@@ -21,9 +27,11 @@ function p = defineParams(p, SUBS, DAY, iSub, SORTED_SUBS)
     p.DATA_FOLDER_WIN = replace(p.DATA_FOLDER, '/', '\');
     p.TESTS_FOLDER = [p.EXP_FOLDER '/./tests/test_results/'];
     % Subjects
-    p.EXP_1_SUBS = SORTED_SUBS.EXP_1_SUBS;
-    p.EXP_2_SUBS = SORTED_SUBS.EXP_2_SUBS;
-    p.EXP_3_SUBS = SORTED_SUBS.EXP_3_SUBS;
+    p.EXP_1_SUBS = EXP_1_SUBS;
+    p.EXP_2_SUBS = EXP_2_SUBS;
+    p.EXP_3_SUBS = EXP_3_SUBS;
+    p.EXP_4_SUBS = EXP_4_SUBS;
+    p.EXP_4_1_SUBS = EXP_4_1_SUBS;
     p.SUBS = SUBS;
     p.SUBS_STRING = regexprep(num2str(p.SUBS), '\s+', '_'); % Concatenate sub's numbers with '_' between them.
     p.DAY = DAY;

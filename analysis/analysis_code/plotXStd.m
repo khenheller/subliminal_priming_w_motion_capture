@@ -4,6 +4,7 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotXStd(iSub, traj_names, subplot_p, plt_p, p)
+    p = defineParams(p, iSub);
     for iTraj = 1:length(traj_names)
         left_right = ["left", "right"];
         reach_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  reach_avg = reach_avg.reach_avg;

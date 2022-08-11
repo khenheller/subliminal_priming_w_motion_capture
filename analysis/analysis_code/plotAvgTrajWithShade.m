@@ -3,6 +3,7 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotAvgTrajWithShade(iSub, traj_names, plt_p, p)
+    p = defineParams(p, iSub);
     for iTraj = 1:length(traj_names)
         reach_single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);  reach_single = reach_single.reach_single;
         reach_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  reach_avg = reach_avg.reach_avg;

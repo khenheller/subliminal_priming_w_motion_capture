@@ -3,6 +3,7 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotPas(iSub, traj_name, plt_p, p)
+    p = defineParams(p, iSub);
     reach_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_name '.mat']);  reach_avg = reach_avg.reach_avg;
     % Plot
     hold on;

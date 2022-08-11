@@ -8,18 +8,18 @@ load('../../experiment/RUN_ME/code/p.mat');
 addpath(genpath('./imported_code'));
 
 % Adjustable params.
-SORTED_SUBS.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
-SORTED_SUBS.EXP_2_SUBS = [11 12 13 14 16 17 18 19 20 21 22 23 24 25]; % Sub 15 didn't finish the experiment (pressed Esc).
-SORTED_SUBS.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn't arrive to day 2.
-SORTED_SUBS.EXP_4_SUBS = [43 44];
-SORTED_SUBS.EXP_4_1_SUBS = [47, 49:85, 87:92];
-SUBS = SORTED_SUBS.EXP_4_1_SUBS; % to analyze.
-DAY = 'day2';
+p.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
+p.EXP_2_SUBS = [11 12 13 14 16 17 18 19 20 21 22 23 24 25]; % Sub 15 didn't finish the experiment (pressed Esc).
+p.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn't arrive to day 2.
+p.EXP_4_SUBS = [43 44];
+p.EXP_4_1_SUBS = [47, 49:85, 87:92];
+p.SUBS = p.EXP_4_1_SUBS; % to analyze.
+p.DAY = 'day2';
 pas_rate = 1; % to analyze.
 bs_iter = 1000;
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
-p = defineParams(p, SUBS, DAY, SUBS(1), SORTED_SUBS);
+p = defineParams(p, p.SUBS(1));
 
 % Name of trajectory column in output data. each cell is a incon type of traj.
 traj_names = {{'target_x_to' 'target_y_to' 'target_z_to'},...
@@ -63,6 +63,7 @@ if p.SIMULATE
         tic
         disp('Creating reduced data files for sub:');
         for iSub = p.SUBS
+            p = defineParams(p, iSub);
             % Delete file if already exists.
             delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'traj.csv']);
             delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'data.csv']);
@@ -82,7 +83,7 @@ if p.SIMULATE
         disp(['Done Creating reduced subs. ' timing 'Sec'])
     end
     p.SUBS = p.SUBS + idx_shift;
-    p = defineParams(p, p.SUBS, DAY, p.SUBS(1), SORTED_SUBS);
+    p = defineParams(p, p.SUBS(1));
     disp("Done Simulating less trials.");
 end
 %% Create proc data file
@@ -90,6 +91,7 @@ end
 tic
 disp('Creating processing data files for sub:');
 for iSub = p.SUBS
+    p = defineParams(p, iSub);
     reach_traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.csv']);
     reach_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.csv']);
     % Fake keybaord data for Exp1,2,3.
@@ -118,6 +120,7 @@ disp(['Done Creating processing data files. ' timing 'Sec'])
 tic
 disp('Adding missing fields to sub:');
 for iSub = p.SUBS
+    p = defineParams(p, iSub);
     % Checks if the fields were already added.
     reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat']);  reach_data_table = reach_data_table.reach_data_table;
     fields = reach_data_table.Properties.VariableNames;
@@ -147,6 +150,7 @@ disp(['Done Adding missing fields. ' timing 'Sec'])
 % Adds trials to subjects who quit before the experiment ended.
 tic
 for iSub = p.SUBS
+    p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat']);  reach_data_table = reach_data_table.reach_data_table;
     keyboard_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.mat']);  keyboard_data_table = keyboard_data_table.keyboard_data_table;
@@ -180,7 +184,7 @@ too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
     'VariableNames', traj_types);
 disp('Preprocessing done for subject:');
 for iSub = p.SUBS
-    p = defineParams(p, p.SUBS, DAY, iSub, SORTED_SUBS);
+    p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.mat']);  reach_data_table = reach_data_table.reach_data_table;
     keyboard_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data.mat']);  keyboard_data_table = keyboard_data_table.keyboard_data_table;
@@ -251,6 +255,7 @@ disp(['Sub screening done. ' timing 'Sec']);
 tic
 for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
+        p = defineParams(p, iSub);
         reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
         reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
         reach_data_table = calcMAD(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
@@ -262,6 +267,7 @@ disp(['MAD calc done. ' timing 'Sec']);
 %% Heading angle
 tic
 for iSub = p.SUBS
+    p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_traj_table = calcHeadAngle(reach_traj_table, p);
     save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
@@ -271,6 +277,7 @@ disp(['Heading angle calc done. ' timing 'Sec']);
 %% Changes of mind
 tic
 for iSub = p.SUBS
+    p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
     reach_data_table = countCom(reach_traj_table, reach_data_table, p);
@@ -281,6 +288,7 @@ disp(['COM calc done. ' timing 'Sec']);
 %% Total distance traveled
 tic
 for iSub = p.SUBS
+    p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
     reach_data_table = calcTotDistTravel(reach_traj_table, reach_data_table, p);
@@ -295,6 +303,7 @@ for iTraj = 1:length(traj_names)
     reach_bad_trials = bad_trials.reach_bad_trials;
     keyboard_bad_trials = bad_trials.keyboard_bad_trials;
     for iSub = p.SUBS
+        p = defineParams(p, iSub);
         [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iSub, traj_names{iTraj}, reach_bad_trials, keyboard_bad_trials, pas_rate, p);
         save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat'], 'reach_single', 'keyboard_single');
         save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat'], 'reach_avg', 'keyboard_avg');
@@ -312,6 +321,7 @@ for iTraj = 1:length(traj_names)
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
     
     for iSub = good_subs
+        p = defineParams(p, iSub);
         reach_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  reach_avg = reach_avg.reach_avg;
         reach_area.con(iSub) = calcReachArea(reach_avg.traj.con_left, reach_avg.traj.con_right, p);
         reach_area.incon(iSub) = calcReachArea(reach_avg.traj.incon_left, reach_avg.traj.incon_right, p);
@@ -342,6 +352,7 @@ for iTraj = 1:length(traj_names)
     num_trials = struct('con_left',NaN(p.MAX_SUB,1), 'con_right',NaN(p.MAX_SUB,1),...
         'incon_left',NaN(p.MAX_SUB,1), 'incon_right',NaN(p.MAX_SUB,1));
     for iSub = p.SUBS
+        p = defineParams(p, iSub);
         % Get trials stats for this sub.
         single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);
         reach_single = single.reach_single;
@@ -751,7 +762,7 @@ effects_names = regexp(exps_table.name', '(.+)_exp2', 'tokens','once');
 effects_names = [effects_names{:}];
 effects_table.Properties.VariableNames = effects_names;
 % Identify the simulated exp according to sub nums.
-sim_exp = isequal(p.SUBS-200, SORTED_SUBS.EXP_1_SUBS) * 1 + isequal(p.SUBS-200, SORTED_SUBS.EXP_2_SUBS) * 2 + isequal(p.SUBS-200, SORTED_SUBS.EXP_3_SUBS) * 3;
+sim_exp = isequal(p.SUBS-200, p.EXP_1_SUBS) * 1 + isequal(p.SUBS-200, p.EXP_2_SUBS) * 2 + isequal(p.SUBS-200, p.EXP_3_SUBS) * 3;
 effects_table.exp_name = ["exp2"; "exp3"; string(['exp' num2str(sim_exp) ' sim ' num2str(p.NUM_TRIALS) ' trials'])];
 writetable(effects_table, [p.PROC_DATA_FOLDER 'effects_table.csv'], 'WriteMode','append');
 %% RT comparison between 1st and 2nd practice blocks.

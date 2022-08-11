@@ -4,6 +4,7 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotMadPoint(iSub, traj_names, subplot_p, plt_p, p)
+    p = defineParams(p, iSub);
     for iTraj = 1:length(traj_names)
         reach_single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_names{iTraj}{1} '.mat']);  reach_single = reach_single.reach_single;
         % Unite sides to single var.

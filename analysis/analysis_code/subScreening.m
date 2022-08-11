@@ -19,6 +19,7 @@ function [bad_subs, valid_trials] = subScreening(traj_name, pas_rate, task_type,
     
 
     for iSub = p.SUBS
+        p = defineParams(p, iSub);
         data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' task_type '_data_proc.mat']);  data_table = data_table.([task_type '_data_table']);
         % Remove practice.
         data_table(data_table.practice>=1, :) = [];

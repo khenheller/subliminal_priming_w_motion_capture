@@ -26,6 +26,7 @@ function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
     n_good_subs = length(good_subs);
     
     for iSub = good_subs
+        p = defineParams(p, iSub);
         % load avg within subject.
         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_name{1}]);  r_avg = avg.reach_avg; k_avg = avg.keyboard_avg;
         % sum to calc avg between subjects.

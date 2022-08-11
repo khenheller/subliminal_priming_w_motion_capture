@@ -56,6 +56,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
     too_short = load([p.PROC_DATA_FOLDER '/too_short_to_filter_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'too_short_to_filter');  too_short = too_short.too_short_to_filter;
 
     for iSub = p.SUBS
+        p = defineParams(p, iSub);
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
         dev_table = load([p.TESTS_FOLDER '/sub' num2str(iSub) p.DAY '.mat']);  dev_table = dev_table.([task_type '_test_res']).dev_table;
         traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  traj_table = traj_table.reach_traj_table;

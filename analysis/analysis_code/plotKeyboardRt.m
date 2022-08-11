@@ -4,6 +4,7 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotKeyboardRt(iSub, traj_name, plt_p, p)
+    p = defineParams(p, iSub);
     hold on;
     keyboard_single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_name '.mat']);  keyboard_single = keyboard_single.keyboard_single;
     % Load data and prep params.
