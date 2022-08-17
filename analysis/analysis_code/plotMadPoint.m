@@ -30,7 +30,7 @@ function [] = plotMadPoint(iSub, traj_names, subplot_p, plt_p, p)
             xlabel('X');
             xlim([-0.12, 0.12]);
             ylabel('Z Axis (to screen)');
-            ylim([0, 100]);
+            ylim([0, 1]);
             title('Maximally deviating point');
             set(gca, 'FontSize',14);
             % Legend.

@@ -10,15 +10,15 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         left_right = ["left", "right"];
         good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
         % Avg over all subs.
-        reach_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_avg_each = reach_avg_each.reach_avg_each;
+        avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  avg_each = avg_each.reach_avg_each;
         % Avg of each sub.
-        reach_subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_subs_avg = reach_subs_avg.reach_subs_avg;
+        subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.reach_subs_avg;
 
         % Unite sides to single var.
-        traj_con = {reach_subs_avg.traj.con_left, reach_subs_avg.traj.con_right};
-        traj_incon = {reach_subs_avg.traj.incon_left, reach_subs_avg.traj.incon_right};
-        x_std_con = {reach_subs_avg.x_std.con_left, reach_subs_avg.x_std.con_right};
-        x_std_incon = {reach_subs_avg.x_std.incon_left, reach_subs_avg.x_std.incon_right};
+        traj_con = {subs_avg.traj.con_left, subs_avg.traj.con_right};
+        traj_incon = {subs_avg.traj.incon_left, subs_avg.traj.incon_right};
+        x_std_con = {subs_avg.x_std.con_left, subs_avg.x_std.con_right};
+        x_std_incon = {subs_avg.x_std.incon_left, subs_avg.x_std.incon_right};
         % 2 plots: left, right.
         for side = 1:2
             subplot(subplot_p(side, 1), subplot_p(side, 2), subplot_p(side, 3));
@@ -40,8 +40,15 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         subplot(subplot_p(3, 1), subplot_p(3, 2), subplot_p(3, 3));
         hold on;
         % Plot.
-        stdshade(reach_avg_each.x_std.diff(:,good_subs)', plt_p.f_alpha, 'k', reach_subs_avg.traj.con_right(:,3), 0, 1, 'ci', plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.x_std.diff(:,good_subs)', plt_p.f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'ci', plt_p.alpha_size, plt_p.linewidth);
         plot([0 1], [0 0], '--', 'linewidth',3, 'color',[0.15 0.15 0.15 plt_p.f_alpha]); % Zero line.
+
+        % Permutation testing.
+        clusters = permCluster(avg_each.x_std.con(:,good_subs), avg_each.x_std.incon(:,good_subs), n_perm);
+
+        % Plot clusters.
+        points = [subs_avg.traj.con_right(clusters.start,3)'; subs_avg.traj.con_right(clusters.end,3)'];
+        drawRectangle(points, 'x', [-10000 10000], plt_p); % 10000 is just a big enough number.
 
         xlabel('Proportion of Z');
         ylabel('X STD difference');
@@ -50,8 +57,7 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         set(gca,'FontSize',14);
         legend(['CI, \alpha=' num2str(plt_p.alpha_size)], 'con - incon');
 
-        % Permutation testing.
-        [cluster_size, p_val, cohens_dz, t_star] = permCluster(reach_avg_each.x_std.con(:,good_subs), reach_avg_each.x_std.incon(:,good_subs), n_perm);
-        printTsStats('----Movement variation--------', cluster_size, p_val, cohens_dz, t_star);
+        % Print stats to terminal.
+        printTsStats('----Movement variation--------', clusters.size, clusters.p_val, clusters.dz, clusters.t_star);
     end
 end
