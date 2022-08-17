@@ -38,7 +38,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     % Sorts trials.
     bad = any(reach_bad_trials{iSub}{:, reasons}, 2);
     bad_timing_or_quit = reach_bad_trials{iSub}.bad_stim_dur | reach_bad_trials{iSub}.quit; % Bad stim duration, or sub quit before trial.
-    pas = reach_data_table.('pas')==pas_rate;
+    pas = ismember(reach_data_table.('pas'), pas_rate);
     con = reach_data_table.('con');
     left = reach_data_table.(ans_left_col); % Sub chose left ans.
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
@@ -89,7 +89,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     % Sorts trials.
     bad = keyboard_bad_trials{iSub}.any;
     bad_timing_or_quit = keyboard_bad_trials{iSub}.bad_stim_dur | keyboard_bad_trials{iSub}.quit; % Bad stim duration, or sub quit before trial.
-    pas = keyboard_data_table.('pas')==pas_rate;
+    pas = ismember(keyboard_data_table.('pas'), pas_rate);
     con = keyboard_data_table.('con');
     left = keyboard_data_table.(ans_left_col); % Sub chose left ans.
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
