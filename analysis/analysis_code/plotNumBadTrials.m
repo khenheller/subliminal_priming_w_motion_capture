@@ -36,9 +36,14 @@ function [] = plotNumBadTrials(traj_name, plt_p, p)
     h(2) = bar(NaN,NaN,'FaceColor',plt_p.keyboard_color);
     legend(h,'Reach','Keyboard', 'Location','northwest');
     % T-test.
+    disp('--------Bad Trials Reach vs Keyboard--------');
     for i_reason = 1:num_reasons
         indx = i_reason*2;
-        [~, bad_trials_p_val, ci, ~] = ttest(beesdata{:, indx-1}, beesdata{:, indx});
-        text(mean(ticks(indx-1 : indx)), (max([beesdata{indx-1 : indx}])+10), ['p: ' num2str(bad_trials_p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+        [~, p_val, ci, stats] = ttest(beesdata{:, indx-1}, beesdata{:, indx});
+        text(mean(ticks(indx-1 : indx)), (max([beesdata{indx-1 : indx}])+10), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+        
+        % Print stats to terminal.
+        printStats(reasons{i_reason}, beesdata{:, indx-1}, ...
+            beesdata{:, indx}, p_val, ci, stats);
     end
 end
