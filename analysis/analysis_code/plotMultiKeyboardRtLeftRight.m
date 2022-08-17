@@ -10,7 +10,6 @@ function [] = plotMultiKeyboardRtLeftRight(traj_names, plt_p, p)
         % Load data and prep params.
         beesdata = {keyboard_avg_each.rt(iTraj).con_left(good_subs),     keyboard_avg_each.rt(iTraj).incon_left(good_subs),...
                     keyboard_avg_each.rt(iTraj).con_right(good_subs),    keyboard_avg_each.rt(iTraj).incon_right(good_subs)};
-        beesdata = cellfun(@times,beesdata,repmat({1000},size(beesdata)),'UniformOutput',false); % convert to ms.
         yLabel = 'Time (ms)';
         XTickLabel = [];
         colors = repmat({plt_p.con_col, plt_p.incon_col},1,2);
@@ -28,7 +27,7 @@ function [] = plotMultiKeyboardRtLeftRight(traj_names, plt_p, p)
         % Connect each sub's dots with lines.
         rt_data = [keyboard_avg_each.rt(iTraj).con_left(good_subs), keyboard_avg_each.rt(iTraj).con_right(good_subs);...
                       keyboard_avg_each.rt(iTraj).incon_left(good_subs), keyboard_avg_each.rt(iTraj).incon_right(good_subs)];
-        y_data = rt_data * 1000; % turn to ms.
+        y_data = rt_data;
         x_data = reshape(get(gca,'XTick'), 2,[]);
         x_data = repelem(x_data,1,length(good_subs));
         plot(x_data, y_data, 'color',[0.1 0.1 0.1, plt_p.f_alpha]);

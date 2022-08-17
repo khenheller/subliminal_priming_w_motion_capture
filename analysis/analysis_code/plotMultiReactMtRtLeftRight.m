@@ -14,7 +14,6 @@ function [] = plotMultiReactMtRtLeftRight(traj_names, plt_p, p)
                     reach_avg_each.mt(iTraj).con_right(good_subs),    reach_avg_each.mt(iTraj).incon_right(good_subs),...
                     reach_avg_each.rt(iTraj).con_left(good_subs),     reach_avg_each.rt(iTraj).incon_left(good_subs),...
                     reach_avg_each.rt(iTraj).con_right(good_subs),    reach_avg_each.rt(iTraj).incon_right(good_subs)};
-        beesdata = cellfun(@times,beesdata,repmat({1000},size(beesdata)),'UniformOutput',false); % convert to ms.
         yLabel = 'Time (ms)';
         XTickLabel = [];
         colors = repmat({plt_p.con_col, plt_p.incon_col},1,6);
@@ -35,7 +34,7 @@ function [] = plotMultiReactMtRtLeftRight(traj_names, plt_p, p)
                       reach_avg_each.mt(iTraj).incon_left(good_subs), reach_avg_each.mt(iTraj).incon_right(good_subs)];
         rt_data = [reach_avg_each.rt(iTraj).con_left(good_subs), reach_avg_each.rt(iTraj).con_right(good_subs);...
                       reach_avg_each.rt(iTraj).incon_left(good_subs), reach_avg_each.rt(iTraj).incon_right(good_subs)];
-        y_data = [react_data mt_data rt_data] * 1000; % turn to ms.
+        y_data = [react_data mt_data rt_data];
         x_data = reshape(get(gca,'XTick'), 2,[]);
         x_data = repelem(x_data,1,length(good_subs));
         plot(x_data, y_data, 'color',[0.1 0.1 0.1, plt_p.f_alpha]);
