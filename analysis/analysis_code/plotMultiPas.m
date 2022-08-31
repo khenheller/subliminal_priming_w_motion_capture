@@ -1,4 +1,4 @@
-% Plots the average (over good subs) recognition performance.
+% Plots the average (over good subs) PAS.
 % measure - 'reach'/'keyboard'.
 % group - 'all_subs','good_subs', to include in analysis.
 % plt_p - struct of plotting params.

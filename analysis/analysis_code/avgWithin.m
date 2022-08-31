@@ -60,8 +60,8 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     single.tot_dist = sortTrials(reach_data_table.(tot_dist_col), sorter, 0); % Total distance traveled.
     single.fc_prime.con   = reach_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
     single.fc_prime.incon = reach_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
-    single.pas.con   = reach_data_table.pas(~bad & con);
-    single.pas.incon = reach_data_table.pas(~bad & ~con);
+    single.pas.con   = reach_data_table.pas(~bad_timing_or_quit & con);
+    single.pas.incon = reach_data_table.pas(~bad_timing_or_quit & ~con);
     % Average.
     avg.traj = sortedAvg(single.trajs, 1);
     avg.time = sortedAvg(single.time, 1);
@@ -104,8 +104,8 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     single.rt = sortTrials(keyboard_data_table.(rt_col), sorter, 0); % Response time.
     single.fc_prime.con   = keyboard_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
     single.fc_prime.incon = keyboard_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
-    single.pas.con   = keyboard_data_table.pas(~bad & con);
-    single.pas.incon = keyboard_data_table.pas(~bad & ~con);
+    single.pas.con   = keyboard_data_table.pas(~bad_timing_or_quit & con);
+    single.pas.incon = keyboard_data_table.pas(~bad_timing_or_quit & ~con);
     % Average.
     avg.rt = sortedAvg(single.rt, 0);
     avg.rt_std.con_left = std(single.rt.con_left);
