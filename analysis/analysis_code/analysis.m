@@ -807,6 +807,11 @@ effects_table.Properties.VariableNames = effects_names;
 sim_exp = isequal(p.SUBS-200, p.EXP_1_SUBS) * 1 + isequal(p.SUBS-200, p.EXP_2_SUBS) * 2 + isequal(p.SUBS-200, p.EXP_3_SUBS) * 3;
 effects_table.exp_name = ["exp2"; "exp3"; string(['exp' num2str(sim_exp) ' sim ' num2str(p.NUM_TRIALS) ' trials'])];
 writetable(effects_table, [p.PROC_DATA_FOLDER 'effects_table.csv'], 'WriteMode','append');
+%% Compare RT between 1st and 2nd day of experiment 3.
+rt_comp_day1_day2 = figure('Name',['RT comp day1 day2'], 'WindowState','maximized', 'MenuBar','figure');
+% Add title.
+figure(rt_comp_day1_day2);
+compareRTFirstSecondDay(traj_names, plt_p, p);
 %% RT comparison between 1st and 2nd practice blocks.
 % Compares n trials from the end of each practice block.
 n_comp_trials = 10;
