@@ -1,6 +1,7 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
-function [] = plotMultiTotDist(traj_names, plt_p, p)
+% p_val - p-value of the statistical test.
+function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
     for iTraj = 1:length(traj_names)
         good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
         reach_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_avg_each = reach_avg_each.reach_avg_each;

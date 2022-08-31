@@ -616,61 +616,30 @@ figure(all_sub_f(2));
 subplot(2,2,1);
 plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
-% % ------- FDA -------
-% figure(all_sub_f(1));
-% subplot(2,3,6);
-% plotMultiFda(traj_names, plt_p, p);
-
 % ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(3));
 subplot(2,1,1);
-plotMultiReactMtRt(traj_names, plt_p, p);
-
-% ------- Prime Forced choice -------
-figure(all_sub_f(6));
-subplot(2,4,1);
-plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
-hold on;
-subplot(2,4,2);
-plotMultiRecognition(pas_rate, 'reach', 'all_subs', traj_names{1}{1}, plt_p, p);
-subplot(2,4,3);
-plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
-subplot(2,4,4);
-plotMultiRecognition(pas_rate, 'keyboard', 'all_subs', traj_names{1}{1}, plt_p, p);
-
-% ------- PAS -------
-figure(all_sub_f(6));
-subplot(2,4,5);
-plotMultiPas(traj_names{1}{1}, 'reach', 'good_subs', plt_p, p);
-subplot(2,4,6);
-plotMultiPas(traj_names{1}{1}, 'reach', 'all_subs', plt_p, p);
-subplot(2,4,7);
-plotMultiPas(traj_names{1}{1}, 'keyboard', 'good_subs', plt_p, p);
-subplot(2,4,8);
-plotMultiPas(traj_names{1}{1}, 'keyboard', 'all_subs', plt_p, p);
+p_val = plotMultiReactMtRt(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/react_mt_rt_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
 
 % % ------- MAD -------
 % % Maximum absolute deviation.
 % figure(all_sub_f(1));
 % subplot(1,3,1);
-% plotMultiMad(traj_names, plt_p, p);
+% p_val = plotMultiMad(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/mad_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], p_val);
 
 % ------- Reach Area -------
 % Area between avg left traj and avg right traj (in each condition).
 figure(all_sub_f(2));
 subplot(2,4,5);
-plotMultiReachArea(traj_names, plt_p, p);
+p_val = plotMultiReachArea(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
 
 % ------- X STD -------
 figure(all_sub_f(1));
 subplot_p = [2,3,2; 2,3,3; 2,3,5];
 plotMultiXStd(traj_names, subplot_p, plt_p, p);
-
-% ------- Condition Diff -------
-% Difference between avg traj in each condition.
-figure(all_sub_f(2));
-subplot_p = [2,4,6; 2,4,7; 2,4,8];
-plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
 
 % ------- Heading angle -------
 figure(all_sub_f(5));
@@ -683,25 +652,65 @@ plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 % Number of changes of mind.
 figure(all_sub_f(2));
 subplot(2,4,3);
-plotMultiCom(traj_names, plt_p, p);
+p_val = plotMultiCom(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
 
 % ------- Total distance traveled -------
 % Total distance traveled.
 figure(all_sub_f(2));
 subplot(2,4,4);
-plotMultiTotDist(traj_names, plt_p, p);
-
-% ------- Number of bad trials -------
-% Comparison of bad trials count between Keybaord and reaching.
-figure(all_sub_f(4));
-plotNumBadTrials(traj_names{1}{1}, plt_p, p)
+p_val = plotMultiTotDist(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
 if any(p.SUBS >=43) % Only for Exp 4.
     figure(all_sub_f(3));
     subplot(2,1,2);
-    plotMultiKeyboardRt(traj_names, plt_p, p);
+    p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
 end
+
+% % ------- FDA -------
+% figure(all_sub_f(1));
+% subplot(2,3,6);
+% plotMultiFda(traj_names, plt_p, p);
+
+% @@@@@@@@------- Prime Forced choice -------@@@@@@@@
+figure(all_sub_f(6));
+subplot(2,4,1);
+plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
+hold on;
+subplot(2,4,2);
+plotMultiRecognition(pas_rate, 'reach', 'all_subs', traj_names{1}{1}, plt_p, p);
+subplot(2,4,3);
+plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
+subplot(2,4,4);
+plotMultiRecognition(pas_rate, 'keyboard', 'all_subs', traj_names{1}{1}, plt_p, p);
+
+% @@@@@@@@------- PAS -------@@@@@@@@
+figure(all_sub_f(6));
+subplot(2,4,5);
+plotMultiPas(traj_names{1}{1}, 'reach', 'good_subs', plt_p, p);
+subplot(2,4,6);
+plotMultiPas(traj_names{1}{1}, 'reach', 'all_subs', plt_p, p);
+subplot(2,4,7);
+plotMultiPas(traj_names{1}{1}, 'keyboard', 'good_subs', plt_p, p);
+subplot(2,4,8);
+plotMultiPas(traj_names{1}{1}, 'keyboard', 'all_subs', plt_p, p);
+
+% @@@@@@@@------- Condition Diff -------@@@@@@@@
+% Difference between avg traj in each condition.
+figure(all_sub_f(2));
+subplot_p = [2,4,6; 2,4,7; 2,4,8];
+plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
+
+% @@@@@@@@------- Number of bad trials -------@@@@@@@@
+% Comparison of bad trials count between Keybaord and reaching.
+figure(all_sub_f(4));
+plotNumBadTrials(traj_names{1}{1}, plt_p, p)
+
+% @@@@@@@@------- Tree-BH Correction -------@@@@@@@@
+plotTreeBH(plt_p, p);
 %% Number of bad trials, Exp 2 vs 3
 num_bad_trials_comp_f = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.

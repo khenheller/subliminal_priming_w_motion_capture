@@ -1,7 +1,8 @@
 % Plots the average (over good subjects) Reaction, movment and Response times.
 % plt_p - struct of plotting params.
 % p - struct of exp params.
-function [] = plotMultiReactMtRt(traj_names, plt_p, p)
+% p_vals - p-value of the statistical tests.
+function [p_val] = plotMultiReactMtRt(traj_names, plt_p, p)
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
 
     for iTraj = 1:length(traj_names)
@@ -42,6 +43,9 @@ function [] = plotMultiReactMtRt(traj_names, plt_p, p)
         [~, p_val_react, ci_react, stats_react] = ttest(reach_avg_each.react(iTraj).con(good_subs), reach_avg_each.react(iTraj).incon(good_subs));
         [~, p_val_mt, ci_mt, stats_mt] = ttest(reach_avg_each.mt(iTraj).con(good_subs), reach_avg_each.mt(iTraj).incon(good_subs));
         [~, p_val_rt, ci_rt, stats_rt] = ttest(reach_avg_each.rt(iTraj).con(good_subs), reach_avg_each.rt(iTraj).incon(good_subs));
+        p_val.react = p_val_react;
+        p_val.mt = p_val_mt;
+        p_val.rt = p_val_rt;
 
         % Print stats to terminal.
         disp('------------Reaching RTs------------');

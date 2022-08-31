@@ -1,7 +1,8 @@
 % Plots the average (over good subjects) Reaction time wen using a keyboard.
 % plt_p - struct of plotting params.
 % p - struct of exp params.
-function [] = plotMultiKeyboardRt(traj_names, plt_p, p)
+% p_val_rt - p-value of the statistical test.
+function [p_val_rt] = plotMultiKeyboardRt(traj_names, plt_p, p)
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
 
     for iTraj = 1:length(traj_names)
