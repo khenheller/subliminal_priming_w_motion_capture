@@ -474,10 +474,14 @@ for iSub = p.SUBS
         reach_avg_each.x_std(iTraj).incon(:, iSub) = mean([reach_avg.x_std.incon_right, reach_avg.x_std.incon_left], 2);
         reach_avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
         reach_avg_each.ra(iTraj).incon(iSub) = reach_area.incon(iSub);
+        reach_avg_each.pas(iTraj).con(iSub,:) = reach_avg.pas.con;
+        reach_avg_each.pas(iTraj).incon(iSub,:) = reach_avg.pas.incon;
         keyboard_avg_each.rt(iTraj).con(iSub) = mean([keyboard_avg.rt.con_right, keyboard_avg.rt.con_left]) * 1000;
         keyboard_avg_each.rt(iTraj).incon(iSub) = mean([keyboard_avg.rt.incon_right, keyboard_avg.rt.incon_left]) * 1000;
         keyboard_avg_each.rt_std(iTraj).con(iSub) = mean([keyboard_avg.rt_std.con_right, keyboard_avg.rt_std.con_left]);
         keyboard_avg_each.rt_std(iTraj).incon(iSub) = mean([keyboard_avg.rt_std.incon_right, keyboard_avg.rt_std.incon_left]);
+        keyboard_avg_each.pas(iTraj).con(iSub,:) = keyboard_avg.pas.con;
+        keyboard_avg_each.pas(iTraj).incon(iSub,:) = keyboard_avg.pas.incon;
         % Compute diff between conditions (con/incon).
         reach_avg_each.rt(iTraj).diff(iSub)  = mean([reach_avg.rt.con_left - reach_avg.rt.incon_left,...
                                                 reach_avg.rt.con_right - reach_avg.rt.incon_right]) * 1000;
@@ -505,8 +509,10 @@ end
 save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_avg_each', 'keyboard_avg_each');
 disp("Done setting plotting params.");
 %% Single Sub plots.
+good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+subs_to_present = good_subs(1);
 % Create figure for each sub.
-for iSub = p.SUBS
+for iSub = subs_to_present(1)
     sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
     sub_f(iSub,2) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
     sub_f(iSub,3) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
@@ -517,14 +523,14 @@ for iSub = p.SUBS
 end
 
 % ------- Traj of each trial -------
-for iSub = p.SUBS
+for iSub = subs_to_present
     figure(sub_f(iSub,1));
     subplot(2,3,1);
     plotAllTrajs(iSub, traj_names, plt_p, p);
 end
 
 % ------- Avg traj with shade -------
-for iSub = p.SUBS
+for iSub = subs_to_present
     figure(sub_f(iSub,1));
     subplot(2,3,2);
     plotAvgTrajWithShade(iSub, traj_names, plt_p, p);
@@ -589,12 +595,14 @@ all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(5)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(6)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 
 % ------- Avg traj with shade -------
 figure(all_sub_f(2));
@@ -612,15 +620,27 @@ subplot(2,1,1);
 plotMultiReactMtRt(traj_names, plt_p, p);
 
 % ------- Prime Forced choice -------
-figure(all_sub_f(5));
+figure(all_sub_f(6));
+subplot(2,4,1);
+plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
+hold on;
+subplot(2,4,2);
+plotMultiRecognition(pas_rate, 'reach', 'all_subs', traj_names{1}{1}, plt_p, p);
 subplot(2,4,3);
-plotMultiRecognition(pas_rate, traj_names{1}{1}, plt_p, p);
+plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
+subplot(2,4,4);
+plotMultiRecognition(pas_rate, 'keyboard', 'all_subs', traj_names{1}{1}, plt_p, p);
 
 % ------- PAS -------
-figure(all_sub_f(5));
-hold on;
-subplot(2,4,4);
-plotMultiPas(traj_names{1}{1}, plt_p, p);
+figure(all_sub_f(6));
+subplot(2,4,5);
+plotMultiPas(traj_names{1}{1}, 'reach', 'good_subs', plt_p, p);
+subplot(2,4,6);
+plotMultiPas(traj_names{1}{1}, 'reach', 'all_subs', plt_p, p);
+subplot(2,4,7);
+plotMultiPas(traj_names{1}{1}, 'keyboard', 'good_subs', plt_p, p);
+subplot(2,4,8);
+plotMultiPas(traj_names{1}{1}, 'keyboard', 'all_subs', plt_p, p);
 
 % % ------- MAD -------
 % % Maximum absolute deviation.
