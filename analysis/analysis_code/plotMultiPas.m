@@ -34,4 +34,13 @@ function [] = plotMultiPas(traj_name, measure, group, plt_p, p)
     set(gca,'FontSize',14);
     % Legend.
     legend('Con','Incon');
+
+    % Cumulative ratings.
+    disp(['--------Cumulative PAS ', measure, ' ', group, '--------']);
+    con_pas = sum(avg_each.pas.con(subs,:), 1)';
+    incon_pas = sum(avg_each.pas.incon(subs,:), 1)';
+    combined_pas = sum([con_pas, incon_pas], 2);
+    pas_ratings = table([1,2,3,4]', con_pas, incon_pas, combined_pas, combined_pas/sum(combined_pas),...
+                        'VariableNames',{'rating','con','incon','sum', 'proportion'});
+    disp(pas_ratings);
 end
