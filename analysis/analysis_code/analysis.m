@@ -525,8 +525,8 @@ end
 % ------- Traj of each trial -------
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
-    subplot(2,3,1);
-    plotAllTrajs(iSub, traj_names, plt_p, p);
+    subplot_p = [2,3,1; 2,3,2];
+    plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
 end
 
 % ------- Heading angle of each trial -------
