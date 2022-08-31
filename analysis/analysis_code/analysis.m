@@ -529,6 +529,13 @@ for iSub = subs_to_present
     plotAllTrajs(iSub, traj_names, plt_p, p);
 end
 
+% ------- Heading angle of each trial -------
+for iSub = subs_to_present
+    figure(sub_f(subs_to_present(1),1));
+    subplot(2,3,4);
+    plotHeadAngles(iSub, traj_names{1}{1}, plt_p, p);
+end
+
 % ------- Avg traj with shade -------
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
@@ -669,6 +676,8 @@ plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
 figure(all_sub_f(5));
 subplot(2,2,1);
 plotMultiHeadAngle(traj_names, plt_p, p);
+subplot_p = [2,2,3; 2,2,4];
+plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 
 % ------- COM -------
 % Number of changes of mind.
