@@ -93,9 +93,9 @@ function p = defineParams(p, iSub)
         p.NUM_BLOCKS = SIM_NUM_BLOCKS;
     end
     p.NUM_TRIALS = p.NUM_BLOCKS * p.BLOCK_SIZE;
-    p.MIN_GOOD_TRIALS = 60; % Total, regardless of condition.
-    p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
     p.MIN_AMNT_TRIALS_IN_COND = 25; % sub with less good trials in each condition (same/diff) is disqualified.
+    p.MIN_GOOD_TRIALS = p.MIN_AMNT_TRIALS_IN_COND * 2; % Total, regardless of condition.
+    p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
 
     % Conditions.
     p.CONDS = ["con" "incon"];

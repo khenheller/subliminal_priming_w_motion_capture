@@ -39,7 +39,10 @@ function [clusters] = permCluster(data1, data2, n_perm)
     % Cluster data.
     [sizes, starts, ends] = getClusters(t_values, thresh);
     % Find p-values.
-    p_vals = 1 - invprctile(clusters_dist, abs(sizes))/100;
+    p_vals = [];
+    if ~isempty(sizes)
+        p_vals = 1 - invprctile(clusters_dist, abs(sizes))/100;
+    end
     % Average Cohen's dz for each cluster.
     cohens_dz = getCohensDz(t_values, size(data1,2), starts, ends);
     % Compute t* of each significant cluster.

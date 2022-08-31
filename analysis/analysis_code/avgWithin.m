@@ -3,6 +3,9 @@
 % avg - structure, each field is avg of one condition. Average of all the good trias that had "pas_rate".
 % single - struct, each field contains one condition's trials, that were good and had "pas_rate".
 function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iSub, traj_name, reach_bad_trials, keyboard_bad_trials, pas_rate, p)
+    % Timecourse column.
+    time_name = replace(traj_name{1}, 'x', 'timecourse');
+
     % Get sub data.
     reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
@@ -15,9 +18,11 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
 
     % Get traj and heading angle.
     traj = reach_traj_table{:, traj_name};
+    time = reach_traj_table{:, time_name};
     head_angle = reach_traj_table{:, 'head_angle'};
     % Reshape to convenient format.
     traj_mat = reshape(traj, p.NORM_FRAMES, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+    time_mat = reshape(time, p.NORM_FRAMES, p.NUM_TRIALS);
     head_angle_mat = reshape(head_angle, p.NORM_FRAMES, p.NUM_TRIALS);
 
     % Column names in tables.
@@ -44,6 +49,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
     % Sort trials and calc avg.
     single.trajs  = sortTrials(traj_mat, sorter, 1);
+    single.time = sortTrials(time_mat, sorter, 1);
     single.head_angle = sortTrials(head_angle_mat, sorter, 1);
     single.rt = sortTrials(reach_data_table.(offset_col), sorter, 0); % Response time.
     single.react = sortTrials(reach_data_table.(onset_col), sorter, 0); % Reaction time.
@@ -58,6 +64,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     single.pas.incon = reach_data_table.pas(~bad & ~con);
     % Average.
     avg.traj = sortedAvg(single.trajs, 1);
+    avg.time = sortedAvg(single.time, 1);
     avg.head_angle = sortedAvg(single.head_angle, 1);
     avg.rt = sortedAvg(single.rt, 0);
     avg.react = sortedAvg(single.react, 0);

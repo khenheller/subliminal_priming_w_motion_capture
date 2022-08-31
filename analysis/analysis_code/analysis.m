@@ -12,7 +12,7 @@ p.EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
 p.EXP_2_SUBS = [11 12 13 14 16 17 18 19 20 21 22 23 24 25]; % Sub 15 didn't finish the experiment (pressed Esc).
 p.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn't arrive to day 2.
 p.EXP_4_SUBS = [43 44];
-p.EXP_4_1_SUBS = [47, 49:85, 87:92];
+p.EXP_4_1_SUBS = [47, 49:85, 87:90];
 p.SUBS = p.EXP_4_1_SUBS; % to analyze.
 p.DAY = 'day2';
 pas_rate = 1; % to analyze.
@@ -377,6 +377,7 @@ close all;
 plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 4; % between beeswarm graphs.
+plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
 % Color of plots.
 plt_p.f_alpha = 0.2; % transperacy of shading.
 plt_p.linewidth = 4; % Used for some graphs.
