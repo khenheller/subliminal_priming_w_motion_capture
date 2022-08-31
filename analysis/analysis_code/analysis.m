@@ -405,6 +405,10 @@ for iSub = p.SUBS
         reach_avg_each.traj(iTraj).con_right(:,iSub,:) = reach_avg.traj.con_right;
         reach_avg_each.traj(iTraj).incon_left(:,iSub,:) = reach_avg.traj.incon_left;
         reach_avg_each.traj(iTraj).incon_right(:,iSub,:) = reach_avg.traj.incon_right;
+        reach_avg_each.time(iTraj).con_left(:,iSub) = reach_avg.time.con_left;
+        reach_avg_each.time(iTraj).con_right(:,iSub) = reach_avg.time.con_right;
+        reach_avg_each.time(iTraj).incon_left(:,iSub) = reach_avg.time.incon_left;
+        reach_avg_each.time(iTraj).incon_right(:,iSub) = reach_avg.time.incon_right;
         reach_avg_each.head_angle(iTraj).con_left(:,iSub) = reach_avg.head_angle.con_left;
         reach_avg_each.head_angle(iTraj).con_right(:,iSub) = reach_avg.head_angle.con_right;
         reach_avg_each.head_angle(iTraj).incon_left(:,iSub) = reach_avg.head_angle.incon_left;
@@ -443,9 +447,15 @@ for iSub = p.SUBS
         keyboard_avg_each.rt(iTraj).con_right(iSub) = keyboard_avg.rt.con_right * 1000;
         keyboard_avg_each.rt(iTraj).incon_left(iSub)  = keyboard_avg.rt.incon_left * 1000;
         keyboard_avg_each.rt(iTraj).incon_right(iSub) = keyboard_avg.rt.incon_right * 1000;
+        keyboard_avg_each.rt_std(iTraj).con_left(iSub)  = keyboard_avg.rt_std.con_left;
+        keyboard_avg_each.rt_std(iTraj).con_right(iSub) = keyboard_avg.rt_std.con_right;
+        keyboard_avg_each.rt_std(iTraj).incon_left(iSub)  = keyboard_avg.rt_std.incon_left;
+        keyboard_avg_each.rt_std(iTraj).incon_right(iSub) = keyboard_avg.rt_std.incon_right;
         % Combined avg of left and right.
         reach_avg_each.traj(iTraj).con(:, iSub, :) = (reach_avg.traj.con_right + reach_avg.traj.con_left .* [-1,1,1]) / 2; % Flip left traj.
         reach_avg_each.traj(iTraj).incon(:, iSub, :) = (reach_avg.traj.incon_right + reach_avg.traj.incon_left .* [-1,1,1]) / 2; % Flip left traj.
+        reach_avg_each.time(iTraj).con(:, iSub) = (reach_avg.time.con_right + reach_avg.time.con_left) / 2;
+        reach_avg_each.time(iTraj).incon(:, iSub) = (reach_avg.time.incon_right + reach_avg.time.incon_left) / 2;
         reach_avg_each.head_angle(iTraj).con(:, iSub) = (reach_avg.head_angle.con_right + reach_avg.head_angle.con_left) / 2;
         reach_avg_each.head_angle(iTraj).incon(:, iSub) = (reach_avg.head_angle.incon_right + reach_avg.head_angle.incon_left) / 2;
         reach_avg_each.rt(iTraj).con(iSub) = mean([reach_avg.rt.con_right, reach_avg.rt.con_left]) * 1000;
@@ -466,6 +476,8 @@ for iSub = p.SUBS
         reach_avg_each.ra(iTraj).incon(iSub) = reach_area.incon(iSub);
         keyboard_avg_each.rt(iTraj).con(iSub) = mean([keyboard_avg.rt.con_right, keyboard_avg.rt.con_left]) * 1000;
         keyboard_avg_each.rt(iTraj).incon(iSub) = mean([keyboard_avg.rt.incon_right, keyboard_avg.rt.incon_left]) * 1000;
+        keyboard_avg_each.rt_std(iTraj).con(iSub) = mean([keyboard_avg.rt_std.con_right, keyboard_avg.rt_std.con_left]);
+        keyboard_avg_each.rt_std(iTraj).incon(iSub) = mean([keyboard_avg.rt_std.incon_right, keyboard_avg.rt_std.incon_left]);
         % Compute diff between conditions (con/incon).
         reach_avg_each.rt(iTraj).diff(iSub)  = mean([reach_avg.rt.con_left - reach_avg.rt.incon_left,...
                                                 reach_avg.rt.con_right - reach_avg.rt.incon_right]) * 1000;

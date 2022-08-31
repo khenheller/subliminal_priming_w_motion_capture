@@ -110,6 +110,10 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     avg.rt = sortedAvg(single.rt, 0);
     avg.fc_prime.con   = mean(single.fc_prime.con);
     avg.fc_prime.incon = mean(single.fc_prime.incon);
+    avg.rt_std.con_left = std(single.rt.con_left);
+    avg.rt_std.con_right = std(single.rt.con_right);
+    avg.rt_std.incon_left = std(single.rt.incon_left);
+    avg.rt_std.incon_right = std(single.rt.incon_right);
     % Count pas ratings.
     for i = 1:4
         avg.pas.con(i)   = sum(single.pas.con == i); 

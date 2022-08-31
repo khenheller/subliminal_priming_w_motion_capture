@@ -27,7 +27,7 @@ function [] = plotMultiKeyboardRt(traj_names, plt_p, p)
         y_data = rt_data;
         x_data = reshape(get(gca,'XTick'), 2,[]);
         x_data = repelem(x_data,1,length(good_subs));
-        plot(x_data, y_data, 'color',[0.1 0.1 0.1, plt_p.f_alpha]);
+        connect_dots(x_data, y_data);
         
         % Legend.
         h = [];
@@ -41,5 +41,8 @@ function [] = plotMultiKeyboardRt(traj_names, plt_p, p)
         % Print stats to terminal.
         printStats('----Keyboard RT--------', keyboard_avg_each.rt(iTraj).con(good_subs), ...
             keyboard_avg_each.rt(iTraj).incon(good_subs), p_val_rt, ci_rt, stats_rt);
+        disp('Between TRIALS rt std: ');
+        disp(['Con: ', num2str(mean(keyboard_avg_each.rt_std.con(good_subs)))]);
+        disp(['Incon: ', num2str(mean(keyboard_avg_each.rt_std.incon(good_subs)))]);
     end
 end
