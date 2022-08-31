@@ -37,7 +37,7 @@ function [] = plotMultiReactMtRtLeftRight(traj_names, plt_p, p)
         y_data = [react_data mt_data rt_data];
         x_data = reshape(get(gca,'XTick'), 2,[]);
         x_data = repelem(x_data,1,length(good_subs));
-        plot(x_data, y_data, 'color',[0.1 0.1 0.1, plt_p.f_alpha]);
+        connect_dots(x_data, y_data);
         
         % Legend.
         h = [];

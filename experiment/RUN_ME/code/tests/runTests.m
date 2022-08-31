@@ -42,7 +42,7 @@ for iSub = sub_num
     else
         file_name = word_list;
         reach_trials = readtable([TRIALS_LISTS_FOLDER word_list]);
-        trials_traj = [];
+        reach_trials_traj = [];
         diary_name = [TEST_RES_FOLDER strrep(word_list,'.xlsx','') '.txt'];
         p = load('p.mat'); p = p.p;
         p.DAY = 'day2'; disp('@@@Dont need this line after having a p.mat from sub 26 and higher@@@');
@@ -51,12 +51,12 @@ for iSub = sub_num
     
     % Day1 has no prime, so remove it's columns.
     if test_day == 'day1'
-        prime_columns = regexp(trials.Properties.VariableNames', '.*prime.*');
+        prime_columns = regexp(reach_trials.Properties.VariableNames', '.*prime.*');
         prime_columns = ~cellfun(@isempty,prime_columns);
-        trials(:, prime_columns) = [];
-        prime_columns = regexp(trials_traj.Properties.VariableNames', '.*prime.*');
+        reach_trials(:, prime_columns) = [];
+        prime_columns = regexp(reach_trials_traj.Properties.VariableNames', '.*prime.*');
         prime_columns = ~cellfun(@isempty,prime_columns);
-        trials_traj(:, prime_columns) = [];
+        reach_trials_traj(:, prime_columns) = [];
         prime_columns = regexp(events, '.*prime.*');
         prime_columns = ~cellfun(@isempty,prime_columns);
         events(prime_columns) = [];

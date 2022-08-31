@@ -135,10 +135,14 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
 
         % Mark if any test failed.
         bad_trials{iSub}.any = any(bad_trials{iSub}{:,1:end-1} > 0, 2); % OR between columns (reasons).
-        bad_trials_i{iSub,'any'}{:,:} = find(bad_trials{iSub}{:,'any'});
+        % Remove nans to count bad trials.
+        bad_trials_mat = bad_trials{iSub}{:,:};
+        bad_trials_mat(isnan(bad_trials_mat(:,:))) = 0;
+        bad_trials_wo_nan = array2table(bad_trials_mat, 'VariableNames',bad_trials{iSub}.Properties.VariableNames);
+        bad_trials_i{iSub,'any'}{:,:} = find(bad_trials_wo_nan{:,'any'});
         % save indices of bad trials.
         for iReason = 1:length(screen_reasons)-1
-            bad_trials_i{iSub, iReason}{:,:} = find(bad_trials{iSub}{:,iReason});
+            bad_trials_i{iSub, iReason}{:,:} = find(bad_trials_wo_nan{:,iReason});
         end
         % Count bad trials.
         n_bad_trials{iSub, :} = sum(bad_trials{iSub}{:,:} > 0, 1);
