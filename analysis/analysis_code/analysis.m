@@ -296,6 +296,17 @@ for iSub = p.SUBS
 end
 timing = num2str(toc);
 disp(['Total distance traveled calc done. ' timing 'Sec']);
+%% AUC
+tic
+for iSub = p.SUBS
+    p = defineParams(p, iSub);
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
+    reach_data_table = calcAuc(reach_traj_table, reach_data_table, p);
+    save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
+end
+timing = num2str(toc);
+disp(['AUC calc done. ' timing 'Sec']);
 %% Sorting and averaging (within subject)
 tic
 for iTraj = 1:length(traj_names)
@@ -437,6 +448,10 @@ for iSub = p.SUBS
         reach_avg_each.tot_dist(iTraj).con_right(iSub) = reach_avg.tot_dist.con_right;
         reach_avg_each.tot_dist(iTraj).incon_left(iSub)  = reach_avg.tot_dist.incon_left;
         reach_avg_each.tot_dist(iTraj).incon_right(iSub) = reach_avg.tot_dist.incon_right;
+        reach_avg_each.auc(iTraj).con_left(iSub)  = reach_avg.auc.con_left;
+        reach_avg_each.auc(iTraj).con_right(iSub) = reach_avg.auc.con_right;
+        reach_avg_each.auc(iTraj).incon_left(iSub)  = reach_avg.auc.incon_left;
+        reach_avg_each.auc(iTraj).incon_right(iSub) = reach_avg.auc.incon_right;
         reach_avg_each.x_std(iTraj).con_left(:,iSub)  = reach_avg.x_std.con_left;
         reach_avg_each.x_std(iTraj).con_right(:,iSub) = reach_avg.x_std.con_right;
         reach_avg_each.x_std(iTraj).incon_left(:,iSub)  = reach_avg.x_std.incon_left;
@@ -470,6 +485,8 @@ for iSub = p.SUBS
         reach_avg_each.com(iTraj).incon(iSub) = mean([reach_avg.com.incon_right, reach_avg.com.incon_left]);
         reach_avg_each.tot_dist(iTraj).con(iSub) = mean([reach_avg.tot_dist.con_right, reach_avg.tot_dist.con_left]);
         reach_avg_each.tot_dist(iTraj).incon(iSub) = mean([reach_avg.tot_dist.incon_right, reach_avg.tot_dist.incon_left]);
+        reach_avg_each.auc(iTraj).con(iSub) = mean([reach_avg.auc.con_right, reach_avg.auc.con_left]);
+        reach_avg_each.auc(iTraj).incon(iSub) = mean([reach_avg.auc.incon_right, reach_avg.auc.incon_left]);
         reach_avg_each.x_std(iTraj).con(:, iSub) = mean([reach_avg.x_std.con_right, reach_avg.x_std.con_left], 2);
         reach_avg_each.x_std(iTraj).incon(:, iSub) = mean([reach_avg.x_std.incon_right, reach_avg.x_std.incon_left], 2);
         reach_avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
@@ -661,6 +678,13 @@ figure(all_sub_f(2));
 subplot(2,4,4);
 p_val = plotMultiTotDist(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
+
+% ------- AUC -------
+% Area under the curve.
+figure(all_sub_f(1));
+subplot(2,3,1);
+p_val = plotMultiAuc(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
 if any(p.SUBS >=43) % Only for Exp 4.

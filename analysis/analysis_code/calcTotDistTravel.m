@@ -1,9 +1,9 @@
 % Calc the total distance traveled (in the x and z axis) in each trial.
 function [data_table] = calcTotDistTravel(traj_table, data_table, p)
 
-    data_table.tot_dist_trav = cell(p.NUM_TRIALS,1);
-    % Name of COM column in data_table.
+    % Name of tot dist column in data_table.
     tot_dist_col = 'tot_dist';
+    data_table.(tot_dist_col) = cell(p.NUM_TRIALS,1);
 
     tot_dist = NaN(p.NUM_TRIALS,1);
 

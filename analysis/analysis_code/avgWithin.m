@@ -35,6 +35,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     head_angle_col = ['head_angle'];
     com_col = ['com'];
     tot_dist_col = ['tot_dist'];
+    auc_col = ['auc'];
 
     % -------------------- Sort and avg REACH --------------------
     % Bad trials reasons, Remove reason: "slow_mvmnt".
@@ -58,6 +59,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     single.mad_p = sortTrials(reach_data_table.(mad_p_col), sorter, 0); % Maximally deviating point.
     single.com = sortTrials(reach_data_table.(com_col), sorter, 0); % Number of changes of mind.
     single.tot_dist = sortTrials(reach_data_table.(tot_dist_col), sorter, 0); % Total distance traveled.
+    single.auc = sortTrials(reach_data_table.(auc_col), sorter, 0); % Area Under the Curve.
     single.fc_prime.con   = reach_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
     single.fc_prime.incon = reach_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
     single.pas.con   = reach_data_table.pas(~bad_timing_or_quit & con);
@@ -73,6 +75,7 @@ function [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iS
     avg.mad_p = sortedAvg(single.mad_p, 0);
     avg.com = sortedAvg(single.com, 0);
     avg.tot_dist = sortedAvg(single.tot_dist, 0);
+    avg.auc = sortedAvg(single.auc, 0);
     avg.fc_prime.con   = nanmean(single.fc_prime.con);
     avg.fc_prime.incon = nanmean(single.fc_prime.incon);
     avg.x_std.con_left    = std(single.trajs.con_left (:,:,1), 0, 2); % std between trials.
