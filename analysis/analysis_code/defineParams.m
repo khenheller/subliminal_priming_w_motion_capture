@@ -62,7 +62,7 @@ function p = defineParams(p, iSub)
         p.RECOG_CAP_LENGTH_SEC = 7;
         p.CATEGOR_CAP_LENGTH_SEC = 0.74;
     else
-        error('Please analyze subs 1-10, 11-25 and 26-... seperatly.');
+        error('Please analyze subs of each experiment seperatly.');
     end
     p.MIN_REACH_DIST = p.SCREEN_DIST - p.MAX_DIST_FROM_SCREEN; % exp2=0.3 exp3=0.32
     % Distances.
@@ -103,4 +103,19 @@ function p = defineParams(p, iSub)
 
     % Hypothesis testing.
     p.SIG_PVAL = 0.05;
+
+    % Which exp is run.
+    if isequal(p.SUBS, p.EXP_1_SUBS)
+        p.EXP = 'exp1';
+    elseif isequal(p.SUBS, p.EXP_2_SUBS)
+        p.EXP = 'exp2';
+    elseif isequal(p.SUBS, p.EXP_3_SUBS)
+        p.EXP = 'exp3';
+    elseif isequal(p.SUBS, p.EXP_4_SUBS)
+        p.EXP = 'exp4';
+    elseif isequal(p.SUBS, p.EXP_4_1_SUBS)
+        p.EXP = 'exp4_1';
+    else
+        error('Please analyze subs of each experiment seperatly.');
+    end
 end

@@ -4,10 +4,6 @@
 %   Columns: sub, side, condition, Proportion of path traveled, variable.
 %   Rows: average under each condition.
 function [var_df] = fMultiVal(var_name, traj_name, p)
-% Build dataframe.
-num_rows = p.N_SUBS * 2 * p.N_CONDS; % 2=left/right.
-columns = ["sub", "side", "cond", "z_pos", var_name];
-var_df = table('size',[num_rows length(columns)], 'VariableTypes',{'double','string','string','double', 'double'}, 'VariableNames',columns);
 
 % Load subs data.
 var = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_name '_subs_' p.SUBS_STRING '.mat']);  var = var.reach_avg_each.(var_name);
@@ -19,7 +15,13 @@ if isequal(var_name, 'traj')
     var.con_right = var.con_right(:,:,1);
     var.incon_left = var.incon_left(:,:,1);
     var.incon_right = var.incon_right(:,:,1);
+    var_name = 'x';
 end
+
+% Build dataframe.
+num_rows = p.N_SUBS * 2 * p.N_CONDS; % 2=left/right.
+columns = ["sub", "side", "cond", "z_pos", var_name];
+var_df = table('size',[num_rows length(columns)], 'VariableTypes',{'double','string','string','double', 'double'}, 'VariableNames',columns);
 
 % Prep table columns.
 num_values = size(var.con_left, 1);
@@ -34,4 +36,4 @@ cond_col = repelem(p.CONDS', num_values * length(good_subs) * 2); % 2=left/right
 z_pos_col = repmat([0.5 : 100/p.NORM_FRAMES : 100]', length(good_subs)*4, 1); % 4=one for each condition and side combination.
 
 % Fill table with goods.
-var_df = table(sub_col, z_pos_col, side_col, cond_col, var_col, 'VariableNames',var_df.Properties.VariableNames);
+var_df = table(sub_col, side_col, cond_col, z_pos_col, var_col, 'VariableNames',var_df.Properties.VariableNames);

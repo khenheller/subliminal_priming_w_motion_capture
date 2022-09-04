@@ -945,41 +945,45 @@ for iTraj = 1:length(traj_names)
     % ---- Signle value per trial ----
     % Total traveled distance
     tot_dist_df = fSingleVal('tot_dist', 'reach', traj_names{iTraj}{1}, p);
-    writetable(tot_dist_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__tot_dist_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(tot_dist_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__tot_dist_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
+    
+    % AUC
+    auc_df = fSingleVal('auc', 'reach', traj_names{iTraj}{1}, p);
+    writetable(auc_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__auc_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % Frequency of COM
     com_df = fSingleVal('com', 'reach', traj_names{iTraj}{1}, p);
-    writetable(com_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__com_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(com_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__com_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % Reaction time
     react_df = fSingleVal('react', 'reach', traj_names{iTraj}{1}, p);
-    writetable(react_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__react_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(react_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__react_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % Movment time
     mt_df = fSingleVal('mt', 'reach', traj_names{iTraj}{1}, p);
-    writetable(mt_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__mt_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(mt_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__mt_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % Reach Area.
     ra_df = fReachArea(traj_names{iTraj}{1}, p);
-    writetable(ra_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__ra_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(ra_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__ra_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % ---- Multiple values per trial ----
     % Heading angle
     head_angle_df = fMultiVal('head_angle', traj_names{iTraj}{1}, p);
-    writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__head_angle_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__head_angle_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
     
     % Deviation from center
     x_df = fMultiVal('traj', traj_names{iTraj}{1}, p);
-    writetable(x_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(x_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % Movement variation
     x_std_df = fMultiVal('x_std', traj_names{iTraj}{1}, p);
-    writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_std_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_std_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % ---- Keyboard ----
     % Keyboard RT
     rt_df = fSingleVal('rt', 'keyboard', traj_names{iTraj}{1}, p);
-    writetable(rt_df, [p.PROC_DATA_FOLDER '/format_to_r_keyboard__rt_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.csv']);
+    writetable(rt_df, [p.PROC_DATA_FOLDER '/format_to_r_keyboard__rt_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 end
 timing = num2str(toc);
 disp(['Formating to R done. ' timing 'Sec']);
