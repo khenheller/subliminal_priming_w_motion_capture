@@ -38,6 +38,6 @@ function [] = plotMultiRecognition(pas_rate, measure, group, traj_name, plt_p, p
     text(get(gca, 'xTick'),[10 10], {['p = ' num2str(fc_p_val(1))], ['p = ' num2str(fc_p_val(2))]}, 'FontSize',14, 'HorizontalAlignment','center');
 
     % Print stats to terminal.
-    printStats(['-----Prime Forced Choice, ' group ', ' measure, '------------'], [], ...
+    printStats(['@@@@-----Prime Forced Choice, ' group ', ' measure, '------------@@@@'], avg_each.fc_prime.con(subs), ...
         avg_each.fc_prime.incon(subs), fc_p_val(2), fc_ci, fc_stats);
 end

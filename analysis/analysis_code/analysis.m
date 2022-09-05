@@ -636,8 +636,11 @@ plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 % ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(3));
 subplot(2,1,1);
-p_val = plotMultiReactMtRt(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/react_mt_rt_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
+react_mt_rt_p_val = plotMultiReactMtRt(traj_names, plt_p, p);
+p_val = react_mt_rt_p_val.react;
+save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+p_val = react_mt_rt_p_val.mt;
+save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % % ------- MAD -------
 % % Maximum absolute deviation.
@@ -651,7 +654,7 @@ save([p.PROC_DATA_FOLDER '/react_mt_rt_p_val_' p.DAY '_subs_' p.SUBS_STRING '.ma
 figure(all_sub_f(2));
 subplot(2,4,5);
 p_val = plotMultiReachArea(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
+save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- X STD -------
 figure(all_sub_f(1));
@@ -670,28 +673,28 @@ plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 figure(all_sub_f(2));
 subplot(2,4,3);
 p_val = plotMultiCom(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
+save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Total distance traveled -------
 % Total distance traveled.
 figure(all_sub_f(2));
 subplot(2,4,4);
 p_val = plotMultiTotDist(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
+save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- AUC -------
 % Area under the curve.
 figure(all_sub_f(1));
 subplot(2,3,1);
 p_val = plotMultiAuc(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
+save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
 if any(p.SUBS >=43) % Only for Exp 4.
     figure(all_sub_f(3));
     subplot(2,1,2);
     p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
-    save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
+    save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 end
 
 % % ------- FDA -------
@@ -732,8 +735,7 @@ plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
 % Comparison of bad trials count between Keybaord and reaching.
 figure(all_sub_f(4));
 plotNumBadTrials(traj_names{1}{1}, plt_p, p)
-
-% @@@@@@@@------- Tree-BH Correction -------@@@@@@@@
+%% Tree-BH Correction
 plotTreeBH(plt_p, p);
 %% Number of bad trials, Exp 2 vs 3
 num_bad_trials_comp_f = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');

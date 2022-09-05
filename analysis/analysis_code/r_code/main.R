@@ -107,15 +107,39 @@ check_outliers(ra_m, method = "iqr", threshold = list('iqr'=1.5))
 check_model(rt_m, check = c("normality","outliers"))
 check_outliers(rt_m, method = "iqr", threshold = list('iqr'=1.5))
 ##----------------------- Permutation T-testing ----------------------------
+# For variables that violated normality.
 alpha = 0.05
-perms = 1000
-auc_perm_result = perm.t.test(formula=auc~cond, data=auc_df, paired=TRUE, conf.level=1-alpha, R=perms)
-ra_perm_result = perm.t.test(formula=ra~cond, data=ra_df, paired=TRUE, conf.level=1-alpha, R=perms)
+tot_dist_perm_result = perm.t.test(formula=tot_dist~cond, data=tot_dist_df, paired=TRUE, conf.level=1-alpha)
+auc_perm_result = perm.t.test(formula=auc~cond, data=auc_df, paired=TRUE, conf.level=1-alpha)
+com_perm_result = perm.t.test(formula=com~cond, data=com_df, paired=TRUE, conf.level=1-alpha)
+react_perm_result = perm.t.test(formula=react~cond, data=react_df, paired=TRUE, conf.level=1-alpha)
+mt_perm_result = perm.t.test(formula=mt~cond, data=mt_df, paired=TRUE, conf.level=1-alpha)
+ra_perm_result = perm.t.test(formula=ra~cond, data=ra_df, paired=TRUE, conf.level=1-alpha)
+rt_perm_result = perm.t.test(formula=rt~cond, data=rt_df, paired=TRUE, conf.level=1-alpha)
+# Print results.
+tot_dist_perm_result
+auc_perm_result
+com_perm_result
+react_perm_result
+mt_perm_result
+ra_perm_result
+rt_perm_result
 # Save results.
-writeMat(con=paste0(p$PROC_DATA_FOLDER, '/auc_perm_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=auc_perm_result$perm.p.value, ci=auc_perm_result$perm.conf.int)
-writeMat(con=paste0(p$PROC_DATA_FOLDER, '/ra_perm_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=ra_perm_result$perm.p.value, ci=ra_perm_result$perm.conf.int)
+# !!!!!!!!!!!!!!!!!!!!!RUN ONLY FOR VARS THAT VIOLATE NORMALITY !!!!!!!!!!!!!!!!!!!!!!!!!
+writeMat(con=paste0(p$PROC_DATA_FOLDER, '/tot_dist_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=tot_dist_perm_result$perm.p.value, ci=tot_dist_perm_result$perm.conf.int)
+writeMat(con=paste0(p$PROC_DATA_FOLDER, '/auc_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=auc_perm_result$perm.p.value, ci=auc_perm_result$perm.conf.int)
+writeMat(con=paste0(p$PROC_DATA_FOLDER, '/com_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=com_perm_result$perm.p.value, ci=com_perm_result$perm.conf.int)
+writeMat(con=paste0(p$PROC_DATA_FOLDER, '/react_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=react_perm_result$perm.p.value, ci=react_perm_result$perm.conf.int)
+writeMat(con=paste0(p$PROC_DATA_FOLDER, '/mt_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=mt_perm_result$perm.p.value, ci=mt_perm_result$perm.conf.int)
+writeMat(con=paste0(p$PROC_DATA_FOLDER, '/ra_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=ra_perm_result$perm.p.value, ci=ra_perm_result$perm.conf.int)
+writeMat(con=paste0(p$PROC_DATA_FOLDER, '/rt_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=rt_perm_result$perm.p.value, ci=rt_perm_result$perm.conf.int)
 ##----------------------- Effect Size Calc ----------------------------
+# Used for vars that violate normality.
+rank_biserial(tot_dist~cond, data=tot_dist_df, paired=TRUE)
 rank_biserial(auc~cond, data=auc_df, paired=TRUE)
+rank_biserial(com~cond, data=com_df, paired=TRUE)
+rank_biserial(react~cond, data=react_df, paired=TRUE)
+rank_biserial(mt~cond, data=mt_df, paired=TRUE)
 rank_biserial(ra~cond, data=ra_df, paired=TRUE)
 # ---- Keyboard ----
 rank_biserial(rt~cond, data=rt_df, paired=TRUE)
@@ -136,36 +160,20 @@ rank_biserial(rt~cond, data=rt_df, paired=TRUE)
 
 # ---- Reach Area ----
 # Linearity - no trend should be in residuals plot.
-plot(r_a_mixed, which=1)
+plot(auc_m, which=1)
 # Outliers - find with IQR, or in resPlot.
-output_list <- getOutliers(ra_data, 'reach_area')
+output_list <- getOutliers(auc_df, 'auc')
 outliers <- output_list[[1]] 
 inliers <- output_list[[2]]
-inliers %>% ggplot(aes(x=reach_area, color=cond, fill=cond)) + geom_histogram(alpha=0.4, position="identity", bins=200) + theme_minimal() + theme(text=element_text(size=15))
-inliers %>% ggplot(aes(x=cond, y=reach_area, fill=cond)) + geom_violin(alpha=0.4) + geom_boxplot(width=0.15) + theme_minimal() + theme(text=element_text(size=15))
+inliers %>% ggplot(aes(x=auc, color=cond, fill=cond)) + geom_histogram(alpha=0.4, position="identity", bins=200) + theme_minimal() + theme(text=element_text(size=15))
+inliers %>% ggplot(aes(x=cond, y=auc, fill=cond)) + geom_violin(alpha=0.4) + geom_boxplot(width=0.15) + theme_minimal() + theme(text=element_text(size=15))
 # Heteroscedasticity - resPlot should distribute normaly / equally across y'.
-plot(r_a_mixed, which=1)
+plot(auc_m, which=1)
 # Multicolinearity - irelevant, we have 1 predictor.
-# Normality - of residuals i nhist, and also no devation from line in qqplot.
-hist(resid(r_a_mixed))
-qqnorm(resid(r_a_mixed))
-qqline(resid(r_a_mixed))
-# ------- MAD --------
-# Linearity - no trend should be in residuals plot.
-plot(mad_mixed, which=1)
-# Outliers - find with IQR, or in resPlot.
-output_list <- getOutliers(mad_data, 'mad')
-outliers <- output_list[[1]] 
-inliers <- output_list[[2]]
-inliers %>% ggplot(aes(x=mad, color=cond, fill=cond)) + geom_histogram(alpha=0.4, position="identity", bins=200) + theme_minimal() + theme(text=element_text(size=15))
-inliers %>% ggplot(aes(x=cond, y=mad, fill=cond)) + geom_violin(alpha=0.4) + geom_boxplot(width=0.15) + theme_minimal() + theme(text=element_text(size=15)) + facet_wrap(~side)
-# Heteroscedasticity - resPlot should distribute normaly / equally across y'.
-plot(mad_mixed, which=1)
-# Multicolinearity - irelevant, we have 1 predictor.
-# Normality - of residuals hist, and also no deviation from line in qqplot.
-hist(resid(mad_mixed))
-qqnorm(resid(mad_mixed))
-qqline(resid(mad_mixed))
+# Normality - of residuals in hist, and also no devation from line in qqplot.
+hist(resid(auc_m))
+qqnorm(resid(auc_m))
+qqline(resid(auc_m))
 # --- X Position ----
 look_range <- c(round(runif(10)*p$NORM_FRAMES)) # Models whose assumptions will be tested.
 # Linearity - no trend should be in residuals plot.

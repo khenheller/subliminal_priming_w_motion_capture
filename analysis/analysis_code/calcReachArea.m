@@ -6,9 +6,9 @@
 % Output:
 %   r_a - reach area.
 function [r_a] = calcReachArea(left, right, p)
-    % Convert to meters.
-    left(:,3) = left(:,3) * p.SCREEN_DIST / 100;
-    right(:,3) = right(:,3) * p.SCREEN_DIST / 100;
+    % Convert to mili-meters.
+    left(:,3) = left(:,3) * p.SCREEN_DIST * 10;
+    right(:,3) = right(:,3) * p.SCREEN_DIST * 10;
     % Turn traj to 2D.
     left_2d = [left(:,3),  left(:,1)];
     right_2d = [right(:,3), right(:,1)];

@@ -36,7 +36,7 @@ function [] = plotNumBadTrials(traj_name, plt_p, p)
     h(2) = bar(NaN,NaN,'FaceColor',plt_p.keyboard_color);
     legend(h,'Reach','Keyboard', 'Location','northwest');
     % T-test.
-    disp('--------Bad Trials Reach vs Keyboard--------');
+    disp('@@@@--------Bad Trials Reach vs Keyboard--------@@@@');
     for i_reason = 1:num_reasons
         indx = i_reason*2;
         [~, p_val, ci, stats] = ttest(beesdata{:, indx-1}, beesdata{:, indx});
