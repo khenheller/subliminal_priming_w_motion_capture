@@ -7,6 +7,14 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
         reach_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_avg_each = reach_avg_each.reach_avg_each;
         hold on;
 
+        % Convert to cm.
+        reach_avg_each(iTraj).tot_dist.con = reach_avg_each(iTraj).tot_dist.con * 100;
+        reach_avg_each(iTraj).tot_dist.incon = reach_avg_each(iTraj).tot_dist.incon * 100;
+        reach_avg_each(iTraj).tot_dist.con_left = reach_avg_each(iTraj).tot_dist.con_left * 100;
+        reach_avg_each(iTraj).tot_dist.con_right = reach_avg_each(iTraj).tot_dist.con_right * 100;
+        reach_avg_each(iTraj).tot_dist.incon_left = reach_avg_each(iTraj).tot_dist.incon_left * 100;
+        reach_avg_each(iTraj).tot_dist.incon_right = reach_avg_each(iTraj).tot_dist.incon_right * 100;
+
         % Load data and set parameters.
         beesdata = {reach_avg_each(iTraj).tot_dist.con_left(good_subs), reach_avg_each(iTraj).tot_dist.incon_left(good_subs), reach_avg_each(iTraj).tot_dist.con_right(good_subs), reach_avg_each(iTraj).tot_dist.incon_right(good_subs)};
         yLabel = 'Distance';
@@ -42,8 +50,8 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
         [~, p_val, ~, ~] = ttest(beesdata{3}, beesdata{4});
         text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
         % T-test and Cohen's dz
-        [~, p_val, ci, stats] = ttest(reach_avg_each.tot_dist(iTraj).con(good_subs), reach_avg_each.tot_dist(iTraj).incon(good_subs));
-        printStats('-----Total Distance Traveled------------', reach_avg_each.tot_dist(iTraj).con(good_subs), ...
-            reach_avg_each.tot_dist(iTraj).incon(good_subs), p_val, ci, stats);
+        [~, p_val, ci, stats] = ttest(reach_avg_each.tot_dist.con(good_subs), reach_avg_each.tot_dist.incon(good_subs));
+        printStats('-----Total Distance Traveled------------', reach_avg_each.tot_dist.con(good_subs), ...
+            reach_avg_each.tot_dist.incon(good_subs), p_val, ci, stats);
     end
 end

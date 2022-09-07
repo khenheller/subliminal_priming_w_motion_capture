@@ -289,7 +289,7 @@ disp(['COM calc done. ' timing 'Sec']);
 tic
 for iSub = p.SUBS
     p = defineParams(p, iSub);
-    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  reach_traj_table = reach_traj_table.reach_pre_norm_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
     reach_data_table = calcTotDistTravel(reach_traj_table, reach_data_table, p);
     save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
