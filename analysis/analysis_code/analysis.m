@@ -734,14 +734,20 @@ plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
 % @@@@@@@@------- Number of bad trials -------@@@@@@@@
 % Comparison of bad trials count between Keybaord and reaching.
 figure(all_sub_f(4));
-plotNumBadTrials(traj_names{1}{1}, plt_p, p)
+subplot(2,1,1);
+plotNumBadTrials(traj_names{1}{1}, 'all_subs', plt_p, p);
+subplot(2,1,2);
+plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
 %% Tree-BH Correction
 plotTreeBH(plt_p, p);
 %% Number of bad trials, Exp 2 vs 3
 num_bad_trials_comp_f = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(num_bad_trials_comp_f); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-plotNumBadTrialsExp2Exp3(traj_names{1}{1}, plt_p, p);
+subplot(2,1,1);
+plotNumBadTrialsExp2Exp3(traj_names{1}{1}, 'all_subs', plt_p, p);
+subplot(2,1,2);
+plotNumBadTrialsExp2Exp3(traj_names{1}{1}, 'good_subs', plt_p, p);
 %% Effect size comparison to previous papers.
 % Prev exp data.
 xiao_auc = struct('N',28,...% Xiao, K., Yamauchi, T., & Bowman, C. (2015)
