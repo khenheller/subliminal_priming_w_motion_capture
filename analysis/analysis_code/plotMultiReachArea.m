@@ -24,7 +24,7 @@ function [p_val_ra] = plotMultiReachArea(traj_names, plt_p, p)
         connect_dots(x_data, y_data);
         
         ticks = get(gca,'XTick');
-        y_limit = [0.10 0.27];
+        y_limit = [0.5 3.1];
         ylim(y_limit);
         % Legend.
         h = [];

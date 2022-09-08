@@ -1,33 +1,54 @@
 function [] = plotTreeBH(plt_p, p)
-    % Specify tree structure.
-    parents_vec = [1 1 2 2 3 4 4 4 4 4 5];
-    node_names = [{'effect size comparison'},...
-        {'reach','keyboard'},...
-        {'exploratory','confirmatory','rt'},...
-        {'react','mt','com','tot dist','auc','ra'}];
-    
-    % Add p-values to tree.
-    if isequal(p.EXP, 'exp_4') || isequal(p.EXP, 'exp4_1')
-        keyboard_rt_p_val = load([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat']);  keyboard_rt_p_val = keyboard_rt_p_val.p_val;
-    else
-        keyboard_rt_p_val = NaN;
-    end
-    tot_dist_p_val = load([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat']);  tot_dist_p_val = tot_dist_p_val.p_val;
-    auc_p_val = load([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat']);  auc_p_val = auc_p_val.p_val;
-    com_p_val = load([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat']);  com_p_val = com_p_val.p_val;
-    ra_p_val = load([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat']);  ra_p_val = ra_p_val.p_val;
-    react_p_val = load([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat']);  react_p_val = react_p_val.p_val;
-    mt_p_val = load([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat']);  mt_p_val = mt_p_val.p_val;
-    node_p_values = [nan,...
-        nan, nan,...
-        nan, nan, keyboard_rt_p_val,...
-        react_p_val, mt_p_val, com_p_val, tot_dist_p_val, auc_p_val, ra_p_val];
-    
-    % Remove keyboard in exp 1,2,3.
-    if ~isequal(p.EXP, 'exp4_1')
-        parents_vec([2, 5]) = [];
-        node_p_values([3, 6]) = [];
-        node_names([3, 6])= [];
+
+    switch p.EXP
+        case 'exp1'
+            % Specify tree structure.
+            parents_vec = [1 1 1 1 1];
+            node_names = [{'reach'},...
+                {'react','mt','com','tot dist','ra'}];
+            % Add p-values to tree.
+            react_p_val = load([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat']);  react_p_val = react_p_val.p_val;
+            mt_p_val = load([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat']);  mt_p_val = mt_p_val.p_val;
+            com_p_val = load([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat']);  com_p_val = com_p_val.p_val;
+            tot_dist_p_val = load([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat']);  tot_dist_p_val = tot_dist_p_val.p_val;
+            ra_p_val = load([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat']);  ra_p_val = ra_p_val.p_val;
+            node_p_values = [nan,...
+                react_p_val, mt_p_val, com_p_val, tot_dist_p_val, ra_p_val];
+        case {'exp2', 'exp3'}
+            % Specify tree structure.
+            parents_vec = [1 1 2 2 2 2 3];
+            node_names = [{'reach'},...
+                {'exploratory','confirmatory'},...
+                {'react','mt','com','tot dist','ra'}];
+            % Add p-values to tree.
+            react_p_val = load([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat']);  react_p_val = react_p_val.p_val;
+            mt_p_val = load([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat']);  mt_p_val = mt_p_val.p_val;
+            com_p_val = load([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat']);  com_p_val = com_p_val.p_val;
+            tot_dist_p_val = load([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat']);  tot_dist_p_val = tot_dist_p_val.p_val;
+            ra_p_val = load([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat']);  ra_p_val = ra_p_val.p_val;
+            node_p_values = [nan,...
+                nan, nan,...
+                react_p_val, mt_p_val, com_p_val, tot_dist_p_val, ra_p_val];
+        case {'exp4', 'exp4_1'}
+            % Specify tree structure.
+            parents_vec = [1 1 2 2 3 4 4 4 4 5];
+            node_names = [{'effect size comparison'},...
+                {'reach','keyboard'},...
+                {'exploratory','confirmatory','rt'},...
+                {'react','mt','com','tot dist','ra'}];
+            % Add p-values to tree.
+            keyboard_rt_p_val = load([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat']);  keyboard_rt_p_val = keyboard_rt_p_val.p_val;
+            react_p_val = load([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat']);  react_p_val = react_p_val.p_val;
+            mt_p_val = load([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat']);  mt_p_val = mt_p_val.p_val;
+            com_p_val = load([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat']);  com_p_val = com_p_val.p_val;
+            tot_dist_p_val = load([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat']);  tot_dist_p_val = tot_dist_p_val.p_val;
+            ra_p_val = load([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat']);  ra_p_val = ra_p_val.p_val;
+            node_p_values = [nan,...
+                nan, nan,...
+                nan, nan, keyboard_rt_p_val,...
+                react_p_val, mt_p_val, com_p_val, tot_dist_p_val, ra_p_val];
+        otherwise
+            error(['No experiment with name ' p.EXP ' exists.']);
     end
 
     % Create a a tree.
