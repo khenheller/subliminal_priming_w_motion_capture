@@ -62,6 +62,8 @@ x_df = load_n_standardize_multi_val('x', traj_names, p)
 x_std_df = load_n_standardize_multi_val('x_std', traj_names, p)
 # ---- Keyboard ----
 rt_df <- load_n_standardize_single_val('rt', 'keyboard', traj_names, p)
+# Convert taveled dist to cm.
+tot_dist_df$tot_dist <- tot_dist_df$tot_dist * 100
 ##---------------- Descriptive statistics / Data Overview ----------------
 # ---- Single value per trial ----
 describe_stats_single_val(tot_dist_df, 'tot_dist')
