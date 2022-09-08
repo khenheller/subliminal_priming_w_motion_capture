@@ -13,6 +13,7 @@
 function [clusters] = permCluster(data1, data2, n_perm)
     % Extreme quantile abovewhich clusters will be significant.
     alpha = 0.05;
+    alpha = alpha / 3; % Correction for having 3 clustering analysis (multiple comparisons).
     thresh = tinv(1 - alpha/2, size(data1, 2) - 1);
 
     clusters_dist = [];
