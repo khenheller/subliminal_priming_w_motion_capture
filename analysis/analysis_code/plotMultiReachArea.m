@@ -10,35 +10,41 @@ function [p_val_ra] = plotMultiReachArea(traj_names, plt_p, p)
 
         % Load data and set aparms.
         beesdata = {reach_avg_each.ra.con(good_subs) reach_avg_each.ra.incon(good_subs)};
-        yLabel = 'Reach area'; % Since traj is in %path_traveled, reach area has no units.
+        yLabel = 'Area'; % Since traj is in %path_traveled, reach area has no units.
         err_bar_type = 'se';
         XTickLabels = ["Congruent","Incongruent"];
         colors = {plt_p.con_col, plt_p.incon_col};
-        title_char = cell2mat(['Reach Area ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
+        title_char = 'Reach area';
         % Plot
-        printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
-        % Connect each sub's dots with lines.
-        y_data = [reach_avg_each.ra.con(good_subs); reach_avg_each.ra.incon(good_subs)];
-        x_data = reshape(get(gca,'XTick'), 2,[]);
-        x_data = repelem(x_data,1,length(good_subs));
-        connect_dots(x_data, y_data);
+        if length(good_subs) > 15 % beeswarm doesn't look good with many subs.
+            makeItRain(beesdata, colors, title_char, yLabel, plt_p);
+        else
+            printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);    
+            % Connect each sub's dots with lines.
+            y_data = [reach_avg_each.ra.con(good_subs); reach_avg_each.ra.incon(good_subs)];
+            x_data = reshape(get(gca,'XTick'), 2,[]);
+            x_data = repelem(x_data,1,length(good_subs));
+            connect_dots(x_data, y_data);
+            y_limit = [0 4];
+            ylim(y_limit);
+        end
         
         ticks = get(gca,'XTick');
-        y_limit = [0.5 3.1];
-        ylim(y_limit);
+        xticks([]);
+        set(gca, 'TickDir','out');
         % Legend.
-        h = [];
-        h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col);
-        h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col);
-        h(3) = plot(NaN,NaN,'k','linewidth',14);
-        legend(h,'Congruent','Incongruent', 'Location','northwest');
+%         h = [];
+%         h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col, 'ShowBaseLine','off');
+%         h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col, 'ShowBaseLine','off');
+%         h(3) = plot(NaN,NaN,'k','linewidth',14);
+%         legend(h,'Congruent','Incongruent', 'Location','northwest');
 
         % T-test and Cohen's dz
         [~, p_val_ra, ci_ra, stats_ra] = ttest(reach_avg_each.ra.con(good_subs), reach_avg_each.ra.incon(good_subs));
-        cohens_dz_ra = stats_ra.tstat / sqrt(length(good_subs));
-        graph_height = y_limit(2) - y_limit(1);
-        text(mean(ticks(1:2)), graph_height/10, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
-        text(mean(ticks(1:2)), graph_height/7, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
+%         cohens_dz_ra = stats_ra.tstat / sqrt(length(good_subs));
+%         graph_height = y_limit(2) - y_limit(1);
+%         text(mean(ticks(1:2)), graph_height/10, ['p-value: ' num2str(p_val_ra)], 'HorizontalAlignment','center', 'FontSize',14);
+%         text(mean(ticks(1:2)), graph_height/7, ['Cohens d_z: ' num2str(cohens_dz_ra)], 'HorizontalAlignment','center', 'FontSize',14);
 
         % Print stats to terminal.
         printStats('-----Reach Area------------', reach_avg_each.ra.con(good_subs), ...

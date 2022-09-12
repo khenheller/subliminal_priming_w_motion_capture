@@ -16,39 +16,39 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
         reach_avg_each(iTraj).tot_dist.incon_right = reach_avg_each(iTraj).tot_dist.incon_right * 100;
 
         % Load data and set parameters.
-        beesdata = {reach_avg_each(iTraj).tot_dist.con_left(good_subs), reach_avg_each(iTraj).tot_dist.incon_left(good_subs), reach_avg_each(iTraj).tot_dist.con_right(good_subs), reach_avg_each(iTraj).tot_dist.incon_right(good_subs)};
-        yLabel = 'Distance';
+        beesdata = {reach_avg_each(iTraj).tot_dist.con(good_subs), reach_avg_each(iTraj).tot_dist.incon(good_subs)};
+        yLabel = 'Distance (cm)';
         XTickLabels = [];
         err_bar_type = 'se';
-        colors = {plt_p.con_col, plt_p.incon_col, plt_p.con_col, plt_p.incon_col};
-        title_char = 'Total Distance Traveled';
+        colors = {plt_p.con_col, plt_p.incon_col};
+        title_char = 'Total distance traveled';
         % plot.
-        printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
-        % Group graphs.
-        ticks = get(gca,'XTick');
-        labels = {["",""]; ["Left","Right"]};
-        dist = [0, 0.005];
-        font_size = [1, 15];
-        groupTick(ticks, labels, dist, font_size)
+        if length(good_subs) > 15 % beeswarm doesn't look good with many subs.
+            makeItRain(beesdata, colors, title_char, yLabel, plt_p);
+        else
+            printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
+            % Connect each sub's dots with lines.
+            y_data = [beesdata{1}; beesdata{2}];
+            x_data = reshape(get(gca,'XTick'), 2,[]);
+            x_data = repelem(x_data,1,length(good_subs));
+            connect_dots(x_data, y_data);
+            ylim([34 46]);
+        end
 
-        % Connect each sub's dots with lines.
-        y_data = [beesdata{1} beesdata{3}; beesdata{2} beesdata{4}];
-        x_data = reshape(get(gca,'XTick'), 2,[]);
-        x_data = repelem(x_data,1,length(good_subs));
-        connect_dots(x_data, y_data);
-
+        set(gca, 'TickDir','out');
+        xticks([]);
         % Legend.
-        h = [];
-        h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col);
-        h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col);
-        h(3) = plot(NaN,NaN,'k','linewidth',14);
-        legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
+%         h = [];
+%         h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col, 'ShowBaseLine','off');
+%         h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col, 'ShowBaseLine','off');
+%         h(3) = plot(NaN,NaN,'k','linewidth',14);
+%         legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
         
         % T-test On plot
         [~, p_val, ~, ~] = ttest(beesdata{1}, beesdata{2});
-        text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
-        [~, p_val, ~, ~] = ttest(beesdata{3}, beesdata{4});
-        text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+%         text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+%         [~, p_val, ~, ~] = ttest(beesdata{3}, beesdata{4});
+%         text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
         % T-test and Cohen's dz
         [~, p_val, ci, stats] = ttest(reach_avg_each.tot_dist.con(good_subs), reach_avg_each.tot_dist.incon(good_subs));
         printStats('-----Total Distance Traveled------------', reach_avg_each.tot_dist.con(good_subs), ...

@@ -23,13 +23,14 @@ function [] = printBeeswarm(beesdata, yLabel, xTickLabel, colors, space, title_n
             error('Wrong input, has to be: std/se/ci');
     end
     for i = 1:length(beesdata)
-        set(h{1,1}(i,1),'MarkerFaceColor',colors{i},'MarkerEdgeColor','k', 'markersize', 8);
+        set(h{1,1}(i,1),'MarkerFaceColor',colors{i},'MarkerEdgeColor','none', 'markersize', 8);
         % plot mean.
-        plot([xTick(i)-space/3,  xTick(i)+space/3], [means(i) means(i)], 'color','k', 'LineWidth',7);
-        plot([xTick(i)-space/3,  xTick(i)+space/3], [means(i) means(i)], 'color',colors{i}, 'LineWidth',5);
+        plot([xTick(i)-space*7/24,  xTick(i)+space*7/24], [means(i) means(i)], 'color',colors{i}, 'LineWidth',5);
+        plot([xTick(i)-space*7/24,  xTick(i)+space*7/24], [means(i) means(i)], 'color',[0.7 0.7 0.7 0.5], 'LineWidth',5);
     end
     % plot std.
     errorbar([xTick; xTick],[means; means],[bar_size; bar_size], 'k.', 'CapSize',20, 'LineWidth',2);
     title(title_name);
     set(gca,'FontSize',14);
+    xlim([(xTick(1)-space/2), (xTick(end)+space/2)]);
 end

@@ -28,17 +28,12 @@ function [] = compareRTFirstSecondDay(traj_names, plt_p, p)
     % Load data and prep params.
     beesdata = {avg_rt.day1,  avg_rt.day2};
     yLabel = 'Time (ms)';
-    XTickLabel = [];
-    colors = repmat({plt_p.first_practice_color, plt_p.second_practice_color},1,3);
-    title_char = 'Reaching RT first block of 1st VS 2nd day';
+    err_bar_type = 'se';
+    XTickLabel = ["Day1", "Day2"];
+    colors = {plt_p.second_practice_color, plt_p.second_practice_color};
+    title_char = 'Response time';
     % Plot.
-    printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
-    % Group graphs.
-    ticks = get(gca,'XTick');
-    labels = {["Day1", "Day2"]};
-    dist = [30];
-    font_size = [15];
-    groupTick(ticks, labels, dist, font_size)
+    printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
     
     % Connect each sub's dots with lines.
     y_data = [avg_rt.day1'; avg_rt.day2'];
@@ -46,12 +41,14 @@ function [] = compareRTFirstSecondDay(traj_names, plt_p, p)
     x_data = repelem(x_data,1,length(good_subs));
     connect_dots(x_data, y_data);
     
-    ylim([190 650]);
+    h = gca;
+    h.XAxis.TickLength = [0 0];
+    h.TickDir = 'out';
     % Legend.
-    h = [];
-    h(1) = bar(NaN,NaN,'FaceColor',plt_p.first_practice_color);
-    h(2) = bar(NaN,NaN,'FaceColor',plt_p.second_practice_color);
-    legend(h,'First day','Second day', 'Location','northwest');
+%     h = [];
+%     h(1) = bar(NaN,NaN,'FaceColor',plt_p.first_practice_color);
+%     h(2) = bar(NaN,NaN,'FaceColor',plt_p.second_practice_color);
+%     legend(h,'First day','Second day', 'Location','northwest');
     
     % T-test and Cohen's dz
     [~, p_val, ci, stats] = ttest(avg_rt.day1, avg_rt.day2);

@@ -387,7 +387,7 @@ close all;
 
 plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
-plt_p.space = 4; % between beeswarm graphs.
+plt_p.space = 3; % between beeswarm graphs.
 plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
 % Color of plots.
 plt_p.f_alpha = 0.2; % transperacy of shading.
@@ -616,27 +616,29 @@ end
 % Create figures.
 all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
-figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-figure(all_sub_f(5)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-figure(all_sub_f(6)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% figure(all_sub_f(5)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% figure(all_sub_f(6)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% figure(all_sub_f(7)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 
 % ------- Avg traj with shade -------
-figure(all_sub_f(2));
-subplot(2,2,1);
+figure(all_sub_f(1));
+subplot(2,5,[1 2]);
 plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
 % ------- React + Movement + Response Times Reaching -------
-figure(all_sub_f(3));
-subplot(2,1,1);
-react_mt_rt_p_val = plotMultiReactMtRt(traj_names, plt_p, p);
+figure(all_sub_f(1));
+subplot_p = [2,5,6; 2,5,7];
+react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
 p_val = react_mt_rt_p_val.react;
 save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 p_val = react_mt_rt_p_val.mt;
@@ -651,48 +653,48 @@ save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Reach Area -------
 % Area between avg left traj and avg right traj (in each condition).
-figure(all_sub_f(2));
-subplot(2,4,5);
+figure(all_sub_f(1));
+subplot(2,5,8);
 p_val = plotMultiReachArea(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- X STD -------
-figure(all_sub_f(1));
-subplot_p = [2,3,2; 2,3,3; 2,3,5];
-plotMultiXStd(traj_names, subplot_p, plt_p, p);
+% figure(all_sub_f(1));
+% subplot_p = [2,3,2; 2,3,3; 2,3,5];
+% plotMultiXStd(traj_names, subplot_p, plt_p, p);
 
 % ------- Heading angle -------
-figure(all_sub_f(5));
-subplot(2,2,1);
-plotMultiHeadAngle(traj_names, plt_p, p);
-subplot_p = [2,2,3; 2,2,4];
-plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
+% figure(all_sub_f(5));
+% subplot(2,2,1);
+% plotMultiHeadAngle(traj_names, plt_p, p);
+% subplot_p = [2,2,3; 2,2,4];
+% plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 
 % ------- COM -------
 % Number of changes of mind.
 figure(all_sub_f(2));
-subplot(2,4,3);
+subplot(2,5,8);
 p_val = plotMultiCom(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Total distance traveled -------
 % Total distance traveled.
-figure(all_sub_f(2));
-subplot(2,4,4);
+figure(all_sub_f(1));
+subplot(2,5,9);
 p_val = plotMultiTotDist(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- AUC -------
 % Area under the curve.
-figure(all_sub_f(1));
-subplot(2,3,1);
-p_val = plotMultiAuc(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% figure(all_sub_f(1));
+% subplot(2,3,1);
+% p_val = plotMultiAuc(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
 if any(p.SUBS >=43) % Only for Exp 4.
-    figure(all_sub_f(3));
-    subplot(2,1,2);
+    figure(all_sub_f(1));
+    subplot(2,5,3);
     p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
     save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 end
@@ -703,41 +705,53 @@ end
 % plotMultiFda(traj_names, plt_p, p);
 
 % @@@@@@@@------- Prime Forced choice -------@@@@@@@@
-figure(all_sub_f(6));
-subplot(2,4,1);
-plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
-hold on;
-subplot(2,4,2);
-plotMultiRecognition(pas_rate, 'reach', 'all_subs', traj_names{1}{1}, plt_p, p);
-subplot(2,4,3);
-plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
-subplot(2,4,4);
-plotMultiRecognition(pas_rate, 'keyboard', 'all_subs', traj_names{1}{1}, plt_p, p);
+% figure(all_sub_f(6));
+% subplot(2,4,1);
+% plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
+% hold on;
+% subplot(2,4,2);
+% plotMultiRecognition(pas_rate, 'reach', 'all_subs', traj_names{1}{1}, plt_p, p);
+% subplot(2,4,3);
+% plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
+% subplot(2,4,4);
+% plotMultiRecognition(pas_rate, 'keyboard', 'all_subs', traj_names{1}{1}, plt_p, p);
 
 % @@@@@@@@------- PAS -------@@@@@@@@
-figure(all_sub_f(6));
-subplot(2,4,5);
-plotMultiPas(traj_names{1}{1}, 'reach', 'good_subs', plt_p, p);
-subplot(2,4,6);
-plotMultiPas(traj_names{1}{1}, 'reach', 'all_subs', plt_p, p);
-subplot(2,4,7);
-plotMultiPas(traj_names{1}{1}, 'keyboard', 'good_subs', plt_p, p);
-subplot(2,4,8);
-plotMultiPas(traj_names{1}{1}, 'keyboard', 'all_subs', plt_p, p);
+% figure(all_sub_f(6));
+% subplot(2,4,5);
+% plotMultiPas(traj_names{1}{1}, 'reach', 'good_subs', plt_p, p);
+% subplot(2,4,6);
+% plotMultiPas(traj_names{1}{1}, 'reach', 'all_subs', plt_p, p);
+% subplot(2,4,7);
+% plotMultiPas(traj_names{1}{1}, 'keyboard', 'good_subs', plt_p, p);
+% subplot(2,4,8);
+% plotMultiPas(traj_names{1}{1}, 'keyboard', 'all_subs', plt_p, p);
 
 % @@@@@@@@------- Condition Diff -------@@@@@@@@
 % Difference between avg traj in each condition.
-figure(all_sub_f(2));
-subplot_p = [2,4,6; 2,4,7; 2,4,8];
-plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
+% figure(all_sub_f(7));
+% subplot_p = [2,4,6; 2,4,7; 2,4,8];
+% plotMultiTrajDiffBetweenConds(traj_names, subplot_p, plt_p, p);
 
 % @@@@@@@@------- Number of bad trials -------@@@@@@@@
 % Comparison of bad trials count between Keybaord and reaching.
-figure(all_sub_f(4));
-subplot(2,1,1);
-plotNumBadTrials(traj_names{1}{1}, 'all_subs', plt_p, p);
-subplot(2,1,2);
-plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
+% figure(all_sub_f(4));
+% subplot(2,1,1);
+% plotNumBadTrials(traj_names{1}{1}, 'all_subs', plt_p, p);
+% subplot(2,1,2);
+% plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
+%% Add labels to subplots.
+subplots = all_sub_f(1).Children;
+subplots = [subplots(7); subplots(1); subplots(5); subplots(4); subplots(3); subplots(2)];
+labels = 'a':'z';
+for iSubplot = 1:length(subplots)
+    y_lim = subplots(iSubplot).YLim;
+    x_lim = subplots(iSubplot).XLim;
+    y_location = y_lim(2) + (y_lim(2) - y_lim(1))*0.11;
+    x_location = x_lim(1) - (x_lim(2) - x_lim(1))*0.11;
+    text(subplots(iSubplot), x_location, y_location, ['(', labels(iSubplot), ')'], 'FontSize',14, 'FontWeight','bold');
+    pause(0.1);
+end
 %% Tree-BH Correction
 plotTreeBH(plt_p, p);
 %% Number of bad trials, Exp 2 vs 3
@@ -851,7 +865,8 @@ writetable(effects_table, [p.PROC_DATA_FOLDER 'effects_table.csv'], 'WriteMode',
 %% Compare RT between 1st and 2nd day of experiment 3.
 rt_comp_day1_day2 = figure('Name',['RT comp day1 day2'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
-figure(rt_comp_day1_day2);
+figure(all_sub_f(1));
+subplot(2,5,3);
 compareRTFirstSecondDay(traj_names, plt_p, p);
 %% RT comparison between 1st and 2nd practice blocks.
 % Compares n trials from the end of each practice block.
