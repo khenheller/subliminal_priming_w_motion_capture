@@ -23,7 +23,7 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
         colors = {plt_p.con_col, plt_p.incon_col};
         title_char = 'Total distance traveled';
         % plot.
-        if length(good_subs) > 15 % beeswarm doesn't look good with many subs.
+        if length(good_subs) > 200 % beeswarm doesn't look good with many subs.
             makeItRain(beesdata, colors, title_char, yLabel, plt_p);
         else
             printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
@@ -32,7 +32,7 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
             x_data = reshape(get(gca,'XTick'), 2,[]);
             x_data = repelem(x_data,1,length(good_subs));
             connect_dots(x_data, y_data);
-            ylim([34 46]);
+%             ylim([34 46]);
         end
 
         set(gca, 'TickDir','out');

@@ -12,6 +12,8 @@ function [] = printBeeswarm(beesdata, yLabel, xTickLabel, colors, space, title_n
         'distributionMarkers', marker_shape, 'spreadWidth',space, 'xMode','manual', 'xValues',xTick);
     % Calc mean and std/se/ci.
     means = cellfun(@mean, beesdata);
+    min_val = min(cellfun(@min, beesdata));
+    max_val = max(cellfun(@max, beesdata));
     switch type
         case 'std'
             bar_size = cellfun(@(data) std(data), beesdata);
@@ -33,4 +35,6 @@ function [] = printBeeswarm(beesdata, yLabel, xTickLabel, colors, space, title_n
     title(title_name);
     set(gca,'FontSize',14);
     xlim([(xTick(1)-space/2), (xTick(end)+space/2)]);
+    y_range = max_val - min_val;
+    ylim([min_val-y_range*0.1, max_val+y_range*0.1]);
 end

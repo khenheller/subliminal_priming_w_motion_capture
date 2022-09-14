@@ -13,10 +13,10 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  avg_each = avg_each.reach_avg_each;
 
         % Plot avg with shade.
-        stdshade(avg_each.traj(iTraj).con_left(:,good_subs,1)', 0, plt_p.con_col, subs_avg.traj.con_left(:,3)*100, 0, 0, 'ci', plt_p.alpha_size, plt_p.linewidth);
-        stdshade(avg_each.traj(iTraj).con_right(:,good_subs,1)', 0, plt_p.con_col, subs_avg.traj.con_right(:,3)*100, 0, 0, 'ci', plt_p.alpha_size, plt_p.linewidth);
-        stdshade(avg_each.traj(iTraj).incon_left(:,good_subs,1)', 0, plt_p.incon_col, subs_avg.traj.incon_left(:,3)*100, 0, 0, 'ci', plt_p.alpha_size, plt_p.linewidth);
-        stdshade(avg_each.traj(iTraj).incon_right(:,good_subs,1)', 0, plt_p.incon_col, subs_avg.traj.incon_right(:,3)*100, 0, 0, 'ci', plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.traj(iTraj).con_left(:,good_subs,1)', plt_p.f_alpha*0.9, plt_p.con_col, subs_avg.traj.con_left(:,3)*100, 0, 0, 'se', plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.traj(iTraj).con_right(:,good_subs,1)', plt_p.f_alpha*0.9, plt_p.con_col, subs_avg.traj.con_right(:,3)*100, 0, 0, 'se', plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.traj(iTraj).incon_left(:,good_subs,1)', plt_p.f_alpha*0.9, plt_p.incon_col, subs_avg.traj.incon_left(:,3)*100, 0, 0, 'se', plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.traj(iTraj).incon_right(:,good_subs,1)', plt_p.f_alpha*0.9, plt_p.incon_col, subs_avg.traj.incon_right(:,3)*100, 0, 0, 'se', plt_p.alpha_size, plt_p.linewidth);
         
         % Permutation testing.
         clusters = permCluster(avg_each.traj.con(:,good_subs,1), avg_each.traj.incon(:,good_subs,1), plt_p.n_perm);

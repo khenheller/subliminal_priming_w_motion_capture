@@ -25,7 +25,7 @@ function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
             colors = {plt_p.con_col, plt_p.incon_col};
             title_char = titles(j);
             % Plot.
-            if length(good_subs) > 15 % beeswarm doesn't look good with many subs.
+            if length(good_subs) > 200 % beeswarm doesn't look good with many subs.
                 makeItRain(beesdata, colors, title_char, yLabel, plt_p);
             else
                 printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
