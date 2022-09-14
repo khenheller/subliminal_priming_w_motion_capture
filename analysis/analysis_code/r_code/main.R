@@ -26,7 +26,7 @@ p$EXP_2_SUBS <- c(11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)
 p$EXP_3_SUBS <- c(26, 28, 29, 31, 32, 33, 34, 35, 37, 38, 39, 40, 42)
 p$EXP_4_1_SUBS <- c(47, 49:85, 87:90)
 p$DAY <- 'day2'
-p$SUBS <- p$EXP_4_1_SUBS # to analyze.
+p$SUBS <- p$EXP_1_SUBS # to analyze.
 p$SUBS_STRING <- paste(p$SUBS, collapse="_") # Concatenate sub's numbers with '_' between them.
 p$PICKED_TRAJS <- c(1) # traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p$NORM_FRAMES <- 200 # Length of normalized trajs.
@@ -57,23 +57,23 @@ react_df <- load_n_standardize_single_val('react', 'reach', traj_names, p)
 mt_df <- load_n_standardize_single_val('mt', 'reach', traj_names, p)
 ra_df <- load_n_standardize_single_val('ra', 'reach', traj_names, p)
 # ---- Multiple values per trial ----
-head_angle_df = load_n_standardize_multi_val('head_angle', traj_names, p)
-x_df = load_n_standardize_multi_val('x', traj_names, p)
-x_std_df = load_n_standardize_multi_val('x_std', traj_names, p)
+#head_angle_df = load_n_standardize_multi_val('head_angle', traj_names, p)
+#x_df = load_n_standardize_multi_val('x', traj_names, p)
+#x_std_df = load_n_standardize_multi_val('x_std', traj_names, p)
 # ---- Keyboard ----
 rt_df <- load_n_standardize_single_val('rt', 'keyboard', traj_names, p)
 # Convert taveled dist to cm.
 tot_dist_df$tot_dist <- tot_dist_df$tot_dist * 100
 ##---------------- Descriptive statistics / Data Overview ----------------
 # ---- Single value per trial ----
-describe_stats_single_val(tot_dist_df, 'tot_dist')
-describe_stats_single_val(auc_df, 'auc')
-describe_stats_single_val(com_df, 'com')
-describe_stats_single_val(react_df, 'react')
-describe_stats_single_val(mt_df, 'mt')
-describe_stats_ra(ra_df)
+#describe_stats_single_val(tot_dist_df, 'tot_dist')
+#describe_stats_single_val(auc_df, 'auc')
+#describe_stats_single_val(com_df, 'com')
+#describe_stats_single_val(react_df, 'react')
+#describe_stats_single_val(mt_df, 'mt')
+#describe_stats_ra(ra_df)
 # ---- Keyboard ----
-describe_stats_single_val(rt_df, 'rt')
+#describe_stats_single_val(rt_df, 'rt')
 ##----------------------- Modeling ----------------------------
 # ---- Single value per trial ----
 tot_dist_m <- lm(tot_dist_stn ~ 1 + cond, tot_dist_df)
@@ -82,23 +82,65 @@ com_m <- lm(com_stn ~ 1 + cond, com_df)
 react_m <- lm(react_stn ~ 1 + cond, react_df)
 mt_m <- lm(mt_stn ~ 1 + cond, mt_df)
 ra_m <- lm(ra_stn ~ 1 + cond, ra_df)
-summary(tot_dist_m)
-summary(auc_m)
-summary(com_m)
-summary(react_m)
-summary(mt_m)
-summary(ra_m)
+#summary(tot_dist_m)
+#summary(auc_m)
+#summary(com_m)
+#summary(react_m)
+#summary(mt_m)
+#summary(ra_m)
 # ---- Keyboard ----
 rt_m <- lm(rt_stn ~ 1 + cond, rt_df)
-summary(rt_m)
+#summary(rt_m)
 ##----------------------- Assumptions testing ----------------------------
 # ---- Single value per trial ----
+# Compute residuals.
+tot_dist_df$res <- resid(tot_dist_m)
+auc_df$res <- resid(auc_m)
+com_df$res <- resid(com_m)
+react_df$res <- resid(react_m)
+mt_df$res <- resid(mt_m)
+ra_df$res <- resid(ra_m)
+# Plot density plot
 check_model(tot_dist_m, check = c("normality","outliers"))
 check_model(auc_m, check = c("normality","outliers"))
 check_model(com_m, check = c("normality","outliers"))
 check_model(react_m, check = c("normality","outliers"))
 check_model(mt_m, check = c("normality","outliers"))
 check_model(ra_m, check = c("normality","outliers"))
+# Test normality with Shapiro-Wilk
+check_normality(tot_dist_m)
+check_normality(auc_m)
+check_normality(com_m)
+check_normality(react_m)
+check_normality(mt_m)
+check_normality(ra_m)
+# Test normality with qq-plot of model.
+qqnorm(resid(tot_dist_m))
+qqline(resid(tot_dist_m))
+qqnorm(resid(auc_m))
+qqline(resid(auc_m))
+qqnorm(resid(com_m))
+qqline(resid(com_m))
+qqnorm(resid(react_m))
+qqline(resid(react_m))
+qqnorm(resid(mt_m))
+qqline(resid(mt_m))
+qqnorm(resid(ra_m))
+qqline(resid(ra_m))
+# Test normality with qqplot of diff.
+ggplot(data = tot_dist_df, mapping = aes(sample = res)) + stat_qq_band() + 
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("tot_dist")
+ggplot(data = auc_df, mapping = aes(sample = res)) + stat_qq_band() + 
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("auc")
+ggplot(data = com_df, mapping = aes(sample = res)) + stat_qq_band() + 
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("com")
+ggplot(data = react_df, mapping = aes(sample = res)) + stat_qq_band() + 
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("react")
+ggplot(data = mt_df, mapping = aes(sample = res)) + stat_qq_band() + 
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("mt")
+ggplot(data = ra_df, mapping = aes(sample = res)) + stat_qq_band() + 
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("ra")
+# Test for outliers.
 check_outliers(tot_dist_m, method = "iqr", threshold = list('iqr'=1.5))
 check_outliers(auc_m, method = "iqr", threshold = list('iqr'=1.5))
 check_outliers(com_m, method = "iqr", threshold = list('iqr'=1.5))
@@ -106,7 +148,13 @@ check_outliers(react_m, method = "iqr", threshold = list('iqr'=1.5))
 check_outliers(mt_m, method = "iqr", threshold = list('iqr'=1.5))
 check_outliers(ra_m, method = "iqr", threshold = list('iqr'=1.5))
 # ---- Keyboard ----
+rt_df$res <- resid(rt_m)
 check_model(rt_m, check = c("normality","outliers"))
+check_normality(rt_m)
+qqnorm(resid(tot_dist_m))
+qqline(resid(tot_dist_m))
+ggplot(data = rt_df, mapping = aes(sample = res)) + stat_qq_band() + 
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("rt_dist")
 check_outliers(rt_m, method = "iqr", threshold = list('iqr'=1.5))
 ##----------------------- Permutation T-testing ----------------------------
 # For variables that violated normality.
@@ -136,7 +184,16 @@ writeMat(con=paste0(p$PROC_DATA_FOLDER, '/mt_p_val_', p$DAY, '_', p$EXP, '.mat')
 writeMat(con=paste0(p$PROC_DATA_FOLDER, '/ra_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=ra_perm_result$perm.p.value, ci=ra_perm_result$perm.conf.int)
 writeMat(con=paste0(p$PROC_DATA_FOLDER, '/rt_p_val_', p$DAY, '_', p$EXP, '.mat'), p_val=rt_perm_result$perm.p.value, ci=rt_perm_result$perm.conf.int)
 ##----------------------- Effect Size Calc ----------------------------
-# Used for vars that violate normality.
+# Cohen's d
+cohens_d(tot_dist~cond, data=tot_dist_df, paired=TRUE, ci=NULL)
+cohens_d(auc~cond, data=auc_df, paired=TRUE, ci=NULL)
+cohens_d(com~cond, data=com_df, paired=TRUE, ci=NULL)
+cohens_d(react~cond, data=react_df, paired=TRUE, ci=NULL)
+cohens_d(mt~cond, data=mt_df, paired=TRUE, ci=NULL)
+cohens_d(ra~cond, data=ra_df, paired=TRUE, ci=NULL)
+# ---- Keyboard ----
+cohens_d(rt~cond, data=rt_df, paired=TRUE, ci=NULL)
+# Rank-Biserial - Could use for vars that violate normality, but Mattan recommended to use Cohen's d.
 rank_biserial(tot_dist~cond, data=tot_dist_df, paired=TRUE)
 rank_biserial(auc~cond, data=auc_df, paired=TRUE)
 rank_biserial(com~cond, data=com_df, paired=TRUE)
