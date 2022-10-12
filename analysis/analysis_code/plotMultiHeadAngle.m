@@ -14,8 +14,8 @@ function [] = plotMultiHeadAngle(traj_names, plt_p, p)
         avg_incon_traj = mean(squeeze(avg_each.traj(iTraj).incon(:,good_subs, 3)), 2);
 
         % Plot avg with shade.
-        stdshade(avg_each.head_angle(iTraj).con(:,good_subs)', plt_p.f_alpha*0.3, plt_p.con_col, avg_con_traj, 0, 1, 'ci', plt_p.alpha_size, plt_p.linewidth);
-        stdshade(avg_each.head_angle(iTraj).incon(:,good_subs)', plt_p.f_alpha*0.3, plt_p.incon_col, avg_incon_traj, 0, 1, 'ci', plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.head_angle(iTraj).con(:,good_subs)', plt_p.f_alpha*0.3, plt_p.con_col, avg_con_traj, 0, 1, 'se', plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.head_angle(iTraj).incon(:,good_subs)', plt_p.f_alpha*0.3, plt_p.incon_col, avg_incon_traj, 0, 1, 'se', plt_p.alpha_size, plt_p.linewidth);
         % Plot 0 line.
         plot([0 1], [0 0], '--', 'linewidth',3, 'color',[0.15 0.15 0.15 plt_p.f_alpha]);
         
@@ -26,10 +26,10 @@ function [] = plotMultiHeadAngle(traj_names, plt_p, p)
         points = [avg_con_traj(clusters.start)'; avg_con_traj(clusters.end)'];
         drawRectangle(points, 'x', [-3 5], plt_p); % 10000 is just a big enough number.
 
-        
+        set(gca, 'TickDir','out');
         xlabel('% Path traveled');
         xlim([min(avg_con_traj) max(avg_con_traj)]);
-        ylabel('Heading angle (degrees)');
+        ylabel('Angle (degrees)');
         title('Heading angle');
         set(gca, 'FontSize',14);
         % Legend.

@@ -38,10 +38,10 @@ function [] = plotNumBadTrialsExp2Exp3(traj_name, group, plt_p, p)
         beesdata{:, i_reason*2 - 1} = exp2_n_bad_trials{exp2_subs, i_reason}';
         beesdata{:, i_reason*2}     = exp3_n_bad_trials{exp3_subs, i_reason}';
     end
-    yLabel = 'Number of bad trials';
+    yLabel = 'Excluded trials';
     XTickLabel = [];
     colors = repmat({plt_p.reach_color, plt_p.keyboard_color},1,num_reasons);
-    title_char = ['Bad trials Exp 2 Vs 3, ', group];
+    title_char = ['Excluded trials Exp 2 Vs 3, ', group];
     hold on;
     % Plot.
     printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
@@ -52,6 +52,9 @@ function [] = plotNumBadTrialsExp2Exp3(traj_name, group, plt_p, p)
     font_size = [1, 12];
     groupTick(ticks, labels, dist, font_size)
 
+    h = gca;
+    h.XAxis.TickLength = [0 0];
+    h.TickDir = 'out';
     % Legend.
     h = [];
     h(1) = bar(NaN,NaN,'FaceColor',plt_p.reach_color);

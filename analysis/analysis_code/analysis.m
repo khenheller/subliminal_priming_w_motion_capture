@@ -526,99 +526,99 @@ end
 save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_avg_each', 'keyboard_avg_each');
 disp("Done setting plotting params.");
 %% Single Sub plots.
-good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
-subs_to_present = good_subs(1);
-% Create figure for each sub.
-for iSub = subs_to_present(1)
-    sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
-    sub_f(iSub,2) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
-    sub_f(iSub,3) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
-    % Add title.
-    figure(sub_f(iSub,1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-    figure(sub_f(iSub,2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-%     figure(sub_f(iSub,3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-end
-
-% ------- Traj of each trial -------
-for iSub = subs_to_present
-    figure(sub_f(iSub,1));
-    subplot_p = [2,3,1; 2,3,2];
-    plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
-end
-
-% ------- Heading angle of each trial -------
-for iSub = subs_to_present
-    figure(sub_f(subs_to_present(1),1));
-    subplot(2,3,4);
-    plotHeadAngles(iSub, traj_names{1}{1}, plt_p, p);
-end
-
-% ------- Avg traj with shade -------
-for iSub = subs_to_present
-    figure(sub_f(iSub,1));
-    subplot(2,3,2);
-    plotAvgTrajWithShade(iSub, traj_names, plt_p, p);
-end
-
-% ------- React + Movement + Response Times -------
-for iSub = p.SUBS
-    figure(sub_f(iSub,1));
-    subplot(2,1,2);
-    plotReactMtRt(iSub, traj_names, plt_p, p);
-end
-
-% ------- PAS -------
-for iSub = p.SUBS
-    figure(sub_f(iSub,1));
-    subplot(2,6,5);
-    plotPas(iSub, traj_names{1}{1}, plt_p, p);
-end
-
-% ------- Prime Forced Choice -------
-for iSub = p.SUBS
-    figure(sub_f(iSub,1));
-    subplot(2,6,6);
-    plotRecognition(iSub, pas_rate, traj_names{1}{1}, plt_p, p);
-end
-
-% ------- MAD -------
-% Maximum absolute deviation.
-for iSub = p.SUBS
-    figure(sub_f(iSub,2));
-    subplot(1,2,1);
-    plotMad(iSub, traj_names, plt_p, p);
-end
-
-% ------- MAD Point -------
-% Maximally absolute deviating point.
-for iSub = p.SUBS
-    figure(sub_f(iSub,2));
-    subplot_p = [2,2,2; 2,2,4]; % Params for 1st and 2nd subplots.
-    plotMadPoint(iSub, traj_names, subplot_p, plt_p, p);
-end
-
-% ------- X Standard Deviation -------
-for iSub = p.SUBS
-    figure(sub_f(iSub,3));
-    subplot_p = [2,2,1; 2,2,2]; % Params for 1st and 2nd subplots.
-    plotXStd(iSub, traj_names, subplot_p, plt_p, p);
-end
-
-% ------- Keyboard Response Times -------
-if any(p.SUBS >=43) % Only for Exp 4.
-    for iSub = p.SUBS
-        figure(sub_f(iSub,3));
-        subplot(2,1,2);
-        plotKeyboardRt(iSub, traj_names{1}{1}, plt_p, p);
-    end
-end
+% good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+% subs_to_present = good_subs(1);
+% % Create figure for each sub.
+% for iSub = subs_to_present(1)
+%     sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
+%     sub_f(iSub,2) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
+%     sub_f(iSub,3) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
+%     % Add title.
+%     figure(sub_f(iSub,1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+%     figure(sub_f(iSub,2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% %     figure(sub_f(iSub,3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+% end
+% 
+% % ------- Traj of each trial -------
+% for iSub = subs_to_present
+%     figure(sub_f(iSub,1));
+%     subplot_p = [2,3,1; 2,3,2];
+%     plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
+% end
+% 
+% % ------- Heading angle of each trial -------
+% for iSub = subs_to_present
+%     figure(sub_f(subs_to_present(1),1));
+%     subplot(2,3,4);
+%     plotHeadAngles(iSub, traj_names{1}{1}, plt_p, p);
+% end
+% 
+% % ------- Avg traj with shade -------
+% for iSub = subs_to_present
+%     figure(sub_f(iSub,1));
+%     subplot(2,3,2);
+%     plotAvgTrajWithShade(iSub, traj_names, plt_p, p);
+% end
+% 
+% % ------- React + Movement + Response Times -------
+% for iSub = p.SUBS
+%     figure(sub_f(iSub,1));
+%     subplot(2,1,2);
+%     plotReactMtRt(iSub, traj_names, plt_p, p);
+% end
+% 
+% % ------- PAS -------
+% for iSub = p.SUBS
+%     figure(sub_f(iSub,1));
+%     subplot(2,6,5);
+%     plotPas(iSub, traj_names{1}{1}, plt_p, p);
+% end
+% 
+% % ------- Prime Forced Choice -------
+% for iSub = p.SUBS
+%     figure(sub_f(iSub,1));
+%     subplot(2,6,6);
+%     plotRecognition(iSub, pas_rate, traj_names{1}{1}, plt_p, p);
+% end
+% 
+% % ------- MAD -------
+% % Maximum absolute deviation.
+% for iSub = p.SUBS
+%     figure(sub_f(iSub,2));
+%     subplot(1,2,1);
+%     plotMad(iSub, traj_names, plt_p, p);
+% end
+% 
+% % ------- MAD Point -------
+% % Maximally absolute deviating point.
+% for iSub = p.SUBS
+%     figure(sub_f(iSub,2));
+%     subplot_p = [2,2,2; 2,2,4]; % Params for 1st and 2nd subplots.
+%     plotMadPoint(iSub, traj_names, subplot_p, plt_p, p);
+% end
+% 
+% % ------- X Standard Deviation -------
+% for iSub = p.SUBS
+%     figure(sub_f(iSub,3));
+%     subplot_p = [2,2,1; 2,2,2]; % Params for 1st and 2nd subplots.
+%     plotXStd(iSub, traj_names, subplot_p, plt_p, p);
+% end
+% 
+% % ------- Keyboard Response Times -------
+% if any(p.SUBS >=43) % Only for Exp 4.
+%     for iSub = p.SUBS
+%         figure(sub_f(iSub,3));
+%         subplot(2,1,2);
+%         plotKeyboardRt(iSub, traj_names{1}{1}, plt_p, p);
+%     end
+% end
 %% Multiple subs average plots.
 % Create figures.
 all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
@@ -659,21 +659,21 @@ p_val = plotMultiReachArea(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- X STD -------
-% figure(all_sub_f(1));
-% subplot_p = [2,3,2; 2,3,3; 2,3,5];
-% plotMultiXStd(traj_names, subplot_p, plt_p, p);
+figure(all_sub_f(4));
+subplot_p = [2,3,2; 2,3,3; 2,2,3];
+plotMultiXStd(traj_names, subplot_p, plt_p, p);
 
 % ------- Heading angle -------
-% figure(all_sub_f(5));
-% subplot(2,2,1);
-% plotMultiHeadAngle(traj_names, plt_p, p);
-% subplot_p = [2,2,3; 2,2,4];
-% plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
+figure(all_sub_f(5));
+subplot(2,2,1);
+plotMultiHeadAngle(traj_names, plt_p, p);
+subplot_p = [2,2,3; 2,2,4];
+plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 
 % ------- COM -------
 % Number of changes of mind.
-figure(all_sub_f(2));
-subplot(2,5,8);
+figure(all_sub_f(1));
+subplot(2,5,10);
 p_val = plotMultiCom(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
@@ -686,10 +686,10 @@ save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- AUC -------
 % Area under the curve.
-% figure(all_sub_f(1));
-% subplot(2,3,1);
-% p_val = plotMultiAuc(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+figure(all_sub_f(2));
+subplot(2,5,1);
+p_val = plotMultiAuc(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
 if any(p.SUBS >=43) % Only for Exp 4.
@@ -700,9 +700,9 @@ if any(p.SUBS >=43) % Only for Exp 4.
 end
 
 % % ------- FDA -------
-% figure(all_sub_f(1));
-% subplot(2,3,6);
-% plotMultiFda(traj_names, plt_p, p);
+figure(all_sub_f(2));
+subplot(1,3,3);
+plotMultiFda(traj_names, plt_p, p);
 
 % @@@@@@@@------- Prime Forced choice -------@@@@@@@@
 % figure(all_sub_f(6));
@@ -735,11 +735,11 @@ end
 
 % @@@@@@@@------- Number of bad trials -------@@@@@@@@
 % Comparison of bad trials count between Keybaord and reaching.
-% figure(all_sub_f(4));
+figure(all_sub_f(3));
 % subplot(2,1,1);
 % plotNumBadTrials(traj_names{1}{1}, 'all_subs', plt_p, p);
 % subplot(2,1,2);
-% plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
+plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
 %% Add labels to subplots.
 subplots = all_sub_f(1).Children;
 subplots = [subplots(7); subplots(1); subplots(5); subplots(4); subplots(3); subplots(2)];
@@ -758,9 +758,9 @@ plotTreeBH(plt_p, p);
 num_bad_trials_comp_f = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(num_bad_trials_comp_f); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-subplot(2,1,1);
-plotNumBadTrialsExp2Exp3(traj_names{1}{1}, 'all_subs', plt_p, p);
-subplot(2,1,2);
+% subplot(2,1,1);
+% plotNumBadTrialsExp2Exp3(traj_names{1}{1}, 'all_subs', plt_p, p);
+% subplot(2,1,2);
 plotNumBadTrialsExp2Exp3(traj_names{1}{1}, 'good_subs', plt_p, p);
 %% Effect size comparison to previous papers.
 % Prev exp data.
@@ -992,16 +992,16 @@ for iTraj = 1:length(traj_names)
 
     % ---- Multiple values per trial ----
     % Heading angle
-    head_angle_df = fMultiVal('head_angle', traj_names{iTraj}{1}, p);
-    writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__head_angle_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
+%     head_angle_df = fMultiVal('head_angle', traj_names{iTraj}{1}, p);
+%     writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__head_angle_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
     
     % Deviation from center
-    x_df = fMultiVal('traj', traj_names{iTraj}{1}, p);
-    writetable(x_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
+%     x_df = fMultiVal('traj', traj_names{iTraj}{1}, p);
+%     writetable(x_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % Movement variation
-    x_std_df = fMultiVal('x_std', traj_names{iTraj}{1}, p);
-    writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_std_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
+%     x_std_df = fMultiVal('x_std', traj_names{iTraj}{1}, p);
+%     writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_std_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
 
     % ---- Keyboard ----
     % Keyboard RT

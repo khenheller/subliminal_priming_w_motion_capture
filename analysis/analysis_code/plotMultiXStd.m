@@ -40,7 +40,7 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         subplot(subplot_p(3, 1), subplot_p(3, 2), subplot_p(3, 3));
         hold on;
         % Plot.
-        stdshade(avg_each.x_std.diff(:,good_subs)', plt_p.f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'ci', plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.x_std.diff(:,good_subs)', plt_p.f_alpha, 'k', subs_avg.traj.con_right(:,3), 0, 1, 'se', plt_p.alpha_size, plt_p.linewidth);
         plot([0 1], [0 0], '--', 'linewidth',3, 'color',[0.15 0.15 0.15 plt_p.f_alpha]); % Zero line.
 
         % Permutation testing.
@@ -50,12 +50,12 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         points = [subs_avg.traj.con_right(clusters.start,3)'; subs_avg.traj.con_right(clusters.end,3)'];
         drawRectangle(points, 'x', [-10000 10000], plt_p); % 10000 is just a big enough number.
 
-        xlabel('Proportion of Z');
-        ylabel('X STD difference');
-        ylim([-0.005 0.02]);
-        title('Diff between con and incon in "X STD", combined left and right');
+        set(gca, 'TickDir','out');
+        xlabel('% Path Traveled');
+        ylabel('Difference');
+        title('Trajectory SD');
         set(gca,'FontSize',14);
-        legend(['CI, \alpha=' num2str(plt_p.alpha_size)], 'con - incon');
+        legend('SE', 'Con - Incon');
 
         % Print stats to terminal.
         printTsStats('----Movement variation--------', clusters, subs_avg);

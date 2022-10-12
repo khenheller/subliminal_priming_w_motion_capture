@@ -8,7 +8,7 @@ function [p_val] = plotMultiAuc(traj_names, plt_p, p)
         hold on;
 
         % Load data and set parameters.
-        beesdata = {reach_avg_each(iTraj).auc.con_left(good_subs), reach_avg_each(iTraj).auc.incon_left(good_subs), reach_avg_each(iTraj).auc.con_right(good_subs), reach_avg_each(iTraj).auc.incon_right(good_subs)};
+        beesdata = {reach_avg_each(iTraj).auc.con(good_subs), reach_avg_each(iTraj).auc.incon(good_subs)};
         yLabel = 'Area';
         XTickLabels = [];
         err_bar_type = 'se';
@@ -16,31 +16,27 @@ function [p_val] = plotMultiAuc(traj_names, plt_p, p)
         title_char = 'AUC';
         % plot.
         printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
-        % Group graphs.
-        ticks = get(gca,'XTick');
-        labels = {["",""]; ["Left","Right"]};
-        dist = [0, 0.005];
-        font_size = [1, 15];
-        groupTick(ticks, labels, dist, font_size)
 
         % Connect each sub's dots with lines.
-        y_data = [beesdata{1} beesdata{3}; beesdata{2} beesdata{4}];
+        y_data = [beesdata{1}; beesdata{2}];
         x_data = reshape(get(gca,'XTick'), 2,[]);
         x_data = repelem(x_data,1,length(good_subs));
         connect_dots(x_data, y_data);
 
+        xticks([]);
+        set(gca, 'TickDir','out');
         % Legend.
-        h = [];
-        h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col);
-        h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col);
-        h(3) = plot(NaN,NaN,'k','linewidth',14);
-        legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
+%         h = [];
+%         h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col);
+%         h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col);
+%         h(3) = plot(NaN,NaN,'k','linewidth',14);
+%         legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
         
         % T-test On plot
-        [~, p_val, ~, ~] = ttest(beesdata{1}, beesdata{2});
-        text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
-        [~, p_val, ~, ~] = ttest(beesdata{3}, beesdata{4});
-        text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+%         [~, p_val, ~, ~] = ttest(beesdata{1}, beesdata{2});
+%         text(mean(ticks(1:2)), (max([beesdata{1:2}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
+%         [~, p_val, ~, ~] = ttest(beesdata{3}, beesdata{4});
+%         text(mean(ticks(3:4)), (max([beesdata{3:4}])+0.005), ['p: ' num2str(p_val)], 'HorizontalAlignment','center', 'FontSize',14);
         % T-test and Cohen's dz
         [~, p_val, ci, stats] = ttest(reach_avg_each.auc(iTraj).con(good_subs), reach_avg_each.auc(iTraj).incon(good_subs));
         printStats('-----AUC------------', reach_avg_each.auc(iTraj).con(good_subs), ...

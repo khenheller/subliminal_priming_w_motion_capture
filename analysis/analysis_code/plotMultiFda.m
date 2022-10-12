@@ -7,7 +7,7 @@ function [] = plotMultiFda(traj_names, plt_p, p)
         hold on;
         % Plot.
         plot(1/p.NORM_FRAMES : 1/p.NORM_FRAMES : 1, p_val.x(1,:), 'k', 'linewidth',2); % 1=con/incon index in p_val.
-        plot([0 1], [plt_p.f_alpha plt_p.f_alpha], 'r');
+        plot([0 1], [plt_p.alpha_size plt_p.alpha_size], 'r');
         xlabel('Percent of Z movement');
         ylabel('P value');
         set(gca,'FontSize',14);
