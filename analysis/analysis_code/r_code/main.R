@@ -26,7 +26,7 @@ p$EXP_2_SUBS <- c(11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)
 p$EXP_3_SUBS <- c(26, 28, 29, 31, 32, 33, 34, 35, 37, 38, 39, 40, 42)
 p$EXP_4_1_SUBS <- c(47, 49:85, 87:90)
 p$DAY <- 'day2'
-p$SUBS <- p$EXP_1_SUBS # to analyze.
+p$SUBS <- p$EXP_2_SUBS # to analyze.
 p$SUBS_STRING <- paste(p$SUBS, collapse="_") # Concatenate sub's numbers with '_' between them.
 p$PICKED_TRAJS <- c(1) # traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p$NORM_FRAMES <- 200 # Length of normalized trajs.
@@ -129,17 +129,17 @@ qqnorm(resid(ra_m))
 qqline(resid(ra_m))
 # Test normality with qqplot of diff.
 ggplot(data = tot_dist_df, mapping = aes(sample = res)) + stat_qq_band() + 
-  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("tot_dist")
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("Traveled distance") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ggplot(data = auc_df, mapping = aes(sample = res)) + stat_qq_band() + 
-  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("auc")
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("AUC") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ggplot(data = com_df, mapping = aes(sample = res)) + stat_qq_band() + 
-  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("com")
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("COM") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ggplot(data = react_df, mapping = aes(sample = res)) + stat_qq_band() + 
-  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("react")
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("Reaction time") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ggplot(data = mt_df, mapping = aes(sample = res)) + stat_qq_band() + 
-  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("mt")
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("Movement duration") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 ggplot(data = ra_df, mapping = aes(sample = res)) + stat_qq_band() + 
-  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("ra")
+  stat_qq_line() + stat_qq_point() + labs(x = "Theoretical Quantiles", y = "Sample Quantiles") + ggtitle("Reach area") + theme_classic() + theme(plot.title = element_text(hjust = 0.5))
 # Test for outliers.
 check_outliers(tot_dist_m, method = "iqr", threshold = list('iqr'=1.5))
 check_outliers(auc_m, method = "iqr", threshold = list('iqr'=1.5))
