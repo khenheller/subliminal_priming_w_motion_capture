@@ -2,8 +2,11 @@ analysis/processed_data/
 experiment/RUN_ME/code/tests/test_results/*
 raw_data
 development/data
+*~*
 *.asv
 *.ini
+*.RData
+*.Rhistory
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/38.1.psd
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/39.1.psd
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/Untitled-2.psd

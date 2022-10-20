@@ -5,7 +5,7 @@
 % Returns: traj_mat - normalized traj.
 %           time_mat - New timestamps that match each sample in the normalized traj.
 %                       double matrix, row=smaple, column=trial.
-function [traj_mat, time_mat] = normalize(traj_mat, p)
+function [traj_mat, time_mat] = normalize_trajs(traj_mat, p)
     time_mat = NaN(p.MAX_CAP_LENGTH, p.NUM_TRIALS);
     for iTrial = 1:size(traj_mat,2)
         current_traj = squeeze(traj_mat(:,iTrial,:));
