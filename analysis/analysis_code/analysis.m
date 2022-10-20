@@ -341,6 +341,13 @@ for iTraj = 1:length(traj_names)
 end
 timing = num2str(toc);
 disp(['Reach area calc done. ' timing 'Sec']);
+%% d' computation
+% Computes each var's d' (sensitivity).
+tic
+[reach_d_prime, keyboard_d_prime] = convertToDPrime(traj_names{1}{1}, p);
+save([p.PROC_DATA_FOLDER '/d_prime_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_d_prime', 'keyboard_d_prime');
+timing = num2str(toc);
+disp(['d prime calc done. ' timing 'Sec']);
 %% Sorting and averaging (between subjects)
 tic
 for iTraj = 1:length(traj_names)
@@ -388,7 +395,7 @@ close all;
 plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 3; % between beeswarm graphs.
-plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
+plt_p.n_perm = 2; % Number of permutations for permutation and clustering procedure.
 % Color of plots.
 plt_p.f_alpha = 0.2; % transperacy of shading.
 plt_p.linewidth = 4; % Used for some graphs.
