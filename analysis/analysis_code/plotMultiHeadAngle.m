@@ -6,8 +6,6 @@ function [] = plotMultiHeadAngle(traj_names, plt_p, p)
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
     for iTraj = 1:length(traj_names)
         hold on;
-        % Load avg over all subs.
-        subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  subs_avg = subs_avg.reach_subs_avg;
         % Load avg of each sub.
         avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  avg_each = avg_each.reach_avg_each;
         avg_con_traj = mean(squeeze(avg_each.traj(iTraj).con(:,good_subs, 3)), 2);
@@ -40,6 +38,6 @@ function [] = plotMultiHeadAngle(traj_names, plt_p, p)
         legend(h, 'Congruent', 'Incongruent', 'Significant', 'Location','southeast');
 
         % Prints stats to terminal.
-        printTsStats('----Heading angle--------', clusters, subs_avg); % Why t* is NaN??????
+        printTsStats('----Heading angle--------', clusters); % Why t* is NaN??????
     end
 end

@@ -45,6 +45,6 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         legend('boxoff');
 
         % Print stats to terminal.
-        printTsStats('----Deviation From center--------', clusters, subs_avg);
+        printTsStats('----Deviation From center--------', clusters);
     end
 end

@@ -6,9 +6,7 @@
 %   cohens_dz - avg cohens dz of each cluster.
 %   t_star - (cluster size) / sd(permutation cluster sizes).  ISN'T T-VALUE! CANNOT BE USED AS ONE!!!
 % subs_avg - struct with average over all subs, of different variables.
-function printTsStats(print_title, clusters, subs_avg)
-    clusters_start_time = subs_avg.time.merged(clusters.start) * 1000; % Convert to ms.
-    clusters_end_time = subs_avg.time.merged(clusters.end) * 1000;
+function printTsStats(print_title, clusters)
     stats_table = table(clusters_start_time, clusters_end_time, clusters.size, clusters.p_val, clusters.dz, clusters.t_star,...
         'VariableNames',{'start_time','end_time','cluster_size','p_val','cohens_dz','t*',});
     disp(['----' print_title]);

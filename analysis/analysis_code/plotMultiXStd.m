@@ -58,6 +58,6 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         legend('SE', 'Con - Incon');
 
         % Print stats to terminal.
-        printTsStats('----Movement variation--------', clusters, subs_avg);
+        printTsStats('----Movement variation--------', clusters);
     end
 end
