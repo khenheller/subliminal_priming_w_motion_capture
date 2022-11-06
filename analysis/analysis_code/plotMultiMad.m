@@ -44,6 +44,6 @@ function [] = plotMultiMad(traj_names, plt_p, p)
         % T-test and Cohen's dz
         [~, p_val, ci, stats] = ttest(reach_avg_each.mad(iTraj).con(good_subs), reach_avg_each.mad(iTraj).incon(good_subs));
         printStats('-----MAD------------', reach_avg_each.mad(iTraj).con(good_subs), ...
-            reach_avg_each.mad(iTraj).incon(good_subs), p_val, ci, stats);
+            reach_avg_each.mad(iTraj).incon(good_subs), ["Con","Incon"], p_val, ci, stats);
     end
 end

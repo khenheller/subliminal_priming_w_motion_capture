@@ -48,6 +48,6 @@ function [p_val_ra] = plotMultiReachArea(traj_names, plt_p, p)
 
         % Print stats to terminal.
         printStats('-----Reach Area------------', reach_avg_each.ra.con(good_subs), ...
-            reach_avg_each.ra.incon(good_subs), p_val_ra, ci_ra, stats_ra);
+            reach_avg_each.ra.incon(good_subs), ["Con","Incon"], p_val_ra, ci_ra, stats_ra);
     end
 end

@@ -41,7 +41,7 @@ function [p_val_rt] = plotMultiKeyboardRt(traj_names, plt_p, p)
 
         % Print stats to terminal.
         printStats('----Keyboard RT--------', keyboard_avg_each.rt(iTraj).con(good_subs), ...
-            keyboard_avg_each.rt(iTraj).incon(good_subs), p_val_rt, ci_rt, stats_rt);
+            keyboard_avg_each.rt(iTraj).incon(good_subs), ["Con","Incon"], p_val_rt, ci_rt, stats_rt);
         disp('Between TRIALS rt std: ');
         disp(['Con: ', num2str(mean(keyboard_avg_each.rt_std.con(good_subs)))]);
         disp(['Incon: ', num2str(mean(keyboard_avg_each.rt_std.incon(good_subs)))]);

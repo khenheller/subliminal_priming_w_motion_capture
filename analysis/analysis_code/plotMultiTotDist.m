@@ -52,6 +52,6 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
         % T-test and Cohen's dz
         [~, p_val, ci, stats] = ttest(reach_avg_each.tot_dist.con(good_subs), reach_avg_each.tot_dist.incon(good_subs));
         printStats('-----Total Distance Traveled------------', reach_avg_each.tot_dist.con(good_subs), ...
-            reach_avg_each.tot_dist.incon(good_subs), p_val, ci, stats);
+            reach_avg_each.tot_dist.incon(good_subs), ["Con","Incon"], p_val, ci, stats);
     end
 end

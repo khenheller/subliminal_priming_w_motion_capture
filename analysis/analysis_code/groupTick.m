@@ -2,12 +2,11 @@
 % ax - axes to draw on.
 % ticks - x ticks in axes.
 % labels - cell matrix with labels. Each row is a level of heirarchy.
-%           exmp: {'a','b','c'; 'one','two'} would be:
+%           exmp: {["a","b","c"]; ["one","two"]} would be:
 %                   a  b  c  a  b  c 
 %                     one      two
-% y_pos - double vec. dist of each lvl from x axis.
+% dist - double vec. dist of each lvl from x axis.
 % font_size - double vec. Of each level.
-% line_length - Seperating line's legnth.
 % draw_edges - draw lines on both sides of each group.
 function ax = groupTick(ticks, labels, dist, font_size, draw_edges)
     % Default value for draw_edges.

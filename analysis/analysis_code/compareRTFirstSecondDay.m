@@ -55,5 +55,5 @@ function [] = compareRTFirstSecondDay(traj_names, plt_p, p)
     
     % Print stats to terminal.
     disp('------------First vs Second day RT------------');
-    printStats('Response time', avg_rt.day1, avg_rt.day2, p_val, ci, stats);
+    printStats('Response time', avg_rt.day1, avg_rt.day2, ["day1","day2"]p_val, ci, stats);
 end

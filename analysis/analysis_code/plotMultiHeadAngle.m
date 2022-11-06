@@ -38,6 +38,6 @@ function [] = plotMultiHeadAngle(traj_names, plt_p, p)
         legend(h, 'Congruent', 'Incongruent', 'Significant', 'Location','southeast');
 
         % Prints stats to terminal.
-        printTsStats('----Heading angle--------', clusters); % Why t* is NaN??????
+        printTsStats('----Heading angle--------', clusters); % Why t* is NaN???????
     end
 end

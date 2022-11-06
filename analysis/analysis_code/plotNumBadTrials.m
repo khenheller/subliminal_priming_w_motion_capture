@@ -54,6 +54,6 @@ function [] = plotNumBadTrials(traj_name, group, plt_p, p)
         
         % Print stats to terminal.
         printStats(reasons{i_reason}, beesdata{:, indx-1}, ...
-            beesdata{:, indx}, p_val, ci, stats);
+            beesdata{:, indx}, ["reach","keyboard"], p_val, ci, stats);
     end
 end

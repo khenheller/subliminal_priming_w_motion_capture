@@ -50,7 +50,7 @@ function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
     
             % Print stats to terminal.
             printStats(vars(j), data.con(good_subs), ...
-                data.incon(good_subs), p_val_temp, ci, stats);
+                data.incon(good_subs), ["Con","Incon"], p_val_temp, ci, stats);
         end
     end
 end

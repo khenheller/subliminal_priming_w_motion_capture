@@ -40,6 +40,6 @@ function [p_val] = plotMultiAuc(traj_names, plt_p, p)
         % T-test and Cohen's dz
         [~, p_val, ci, stats] = ttest(reach_avg_each.auc(iTraj).con(good_subs), reach_avg_each.auc(iTraj).incon(good_subs));
         printStats('-----AUC------------', reach_avg_each.auc(iTraj).con(good_subs), ...
-            reach_avg_each.auc(iTraj).incon(good_subs), p_val, ci, stats);
+            reach_avg_each.auc(iTraj).incon(good_subs), ["Con","Incon"], p_val, ci, stats);
     end
 end

@@ -39,5 +39,5 @@ function [] = plotMultiRecognition(pas_rate, measure, group, traj_name, plt_p, p
 
     % Print stats to terminal.
     printStats(['@@@@-----Prime Forced Choice, ' group ', ' measure, '------------@@@@'], avg_each.fc_prime.con(subs), ...
-        avg_each.fc_prime.incon(subs), fc_p_val(2), fc_ci, fc_stats);
+        avg_each.fc_prime.incon(subs), ["Con","Incon"], fc_p_val(2), fc_ci, fc_stats);
 end
