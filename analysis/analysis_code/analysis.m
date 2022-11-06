@@ -342,12 +342,45 @@ end
 timing = num2str(toc);
 disp(['Reach area calc done. ' timing 'Sec']);
 %% d' computation
-% Computes each var's d' (sensitivity).
-tic
-[reach_d_prime, keyboard_d_prime] = convertToDPrime(traj_names{1}{1}, p);
-save([p.PROC_DATA_FOLDER '/d_prime_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_d_prime', 'keyboard_d_prime');
-timing = num2str(toc);
-disp(['d prime calc done. ' timing 'Sec']);
+% Computes each var's d' (sensitivity) many times.
+% Num iters.
+iters = 2;
+% Features when decoding d' for indirect measure.
+r_preds = ["rt","react","mt","mad","com","tot_dist","auc","traj"];
+k_preds = ["rt"];
+% Save a features and labels table to be used in python.
+save_to_python = 0;
+if save_to_python
+    iters = 1;
+end
+
+r_coef = {}; % Regression classifier coefficients.
+k_coef = {}; % Regression classifier coefficients.
+r_d_prime = struct('direct',NaN(iters, p.MAX_SUB), 'indirect',NaN(iters, p.MAX_SUB));
+k_d_prime = struct('direct',NaN(iters, p.MAX_SUB), 'indirect',NaN(iters, p.MAX_SUB));
+% Bad subs have too few trials, so we don't use them.
+good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+
+for iIter = 1:iters
+    tic
+    for iSub = good_subs
+        avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{1}{1} '.mat']);
+        r_avg = avg.reach_avg;
+        k_avg = avg.keyboard_avg;
+
+        % Direct measure sensitivity. [Meyen et al. (2022) advancing research...]
+        r_d_prime.direct(iIter, iSub) = 2 * norminv(r_avg.fc_prime.incon);
+        k_d_prime.direct(iIter, iSub) = 2 * norminv(k_avg.fc_prime.incon);
+        % Decode indirect measure sensitivity.
+        [r_d_prime.indirect(iIter, iSub), r_coef{iIter}(iSub,:)] = decodeDPrime(iSub, 'reach', r_preds, save_to_python, traj_names{1}{1}, p);
+        [k_d_prime.indirect(iIter, iSub), k_coef{iIter}(iSub,:)] = decodeDPrime(iSub, 'keyboard', k_preds, save_to_python, traj_names{1}{1}, p);
+    end
+
+    timing = num2str(toc);
+    disp([num2str(iIter) ' iterations of d prime calc done. ' timing 'Sec']);
+end
+save([p.PROC_DATA_FOLDER '/d_prime_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat'], 'r_d_prime', 'k_d_prime');
+
 %% Sorting and averaging (between subjects)
 tic
 for iTraj = 1:length(traj_names)
@@ -407,6 +440,8 @@ plt_p.reach_color = [225 225 225] / 255; % used when comparing exp 2 and 3.
 plt_p.keyboard_color = [0 146 146] / 255;
 plt_p.first_practice_color = [125 255 0] / 255;
 plt_p.second_practice_color = [0 125 0] / 255;
+plt_p.green_1 = [0.46667 0.85882 0.40392];
+plt_p.green_2 = [0.56471 0.6902 0.37255];
 plt_p.test_color = [240 240 30] / 255;
 
 % Load reach area.
@@ -620,7 +655,7 @@ all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 % figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
@@ -634,7 +669,7 @@ all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 % ------- Avg traj with shade -------
 figure(all_sub_f(1));
 subplot(2,5,[1 2]);
-plotMultiAvgTrajWithShade(traj_names, plt_p, p);
+% plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
 % ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(1));
@@ -660,16 +695,16 @@ p_val = plotMultiReachArea(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- X STD -------
-figure(all_sub_f(4));
-subplot_p = [2,3,2; 2,3,3; 2,2,3];
-plotMultiXStd(traj_names, subplot_p, plt_p, p);
+% figure(all_sub_f(4));
+% subplot_p = [2,3,2; 2,3,3; 2,2,3];
+% plotMultiXStd(traj_names, subplot_p, plt_p, p);
 
 % ------- Heading angle -------
-figure(all_sub_f(5));
-subplot(2,2,1);
-plotMultiHeadAngle(traj_names, plt_p, p);
-subplot_p = [2,2,3; 2,2,4];
-plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
+% figure(all_sub_f(5));
+% subplot(2,2,1);
+% plotMultiHeadAngle(traj_names, plt_p, p);
+% subplot_p = [2,2,3; 2,2,4];
+% plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 
 % ------- COM -------
 % Number of changes of mind.
@@ -741,6 +776,12 @@ figure(all_sub_f(3));
 % plotNumBadTrials(traj_names{1}{1}, 'all_subs', plt_p, p);
 % subplot(2,1,2);
 plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
+
+% @@@@@@@@------- d' direct vs indirect -------@@@@@@@@
+% Comparison of sensitivity between direct and indirect measures of prime processing.
+figure(all_sub_f(6));
+subplot_p = [2,3,1; 2,3,2];
+plotMultiDPrime(traj_names{1}{1}, subplot_p, plt_p, p);
 %% Add labels to subplots.
 subplots = all_sub_f(1).Children;
 subplots = [subplots(7); subplots(1); subplots(5); subplots(4); subplots(3); subplots(2)];
