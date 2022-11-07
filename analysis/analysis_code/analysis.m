@@ -334,9 +334,9 @@ for iTraj = 1:length(traj_names)
     
     for iSub = good_subs
         p = defineParams(p, iSub);
-        reach_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  reach_avg = reach_avg.reach_avg;
-        reach_area.con(iSub) = calcReachArea(reach_avg.traj.con_left, reach_avg.traj.con_right, p);
-        reach_area.incon(iSub) = calcReachArea(reach_avg.traj.incon_left, reach_avg.traj.incon_right, p);
+        r_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  r_avg = r_avg.r_avg;
+        reach_area.con(iSub) = calcReachArea(r_avg.traj.con_left, r_avg.traj.con_right, p);
+        reach_area.incon(iSub) = calcReachArea(r_avg.traj.incon_left, r_avg.traj.incon_right, p);
     end
     save([p.PROC_DATA_FOLDER 'reach_area_' traj_names{iTraj}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'reach_area');
 end
@@ -366,8 +366,8 @@ for iIter = 1:iters
     tic
     for iSub = good_subs
         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{1}{1} '.mat']);
-        r_avg = avg.reach_avg;
-        k_avg = avg.keyboard_avg;
+        r_avg = avg.r_avg;
+        k_avg = avg.k_avg;
 
         % Direct measure sensitivity. [Meyen et al. (2022) advancing research...]
         r_d_prime.direct(iIter, iSub) = 2 * norminv(r_avg.fc_prime.incon);
@@ -407,8 +407,8 @@ for iTraj = 1:length(traj_names)
         p = defineParams(p, iSub);
         % Get trials stats for this sub.
         single_trial = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);
-        reach_single = single_trial.reach_single;
-        keyboard_single = single_trial.keyboard_single;
+        reach_single = single_trial.r_trial;
+        keyboard_single = single_trial.k_trial;
         reach_num_trials.con_left(iSub)  = size(reach_single.rt.con_left, 1);
         reach_num_trials.con_right(iSub) = size(reach_single.rt.con_right, 1);
         reach_num_trials.incon_left(iSub)  = size(reach_single.rt.incon_left, 1);
@@ -429,7 +429,7 @@ close all;
 plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 3; % between beeswarm graphs.
-plt_p.n_perm = 2; % Number of permutations for permutation and clustering procedure.
+plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
 % Color of plots.
 plt_p.f_alpha = 0.2; % transperacy of shading.
 plt_p.linewidth = 4; % Used for some graphs.
@@ -452,113 +452,113 @@ reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{1}{1} '_' p.DAY '
 for iSub = p.SUBS
     for iTraj = 1:length(traj_names)
         avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'avg_' traj_names{iTraj}{1} '.mat']);
-        reach_avg = avg.reach_avg;
-        keyboard_avg = avg.keyboard_avg;
+        r_avg = avg.r_avg;
+        k_avg = avg.k_avg;
         % Seperate avg for left and right.
-        reach_avg_each.traj(iTraj).con_left(:,iSub,:) = reach_avg.traj.con_left;
-        reach_avg_each.traj(iTraj).con_right(:,iSub,:) = reach_avg.traj.con_right;
-        reach_avg_each.traj(iTraj).incon_left(:,iSub,:) = reach_avg.traj.incon_left;
-        reach_avg_each.traj(iTraj).incon_right(:,iSub,:) = reach_avg.traj.incon_right;
-        reach_avg_each.head_angle(iTraj).con_left(:,iSub) = reach_avg.head_angle.con_left;
-        reach_avg_each.head_angle(iTraj).con_right(:,iSub) = reach_avg.head_angle.con_right;
-        reach_avg_each.head_angle(iTraj).incon_left(:,iSub) = reach_avg.head_angle.incon_left;
-        reach_avg_each.head_angle(iTraj).incon_right(:,iSub) = reach_avg.head_angle.incon_right;
-        reach_avg_each.rt(iTraj).con_left(iSub)  = reach_avg.rt.con_left * 1000;
-        reach_avg_each.rt(iTraj).con_right(iSub) = reach_avg.rt.con_right * 1000;
-        reach_avg_each.rt(iTraj).incon_left(iSub)  = reach_avg.rt.incon_left * 1000;
-        reach_avg_each.rt(iTraj).incon_right(iSub) = reach_avg.rt.incon_right * 1000;
-        reach_avg_each.react(iTraj).con_left(iSub)  = reach_avg.react.con_left * 1000;
-        reach_avg_each.react(iTraj).con_right(iSub) = reach_avg.react.con_right * 1000;
-        reach_avg_each.react(iTraj).incon_left(iSub)  = reach_avg.react.incon_left * 1000;
-        reach_avg_each.react(iTraj).incon_right(iSub) = reach_avg.react.incon_right * 1000;
-        reach_avg_each.mt(iTraj).con_left(iSub)  = reach_avg.mt.con_left * 1000;
-        reach_avg_each.mt(iTraj).con_right(iSub) = reach_avg.mt.con_right * 1000;
-        reach_avg_each.mt(iTraj).incon_left(iSub)  = reach_avg.mt.incon_left * 1000;
-        reach_avg_each.mt(iTraj).incon_right(iSub) = reach_avg.mt.incon_right * 1000;
-        reach_avg_each.mad(iTraj).con_left(iSub)  = reach_avg.mad.con_left;
-        reach_avg_each.mad(iTraj).con_right(iSub) = reach_avg.mad.con_right;
-        reach_avg_each.mad(iTraj).incon_left(iSub)  = reach_avg.mad.incon_left;
-        reach_avg_each.mad(iTraj).incon_right(iSub) = reach_avg.mad.incon_right;
-        reach_avg_each.com(iTraj).con_left(iSub)  = reach_avg.com.con_left;
-        reach_avg_each.com(iTraj).con_right(iSub) = reach_avg.com.con_right;
-        reach_avg_each.com(iTraj).incon_left(iSub)  = reach_avg.com.incon_left;
-        reach_avg_each.com(iTraj).incon_right(iSub) = reach_avg.com.incon_right;
-        reach_avg_each.tot_dist(iTraj).con_left(iSub)  = reach_avg.tot_dist.con_left;
-        reach_avg_each.tot_dist(iTraj).con_right(iSub) = reach_avg.tot_dist.con_right;
-        reach_avg_each.tot_dist(iTraj).incon_left(iSub)  = reach_avg.tot_dist.incon_left;
-        reach_avg_each.tot_dist(iTraj).incon_right(iSub) = reach_avg.tot_dist.incon_right;
-        reach_avg_each.auc(iTraj).con_left(iSub)  = reach_avg.auc.con_left;
-        reach_avg_each.auc(iTraj).con_right(iSub) = reach_avg.auc.con_right;
-        reach_avg_each.auc(iTraj).incon_left(iSub)  = reach_avg.auc.incon_left;
-        reach_avg_each.auc(iTraj).incon_right(iSub) = reach_avg.auc.incon_right;
-        reach_avg_each.x_std(iTraj).con_left(:,iSub)  = reach_avg.x_std.con_left;
-        reach_avg_each.x_std(iTraj).con_right(:,iSub) = reach_avg.x_std.con_right;
-        reach_avg_each.x_std(iTraj).incon_left(:,iSub)  = reach_avg.x_std.incon_left;
-        reach_avg_each.x_std(iTraj).incon_right(:,iSub) = reach_avg.x_std.incon_right;
-        reach_avg_each.cond_diff(iTraj).left(:,iSub,:)  = reach_avg.cond_diff.left;
-        reach_avg_each.cond_diff(iTraj).right(:,iSub,:) = reach_avg.cond_diff.right;
-        keyboard_avg_each.rt(iTraj).con_left(iSub)  = keyboard_avg.rt.con_left * 1000;
-        keyboard_avg_each.rt(iTraj).con_right(iSub) = keyboard_avg.rt.con_right * 1000;
-        keyboard_avg_each.rt(iTraj).incon_left(iSub)  = keyboard_avg.rt.incon_left * 1000;
-        keyboard_avg_each.rt(iTraj).incon_right(iSub) = keyboard_avg.rt.incon_right * 1000;
-        keyboard_avg_each.rt_std(iTraj).con_left(iSub)  = keyboard_avg.rt_std.con_left;
-        keyboard_avg_each.rt_std(iTraj).con_right(iSub) = keyboard_avg.rt_std.con_right;
-        keyboard_avg_each.rt_std(iTraj).incon_left(iSub)  = keyboard_avg.rt_std.incon_left;
-        keyboard_avg_each.rt_std(iTraj).incon_right(iSub) = keyboard_avg.rt_std.incon_right;
+        reach_avg_each.traj(iTraj).con_left(:,iSub,:) = r_avg.traj.con_left;
+        reach_avg_each.traj(iTraj).con_right(:,iSub,:) = r_avg.traj.con_right;
+        reach_avg_each.traj(iTraj).incon_left(:,iSub,:) = r_avg.traj.incon_left;
+        reach_avg_each.traj(iTraj).incon_right(:,iSub,:) = r_avg.traj.incon_right;
+        reach_avg_each.head_angle(iTraj).con_left(:,iSub) = r_avg.head_angle.con_left;
+        reach_avg_each.head_angle(iTraj).con_right(:,iSub) = r_avg.head_angle.con_right;
+        reach_avg_each.head_angle(iTraj).incon_left(:,iSub) = r_avg.head_angle.incon_left;
+        reach_avg_each.head_angle(iTraj).incon_right(:,iSub) = r_avg.head_angle.incon_right;
+        reach_avg_each.rt(iTraj).con_left(iSub)  = r_avg.rt.con_left * 1000;
+        reach_avg_each.rt(iTraj).con_right(iSub) = r_avg.rt.con_right * 1000;
+        reach_avg_each.rt(iTraj).incon_left(iSub)  = r_avg.rt.incon_left * 1000;
+        reach_avg_each.rt(iTraj).incon_right(iSub) = r_avg.rt.incon_right * 1000;
+        reach_avg_each.react(iTraj).con_left(iSub)  = r_avg.react.con_left * 1000;
+        reach_avg_each.react(iTraj).con_right(iSub) = r_avg.react.con_right * 1000;
+        reach_avg_each.react(iTraj).incon_left(iSub)  = r_avg.react.incon_left * 1000;
+        reach_avg_each.react(iTraj).incon_right(iSub) = r_avg.react.incon_right * 1000;
+        reach_avg_each.mt(iTraj).con_left(iSub)  = r_avg.mt.con_left * 1000;
+        reach_avg_each.mt(iTraj).con_right(iSub) = r_avg.mt.con_right * 1000;
+        reach_avg_each.mt(iTraj).incon_left(iSub)  = r_avg.mt.incon_left * 1000;
+        reach_avg_each.mt(iTraj).incon_right(iSub) = r_avg.mt.incon_right * 1000;
+        reach_avg_each.mad(iTraj).con_left(iSub)  = r_avg.mad.con_left;
+        reach_avg_each.mad(iTraj).con_right(iSub) = r_avg.mad.con_right;
+        reach_avg_each.mad(iTraj).incon_left(iSub)  = r_avg.mad.incon_left;
+        reach_avg_each.mad(iTraj).incon_right(iSub) = r_avg.mad.incon_right;
+        reach_avg_each.com(iTraj).con_left(iSub)  = r_avg.com.con_left;
+        reach_avg_each.com(iTraj).con_right(iSub) = r_avg.com.con_right;
+        reach_avg_each.com(iTraj).incon_left(iSub)  = r_avg.com.incon_left;
+        reach_avg_each.com(iTraj).incon_right(iSub) = r_avg.com.incon_right;
+        reach_avg_each.tot_dist(iTraj).con_left(iSub)  = r_avg.tot_dist.con_left;
+        reach_avg_each.tot_dist(iTraj).con_right(iSub) = r_avg.tot_dist.con_right;
+        reach_avg_each.tot_dist(iTraj).incon_left(iSub)  = r_avg.tot_dist.incon_left;
+        reach_avg_each.tot_dist(iTraj).incon_right(iSub) = r_avg.tot_dist.incon_right;
+        reach_avg_each.auc(iTraj).con_left(iSub)  = r_avg.auc.con_left;
+        reach_avg_each.auc(iTraj).con_right(iSub) = r_avg.auc.con_right;
+        reach_avg_each.auc(iTraj).incon_left(iSub)  = r_avg.auc.incon_left;
+        reach_avg_each.auc(iTraj).incon_right(iSub) = r_avg.auc.incon_right;
+        reach_avg_each.x_std(iTraj).con_left(:,iSub)  = r_avg.x_std.con_left;
+        reach_avg_each.x_std(iTraj).con_right(:,iSub) = r_avg.x_std.con_right;
+        reach_avg_each.x_std(iTraj).incon_left(:,iSub)  = r_avg.x_std.incon_left;
+        reach_avg_each.x_std(iTraj).incon_right(:,iSub) = r_avg.x_std.incon_right;
+        reach_avg_each.cond_diff(iTraj).left(:,iSub,:)  = r_avg.cond_diff.left;
+        reach_avg_each.cond_diff(iTraj).right(:,iSub,:) = r_avg.cond_diff.right;
+        keyboard_avg_each.rt(iTraj).con_left(iSub)  = k_avg.rt.con_left * 1000;
+        keyboard_avg_each.rt(iTraj).con_right(iSub) = k_avg.rt.con_right * 1000;
+        keyboard_avg_each.rt(iTraj).incon_left(iSub)  = k_avg.rt.incon_left * 1000;
+        keyboard_avg_each.rt(iTraj).incon_right(iSub) = k_avg.rt.incon_right * 1000;
+        keyboard_avg_each.rt_std(iTraj).con_left(iSub)  = k_avg.rt_std.con_left;
+        keyboard_avg_each.rt_std(iTraj).con_right(iSub) = k_avg.rt_std.con_right;
+        keyboard_avg_each.rt_std(iTraj).incon_left(iSub)  = k_avg.rt_std.incon_left;
+        keyboard_avg_each.rt_std(iTraj).incon_right(iSub) = k_avg.rt_std.incon_right;
         % Combined avg of left and right.
-        reach_avg_each.traj(iTraj).con(:, iSub, :) = reach_avg.traj.con;
-        reach_avg_each.traj(iTraj).incon(:, iSub, :) = reach_avg.traj.incon;
-        reach_avg_each.head_angle(iTraj).con(:, iSub) = reach_avg.head_angle.con;
-        reach_avg_each.head_angle(iTraj).incon(:, iSub) = reach_avg.head_angle.incon;
-        reach_avg_each.rt(iTraj).con(iSub) = reach_avg.rt.con * 1000;
-        reach_avg_each.rt(iTraj).incon(iSub) = reach_avg.rt.incon * 1000;
-        reach_avg_each.react(iTraj).con(iSub) = reach_avg.react.con * 1000;
-        reach_avg_each.react(iTraj).incon(iSub) = reach_avg.react.incon * 1000;
-        reach_avg_each.mt(iTraj).con(iSub) = reach_avg.mt.con * 1000;
-        reach_avg_each.mt(iTraj).incon(iSub) = reach_avg.mt.incon * 1000;
-        reach_avg_each.mad(iTraj).con(iSub) = reach_avg.mad.con;
-        reach_avg_each.mad(iTraj).incon(iSub) = reach_avg.mad.incon;
-        reach_avg_each.com(iTraj).con(iSub) = reach_avg.com.con;
-        reach_avg_each.com(iTraj).incon(iSub) = reach_avg.com.incon;
-        reach_avg_each.tot_dist(iTraj).con(iSub) = reach_avg.tot_dist.con;
-        reach_avg_each.tot_dist(iTraj).incon(iSub) = reach_avg.tot_dist.incon;
-        reach_avg_each.auc(iTraj).con(iSub) = reach_avg.auc.con;
-        reach_avg_each.auc(iTraj).incon(iSub) = reach_avg.auc.incon;
+        reach_avg_each.traj(iTraj).con(:, iSub, :) = r_avg.traj.con;
+        reach_avg_each.traj(iTraj).incon(:, iSub, :) = r_avg.traj.incon;
+        reach_avg_each.head_angle(iTraj).con(:, iSub) = r_avg.head_angle.con;
+        reach_avg_each.head_angle(iTraj).incon(:, iSub) = r_avg.head_angle.incon;
+        reach_avg_each.rt(iTraj).con(iSub) = r_avg.rt.con * 1000;
+        reach_avg_each.rt(iTraj).incon(iSub) = r_avg.rt.incon * 1000;
+        reach_avg_each.react(iTraj).con(iSub) = r_avg.react.con * 1000;
+        reach_avg_each.react(iTraj).incon(iSub) = r_avg.react.incon * 1000;
+        reach_avg_each.mt(iTraj).con(iSub) = r_avg.mt.con * 1000;
+        reach_avg_each.mt(iTraj).incon(iSub) = r_avg.mt.incon * 1000;
+        reach_avg_each.mad(iTraj).con(iSub) = r_avg.mad.con;
+        reach_avg_each.mad(iTraj).incon(iSub) = r_avg.mad.incon;
+        reach_avg_each.com(iTraj).con(iSub) = r_avg.com.con;
+        reach_avg_each.com(iTraj).incon(iSub) = r_avg.com.incon;
+        reach_avg_each.tot_dist(iTraj).con(iSub) = r_avg.tot_dist.con;
+        reach_avg_each.tot_dist(iTraj).incon(iSub) = r_avg.tot_dist.incon;
+        reach_avg_each.auc(iTraj).con(iSub) = r_avg.auc.con;
+        reach_avg_each.auc(iTraj).incon(iSub) = r_avg.auc.incon;
 %         reach_avg_each.x_std(iTraj).con(:, iSub) = reach_avg.x_std.con;
 %         reach_avg_each.x_std(iTraj).incon(:, iSub) = reach_avg.x_std.incon;
         reach_avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
         reach_avg_each.ra(iTraj).incon(iSub) = reach_area.incon(iSub);
-        reach_avg_each.pas(iTraj).con(iSub,:) = reach_avg.pas.con;
-        reach_avg_each.pas(iTraj).incon(iSub,:) = reach_avg.pas.incon;
-        keyboard_avg_each.rt(iTraj).con(iSub) = keyboard_avg.rt.con * 1000;
-        keyboard_avg_each.rt(iTraj).incon(iSub) = keyboard_avg.rt.incon * 1000;
-        keyboard_avg_each.rt_std(iTraj).con(iSub) = keyboard_avg.rt_std.con;
-        keyboard_avg_each.rt_std(iTraj).incon(iSub) = keyboard_avg.rt_std.incon;
-        keyboard_avg_each.pas(iTraj).con(iSub,:) = keyboard_avg.pas.con;
-        keyboard_avg_each.pas(iTraj).incon(iSub,:) = keyboard_avg.pas.incon;
+        reach_avg_each.pas(iTraj).con(iSub,:) = r_avg.pas.con;
+        reach_avg_each.pas(iTraj).incon(iSub,:) = r_avg.pas.incon;
+        keyboard_avg_each.rt(iTraj).con(iSub) = k_avg.rt.con * 1000;
+        keyboard_avg_each.rt(iTraj).incon(iSub) = k_avg.rt.incon * 1000;
+        keyboard_avg_each.rt_std(iTraj).con(iSub) = k_avg.rt_std.con;
+        keyboard_avg_each.rt_std(iTraj).incon(iSub) = k_avg.rt_std.incon;
+        keyboard_avg_each.pas(iTraj).con(iSub,:) = k_avg.pas.con;
+        keyboard_avg_each.pas(iTraj).incon(iSub,:) = k_avg.pas.incon;
         % Compute diff between conditions (con/incon).
-        reach_avg_each.rt(iTraj).diff(iSub)  = mean([reach_avg.rt.con_left - reach_avg.rt.incon_left,...
-                                                reach_avg.rt.con_right - reach_avg.rt.incon_right]) * 1000;
-        reach_avg_each.react(iTraj).diff(iSub)  = mean([reach_avg.react.con_left - reach_avg.react.incon_left,...
-                                                reach_avg.react.con_right - reach_avg.react.incon_right]) * 1000;
-        reach_avg_each.mt(iTraj).diff(iSub)  = mean([reach_avg.mt.con_left - reach_avg.mt.incon_left,...
-                                                reach_avg.mt.con_right - reach_avg.mt.incon_right]) * 1000;
-        reach_avg_each.mad(iTraj).diff(iSub)  = mean([reach_avg.mad.con_left - reach_avg.mad.incon_left,...
-                                                reach_avg.mad.con_right - reach_avg.mad.incon_right]);
-        reach_avg_each.x_dev(iTraj).diff(:,iSub) = mean([-1 * (reach_avg.traj.con_left(:,1) - reach_avg.traj.incon_left(:,1)),...
-                                                    (reach_avg.traj.con_right(:,1) - reach_avg.traj.incon_right(:,1))],...
+        reach_avg_each.rt(iTraj).diff(iSub)  = mean([r_avg.rt.con_left - r_avg.rt.incon_left,...
+                                                r_avg.rt.con_right - r_avg.rt.incon_right]) * 1000;
+        reach_avg_each.react(iTraj).diff(iSub)  = mean([r_avg.react.con_left - r_avg.react.incon_left,...
+                                                r_avg.react.con_right - r_avg.react.incon_right]) * 1000;
+        reach_avg_each.mt(iTraj).diff(iSub)  = mean([r_avg.mt.con_left - r_avg.mt.incon_left,...
+                                                r_avg.mt.con_right - r_avg.mt.incon_right]) * 1000;
+        reach_avg_each.mad(iTraj).diff(iSub)  = mean([r_avg.mad.con_left - r_avg.mad.incon_left,...
+                                                r_avg.mad.con_right - r_avg.mad.incon_right]);
+        reach_avg_each.x_dev(iTraj).diff(:,iSub) = mean([-1 * (r_avg.traj.con_left(:,1) - r_avg.traj.incon_left(:,1)),...
+                                                    (r_avg.traj.con_right(:,1) - r_avg.traj.incon_right(:,1))],...
                                                     2);
-        reach_avg_each.x_std(iTraj).diff(:,iSub) = mean([reach_avg.x_std.con_left - reach_avg.x_std.incon_left,...
-                                                    reach_avg.x_std.con_right - reach_avg.x_std.incon_right],...
+        reach_avg_each.x_std(iTraj).diff(:,iSub) = mean([r_avg.x_std.con_left - r_avg.x_std.incon_left,...
+                                                    r_avg.x_std.con_right - r_avg.x_std.incon_right],...
                                                     2);
         reach_avg_each.ra(iTraj).diff(iSub) = reach_area.con(iSub) - reach_area.incon(iSub);
-        keyboard_avg_each.rt(iTraj).diff(iSub)  = mean([keyboard_avg.rt.con_left - keyboard_avg.rt.incon_left,...
-                                                keyboard_avg.rt.con_right - keyboard_avg.rt.incon_right]) * 1000;
+        keyboard_avg_each.rt(iTraj).diff(iSub)  = mean([k_avg.rt.con_left - k_avg.rt.incon_left,...
+                                                k_avg.rt.con_right - k_avg.rt.incon_right]) * 1000;
     end
-    reach_avg_each.fc_prime.con(iSub) = reach_avg.fc_prime.con;
-    reach_avg_each.fc_prime.incon(iSub) = reach_avg.fc_prime.incon;
-    keyboard_avg_each.fc_prime.con(iSub) = keyboard_avg.fc_prime.con;
-    keyboard_avg_each.fc_prime.incon(iSub) = keyboard_avg.fc_prime.incon;
+    reach_avg_each.fc_prime.con(iSub) = r_avg.fc_prime.con;
+    reach_avg_each.fc_prime.incon(iSub) = r_avg.fc_prime.incon;
+    keyboard_avg_each.fc_prime.con(iSub) = k_avg.fc_prime.con;
+    keyboard_avg_each.fc_prime.incon(iSub) = k_avg.fc_prime.incon;
 end
 save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_avg_each', 'keyboard_avg_each');
 disp("Done setting plotting params.");
@@ -654,8 +654,8 @@ disp("Done setting plotting params.");
 all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
@@ -670,7 +670,7 @@ all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 % ------- Avg traj with shade -------
 figure(all_sub_f(1));
 subplot(2,5,[1 2]);
-% plotMultiAvgTrajWithShade(traj_names, plt_p, p);
+plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
 % ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(1));

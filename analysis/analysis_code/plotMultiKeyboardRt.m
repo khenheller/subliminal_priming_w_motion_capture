@@ -3,13 +3,18 @@
 % p - struct of exp params.
 % p_val_rt - p-value of the statistical test.
 function [p_val_rt] = plotMultiKeyboardRt(traj_names, plt_p, p)
+    units = '(ms)';
+    % When normalized, no units.
+    if p.NORMALIZE_WITHIN_SUB
+        units = '';
+    end
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
 
     for iTraj = 1:length(traj_names)
         keyboard_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  keyboard_avg_each = keyboard_avg_each.keyboard_avg_each;
         % Load data and prep params.
         beesdata = {keyboard_avg_each.rt(iTraj).con(good_subs), keyboard_avg_each.rt(iTraj).incon(good_subs)};
-        yLabel = 'Time (ms)';
+        yLabel = ['Time ', units];
         XTickLabel = [];
         colors = {plt_p.con_col, plt_p.incon_col};
         title_char = 'Keyboard RT';

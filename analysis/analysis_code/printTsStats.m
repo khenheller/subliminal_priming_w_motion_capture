@@ -7,7 +7,7 @@
 %   t_star - (cluster size) / sd(permutation cluster sizes).  ISN'T T-VALUE! CANNOT BE USED AS ONE!!!
 % subs_avg - struct with average over all subs, of different variables.
 function printTsStats(print_title, clusters)
-    stats_table = table(clusters_start_time, clusters_end_time, clusters.size, clusters.p_val, clusters.dz, clusters.t_star,...
+    stats_table = table(clusters.('start'), clusters.('end'), clusters.size, clusters.p_val, clusters.dz, clusters.t_star,...
         'VariableNames',{'start_time','end_time','cluster_size','p_val','cohens_dz','t*',});
     disp(['----' print_title]);
     disp(stats_table);

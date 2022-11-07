@@ -145,6 +145,12 @@ function [sorted_data] = sortTrials(data, sorter, data_type, to_normalize)
         % Calc mean and std.
         data_avg = mean([sorted_data.con, sorted_data.incon], 2);
         data_std = std([sorted_data.con, sorted_data.incon], 0, 2);
+        % If traj was normalized in space (z identical for all trials), don't normalize Z.
+        all_trials = [sorted_data.con, sorted_data.incon];
+        if all(all_trials(:,1,end) == all_trials(:,:,end), 'all')
+            data_avg(:,1,end) = 0;
+            data_std(:,1,end) = 1;
+        end
     else
         sorted_data.con_left = data(~bad & pas & con  & (left==1),:);
         sorted_data.con_right = data(~bad & pas & con  & (left==0),:);
@@ -155,6 +161,7 @@ function [sorted_data] = sortTrials(data, sorter, data_type, to_normalize)
         % Calc mean and std.
         data_avg = mean([sorted_data.con; sorted_data.incon], 1);
         data_std = std([sorted_data.con; sorted_data.incon], 0, 1);
+        all_trials = [sorted_data.con; sorted_data.incon];
     end
 
     % Normalize.

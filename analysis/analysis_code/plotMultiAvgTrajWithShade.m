@@ -2,7 +2,7 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
-    xlimit = [-0.105, 0.105]; % For plot.
+    xlimit = [-1.105, 1.105]; % For plot.
 
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
     for iTraj = 1:length(traj_names)

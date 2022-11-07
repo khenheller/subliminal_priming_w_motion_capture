@@ -14,7 +14,7 @@ function [d_prime, coef] = decodeDPrime(iSub, measure, selected, save_to_python,
     % Load data and arrange features.
     trial = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_name '.mat']);
     if isequal(measure, 'reach')
-        trial = trial.reach_single;
+        trial = trial.r_trial;
         feats = table([trial.rt.con; trial.rt.incon],...
             [trial.react.con; trial.react.incon],...
             [trial.mt.con; trial.mt.incon],...
@@ -26,7 +26,7 @@ function [d_prime, coef] = decodeDPrime(iSub, measure, selected, save_to_python,
         traj = [trial.trajs.con(downsample_i,:,1)'; trial.trajs.incon(downsample_i,:,1)'];
         feats = [feats , array2table(traj)];
     else
-        trial = trial.keyboard_single;
+        trial = trial.k_trial;
         feats = table([trial.rt.con; trial.rt.incon], 'VariableNames',{'rt'});
     end
 

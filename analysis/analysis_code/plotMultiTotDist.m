@@ -2,6 +2,11 @@
 % p - struct of exp params.
 % p_val - p-value of the statistical test.
 function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
+    units = '(cm)';
+    % When normalized, no units.
+    if p.NORMALIZE_WITHIN_SUB
+        units = '';
+    end
     for iTraj = 1:length(traj_names)
         good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
         reach_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_avg_each = reach_avg_each.reach_avg_each;
@@ -17,7 +22,7 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
 
         % Load data and set parameters.
         beesdata = {reach_avg_each(iTraj).tot_dist.con(good_subs), reach_avg_each(iTraj).tot_dist.incon(good_subs)};
-        yLabel = 'Distance (cm)';
+        yLabel = ['Distance ', units];
         XTickLabels = [];
         err_bar_type = 'se';
         colors = {plt_p.con_col, plt_p.incon_col};

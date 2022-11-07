@@ -4,6 +4,11 @@
 % p - struct of exp params.
 % p_vals - p-value of the statistical tests.
 function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
+    units = '(ms)';
+    % When normalized, no units.
+    if p.NORMALIZE_WITHIN_SUB
+        units = '';
+    end
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
 
     disp('------------Reaching RTs------------');
@@ -19,7 +24,7 @@ function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
             hold on;
             % Load data and prep params.
             beesdata = {data.con(good_subs),  data.incon(good_subs)};
-            yLabel = 'Time (ms)';
+            yLabel = ['Time ', units];
             XTickLabel = ["Congruent", "Incongruent"];
             err_bar_type = 'se';
             colors = {plt_p.con_col, plt_p.incon_col};
@@ -49,7 +54,7 @@ function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
             p_vals.(vars(j)) = p_val_temp;
     
             % Print stats to terminal.
-            printStats(vars(j), data.con(good_subs), ...
+            printStats(char(vars(j)), data.con(good_subs), ...
                 data.incon(good_subs), ["Con","Incon"], p_val_temp, ci, stats);
         end
     end
