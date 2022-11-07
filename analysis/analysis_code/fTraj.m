@@ -7,7 +7,7 @@ traj_df = table('Size',[num_rows, length(columns)], 'VariableType',{'double','st
 % Fill table with goods.
 j = 1;
 for iSub = p.SUBS
-    sub_trajs = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_name{1} '.mat']); sub_trajs = sub_trajs.single.trajs;
+    sub_trajs = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_name{1} '.mat']); sub_trajs = sub_trajs.trial.trajs;
     for cond = p.CONDS
         for side = ["left","right"]
             % Get trajs for this cond and side.

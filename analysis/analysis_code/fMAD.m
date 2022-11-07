@@ -12,7 +12,7 @@ mad_df = table('size',[num_rows length(columns)], 'VariableTypes',{'double','str
 j = 1;
 for iSub = p.SUBS
     % Load sub data.
-    sub_mad = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_name{1} '.mat']);  sub_mad = sub_mad.single.mad;
+    sub_mad = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' traj_name{1} '.mat']);  sub_mad = sub_mad.trial.mad;
 
     for side = ["left", "right"]
         for cond = p.CONDS

@@ -1,9 +1,9 @@
 % Averages only good trials.
 % pas_rate - double, only trials with this pas rating will be averaged.
-% reach/keybaord - struct with:
-%   avg - struct, contains struct for each var, in which each field is average of good trials in a condition.
-%   single - struct, contains struct for each var, in which each field has all good trials for that condition.
-function [reach, keyboard] = avgWithin(iSub, traj_name, reach_bad_trials, keyboard_bad_trials, pas_rate, p)
+% to_normalize - nromalize data within each subject (1/0).
+% r/k_avg - struct, contains struct for each var, in which each field is average of good trials in a condition.
+% r/k_trial - struct, contains struct for each var, in which each field has all good trials for that condition.
+function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad_trials, keyboard_bad_trials, pas_rate, to_normalize, p)
 
     % Get sub data.
     reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
@@ -38,89 +38,88 @@ function [reach, keyboard] = avgWithin(iSub, traj_name, reach_bad_trials, keyboa
     % Bad trials reasons, Remove reason: "slow_mvmnt".
     reasons = string(reach_bad_trials{iSub}.Properties.VariableNames);
     reasons(reasons == "any" | reasons == "slow_mvmnt") = [];
-    % Sorts trials.
+    % Create sorter.
     bad = any(reach_bad_trials{iSub}{:, reasons}, 2);
     bad_timing_or_quit = reach_bad_trials{iSub}.bad_stim_dur | reach_bad_trials{iSub}.quit; % Bad stim duration, or sub quit before trial.
     pas = ismember(reach_data_table.('pas'), pas_rate);
     con = reach_data_table.('con');
     left = reach_data_table.(ans_left_col); % Sub chose left ans.
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
-    % Sort trials and calc avg.
-    single.trajs  = sortTrials(traj_mat, sorter, 'timeseries');
-    single.head_angle = sortTrials(head_angle_mat, sorter, 'timeseries');
-    single.rt = sortTrials(reach_data_table.(offset_col), sorter, 0); % Response time.
-    single.react = sortTrials(reach_data_table.(onset_col), sorter, 0); % Reaction time.
-    single.mt = sortTrials(reach_data_table.(offset_col) - reach_data_table.(onset_col), sorter, 0); % Movement time.
-    single.mad = sortTrials(reach_data_table.(mad_col), sorter, 0); % Maximum absolute deviation.
-    single.mad_p = sortTrials(reach_data_table.(mad_p_col), sorter, 0); % Maximally deviating point.
-    single.com = sortTrials(reach_data_table.(com_col), sorter, 0); % Number of changes of mind.
-    single.tot_dist = sortTrials(reach_data_table.(tot_dist_col), sorter, 0); % Total distance traveled.
-    single.auc = sortTrials(reach_data_table.(auc_col), sorter, 0); % Area Under the Curve.
-    single.fc_prime.con   = reach_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
-    single.fc_prime.incon = reach_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
-    single.pas.con   = reach_data_table.pas(~bad_timing_or_quit & con);
-    single.pas.incon = reach_data_table.pas(~bad_timing_or_quit & ~con);
+    % Sort trials.
+    trial.trajs  = sortTrials(traj_mat, sorter, 'timeseries', to_normalize);
+    trial.head_angle = sortTrials(head_angle_mat, sorter, 'timeseries', to_normalize);
+    trial.rt = sortTrials(reach_data_table.(offset_col), sorter, 0, to_normalize); % Response time.
+    trial.react = sortTrials(reach_data_table.(onset_col), sorter, 0, to_normalize); % Reaction time.
+    trial.mt = sortTrials(reach_data_table.(offset_col) - reach_data_table.(onset_col), sorter, 0, to_normalize); % Movement time.
+    trial.mad = sortTrials(reach_data_table.(mad_col), sorter, 0, to_normalize); % Maximum absolute deviation.
+    trial.mad_p = sortTrials(reach_data_table.(mad_p_col), sorter, 0, to_normalize); % Maximally deviating point.
+    trial.com = sortTrials(reach_data_table.(com_col), sorter, 0, to_normalize); % Number of changes of mind.
+    trial.tot_dist = sortTrials(reach_data_table.(tot_dist_col), sorter, 0, to_normalize); % Total distance traveled.
+    trial.auc = sortTrials(reach_data_table.(auc_col), sorter, 0, to_normalize); % Area Under the Curve.
+    trial.fc_prime.con   = reach_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
+    trial.fc_prime.incon = reach_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
+    trial.pas.con   = reach_data_table.pas(~bad_timing_or_quit & con);
+    trial.pas.incon = reach_data_table.pas(~bad_timing_or_quit & ~con);
     % Average.
-    avg.traj = sortedAvg(single.trajs, 'timeseries', 1);
-    avg.head_angle = sortedAvg(single.head_angle, 'timeseries', 0);
-    avg.rt = sortedAvg(single.rt, '', 0);
-    avg.react = sortedAvg(single.react, '', 0);
-    avg.mt = sortedAvg(single.mt, '', 0);
-    avg.mad = sortedAvg(single.mad, '', 0);
-    avg.mad_p = sortedAvg(single.mad_p, '', 1);
-    avg.com = sortedAvg(single.com, '', 0);
-    avg.tot_dist = sortedAvg(single.tot_dist, '', 0);
-    avg.auc = sortedAvg(single.auc, '', 0);
-    avg.fc_prime.con   = nanmean(single.fc_prime.con);
-    avg.fc_prime.incon = nanmean(single.fc_prime.incon);
-    avg.x_std.con_left    = std(single.trajs.con_left (:,:,1), 0, 2); % std between trials.
-    avg.x_std.con_right   = std(single.trajs.con_right(:,:,1), 0, 2);
-    avg.x_std.incon_left  = std(single.trajs.incon_left (:,:,1), 0, 2);
-    avg.x_std.incon_right = std(single.trajs.incon_right(:,:,1), 0, 2);
-    avg.x_avg_std = sortedAvg(avg.x_std, '', 0); % avg across time. one value for whole traj.
+    avg.traj = sortedAvg(trial.trajs, 'timeseries', 1);
+    avg.head_angle = sortedAvg(trial.head_angle, 'timeseries', 0);
+    avg.rt = sortedAvg(trial.rt, '', 0);
+    avg.react = sortedAvg(trial.react, '', 0);
+    avg.mt = sortedAvg(trial.mt, '', 0);
+    avg.mad = sortedAvg(trial.mad, '', 0);
+    avg.mad_p = sortedAvg(trial.mad_p, '', 1);
+    avg.com = sortedAvg(trial.com, '', 0);
+    avg.tot_dist = sortedAvg(trial.tot_dist, '', 0);
+    avg.auc = sortedAvg(trial.auc, '', 0);
+    avg.fc_prime.con   = nanmean(trial.fc_prime.con);
+    avg.fc_prime.incon = nanmean(trial.fc_prime.incon);
+    avg.x_std.con_left    = std(trial.trajs.con_left (:,:,1), 0, 2); % std between trials.
+    avg.x_std.con_right   = std(trial.trajs.con_right(:,:,1), 0, 2);
+    avg.x_std.incon_left  = std(trial.trajs.incon_left (:,:,1), 0, 2);
+    avg.x_std.incon_right = std(trial.trajs.incon_right(:,:,1), 0, 2);
     avg.cond_diff.left  = avg.traj.con_left  - avg.traj.incon_left;
     avg.cond_diff.right = avg.traj.con_right - avg.traj.incon_right;
     % Count pas ratings.
     for i = 1:4
-        avg.pas.con(i)   = sum(single.pas.con == i); 
-        avg.pas.incon(i) = sum(single.pas.incon == i);
+        avg.pas.con(i)   = sum(trial.pas.con == i); 
+        avg.pas.incon(i) = sum(trial.pas.incon == i);
     end
-    reach.single = single;
-    reach.avg = avg;
-    single = []; % Clear before computing keyboard.
+    r_trial = trial;
+    r_avg = avg;
+    trial = []; % Clear before computing keyboard.
     avg = [];
 
     % -------------------- Sort and avg KEYBOARD --------------------
-    % Sorts trials.
+    % Create sorter.
     bad = keyboard_bad_trials{iSub}.any;
     bad_timing_or_quit = keyboard_bad_trials{iSub}.bad_stim_dur | keyboard_bad_trials{iSub}.quit; % Bad stim duration, or sub quit before trial.
     pas = ismember(keyboard_data_table.('pas'), pas_rate);
     con = keyboard_data_table.('con');
     left = keyboard_data_table.(ans_left_col); % Sub chose left ans.
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
-    % Sort trials and calc avg.
-    single.rt = sortTrials(keyboard_data_table.(rt_col), sorter, ''); % Response time.
-    single.fc_prime.con   = keyboard_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
-    single.fc_prime.incon = keyboard_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
-    single.pas.con   = keyboard_data_table.pas(~bad_timing_or_quit & con);
-    single.pas.incon = keyboard_data_table.pas(~bad_timing_or_quit & ~con);
+    % Sort trials.
+    trial.rt = sortTrials(keyboard_data_table.(rt_col), sorter, '', to_normalize); % Response time.
+    trial.fc_prime.con   = keyboard_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
+    trial.fc_prime.incon = keyboard_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
+    trial.pas.con   = keyboard_data_table.pas(~bad_timing_or_quit & con);
+    trial.pas.incon = keyboard_data_table.pas(~bad_timing_or_quit & ~con);
     % Average.
-    avg.rt = sortedAvg(single.rt, '', 0);
-    avg.rt_std.con_left = std(single.rt.con_left);
-    avg.rt_std.con_right = std(single.rt.con_right);
-    avg.rt_std.incon_left = std(single.rt.incon_left);
-    avg.rt_std.incon_right = std(single.rt.incon_right);
-    avg.rt_std.con = std(single.rt.con);
-    avg.rt_std.incon = std(single.rt.incon);
-    avg.fc_prime.con   = nanmean(single.fc_prime.con);
-    avg.fc_prime.incon = nanmean(single.fc_prime.incon);
+    avg.rt = sortedAvg(trial.rt, '', 0);
+    avg.rt_std.con_left = std(trial.rt.con_left);
+    avg.rt_std.con_right = std(trial.rt.con_right);
+    avg.rt_std.incon_left = std(trial.rt.incon_left);
+    avg.rt_std.incon_right = std(trial.rt.incon_right);
+    avg.rt_std.con = std(trial.rt.con);
+    avg.rt_std.incon = std(trial.rt.incon);
+    avg.fc_prime.con   = nanmean(trial.fc_prime.con);
+    avg.fc_prime.incon = nanmean(trial.fc_prime.incon);
     % Count pas ratings.
     for i = 1:4
-        avg.pas.con(i)   = sum(single.pas.con == i); 
-        avg.pas.incon(i) = sum(single.pas.incon == i);
+        avg.pas.con(i)   = sum(trial.pas.con == i); 
+        avg.pas.incon(i) = sum(trial.pas.incon == i);
     end
-    keyboard.single = single;
-    keyboard.avg = avg;
+    k_trial = trial;
+    k_avg = avg;
 end
 
 % Seperate data to struct fields according to conditions.
@@ -129,8 +128,9 @@ end
 %   pas - has each trial got required pas rating.
 %   con - is each trial congruent.
 %   left - was answer in each trial "left".
-% is_traj - sorting trajs (which have multiple values for each trial) or regular data (single value per trial)?
-function [sorted_data] = sortTrials(data, sorter, data_type)
+% data_type - sorting trajs (which have multiple values for each trial) or regular data (single value per trial)?
+% to_normalize - within each sub.
+function [sorted_data] = sortTrials(data, sorter, data_type, to_normalize)
     bad = sorter.bad;
     pas = sorter.pas;
     con = sorter.con;
@@ -142,6 +142,9 @@ function [sorted_data] = sortTrials(data, sorter, data_type)
         sorted_data.incon_right = data(:, ~bad & pas & ~con & (left==0), :);
         sorted_data.con = data(:, ~bad & pas & con, :);
         sorted_data.incon = data(:, ~bad & pas & ~con, :);
+        % Calc mean and std.
+        data_avg = mean([sorted_data.con, sorted_data.incon], 2);
+        data_std = std([sorted_data.con, sorted_data.incon], 0, 2);
     else
         sorted_data.con_left = data(~bad & pas & con  & (left==1),:);
         sorted_data.con_right = data(~bad & pas & con  & (left==0),:);
@@ -149,6 +152,19 @@ function [sorted_data] = sortTrials(data, sorter, data_type)
         sorted_data.incon_right = data(~bad & pas & ~con & (left==0),:);
         sorted_data.con = data(~bad & pas & con,:);
         sorted_data.incon = data(~bad & pas & ~con,:);
+        % Calc mean and std.
+        data_avg = mean([sorted_data.con; sorted_data.incon], 1);
+        data_std = std([sorted_data.con; sorted_data.incon], 0, 1);
+    end
+
+    % Normalize.
+    if to_normalize
+        sorted_data.con_left = round((sorted_data.con_left - data_avg), 10) ./ data_std;
+        sorted_data.con_right = round((sorted_data.con_right - data_avg), 10) ./ data_std;
+        sorted_data.incon_left = round((sorted_data.incon_left - data_avg), 10) ./ data_std;
+        sorted_data.incon_right = round((sorted_data.incon_right - data_avg), 10) ./ data_std;
+        sorted_data.con = round((sorted_data.con - data_avg), 10) ./ data_std;
+        sorted_data.incon = round((sorted_data.incon - data_avg), 10) ./ data_std;
     end
 end
 

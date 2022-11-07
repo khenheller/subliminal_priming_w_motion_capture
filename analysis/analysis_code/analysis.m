@@ -19,6 +19,7 @@ pas_rate = 1; % to analyze.
 bs_iter = 1000;
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
+p.NORMALIZE_WITHIN_SUB = 1; % Normalize each variable within each sub.
 p = defineParams(p, p.SUBS(1));
 
 % Name of trajectory column in output data. each cell is a incon type of traj.
@@ -315,9 +316,9 @@ for iTraj = 1:length(traj_names)
     keyboard_bad_trials = bad_trials.keyboard_bad_trials;
     for iSub = p.SUBS
         p = defineParams(p, iSub);
-        [reach_avg, reach_single, keyboard_avg, keyboard_single] = avgWithin(iSub, traj_names{iTraj}, reach_bad_trials, keyboard_bad_trials, pas_rate, p);
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat'], 'reach_single', 'keyboard_single');
-        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat'], 'reach_avg', 'keyboard_avg');
+        [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_names{iTraj}, reach_bad_trials, keyboard_bad_trials, pas_rate, p.NORMALIZE_WITHIN_SUB, p);
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat'], 'r_trial', 'k_trial');
+        save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat'], 'r_avg', 'k_avg');
     end
 end
 timing = num2str(toc);
@@ -405,9 +406,9 @@ for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
         p = defineParams(p, iSub);
         % Get trials stats for this sub.
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);
-        reach_single = single.reach_single;
-        keyboard_single = single.keyboard_single;
+        single_trial = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);
+        reach_single = single_trial.reach_single;
+        keyboard_single = single_trial.keyboard_single;
         reach_num_trials.con_left(iSub)  = size(reach_single.rt.con_left, 1);
         reach_num_trials.con_right(iSub) = size(reach_single.rt.con_right, 1);
         reach_num_trials.incon_left(iSub)  = size(reach_single.rt.incon_left, 1);
