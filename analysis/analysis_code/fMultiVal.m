@@ -4,7 +4,7 @@
 %   Columns: sub, side, condition, Proportion of path traveled, variable.
 %   Rows: average under each condition.
 function [var_df] = fMultiVal(var_name, traj_name, p)
-
+traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
 % Load subs data.
 var = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_name '_subs_' p.SUBS_STRING '.mat']);  var = var.reach_avg_each.(var_name);
 good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_name '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
@@ -33,7 +33,7 @@ var_col = [con_left_data; con_right_data; incon_left_data; incon_right_data];
 sub_col = repmat(repelem(good_subs', num_values), 4, 1); % 4=one for each condition and side combination.
 side_col = repmat(repelem(["left"; "right"], num_values * length(good_subs)), 2, 1); % 2=one for each condition.
 cond_col = repelem(p.CONDS', num_values * length(good_subs) * 2); % 2=left/right
-z_pos_col = repmat([0.5 : 100/p.NORM_FRAMES : 100]', length(good_subs)*4, 1); % 4=one for each condition and side combination.
+z_pos_col = repmat([0.5 : 100/traj_len : 100]', length(good_subs)*4, 1); % 4=one for each condition and side combination.
 
 % Fill table with goods.
 var_df = table(sub_col, side_col, cond_col, z_pos_col, var_col, 'VariableNames',var_df.Properties.VariableNames);

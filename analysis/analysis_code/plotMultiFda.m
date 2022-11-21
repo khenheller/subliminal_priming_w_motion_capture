@@ -2,11 +2,12 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotMultiFda(traj_names, plt_p, p)
+traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
     for iTraj = 1:length(traj_names)
         p_val = load([p.PROC_DATA_FOLDER '/fda_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'p_val');  p_val = p_val.p_val;
         hold on;
         % Plot.
-        plot(1/p.NORM_FRAMES : 1/p.NORM_FRAMES : 1, p_val.x(1,:), 'k', 'linewidth',2); % 1=con/incon index in p_val.
+        plot(1/traj_len : 1/traj_len : 1, p_val.x(1,:), 'k', 'linewidth',2); % 1=con/incon index in p_val.
         plot([0 1], [plt_p.alpha_size plt_p.alpha_size], 'r');
         xlabel('Percent of Z movement');
         ylabel('P value');

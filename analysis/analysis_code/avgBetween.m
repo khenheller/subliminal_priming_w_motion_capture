@@ -1,10 +1,11 @@
 % Calc average between subjects.
 % r = reach, k = keyboard.
 function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
+    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
     % Init reach vars.
-    r_subs_avg.traj  = struct('con_left',zeros(p.NORM_FRAMES, 3), 'con_right',zeros(p.NORM_FRAMES, 3), 'incon_left',zeros(p.NORM_FRAMES, 3), 'incon_right',zeros(p.NORM_FRAMES, 3));
-    r_subs_avg.x_std = struct('con_left',zeros(p.NORM_FRAMES,1), 'con_right',zeros(p.NORM_FRAMES,1), 'incon_left',zeros(p.NORM_FRAMES,1), 'incon_right',zeros(p.NORM_FRAMES,1));
-    r_subs_avg.head_angle = struct('con_left',zeros(p.NORM_FRAMES,1), 'con_right',zeros(p.NORM_FRAMES,1), 'incon_left',zeros(p.NORM_FRAMES,1), 'incon_right',zeros(p.NORM_FRAMES,1));
+    r_subs_avg.traj  = struct('con_left',zeros(traj_len, 3), 'con_right',zeros(traj_len, 3), 'incon_left',zeros(traj_len, 3), 'incon_right',zeros(traj_len, 3));
+    r_subs_avg.x_std = struct('con_left',zeros(traj_len,1), 'con_right',zeros(traj_len,1), 'incon_left',zeros(traj_len,1), 'incon_right',zeros(traj_len,1));
+    r_subs_avg.head_angle = struct('con_left',zeros(traj_len,1), 'con_right',zeros(traj_len,1), 'incon_left',zeros(traj_len,1), 'incon_right',zeros(traj_len,1));
     r_subs_avg.rt        = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
     r_subs_avg.react     = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);
     r_subs_avg.mt        = struct('con_left',0, 'con_right',0, 'incon_left',0, 'incon_right',0);

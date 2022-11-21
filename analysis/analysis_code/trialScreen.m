@@ -26,11 +26,12 @@
 function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_type, p)
     is_reach = isequal(task_type, 'reach');
 
-    screen_reasons = {'hole_in_data','missing_data','short_traj','missed_target','bad_stim_dur',...
+    screen_reasons = {'hole_in_data','missing_data','loop','short_traj','missed_target','bad_stim_dur',...
         'late_res', 'slow_mvmnt', 'very_slow_mvmnt', 'early_res', 'incorrect', 'quit', 'any'};
     % Index of each reason.
     indx.hole_in_data = ismember(screen_reasons, 'hole_in_data');
     indx.missing_data = ismember(screen_reasons, 'missing_data');
+    indx.loop = ismember(screen_reasons, 'loop');
     indx.short_traj = ismember(screen_reasons, 'short_traj');
     indx.missed_target = ismember(screen_reasons, 'missed_target');
     indx.bad_stim_dur = ismember(screen_reasons, 'bad_stim_dur');
@@ -105,6 +106,9 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
                 success(indx.hole_in_data) = testHoleData(single_traj, p);
                 % Check if too much data is missing.
                 success(indx.missing_data) = testAmountData(single_traj, p) &...
+                    ~any(too_short_to_filter{:} == iTrial);
+                % Check if there is loop in traj.
+                success(indx.loop) = testLoop(single_traj) &...
                     ~any(too_short_to_filter{:} == iTrial);
                 % Check if finger missed target.
                 if contains(traj_name{1}, '_to')

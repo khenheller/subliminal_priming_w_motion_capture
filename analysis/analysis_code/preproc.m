@@ -32,9 +32,17 @@ function [traj_table, data_table, too_short, pre_norm_traj_table] = preproc(traj
     [traj_mat, onsets, offsets, onsets_idx, offsets_idx] = trimOnsetOffset(traj_mat, time_mat, p);
     pre_norm_traj_mat = traj_mat;
 
-    %-------- Normalization --------
-    % Fit using B-spline.
-    [traj_mat, time_mat] = normalize_trajs(traj_mat, p);
+
+    if p.NORM_TRAJ
+        %-------- Normalization --------
+        % Fit using B-spline.
+        [traj_mat, time_mat] = normalize_trajs(traj_mat, p);
+    else
+        %-------- Trimming --------
+        % Trim all trajs to minimal traj's length.
+        [traj_mat, time_mat] = trimToLength(traj_mat, time_mat, p);
+    end
+    
     
     % Reassign to table.
     pre_norm_traj_table{:, traj_name} = reshape(pre_norm_traj_mat, p.MAX_CAP_LENGTH * p.NUM_TRIALS, 3);

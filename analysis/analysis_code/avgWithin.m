@@ -4,7 +4,7 @@
 % r/k_avg - struct, contains struct for each var, in which each field is average of good trials in a condition.
 % r/k_trial - struct, contains struct for each var, in which each field has all good trials for that condition.
 function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad_trials, keyboard_bad_trials, pas_rate, to_normalize, p)
-
+    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
     % Get sub data.
     reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
@@ -19,8 +19,8 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     traj = reach_traj_table{:, traj_name};
     head_angle = reach_traj_table{:, 'head_angle'};
     % Reshape to convenient format.
-    traj_mat = reshape(traj, p.NORM_FRAMES, p.NUM_TRIALS, 3); % 3 for (x,y,z).
-    head_angle_mat = reshape(head_angle, p.NORM_FRAMES, p.NUM_TRIALS);
+    traj_mat = reshape(traj, traj_len, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+    head_angle_mat = reshape(head_angle, traj_len, p.NUM_TRIALS);
 
     % Column names in tables.
     ans_left_col   = regexprep(traj_name{1}, '_x_.+', '_ans_left'); % name of traj's ans_left column.

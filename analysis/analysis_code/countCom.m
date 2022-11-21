@@ -2,6 +2,7 @@
 % COM happens when the subject changes his end goal, this is
 % reflected by a change in the heading angle's sign.
 function data_table = countCom(traj_table, data_table, p)
+    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
     assert(any(contains(traj_table.Properties.VariableNames, 'head_angle')), "Run heading angle section before COM section");
 
     % Name of COM column in data_table.
@@ -11,7 +12,7 @@ function data_table = countCom(traj_table, data_table, p)
 
     % Reshape to convinient format.
     angles = traj_table{:,'head_angle'};
-    angles_mat = reshape(angles, p.NORM_FRAMES, p.NUM_TRIALS);
+    angles_mat = reshape(angles, traj_len, p.NUM_TRIALS);
 
     for iTrial = 1:height(data_table)
         % Find all negative angles.

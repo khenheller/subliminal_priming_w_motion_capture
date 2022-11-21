@@ -19,7 +19,9 @@ pas_rate = 1; % to analyze.
 bs_iter = 1000;
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
-p.NORMALIZE_WITHIN_SUB = 1; % Normalize each variable within each sub.
+p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
+p.NORM_TRAJ = 0; % Normalize traj in space.
+p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
 p = defineParams(p, p.SUBS(1));
 
 % Name of trajectory column in output data. each cell is a incon type of traj.
@@ -199,11 +201,12 @@ for iSub = p.SUBS
     for iTraj = 1:length(traj_names)
         [reach_traj_table, reach_data_table, too_short_to_filter{iSub, iTraj}{:}, reach_pre_norm_traj_table] = preproc(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
     end
-    % Trim to normalized length (=p.norm_frames).
+    % Trim to new length.
+    new_traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
     matrix = reshape(reach_traj_table{:,:}, p.MAX_CAP_LENGTH, p.NUM_TRIALS, width(reach_traj_table));
-    matrix = matrix(1:p.NORM_FRAMES, :, :);
-    reach_traj_table = reach_traj_table(1 : p.NORM_FRAMES * p.NUM_TRIALS, :);
-    reach_traj_table{:,:} = reshape(matrix, p.NORM_FRAMES * p.NUM_TRIALS, width(reach_traj_table));
+    matrix = matrix(1:new_traj_len, :, :);
+    reach_traj_table = reach_traj_table(1 : new_traj_len * p.NUM_TRIALS, :);
+    reach_traj_table{:,:} = reshape(matrix, new_traj_len * p.NUM_TRIALS, width(reach_traj_table));
     % Save
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat'], 'reach_pre_norm_traj_table');
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
@@ -347,7 +350,7 @@ disp(['Reach area calc done. ' timing 'Sec']);
 % Num iters.
 iters = 2;
 % Features when decoding d' for indirect measure.
-r_preds = ["rt","react","mt","mad","com","tot_dist","auc","traj"];
+r_preds = ["rt","react","mt","mad","com","tot_dist","auc"];
 k_preds = ["rt"];
 % Save a features and labels table to be used in python.
 save_to_python = 0;

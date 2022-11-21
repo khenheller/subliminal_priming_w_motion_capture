@@ -7,6 +7,8 @@ function p = defineParams(p, iSub)
     SIM_NUM_BLOCKS = p.NUM_BLOCKS;
     SIMULATE = p.SIMULATE;
     NORMALIZE_WITHIN_SUB = p.NORMALIZE_WITHIN_SUB;
+    NORM_TRAJ = p.NORM_TRAJ;
+    MIN_TRIM_FRAMES = p.MIN_TRIM_FRAMES;
     EXP_1_SUBS = p.EXP_1_SUBS;
     EXP_2_SUBS = p.EXP_2_SUBS;
     EXP_3_SUBS = p.EXP_3_SUBS;
@@ -18,6 +20,8 @@ function p = defineParams(p, iSub)
     p = load([p.DATA_FOLDER '/sub' num2str(iSub) DAY '_' 'p.mat']); p = p.p;
     p.SIMULATE = SIMULATE;
     p.NORMALIZE_WITHIN_SUB = NORMALIZE_WITHIN_SUB;
+    p.NORM_TRAJ = NORM_TRAJ;
+    p.MIN_TRIM_FRAMES = MIN_TRIM_FRAMES;
     % Paths.
     [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
     curr_path = replace(curr_path, '\', '/');

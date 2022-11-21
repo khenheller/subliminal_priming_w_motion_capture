@@ -6,10 +6,10 @@
 % d_prime - d' of in/direct task.
 % coef - table with regression classifier coefficients, column=variable.
 function [d_prime, coef] = decodeDPrime(iSub, measure, selected, save_to_python, traj_name, p)
-
+    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
     % Num samples used when feature is traj.
     n_samples = 30;
-    downsample_i = round(linspace(1,p.NORM_FRAMES, n_samples));
+    downsample_i = round(linspace(1,traj_len, n_samples));
 
     % Load data and arrange features.
     trial = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_name '.mat']);
@@ -56,6 +56,7 @@ end
 % feats - table, variables are classifier features (predictors). Rows are trials.
 % labels - table with label of each trial.
 function [d_prime, coef] = calcDPrime(feats, labels)
+    % What classifiation to use: Naive bayesian ('fitcnb'), logistic ('fitclinear').
     alg_type = 'fitcnb';
 
     % Train-test split.
