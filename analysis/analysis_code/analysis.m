@@ -350,7 +350,7 @@ disp(['Reach area calc done. ' timing 'Sec']);
 % Num iters.
 iters = 2;
 % Features when decoding d' for indirect measure.
-r_preds = ["rt","react","mt","mad","com","tot_dist","auc"];
+r_preds = ["rt","react","mt","mad","tot_dist","auc"];
 k_preds = ["rt"];
 % Save a features and labels table to be used in python.
 save_to_python = 0;

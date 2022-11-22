@@ -35,9 +35,9 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     auc_col = ['auc'];
 
     % -------------------- Sort and avg REACH --------------------
-    % Bad trials reasons, Remove reason: "slow_mvmnt".
+    % Bad trials reasons, Remove reason: "slow_mvmnt", "loop".
     reasons = string(reach_bad_trials{iSub}.Properties.VariableNames);
-    reasons(reasons == "any" | reasons == "slow_mvmnt") = [];
+    reasons(reasons == "any" | reasons == "slow_mvmnt" | reasons == "loop") = [];
     % Create sorter.
     bad = any(reach_bad_trials{iSub}{:, reasons}, 2);
     bad_timing_or_quit = reach_bad_trials{iSub}.bad_stim_dur | reach_bad_trials{iSub}.quit; % Bad stim duration, or sub quit before trial.

@@ -9,6 +9,17 @@ function [r_a] = calcReachArea(left, right, p)
     % Convert to micro-meters.
     left(:,3) = left(:,3) * p.SCREEN_DIST * 100;
     right(:,3) = right(:,3) * p.SCREEN_DIST * 100;
+    % If traj not normalized to Z, loops can occur.
+    % To avoid, replace Z with time (can't reverse direction [unless a timemachine is at hand]).
+    if ~p.NORM_TRAJ
+        timeseries = (1 : p.REACH_MAX_RT_LIMIT) * p.SAMPLE_RATE_SEC; % Array with timing of each sample, use longest recording length.
+        last_sample_left = find(~isnan(left(:,3)), 1, 'last');
+        last_sample_right = find(~isnan(right(:,3)), 1, 'last');
+        % Verify traj length.
+        assert(last_sample_left==last_sample_right, "Can't compute area between trajectories of different length.")
+        left(1:last_sample_left, 3) = timeseries(1:last_sample_left);
+        right(1:last_sample_right, 3) = timeseries(1:last_sample_right);
+    end
     % Turn traj to 2D.
     left_2d = [left(:,3),  left(:,1)];
     right_2d = [right(:,3), right(:,1)];
