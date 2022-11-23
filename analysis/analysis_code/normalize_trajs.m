@@ -1,15 +1,19 @@
 % Normalizes all trials in a single type of traj.
-% Receives: trajs_mat - a subject's trajectory, of 1 type (categot_to / categor_from / recog_to / recog_from).
-%               3 Dim double matrix, row = sample, column = trial, 3rd dim = axis (x,y,z).
-%               Each trial has MAX_CAP_LENGTH samples.
-% Returns: traj_mat - normalized traj.
-%           time_mat - New timestamps that match each sample in the normalized traj.
-%                       double matrix, row=smaple, column=trial.
-function [traj_mat, time_mat] = normalize_trajs(traj_mat, p)
+% Assigns new timestamps that match each sample in the normalized traj.
+function [traj_table] = normalize_trajs(iSub, traj_name, p)
+    time_name = replace(traj_name{1}, 'x', 'timecourse');
+
+    % Load data.
+    pre_norm_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat'], 'reach_pre_norm_traj_table');  pre_norm_traj_table = pre_norm_traj_table.reach_pre_norm_traj_table;
+    % Traj of interest.
+    traj = pre_norm_traj_table{:, traj_name};
+    % Reshape to convinient format.
+    traj_mat = reshape(traj, p.MAX_CAP_LENGTH, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+
     time_mat = NaN(p.MAX_CAP_LENGTH, p.NUM_TRIALS);
     for iTrial = 1:size(traj_mat,2)
         current_traj = squeeze(traj_mat(:,iTrial,:));
-        current_traj(isnan(current_traj(:,1)), :) = [];% remove nans.
+        current_traj(isnan(current_traj(:,1)), :) = [];% remove nans tail (nans at beginning or middle were filled).
         % Normalize when trial longer than 2 samples (otherwise normalizeFDA doesn't work).
         if size(current_traj,1) > 2
             [norm_traj, norm_time] = normalizeFDA({current_traj}, 1, p.NORM_FRAMES, p.NORM_TYPE, p.SAMPLE_RATE_HZ);
@@ -19,4 +23,8 @@ function [traj_mat, time_mat] = normalize_trajs(traj_mat, p)
             time_mat(1:p.NORM_FRAMES, iTrial) = norm_time;
         end
     end
+
+    traj_table = pre_norm_traj_table;
+    traj_table{:, time_name} = reshape(time_mat, p.MAX_CAP_LENGTH * p.NUM_TRIALS, 1);
+    traj_table{:, traj_name} = reshape(traj_mat, p.MAX_CAP_LENGTH * p.NUM_TRIALS, 3);
 end

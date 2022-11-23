@@ -186,6 +186,7 @@ too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
     'VariableTypes', repmat({'cell'}, length(traj_types), 1),...
     'VariableNames', traj_types);
 disp('Preprocessing done for subject:');
+% Preprocessing.
 for iSub = p.SUBS
     p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
@@ -197,23 +198,41 @@ for iSub = p.SUBS
     reach_data_table(reach_data_table{:,'practice'} > 0, :) = [];
     keyboard_data_table(keyboard_data_table{:,'practice'} > 0, :) = [];
     
-    % Preprocessing and normalization.
+    % Preprocessing.
     for iTraj = 1:length(traj_names)
-        [reach_traj_table, reach_data_table, too_short_to_filter{iSub, iTraj}{:}, reach_pre_norm_traj_table] = preproc(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
+        [reach_pre_norm_traj_table, reach_data_table, too_short_to_filter{iSub, iTraj}{:}] = preproc(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
     end
-    % Trim to new length.
-    new_traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+
+    % Save
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat'], 'reach_pre_norm_traj_table');
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data_proc.mat'], 'keyboard_data_table'); % Keyboard data isn't pre-processed because there is no need for that.
+end
+
+% Get minimal traj length.
+min_len = getMinLength(traj_names{1}, p);
+
+% Normalize or Trim
+for iSub = p.SUBS
+    % Normalize by fitting a B-spline.
+    if p.NORM_TRAJ
+        [reach_traj_table] = normalize_trajs(iSub, traj_names{1}, p);
+    % Trim to minimal traj's length (across subs).
+    else
+        [reach_traj_table] = trimToLength(iSub, min_len, traj_names{1}, p);
+    end
+
+    % Trim num samples to new length.
+    new_traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * min_len;
     matrix = reshape(reach_traj_table{:,:}, p.MAX_CAP_LENGTH, p.NUM_TRIALS, width(reach_traj_table));
     matrix = matrix(1:new_traj_len, :, :);
     reach_traj_table = reach_traj_table(1 : new_traj_len * p.NUM_TRIALS, :);
     reach_traj_table{:,:} = reshape(matrix, new_traj_len * p.NUM_TRIALS, width(reach_traj_table));
     % Save
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat'], 'reach_pre_norm_traj_table');
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
-    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_keyboard_data_proc.mat'], 'keyboard_data_table'); % Keyboard data isn't pre-processed because there is no need for that.
     disp(num2str(iSub));
 end
+
 disp('Following trials where too short to filter:');
 disp(too_short_to_filter);
 save([p.PROC_DATA_FOLDER '/too_short_to_filter_'  p.DAY '_subs_' p.SUBS_STRING '.mat'], 'too_short_to_filter');
@@ -433,6 +452,7 @@ plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 3; % between beeswarm graphs.
 plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
+plt_p.x_as_func_of = "time"; % To plot X as a function of "time" or "zaxis".
 % Color of plots.
 plt_p.f_alpha = 0.2; % transperacy of shading.
 plt_p.linewidth = 4; % Used for some graphs.

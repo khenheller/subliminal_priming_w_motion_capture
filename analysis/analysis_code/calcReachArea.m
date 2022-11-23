@@ -12,7 +12,7 @@ function [r_a] = calcReachArea(left, right, p)
     % If traj not normalized to Z, loops can occur.
     % To avoid, replace Z with time (can't reverse direction [unless a timemachine is at hand]).
     if ~p.NORM_TRAJ
-        timeseries = (1 : p.REACH_MAX_RT_LIMIT) * p.SAMPLE_RATE_SEC; % Array with timing of each sample, use longest recording length.
+        timeseries = (1 : p.MAX_CAP_LENGTH) * p.SAMPLE_RATE_SEC; % Array with timing of each sample.
         last_sample_left = find(~isnan(left(:,3)), 1, 'last');
         last_sample_right = find(~isnan(right(:,3)), 1, 'last');
         % Verify traj length.

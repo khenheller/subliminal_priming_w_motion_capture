@@ -1,9 +1,8 @@
 % Receives a subject's traj and data tables and a single traj's name.
-% Performs preprocessing and normalization on that traj and returns it.
+% Performs preprocessing on that traj and returns it.
 % Adds movement onset and offset time to each trial in data_table.
 % too_short - list of trials whos data was too short to use noise filtering.
-% pre_norm_traj_table - table with the trajectory after preprocessing but before normalization.
-function [traj_table, data_table, too_short, pre_norm_traj_table] = preproc(traj_table, data_table, traj_name, p)
+function [traj_table, data_table, too_short] = preproc(traj_table, data_table, traj_name, p)
     time_name = replace(traj_name{1}, 'x', 'timecourse');
     too_short = zeros(p.NUM_TRIALS,1);
     
@@ -11,8 +10,6 @@ function [traj_table, data_table, too_short, pre_norm_traj_table] = preproc(traj
     offset_col = ['offset'];
     onset_idx_col  = ['onset_idx'];
     offset_idx_col = ['offset_idx'];
-
-    pre_norm_traj_table = traj_table;
     
     % Traj of interest.
     traj = traj_table{:, traj_name};
@@ -30,22 +27,8 @@ function [traj_table, data_table, too_short, pre_norm_traj_table] = preproc(traj
     [traj_mat, time_mat] = setOrigin(traj_mat, time_mat);
     % Trim to onset and offset.
     [traj_mat, onsets, offsets, onsets_idx, offsets_idx] = trimOnsetOffset(traj_mat, time_mat, p);
-    pre_norm_traj_mat = traj_mat;
-
-
-    if p.NORM_TRAJ
-        %-------- Normalization --------
-        % Fit using B-spline.
-        [traj_mat, time_mat] = normalize_trajs(traj_mat, p);
-    else
-        %-------- Trimming --------
-        % Trim all trajs to minimal traj's length.
-        [traj_mat, time_mat] = trimToLength(traj_mat, time_mat, p);
-    end
-    
     
     % Reassign to table.
-    pre_norm_traj_table{:, traj_name} = reshape(pre_norm_traj_mat, p.MAX_CAP_LENGTH * p.NUM_TRIALS, 3);
     traj_table{:, traj_name} = reshape(traj_mat, p.MAX_CAP_LENGTH * p.NUM_TRIALS, 3);
     traj_table{:, time_name} = reshape(time_mat, p.MAX_CAP_LENGTH * p.NUM_TRIALS, 1);
     data_table{:, onset_col}  = onsets;
