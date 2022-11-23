@@ -23,9 +23,9 @@ function [bad_subs, valid_trials] = subScreening(traj_name, pas_rate, task_type,
         data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' task_type '_data_proc.mat']);  data_table = data_table.([task_type '_data_table']);
         % Remove practice.
         data_table(data_table.practice>=1, :) = [];
-        % Bad trials reasons, Remove reason: "incorrect", "slow_mvmnt".
+        % Bad trials reasons, Remove reason: "incorrect", "slow_mvmnt", "loop".
         reasons = string(bad_trials{iSub}.Properties.VariableNames);
-        reasons(reasons == "any" | reasons == "incorrect" | reasons == "slow_mvmnt") = [];
+        reasons(reasons == "any" | reasons == "incorrect" | reasons == "slow_mvmnt" | reasons == "loop") = [];
         % Find good trials
         ok = ~any(bad_trials{iSub}{:, reasons}, 2); % has no timing / data issues (includes "slow mvmnt", excludes "very_slow_mvmnt".
         ok_pas = ok & ismember(data_table.pas, pas_rate); % And PAS rating is ok.
