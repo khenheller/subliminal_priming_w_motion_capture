@@ -4,6 +4,8 @@
 % r/k_avg - struct, contains struct for each var, in which each field is average of good trials in a condition.
 % r/k_trial - struct, contains struct for each var, in which each field has all good trials for that condition.
 function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad_trials, keyboard_bad_trials, pas_rate, to_normalize, p)
+    time_name = replace(traj_name{1}, 'x', 'timecourse');
+
     traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
     % Get sub data.
     reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
@@ -15,11 +17,13 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     reach_data_table(reach_data_table{:,'practice'} >= 1, :) = [];
     keyboard_data_table(keyboard_data_table{:,'practice'} >= 1, :) = [];
 
-    % Get traj and heading angle.
+    % Get timeseries variables.
     traj = reach_traj_table{:, traj_name};
+    time_vec = reach_traj_table{:, time_name};
     head_angle = reach_traj_table{:, 'head_angle'};
     % Reshape to convenient format.
     traj_mat = reshape(traj, traj_len, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+    time_mat = reshape(time_vec, traj_len, p.NUM_TRIALS);
     head_angle_mat = reshape(head_angle, traj_len, p.NUM_TRIALS);
 
     % Column names in tables.
@@ -47,6 +51,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
     % Sort trials.
     trial.trajs  = sortTrials(traj_mat, sorter, 'timeseries', to_normalize);
+    trial.time  = sortTrials(time_mat, sorter, 'timeseries', 0);
     trial.head_angle = sortTrials(head_angle_mat, sorter, 'timeseries', to_normalize);
     trial.rt = sortTrials(reach_data_table.(offset_col), sorter, 0, to_normalize); % Response time.
     trial.react = sortTrials(reach_data_table.(onset_col), sorter, 0, to_normalize); % Reaction time.
@@ -62,6 +67,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     trial.pas.incon = reach_data_table.pas(~bad_timing_or_quit & ~con);
     % Average.
     avg.traj = sortedAvg(trial.trajs, 'timeseries', 1);
+    avg.time = sortedAvg(trial.time, 'timeseries', 0);
     avg.head_angle = sortedAvg(trial.head_angle, 'timeseries', 0);
     avg.rt = sortedAvg(trial.rt, '', 0);
     avg.react = sortedAvg(trial.react, '', 0);
