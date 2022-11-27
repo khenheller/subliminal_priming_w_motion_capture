@@ -10,6 +10,7 @@ function [d_prime, coef] = decodeDPrime(iSub, measure, selected, save_to_python,
     % Num samples used when feature is traj.
     n_samples = 30;
     downsample_i = round(linspace(1,traj_len, n_samples));
+    assert(n_samples <= traj_len, "Trajectory is too short to downsample, adjust length or downsample rate.")
 
     % Load data and arrange features.
     trial = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_name '.mat']);

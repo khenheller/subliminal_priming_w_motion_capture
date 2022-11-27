@@ -13,6 +13,7 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
 
         % Plot time instead of Z axis.
         if plt_p.x_as_func_of == "time"
+            assert(~p.NORM_TRAJ, "When traj is normalized in space, time isn't releveant and shouldnt be used");
             % Array with timing of each sample.
             timeseries = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC;
             left_axis = timeseries;
@@ -35,7 +36,7 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         clusters = permCluster(avg_each.traj.con(:,good_subs,1), avg_each.traj.incon(:,good_subs,1), plt_p.n_perm);
 
         % Plot clusters.
-        points = [left_axis(clusters.start,3)'; left_axis(clusters.end,3)'];
+        points = [left_axis(clusters.start)'; left_axis(clusters.end)'];
         drawRectangle(points, 'y', xlimit, plt_p);
 
         set(gca, 'TickDir','out');

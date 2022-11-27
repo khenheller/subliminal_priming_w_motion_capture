@@ -19,8 +19,9 @@ pas_rate = 1; % to analyze.
 bs_iter = 1000;
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
-p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
-p.NORM_TRAJ = 0; % Normalize traj in space.
+p.NORMALIZE_WITHIN_SUB = 1; % Normalize each variable within each sub.
+p.NORM_TRAJ = 1; % Normalize traj in space.
+p.MIN_SAMP_LEN = 0.1; % In sec. Shorter trajs are excluded. (recommended 0.1 sec).
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
 p = defineParams(p, p.SUBS(1));
 
@@ -368,7 +369,7 @@ disp(['Reach area calc done. ' timing 'Sec']);
 % Computes each var's d' (sensitivity) many times.
 % Num iters.
 iters = 2;
-% Features when decoding d' for indirect measure.
+% Features when decoding d' for indirect measure (Reach: rt, react, mt, mad, com, tot_dist, auc, traj)
 r_preds = ["rt","react","mt","mad","tot_dist","auc"];
 k_preds = ["rt"];
 % Save a features and labels table to be used in python.
@@ -734,8 +735,8 @@ save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 % Number of changes of mind.
 figure(all_sub_f(1));
 subplot(2,5,10);
-p_val = plotMultiCom(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% p_val = plotMultiCom(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Total distance traveled -------
 % Total distance traveled.

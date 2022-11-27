@@ -8,6 +8,7 @@ function p = defineParams(p, iSub)
     SIMULATE = p.SIMULATE;
     NORMALIZE_WITHIN_SUB = p.NORMALIZE_WITHIN_SUB;
     NORM_TRAJ = p.NORM_TRAJ;
+    MIN_SAMP_LEN = p.MIN_SAMP_LEN;
     MIN_TRIM_FRAMES = p.MIN_TRIM_FRAMES;
     EXP_1_SUBS = p.EXP_1_SUBS;
     EXP_2_SUBS = p.EXP_2_SUBS;
@@ -21,6 +22,7 @@ function p = defineParams(p, iSub)
     p.SIMULATE = SIMULATE;
     p.NORMALIZE_WITHIN_SUB = NORMALIZE_WITHIN_SUB;
     p.NORM_TRAJ = NORM_TRAJ;
+    p.MIN_SAMP_LEN = MIN_SAMP_LEN;
     p.MIN_TRIM_FRAMES = MIN_TRIM_FRAMES;
     % Paths.
     [curr_path, ~, ~] = fileparts(mfilename('fullpath'));
