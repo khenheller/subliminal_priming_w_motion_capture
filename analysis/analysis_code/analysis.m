@@ -19,9 +19,9 @@ pas_rate = 1; % to analyze.
 bs_iter = 1000;
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
-p.NORMALIZE_WITHIN_SUB = 1; % Normalize each variable within each sub.
-p.NORM_TRAJ = 1; % Normalize traj in space.
-p.MIN_SAMP_LEN = 0.1; % In sec. Shorter trajs are excluded. (recommended 0.1 sec).
+p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
+p.NORM_TRAJ = 0; % Normalize traj in space.
+p.MIN_SAMP_LEN = 0.3; % In sec. Shorter trajs are excluded. (recommended 0.1 sec).
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
 p = defineParams(p, p.SUBS(1));
 
@@ -332,6 +332,16 @@ for iSub = p.SUBS
 end
 timing = num2str(toc);
 disp(['AUC calc done. ' timing 'Sec']);
+%% Velocity
+tic
+for iSub = p.SUBS
+    p = defineParams(p, iSub);
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_traj_table = calcVelocity(reach_traj_table, p);
+    save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
+end
+timing = num2str(toc);
+disp(['Velocity calc done. ' timing 'Sec']);
 %% Sorting and averaging (within subject)
 tic
 for iTraj = 1:length(traj_names)
@@ -490,6 +500,10 @@ for iSub = p.SUBS
         reach_avg_each.head_angle(iTraj).con_right(:,iSub) = r_avg.head_angle.con_right;
         reach_avg_each.head_angle(iTraj).incon_left(:,iSub) = r_avg.head_angle.incon_left;
         reach_avg_each.head_angle(iTraj).incon_right(:,iSub) = r_avg.head_angle.incon_right;
+        reach_avg_each.vel(iTraj).con_left(:,iSub) = r_avg.vel.con_left;
+        reach_avg_each.vel(iTraj).con_right(:,iSub) = r_avg.vel.con_right;
+        reach_avg_each.vel(iTraj).incon_left(:,iSub) = r_avg.vel.incon_left;
+        reach_avg_each.vel(iTraj).incon_right(:,iSub) = r_avg.vel.incon_right;
         reach_avg_each.rt(iTraj).con_left(iSub)  = r_avg.rt.con_left * 1000;
         reach_avg_each.rt(iTraj).con_right(iSub) = r_avg.rt.con_right * 1000;
         reach_avg_each.rt(iTraj).incon_left(iSub)  = r_avg.rt.incon_left * 1000;
@@ -537,6 +551,8 @@ for iSub = p.SUBS
         reach_avg_each.traj(iTraj).incon(:, iSub, :) = r_avg.traj.incon;
         reach_avg_each.head_angle(iTraj).con(:, iSub) = r_avg.head_angle.con;
         reach_avg_each.head_angle(iTraj).incon(:, iSub) = r_avg.head_angle.incon;
+        reach_avg_each.vel(iTraj).con(:, iSub) = r_avg.vel.con;
+        reach_avg_each.vel(iTraj).incon(:, iSub) = r_avg.vel.incon;
         reach_avg_each.rt(iTraj).con(iSub) = r_avg.rt.con * 1000;
         reach_avg_each.rt(iTraj).incon(iSub) = r_avg.rt.incon * 1000;
         reach_avg_each.react(iTraj).con(iSub) = r_avg.react.con * 1000;
@@ -667,6 +683,12 @@ disp("Done setting plotting params.");
 %     subplot_p = [2,2,1; 2,2,2]; % Params for 1st and 2nd subplots.
 %     plotXStd(iSub, traj_names, subplot_p, plt_p, p);
 % end
+% ------- X Velocity -------
+for iSub = p.SUBS
+    figure(sub_f(iSub,4));
+    subplot_p = [2,2,1; 2,2,2]; % Params for 1st and 2nd subplots.
+    plotXVel(iSub, traj_names{1}, subplot_p, plt_p, p);
+end
 % 
 % % ------- Keyboard Response Times -------
 % if any(p.SUBS >=43) % Only for Exp 4.
@@ -698,6 +720,11 @@ all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 figure(all_sub_f(1));
 subplot(2,5,[1 2]);
 plotMultiAvgTrajWithShade(traj_names, plt_p, p);
+
+% ------- Velocity -------
+figure(all_sub_f(1));
+subplot_p = [2,2,1; 2,2,2];
+plotMultiVel(traj_names{1}, subplot_p, plt_p, p);
 
 % ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(1));

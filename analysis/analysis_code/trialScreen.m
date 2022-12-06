@@ -2,6 +2,7 @@
 % Reach:
 %   Has big hole (NaNs) in data.
 %   Have too much missing data.
+%   Preprocessed traj length is different from the defined one.
 %   Reach distance too short.
 %   Finger missed target.
 %   Stim duration was false.
@@ -24,13 +25,15 @@
 %               Table has list of disqualified trials for each screen reason.
 %               bad_trials is logical indexing, this is numeric.
 function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_type, p)
+    trim_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  trim_len = trim_len.trim_len;
     is_reach = isequal(task_type, 'reach');
 
-    screen_reasons = {'hole_in_data','missing_data','loop','short_traj','missed_target','bad_stim_dur',...
+    screen_reasons = {'hole_in_data','missing_data','diff_len','loop','short_traj','missed_target','bad_stim_dur',...
         'late_res', 'slow_mvmnt', 'very_slow_mvmnt', 'early_res', 'incorrect', 'quit', 'any'};
     % Index of each reason.
     indx.hole_in_data = ismember(screen_reasons, 'hole_in_data');
     indx.missing_data = ismember(screen_reasons, 'missing_data');
+    indx.diff_len = ismember(screen_reasons, 'diff_len');
     indx.loop = ismember(screen_reasons, 'loop');
     indx.short_traj = ismember(screen_reasons, 'short_traj');
     indx.missed_target = ismember(screen_reasons, 'missed_target');
@@ -60,21 +63,25 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
         p = defineParams(p, iSub);
         too_short_to_filter = too_short{iSub, strrep(traj_name{1}, '_x', '')};
         dev_table = load([p.TESTS_FOLDER '/sub' num2str(iSub) p.DAY '.mat']);  dev_table = dev_table.([task_type '_test_res']).dev_table;
-        traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  traj_table = traj_table.reach_traj_table;
-        traj_table_pre_norm = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  traj_table_pre_norm = traj_table_pre_norm.reach_pre_norm_traj_table;
+        trajs_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.mat']);  trajs_table = trajs_table.reach_traj_table;
+        trajs_table_proc = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  trajs_table_proc = trajs_table_proc.reach_traj_table;
+        trajs_table_pre_norm = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  trajs_table_pre_norm = trajs_table_pre_norm.reach_pre_norm_traj_table;
         trials_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' task_type '_data_proc.mat']);  trials_table = trials_table.([task_type '_data_table']);
         % remove practice.
-        traj_table(traj_table{:,'practice'} >= 1, :) = [];
-        traj_table_pre_norm(traj_table_pre_norm{:,'practice'} >= 1, :) = [];
+        trajs_table(trajs_table{:,'practice'} >= 1, :) = [];
+        trajs_table_proc(trajs_table_proc{:,'practice'} >= 1, :) = [];
+        trajs_table_pre_norm(trajs_table_pre_norm{:,'practice'} >= 1, :) = [];
         trials_table(trials_table{:,'practice'} >= 1, :) = [];
-        traj = traj_table{:, traj_name};
-        traj_pre_norm = traj_table_pre_norm{:, traj_name};
+        trajs = trajs_table{:, traj_name};
+        trajs_proc = trajs_table_proc{:, traj_name};
+        trajs_pre_norm = trajs_table_pre_norm{:, traj_name};
 
         bad_trials{iSub} = bad_trials_table;
 
         % Reshape to convenient format.
-        traj_mat = reshape(traj, p.MAX_CAP_LENGTH, p.NUM_TRIALS, 3); % 3 for (x,y,z).
-        traj_mat_pre_norm = reshape(traj_pre_norm, p.MAX_CAP_LENGTH, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+        trajs_mat = reshape(trajs, p.MAX_CAP_LENGTH, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+        trajs_mat_proc = reshape(trajs_proc, trim_len, p.NUM_TRIALS, 3); % 3 for (x,y,z).
+        trajs_mat_pre_norm = reshape(trajs_pre_norm, p.MAX_CAP_LENGTH, p.NUM_TRIALS, 3); % 3 for (x,y,z).
 
         % Screen result for each trial.
         successes = ones(p.NUM_TRIALS, length(screen_reasons));
@@ -82,8 +89,9 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
         % Test every screen reason for each trial.
         for iTrial = 1:p.NUM_TRIALS
             success = ones(1, length(screen_reasons)); % 0 = bad trial.
-            single_traj = squeeze(traj_mat(:,iTrial,:));
-            single_traj_pre_norm = squeeze(traj_mat_pre_norm(:,iTrial,:));
+            one_traj = squeeze(trajs_mat(:,iTrial,:));
+            one_traj_proc = squeeze(trajs_mat_proc(:,iTrial,:));
+            one_traj_pre_norm = squeeze(trajs_mat_pre_norm(:,iTrial,:));
     
             % Check if reaponse was too late.
             success(indx.late_res) = ~trials_table.late_res(iTrial);
@@ -101,18 +109,21 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
                 % Check if mvmnt time is long.
                 success(indx.slow_mvmnt) = ~trials_table.slow_mvmnt(iTrial);
                 % Check if reach distance is too short.
-                success(indx.short_traj) = testReachDist(single_traj_pre_norm, p);
+                success(indx.short_traj) = testReachDist(one_traj_pre_norm, p); % Use pre_norm because I need the traj after I trimmed it to onset and offset.
                 % Check if there is a big hole in the data.
-                success(indx.hole_in_data) = testHoleData(single_traj, p);
+                success(indx.hole_in_data) = testHoleData(one_traj, p);
                 % Check if too much data is missing.
-                success(indx.missing_data) = testAmountData(single_traj, p) &...
+                success(indx.missing_data) = testAmountData(one_traj, p) &...
+                    ~any(too_short_to_filter{:} == iTrial);
+                % Check if num samples is different form defined one.
+                success(indx.diff_len) = testDefinedLength(one_traj_proc, p) &...
                     ~any(too_short_to_filter{:} == iTrial);
                 % Check if there is loop in traj.
-                success(indx.loop) = testLoop(single_traj) &...
+                success(indx.loop) = testLoop(one_traj) &...
                     ~any(too_short_to_filter{:} == iTrial);
                 % Check if finger missed target.
                 if contains(traj_name{1}, '_to')
-                    success(indx.missed_target) = testMissTarget(single_traj, p);
+                    success(indx.missed_target) = testMissTarget(one_traj, p);
                 end
             end
             % Store result.

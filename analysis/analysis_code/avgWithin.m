@@ -21,10 +21,12 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     traj = reach_traj_table{:, traj_name};
     time_vec = reach_traj_table{:, time_name};
     head_angle = reach_traj_table{:, 'head_angle'};
+    vel_vec = reach_traj_table{:, 'vel'};
     % Reshape to convenient format.
     traj_mat = reshape(traj, traj_len, p.NUM_TRIALS, 3); % 3 for (x,y,z).
     time_mat = reshape(time_vec, traj_len, p.NUM_TRIALS);
     head_angle_mat = reshape(head_angle, traj_len, p.NUM_TRIALS);
+    vel_mat = reshape(vel_vec, traj_len, p.NUM_TRIALS);
 
     % Column names in tables.
     ans_left_col   = regexprep(traj_name{1}, '_x_.+', '_ans_left'); % name of traj's ans_left column.
@@ -37,6 +39,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     com_col = ['com'];
     tot_dist_col = ['tot_dist'];
     auc_col = ['auc'];
+    vel_col = ['vel'];
 
     % -------------------- Sort and avg REACH --------------------
     % Bad trials reasons, Remove reason: "slow_mvmnt", "loop".
@@ -53,6 +56,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     trial.trajs  = sortTrials(traj_mat, sorter, 'timeseries', to_normalize);
     trial.time  = sortTrials(time_mat, sorter, 'timeseries', 0);
     trial.head_angle = sortTrials(head_angle_mat, sorter, 'timeseries', to_normalize);
+    trial.vel = sortTrials(vel_mat, sorter, 'timeseries', to_normalize);
     trial.rt = sortTrials(reach_data_table.(offset_col), sorter, 0, to_normalize); % Response time.
     trial.react = sortTrials(reach_data_table.(onset_col), sorter, 0, to_normalize); % Reaction time.
     trial.mt = sortTrials(reach_data_table.(offset_col) - reach_data_table.(onset_col), sorter, 0, to_normalize); % Movement time.
@@ -69,6 +73,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     avg.traj = sortedAvg(trial.trajs, 'timeseries', 1);
     avg.time = sortedAvg(trial.time, 'timeseries', 0);
     avg.head_angle = sortedAvg(trial.head_angle, 'timeseries', 0);
+    avg.vel = sortedAvg(trial.vel, 'timeseries', 0); % No flip because flipped in calculation.
     avg.rt = sortedAvg(trial.rt, '', 0);
     avg.react = sortedAvg(trial.react, '', 0);
     avg.mt = sortedAvg(trial.mt, '', 0);
