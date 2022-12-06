@@ -1,5 +1,5 @@
 function [traj_df] = fTraj(traj_name, p)
-traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
 % Build dataframe.
 num_rows = p.N_SUBS * p.N_CONDS * p.NUM_TRIALS * traj_len;
 columns = ["sub", "side", "cond", "xpos", "zindex"];

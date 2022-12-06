@@ -4,7 +4,7 @@
 %   Columns: sub, side, condition, Proportion of path traveled, variable.
 %   Rows: average under each condition.
 function [var_df] = fMultiVal(var_name, traj_name, p)
-traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
 % Load subs data.
 var = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_name '_subs_' p.SUBS_STRING '.mat']);  var = var.reach_avg_each.(var_name);
 good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_name '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
