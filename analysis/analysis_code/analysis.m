@@ -606,18 +606,18 @@ end
 save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_avg_each', 'keyboard_avg_each');
 disp("Done setting plotting params.");
 %% Single Sub plots.
-% good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
-% subs_to_present = good_subs(1);
-% % Create figure for each sub.
-% for iSub = subs_to_present(1)
-%     sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
+good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+subs_to_present = good_subs(1:10);
+% Create figure for each sub.
+for iSub = subs_to_present
+    sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
 %     sub_f(iSub,2) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
 %     sub_f(iSub,3) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
-%     % Add title.
-%     figure(sub_f(iSub,1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+    % Add title.
+    figure(sub_f(iSub,1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 %     figure(sub_f(iSub,2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-% %     figure(sub_f(iSub,3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-% end
+%     figure(sub_f(iSub,3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+end
 % 
 % % ------- Traj of each trial -------
 % for iSub = subs_to_present
@@ -684,9 +684,9 @@ disp("Done setting plotting params.");
 %     plotXStd(iSub, traj_names, subplot_p, plt_p, p);
 % end
 % ------- X Velocity -------
-for iSub = p.SUBS
-    figure(sub_f(iSub,4));
-    subplot_p = [2,2,1; 2,2,2]; % Params for 1st and 2nd subplots.
+for iSub = subs_to_present
+    figure(sub_f(iSub,1));
+    subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
     plotXVel(iSub, traj_names{1}, subplot_p, plt_p, p);
 end
 % 
