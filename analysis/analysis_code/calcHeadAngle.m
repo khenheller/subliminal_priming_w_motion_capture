@@ -4,7 +4,7 @@
 % and a line perpendicular to the screen.
 % Angle is negative if it points to the side opposite to the final answer.
 function traj_table = calcHeadAngle(traj_table, p)
-    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+    traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
     angles_mat = nan(traj_len, p.NUM_TRIALS);
 
     % Reshape to convinient format.

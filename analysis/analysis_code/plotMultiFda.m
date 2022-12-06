@@ -2,7 +2,7 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotMultiFda(traj_names, plt_p, p)
-traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
 x_lim = [0 1] * p.NORM_TRAJ + [0 p.SCREEN_DIST] * ~p.NORM_TRAJ;
 % Determine X axis for plot.
 if p.NORM_TRAJ

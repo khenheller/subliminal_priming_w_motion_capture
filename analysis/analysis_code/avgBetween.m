@@ -1,7 +1,7 @@
 % Calc average between subjects.
 % r = reach, k = keyboard.
 function [r_subs_avg, k_subs_avg] = avgBetween(traj_name, p)
-    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+    traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
     % Init reach vars.
     r_subs_avg.traj  = struct('con_left',zeros(traj_len, 3), 'con_right',zeros(traj_len, 3), 'incon_left',zeros(traj_len, 3), 'incon_right',zeros(traj_len, 3));
     r_subs_avg.time = struct('con_left',zeros(traj_len, 1), 'con_right',zeros(traj_len, 1), 'incon_left',zeros(traj_len, 1), 'incon_right',zeros(traj_len, 1));

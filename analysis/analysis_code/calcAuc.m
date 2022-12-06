@@ -1,7 +1,7 @@
 % Calc Area Under the Curve (AUC) for each trial of a single sub.
 % Includes only area centrally to the optimal path.
 function [data_table] = calcAuc(traj_table, data_table, p)
-    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+    traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
     data_table.auc = cell(p.NUM_TRIALS,1);
     auc = NaN(p.NUM_TRIALS,1);
 

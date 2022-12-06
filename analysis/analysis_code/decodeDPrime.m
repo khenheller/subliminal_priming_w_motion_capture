@@ -6,7 +6,7 @@
 % d_prime - d' of in/direct task.
 % coef - table with regression classifier coefficients, column=variable.
 function [d_prime, coef] = decodeDPrime(iSub, measure, selected, save_to_python, traj_name, p)
-    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+    traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
     % Num samples used when feature is traj.
     n_samples = 30;
     downsample_i = round(linspace(1,traj_len, n_samples));

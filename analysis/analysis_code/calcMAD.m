@@ -3,7 +3,7 @@
 % We find the point furthest away from the line connecting the start and end points,
 % and calc its distance from that line.
 function data_table = calcMAD(traj_table, data_table, traj_name, p)
-    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+    traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
     mad_col   = [strrep(traj_name{1}, '_x','') '_mad'];
     mad_p_col = [strrep(traj_name{1}, '_x','') '_mad_p'];
     

@@ -6,7 +6,7 @@
 function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad_trials, keyboard_bad_trials, pas_rate, to_normalize, p)
     time_name = replace(traj_name{1}, 'x', 'timecourse');
 
-    traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * p.MIN_TRIM_FRAMES;
+    traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
     % Get sub data.
     reach_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;

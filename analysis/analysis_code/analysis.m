@@ -212,6 +212,8 @@ end
 
 % Get minimal traj length.
 min_len = getMinLength(traj_names{1}, p);
+trim_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * min_len;
+save([p.PROC_DATA_FOLDER '/trim_len.mat'], 'trim_len');
 
 % Normalize or Trim
 for iSub = p.SUBS
@@ -224,11 +226,10 @@ for iSub = p.SUBS
     end
 
     % Trim num samples to new length.
-    new_traj_len = p.NORM_TRAJ * p.NORM_FRAMES + ~p.NORM_TRAJ * min_len;
     matrix = reshape(reach_traj_table{:,:}, p.MAX_CAP_LENGTH, p.NUM_TRIALS, width(reach_traj_table));
-    matrix = matrix(1:new_traj_len, :, :);
-    reach_traj_table = reach_traj_table(1 : new_traj_len * p.NUM_TRIALS, :);
-    reach_traj_table{:,:} = reshape(matrix, new_traj_len * p.NUM_TRIALS, width(reach_traj_table));
+    matrix = matrix(1:trim_len, :, :);
+    reach_traj_table = reach_traj_table(1 : trim_len * p.NUM_TRIALS, :);
+    reach_traj_table{:,:} = reshape(matrix, trim_len * p.NUM_TRIALS, width(reach_traj_table));
     % Save
     save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
     disp(num2str(iSub));
@@ -424,22 +425,24 @@ disp(['FDA calc done. ' timing 'Sec']);
 %% Count trials
 tic
 for iTraj = 1:length(traj_names)
-    num_trials = struct('con_left',NaN(p.MAX_SUB,1), 'con_right',NaN(p.MAX_SUB,1),...
-        'incon_left',NaN(p.MAX_SUB,1), 'incon_right',NaN(p.MAX_SUB,1));
     for iSub = p.SUBS
         p = defineParams(p, iSub);
         % Get trials stats for this sub.
         single_trial = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);
         reach_single = single_trial.r_trial;
         keyboard_single = single_trial.k_trial;
-        reach_num_trials.con_left(iSub)  = size(reach_single.rt.con_left, 1);
-        reach_num_trials.con_right(iSub) = size(reach_single.rt.con_right, 1);
-        reach_num_trials.incon_left(iSub)  = size(reach_single.rt.incon_left, 1);
-        reach_num_trials.incon_right(iSub) = size(reach_single.rt.incon_right, 1);
-        keyboard_num_trials.con_left(iSub)  = size(keyboard_single.rt.con_left, 1);
-        keyboard_num_trials.con_right(iSub) = size(keyboard_single.rt.con_right, 1);
-        keyboard_num_trials.incon_left(iSub)  = size(keyboard_single.rt.incon_left, 1);
-        keyboard_num_trials.incon_right(iSub) = size(keyboard_single.rt.incon_right, 1);
+        reach_num_trials(iSub).con_left  = size(reach_single.rt.con_left, 1);
+        reach_num_trials(iSub).con_right = size(reach_single.rt.con_right, 1);
+        reach_num_trials(iSub).incon_left  = size(reach_single.rt.incon_left, 1);
+        reach_num_trials(iSub).incon_right = size(reach_single.rt.incon_right, 1);
+        reach_num_trials(iSub).con = reach_num_trials(iSub).con_left + reach_num_trials(iSub).con_right;
+        reach_num_trials(iSub).incon = reach_num_trials(iSub).incon_left + reach_num_trials(iSub).incon_right;
+        keyboard_num_trials(iSub).con_left  = size(keyboard_single.rt.con_left, 1);
+        keyboard_num_trials(iSub).con_right = size(keyboard_single.rt.con_right, 1);
+        keyboard_num_trials(iSub).incon_left  = size(keyboard_single.rt.incon_left, 1);
+        keyboard_num_trials(iSub).incon_right = size(keyboard_single.rt.incon_right, 1);
+        keyboard_num_trials(iSub).con = keyboard_num_trials(iSub).con_left + keyboard_num_trials(iSub).con_right;
+        keyboard_num_trials(iSub).incon = keyboard_num_trials(iSub).incon_left + keyboard_num_trials(iSub).incon_right;
     end
     save([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat'], 'reach_num_trials', 'keyboard_num_trials');
 end
@@ -1029,51 +1032,50 @@ miss_data(p, traj_names); clc;
 
 assert(exist('reach_avg_each'), "Run Plotting params section before running this one");
 
+good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_target_x_to_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+trim_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  trim_len = trim_len.trim_len;
+save([p.PROC_DATA_FOLDER '/format_to_r__good_subs.mat'], 'good_subs');
+
 tic
-for iTraj = 1:length(traj_names)
-    
-    % ---- Signle value per trial ----
-    % Total traveled distance
-    tot_dist_df = fSingleVal('tot_dist', 'reach', traj_names{iTraj}{1}, p);
-    writetable(tot_dist_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__tot_dist_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-    
-    % AUC
-    auc_df = fSingleVal('auc', 'reach', traj_names{iTraj}{1}, p);
-    writetable(auc_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__auc_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-
-    % Frequency of COM
-    com_df = fSingleVal('com', 'reach', traj_names{iTraj}{1}, p);
-    writetable(com_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__com_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-
-    % Reaction time
-    react_df = fSingleVal('react', 'reach', traj_names{iTraj}{1}, p);
-    writetable(react_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__react_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-
-    % Movment time
-    mt_df = fSingleVal('mt', 'reach', traj_names{iTraj}{1}, p);
-    writetable(mt_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__mt_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-
-    % Reach Area.
-    ra_df = fReachArea(traj_names{iTraj}{1}, p);
-    writetable(ra_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__ra_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-
-    % ---- Multiple values per trial ----
-    % Heading angle
-%     head_angle_df = fMultiVal('head_angle', traj_names{iTraj}{1}, p);
-%     writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__head_angle_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-    
-    % Deviation from center
-%     x_df = fMultiVal('traj', traj_names{iTraj}{1}, p);
-%     writetable(x_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-
-    % Movement variation
-%     x_std_df = fMultiVal('x_std', traj_names{iTraj}{1}, p);
-%     writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r_reach__x_std_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
-
-    % ---- Keyboard ----
-    % Keyboard RT
-    rt_df = fSingleVal('rt', 'keyboard', traj_names{iTraj}{1}, p);
-    writetable(rt_df, [p.PROC_DATA_FOLDER '/format_to_r_keyboard__rt_' p.DAY '_' traj_names{iTraj}{1} '_' p.EXP '.csv']);
+% % ----------- Avg of each Sub -----------
+% % Total traveled distance
+% tot_dist_df = fSingleVal('tot_dist', 'reach', '', [], p);
+% writetable(tot_dist_df, [p.PROC_DATA_FOLDER '/format_to_r__r_tot_dist_' p.DAY '_' p.EXP '.csv']);
+% % AUC
+% auc_df = fSingleVal('auc', 'reach', '', [], p);
+% writetable(auc_df, [p.PROC_DATA_FOLDER '/format_to_r__r_auc_' p.DAY '_' p.EXP '.csv']);
+% % Frequency of COM
+% com_df = fSingleVal('com', 'reach', '', [], p);
+% writetable(com_df, [p.PROC_DATA_FOLDER '/format_to_r__r_com_' p.DAY '_' p.EXP '.csv']);
+% % Reaction time
+% react_df = fSingleVal('react', 'reach', '', [], p);
+% writetable(react_df, [p.PROC_DATA_FOLDER '/format_to_r__r_react_' p.DAY '_' p.EXP '.csv']);
+% % Movment time
+% mt_df = fSingleVal('mt', 'reach', '', [], p);
+% writetable(mt_df, [p.PROC_DATA_FOLDER '/format_to_r__r_mt_' p.DAY '_' p.EXP '.csv']);
+% % Reach Area.
+% ra_df = fReachArea(traj_names{iTraj}{1}, p);
+% writetable(ra_df, [p.PROC_DATA_FOLDER '/format_to_r__r_ra_' p.DAY '_' p.EXP '.csv']);
+% % Keyboard RT
+% rt_df = fSingleVal('rt', 'keyboard', '', [], p);
+% writetable(rt_df, [p.PROC_DATA_FOLDER '/format_to_r__k_rt_' p.DAY '_' p.EXP '.csv']);
+% for iSamp = 1:trim_len
+%     % Deviation from center
+%     traj_df = fSingleVal('traj', 'reach', 'time_series', iSamp, p);
+%     writetable(traj_df, [p.PROC_DATA_FOLDER '/format_to_r__r_traj' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
+%     % Movement variation
+%     x_std_df = fSingleVal('x_std', 'reach', 'time_series', iSamp, p);
+%     writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r__r_x_std' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
+%     % Heading angle
+%     head_angle_df = fSingleVal('head_angle', 'reach', 'time_series', iSamp, p);
+%     writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r__r_head_angle' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
+% end
+% ----------- All good trials of each Sub -----------
+for iSub = good_subs
+    [r_df, k_df] = fAllGoodTrials(iSub, p);
+    writetable(r_df, [p.PROC_DATA_FOLDER '/format_to_r__sub' num2str(iSub) 'rdata.csv'])
+    writetable(k_df, [p.PROC_DATA_FOLDER '/format_to_r__sub' num2str(iSub) 'kdata.csv'])
 end
+
 timing = num2str(toc);
 disp(['Formating to R done. ' timing 'Sec']);
