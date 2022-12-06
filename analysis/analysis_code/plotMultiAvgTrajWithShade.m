@@ -15,8 +15,8 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         if plt_p.x_as_func_of == "time"
             assert(~p.NORM_TRAJ, "When traj is normalized in space, time isn't releveant and shouldnt be used");
             % Array with timing of each sample.
-            timeseries = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC;
-            left_axis = timeseries;
+            time_series = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC;
+            left_axis = time_series;
             y_label = 'time';
             xlimit = [-0.003 0.003]; % For plot.
         else
