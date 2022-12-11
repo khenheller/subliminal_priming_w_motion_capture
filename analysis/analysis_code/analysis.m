@@ -337,11 +337,21 @@ tic
 for iSub = p.SUBS
     p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
-    reach_traj_table = calcVelocity(reach_traj_table, p);
+    reach_traj_table = calcVelAcc(reach_traj_table, 'vel', p);
     save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
 end
 timing = num2str(toc);
 disp(['Velocity calc done. ' timing 'Sec']);
+%% Acceleration
+tic
+for iSub = p.SUBS
+    p = defineParams(p, iSub);
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_traj_table = calcVelAcc(reach_traj_table, 'acc', p);
+    save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
+end
+timing = num2str(toc);
+disp(['Acceleration calc done. ' timing 'Sec']);
 %% Sorting and averaging (within subject)
 tic
 for iTraj = 1:length(traj_names)
@@ -415,7 +425,12 @@ for iIter = 1:iters
     disp([num2str(iIter) ' iterations of d prime calc done. ' timing 'Sec']);
 end
 save([p.PROC_DATA_FOLDER '/d_prime_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat'], 'r_d_prime', 'k_d_prime');
-
+%% Velocity profile
+tic
+vel_dist = velProf(p);
+save([p.PROC_DATA_FOLDER,'/vel_dist_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'vel_dist');
+timing = num2str(toc);
+disp(['Velocity profiling done. ' timing 'Sec']);
 %% Sorting and averaging (between subjects)
 tic
 for iTraj = 1:length(traj_names)
@@ -504,6 +519,10 @@ for iSub = p.SUBS
         reach_avg_each.vel(iTraj).con_right(:,iSub) = r_avg.vel.con_right;
         reach_avg_each.vel(iTraj).incon_left(:,iSub) = r_avg.vel.incon_left;
         reach_avg_each.vel(iTraj).incon_right(:,iSub) = r_avg.vel.incon_right;
+        reach_avg_each.acc(iTraj).con_left(:,iSub) = r_avg.acc.con_left;
+        reach_avg_each.acc(iTraj).con_right(:,iSub) = r_avg.acc.con_right;
+        reach_avg_each.acc(iTraj).incon_left(:,iSub) = r_avg.acc.incon_left;
+        reach_avg_each.acc(iTraj).incon_right(:,iSub) = r_avg.acc.incon_right;
         reach_avg_each.rt(iTraj).con_left(iSub)  = r_avg.rt.con_left * 1000;
         reach_avg_each.rt(iTraj).con_right(iSub) = r_avg.rt.con_right * 1000;
         reach_avg_each.rt(iTraj).incon_left(iSub)  = r_avg.rt.incon_left * 1000;
@@ -553,6 +572,8 @@ for iSub = p.SUBS
         reach_avg_each.head_angle(iTraj).incon(:, iSub) = r_avg.head_angle.incon;
         reach_avg_each.vel(iTraj).con(:, iSub) = r_avg.vel.con;
         reach_avg_each.vel(iTraj).incon(:, iSub) = r_avg.vel.incon;
+        reach_avg_each.acc(iTraj).con(:, iSub) = r_avg.acc.con;
+        reach_avg_each.acc(iTraj).incon(:, iSub) = r_avg.acc.incon;
         reach_avg_each.rt(iTraj).con(iSub) = r_avg.rt.con * 1000;
         reach_avg_each.rt(iTraj).incon(iSub) = r_avg.rt.incon * 1000;
         reach_avg_each.react(iTraj).con(iSub) = r_avg.react.con * 1000;
@@ -607,7 +628,7 @@ save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.
 disp("Done setting plotting params.");
 %% Single Sub plots.
 good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
-subs_to_present = good_subs(1:10);
+subs_to_present = good_subs(1:3);
 % Create figure for each sub.
 for iSub = subs_to_present
     sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
@@ -687,7 +708,13 @@ end
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
     subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
-    plotXVel(iSub, traj_names{1}, subplot_p, plt_p, p);
+    plotXVelAcc(iSub, 'vel', traj_names{1}, subplot_p, plt_p, p);
+end
+% ------- X Acceleration -------
+for iSub = subs_to_present
+    figure(sub_f(iSub,2));
+    subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
+    plotXVelAcc(iSub, 'acc', traj_names{1}, subplot_p, plt_p, p);
 end
 % 
 % % ------- Keyboard Response Times -------
@@ -722,9 +749,18 @@ subplot(2,5,[1 2]);
 plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
 % ------- Velocity -------
-figure(all_sub_f(1));
-subplot_p = [2,2,1; 2,2,2];
-plotMultiVel(traj_names{1}, subplot_p, plt_p, p);
+% figure(all_sub_f(1));
+% subplot_p = [1,2,1; 1,2,2];
+% plotMultiVelAcc('vel', traj_names{1}, subplot_p, plt_p, p);
+
+% ------- Acceleration -------
+% figure(all_sub_f(2));
+% subplot_p = [1,2,1; 1,2,2];
+% plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
+
+% ------- Velocity Profile -------
+% figure(all_sub_f(1));
+% plotMultiVelProf(p);
 
 % ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(1));
