@@ -54,16 +54,9 @@ function [signs] = getAngleSign(traj, traj_len, p)
         z = [traj(iSample, 3), traj(iSample-1, 3)];
         % Define two points the screen goes through.
         screen_x = [-0.01 0.01];
-        screen_z = [screen_dist screen_dist];
-        % fit a linear func to screen and to tangent.
-        tan_coef = polyfit(x, z, 1);
-        screen_coef = polyfit(screen_x, screen_z, 1);
-        % Arrange according to equation: y = a + bx
-        tan_a = tan_coef(2);
-        tan_b = tan_coef(1);
-        % Find intersection with screen.
-        inter_x = (tan_coef(2) - screen_coef(2)) / (screen_coef(1) - tan_coef(1));
-
+        screen_z = [screen_dist*-100000000 screen_dist*-100000000];
+        [inter_x, ~] = mathIntersect(x,z, screen_x,screen_z);
+        % Find sign.
         signs(iSample) = ((inter_x < 0 && traj(end, 1) < 0) || ...
                           (inter_x >= 0 && traj(end, 1) >= 0)) ...
                             * 2 - 1;

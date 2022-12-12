@@ -299,6 +299,16 @@ for iSub = p.SUBS
 end
 timing = num2str(toc);
 disp(['Heading angle calc done. ' timing 'Sec']);
+%% Implied endpoint.
+tic
+for iSub = p.SUBS
+    p = defineParams(p, iSub);
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_traj_table = calcIEP(reach_traj_table, traj_names{1}, p);
+    save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
+end
+timing = num2str(toc);
+disp(['Implied endpoint calc done. ' timing 'Sec']);
 %% Changes of mind
 tic
 for iSub = p.SUBS
@@ -523,6 +533,10 @@ for iSub = p.SUBS
         reach_avg_each.acc(iTraj).con_right(:,iSub) = r_avg.acc.con_right;
         reach_avg_each.acc(iTraj).incon_left(:,iSub) = r_avg.acc.incon_left;
         reach_avg_each.acc(iTraj).incon_right(:,iSub) = r_avg.acc.incon_right;
+        reach_avg_each.iep(iTraj).con_left(:,iSub) = r_avg.iep.con_left;
+        reach_avg_each.iep(iTraj).con_right(:,iSub) = r_avg.iep.con_right;
+        reach_avg_each.iep(iTraj).incon_left(:,iSub) = r_avg.iep.incon_left;
+        reach_avg_each.iep(iTraj).incon_right(:,iSub) = r_avg.iep.incon_right;
         reach_avg_each.rt(iTraj).con_left(iSub)  = r_avg.rt.con_left * 1000;
         reach_avg_each.rt(iTraj).con_right(iSub) = r_avg.rt.con_right * 1000;
         reach_avg_each.rt(iTraj).incon_left(iSub)  = r_avg.rt.incon_left * 1000;
@@ -574,6 +588,8 @@ for iSub = p.SUBS
         reach_avg_each.vel(iTraj).incon(:, iSub) = r_avg.vel.incon;
         reach_avg_each.acc(iTraj).con(:, iSub) = r_avg.acc.con;
         reach_avg_each.acc(iTraj).incon(:, iSub) = r_avg.acc.incon;
+        reach_avg_each.iep(iTraj).con(:, iSub) = r_avg.iep.con;
+        reach_avg_each.iep(iTraj).incon(:, iSub) = r_avg.iep.incon;
         reach_avg_each.rt(iTraj).con(iSub) = r_avg.rt.con * 1000;
         reach_avg_each.rt(iTraj).incon(iSub) = r_avg.rt.incon * 1000;
         reach_avg_each.react(iTraj).con(iSub) = r_avg.react.con * 1000;
@@ -704,17 +720,26 @@ end
 %     subplot_p = [2,2,1; 2,2,2]; % Params for 1st and 2nd subplots.
 %     plotXStd(iSub, traj_names, subplot_p, plt_p, p);
 % end
+
 % ------- X Velocity -------
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
     subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
     plotXVelAcc(iSub, 'vel', traj_names{1}, subplot_p, plt_p, p);
 end
+
 % ------- X Acceleration -------
 for iSub = subs_to_present
     figure(sub_f(iSub,2));
     subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
     plotXVelAcc(iSub, 'acc', traj_names{1}, subplot_p, plt_p, p);
+end
+
+% ------- Implied endpoint -------
+for iSub = subs_to_present
+    figure(sub_f(iSub,2));
+    subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
+    plotIEP(iSub, traj_names{1}, subplot_p, plt_p, p);
 end
 % 
 % % ------- Keyboard Response Times -------
@@ -747,6 +772,11 @@ all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 figure(all_sub_f(1));
 subplot(2,5,[1 2]);
 plotMultiAvgTrajWithShade(traj_names, plt_p, p);
+
+% ------- Implied Endpoint -------
+figure(all_sub_f(1));
+subplot_p = [1,2,1; 1,2,2];
+plotMultiIEP(traj_names, subplot_p, plt_p, p);
 
 % ------- Velocity -------
 % figure(all_sub_f(1));
