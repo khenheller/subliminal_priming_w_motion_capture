@@ -38,6 +38,7 @@ plot(x_axis, incon, 'color',[plt_p.incon_col plt_p.f_alpha]);
 set(gca, 'TickDir','out');
 xlabel(x_label);
 ylim(y_lim);
+title([target ', avg of each sub']);
 % xticks([]);
 ylabel(y_label);
 set(gca, 'FontSize',14);
@@ -49,11 +50,19 @@ hold on;
 stdshade(con', plt_p.f_alpha*0.9, plt_p.con_col, x_axis, 0, 1, 'se', plt_p.alpha_size, plt_p.linewidth);
 stdshade(incon', plt_p.f_alpha*0.9, plt_p.incon_col, x_axis, 0, 1, 'se', plt_p.alpha_size, plt_p.linewidth);
 
+% Permutation testing.
+clusters = permCluster(avg_each.(target).con(:,good_subs), avg_each.(target).incon(:,good_subs), plt_p.n_perm);
+
+% Plot clusters.
+points = [x_axis(clusters.start)'; x_axis(clusters.end)'];
+drawRectangle(points, 'x', y_lim, plt_p);
+
 set(gca, 'TickDir','out');
 xlabel(x_label);
 % ylim(ylimit);
 % xticks([]);
 ylabel(y_label);
+title([target ', avg over subs']);
 set(gca, 'FontSize',14);
 % Legend.
 h = [];
@@ -62,4 +71,7 @@ h(2) = plot(nan,nan,'Color',plt_p.incon_col, 'linewidth',plt_p.linewidth);
 graphs = {'Congruent', 'Incongruent'};
 legend(h, graphs, 'Location','southeast');
 legend('boxoff');
+
+% Print stats to terminal.
+printTsStats(['---- ' target ' --------'], clusters);
 end

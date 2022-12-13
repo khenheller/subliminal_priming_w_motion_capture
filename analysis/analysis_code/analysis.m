@@ -347,7 +347,8 @@ tic
 for iSub = p.SUBS
     p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
-    reach_traj_table = calcVelAcc(reach_traj_table, 'vel', p);
+    prenorm_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  prenorm_traj_table = prenorm_traj_table.reach_pre_norm_traj_table;
+    reach_traj_table = calcVelAcc(prenorm_traj_table, reach_traj_table, 'vel', p);
     save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
 end
 timing = num2str(toc);
@@ -357,7 +358,8 @@ tic
 for iSub = p.SUBS
     p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
-    reach_traj_table = calcVelAcc(reach_traj_table, 'acc', p);
+    prenorm_traj_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  prenorm_traj_table = prenorm_traj_table.reach_pre_norm_traj_table;
+    reach_traj_table = calcVelAcc(prenorm_traj_table, reach_traj_table, 'acc', p);
     save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
 end
 timing = num2str(toc);
@@ -724,21 +726,21 @@ end
 % ------- X Velocity -------
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
-    subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
+    subplot_p = [2,3,1; 2,3,4]; % Params for 1st and 2nd subplots.
     plotXVelAcc(iSub, 'vel', traj_names{1}, subplot_p, plt_p, p);
 end
 
 % ------- X Acceleration -------
 for iSub = subs_to_present
-    figure(sub_f(iSub,2));
-    subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
+    figure(sub_f(iSub,1));
+    subplot_p = [2,3,2; 2,3,5]; % Params for 1st and 2nd subplots.
     plotXVelAcc(iSub, 'acc', traj_names{1}, subplot_p, plt_p, p);
 end
 
 % ------- Implied endpoint -------
 for iSub = subs_to_present
-    figure(sub_f(iSub,2));
-    subplot_p = [1,2,1; 1,2,2]; % Params for 1st and 2nd subplots.
+    figure(sub_f(iSub,1));
+    subplot_p = [2,3,3; 2,3,6]; % Params for 1st and 2nd subplots.
     plotIEP(iSub, traj_names{1}, subplot_p, plt_p, p);
 end
 % 
@@ -753,11 +755,11 @@ end
 %% Multiple subs average plots.
 % Create figures.
 all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 % figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
@@ -775,31 +777,31 @@ plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
 % ------- Implied Endpoint -------
 figure(all_sub_f(1));
-subplot_p = [1,2,1; 1,2,2];
+subplot_p = [2,3,3; 2,3,6];
 plotMultiIEP(traj_names, subplot_p, plt_p, p);
 
 % ------- Velocity -------
-% figure(all_sub_f(1));
-% subplot_p = [1,2,1; 1,2,2];
-% plotMultiVelAcc('vel', traj_names{1}, subplot_p, plt_p, p);
+figure(all_sub_f(1));
+subplot_p = [2,3,1; 2,3,4];
+plotMultiVelAcc('vel', traj_names{1}, subplot_p, plt_p, p);
 
 % ------- Acceleration -------
-% figure(all_sub_f(2));
-% subplot_p = [1,2,1; 1,2,2];
-% plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
+figure(all_sub_f(1));
+subplot_p = [2,3,2; 2,3,5];
+plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
 
 % ------- Velocity Profile -------
 % figure(all_sub_f(1));
 % plotMultiVelProf(p);
 
 % ------- React + Movement + Response Times Reaching -------
-figure(all_sub_f(1));
-subplot_p = [2,5,6; 2,5,7];
-react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
-p_val = react_mt_rt_p_val.react;
-save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-p_val = react_mt_rt_p_val.mt;
-save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% figure(all_sub_f(1));
+% subplot_p = [2,5,6; 2,5,7];
+% react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
+% p_val = react_mt_rt_p_val.react;
+% save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% p_val = react_mt_rt_p_val.mt;
+% save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % % ------- MAD -------
 % % Maximum absolute deviation.
@@ -810,10 +812,10 @@ save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Reach Area -------
 % Area between avg left traj and avg right traj (in each condition).
-figure(all_sub_f(1));
-subplot(2,5,8);
-p_val = plotMultiReachArea(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% figure(all_sub_f(1));
+% subplot(2,5,8);
+% p_val = plotMultiReachArea(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- X STD -------
 % figure(all_sub_f(4));
@@ -829,37 +831,37 @@ save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- COM -------
 % Number of changes of mind.
-figure(all_sub_f(1));
-subplot(2,5,10);
+% figure(all_sub_f(1));
+% subplot(2,5,10);
 % p_val = plotMultiCom(traj_names, plt_p, p);
 % save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Total distance traveled -------
 % Total distance traveled.
-figure(all_sub_f(1));
-subplot(2,5,9);
-p_val = plotMultiTotDist(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% figure(all_sub_f(1));
+% subplot(2,5,9);
+% p_val = plotMultiTotDist(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- AUC -------
 % Area under the curve.
-figure(all_sub_f(2));
-subplot(2,5,1);
-p_val = plotMultiAuc(traj_names, plt_p, p);
-save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% figure(all_sub_f(2));
+% subplot(2,5,1);
+% p_val = plotMultiAuc(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
-if any(p.SUBS >=43) % Only for Exp 4.
-    figure(all_sub_f(1));
-    subplot(2,5,3);
-    p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
-    save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-end
+% if any(p.SUBS >=43) % Only for Exp 4.
+%     figure(all_sub_f(1));
+%     subplot(2,5,3);
+%     p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
+%     save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% end
 
 % % ------- FDA -------
-figure(all_sub_f(2));
-subplot(1,3,3);
-plotMultiFda(traj_names, plt_p, p);
+% figure(all_sub_f(2));
+% subplot(1,3,3);
+% plotMultiFda(traj_names, plt_p, p);
 
 % @@@@@@@@------- Prime Forced choice -------@@@@@@@@
 % figure(all_sub_f(6));
@@ -892,17 +894,17 @@ plotMultiFda(traj_names, plt_p, p);
 
 % @@@@@@@@------- Number of bad trials -------@@@@@@@@
 % Comparison of bad trials count between Keybaord and reaching.
-figure(all_sub_f(3));
+% figure(all_sub_f(3));
 % subplot(2,1,1);
 % plotNumBadTrials(traj_names{1}{1}, 'all_subs', plt_p, p);
 % subplot(2,1,2);
-plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
+% plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
 
 % @@@@@@@@------- d' direct vs indirect -------@@@@@@@@
 % Comparison of sensitivity between direct and indirect measures of prime processing.
-figure(all_sub_f(6));
-subplot_p = [2,3,1; 2,3,2];
-plotMultiDPrime(traj_names{1}{1}, subplot_p, plt_p, p);
+% figure(all_sub_f(6));
+% subplot_p = [2,3,1; 2,3,2];
+% plotMultiDPrime(traj_names{1}{1}, subplot_p, plt_p, p);
 %% Add labels to subplots.
 subplots = all_sub_f(1).Children;
 subplots = [subplots(7); subplots(1); subplots(5); subplots(4); subplots(3); subplots(2)];

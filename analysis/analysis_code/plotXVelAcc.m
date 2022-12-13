@@ -23,6 +23,7 @@ if isequal(target,'vel')
     y_lim = [-1 1.5];
 else
     y_label = 'Acceleration(m/s^2)';
+    y_lim = [-15 25];
 end
 
 % Plot single trials.
@@ -35,8 +36,9 @@ plot(x_axis, incon, 'color',[plt_p.incon_col plt_p.f_alpha]);
 set(gca, 'TickDir','out');
 xlabel(x_label);
 ylim(y_lim);
+title([target ' of each trial']);
 % xticks([]);
-ylabel([y_label '(m/s)']);
+ylabel(y_label);
 set(gca, 'FontSize',14);
 
 % Plot avg with shade.
@@ -48,9 +50,10 @@ stdshade(incon', plt_p.f_alpha*0.9, plt_p.incon_col, x_axis, 0, 1, 'se', plt_p.a
 
 set(gca, 'TickDir','out');
 xlabel(x_label);
+title(['Average ' target]);
 % ylim(ylimit);
 % xticks([]);
-ylabel([y_label '(m/s)']);
+ylabel(y_label);
 set(gca, 'FontSize',14);
 % Legend.
 h = [];

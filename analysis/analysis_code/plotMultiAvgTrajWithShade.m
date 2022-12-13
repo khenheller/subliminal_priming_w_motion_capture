@@ -18,7 +18,7 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
             time_series = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC;
             left_axis = time_series;
             y_label = 'time';
-            xlimit = [-0.003 0.003]; % For plot.
+            xlimit = [-0.04 0.04]; % For plot.
         else
             left_axis = subs_avg.traj.con_left(:,3)*100;
             assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
@@ -37,12 +37,14 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
 
         % Plot clusters.
         points = [left_axis(clusters.start)'; left_axis(clusters.end)'];
-        drawRectangle(points, 'y', xlimit, plt_p);
+        if ~isempty(points)
+            drawRectangle(points, 'y', xlimit, plt_p);
+        end
 
         set(gca, 'TickDir','out');
         xlabel('X');
         xlim(xlimit);
-        xticks([]);
+%         xticks([]);
         ylabel(y_label);
         title('Average trajectory');
         set(gca, 'FontSize',14);

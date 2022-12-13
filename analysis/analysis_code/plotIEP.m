@@ -20,8 +20,6 @@ else
     y_label = '% Path traveled';
 end
 
-% y_lim = []
-
 % Plot single trials.
 subplot(subplot_p(1,1),subplot_p(1,2),subplot_p(1,3));
 xline(0, '--', 'color',[0.7 0.7 0.7]);
@@ -56,6 +54,6 @@ h = [];
 h(1) = plot(nan,nan,'Color',plt_p.con_col, 'linewidth',plt_p.linewidth);
 h(2) = plot(nan,nan,'Color',plt_p.incon_col, 'linewidth',plt_p.linewidth);
 graphs = {'Congruent', 'Incongruent'};
-legend(h, graphs, 'Location','northeast');
+legend(h, graphs, 'Location','southeast');
 legend('boxoff');
 end
