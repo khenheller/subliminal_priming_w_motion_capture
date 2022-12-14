@@ -55,20 +55,20 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     left = reach_data_table.(ans_left_col); % Sub chose left ans.
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
     % Sort trials.
-    trial.trajs  = sortTrials(traj_mat, sorter, 'timeseries', to_normalize);
-    trial.time  = sortTrials(time_mat, sorter, 'timeseries', 0);
-    trial.head_angle = sortTrials(head_angle_mat, sorter, 'timeseries', to_normalize);
-    trial.vel = sortTrials(vel_mat, sorter, 'timeseries', to_normalize);
-    trial.acc = sortTrials(acc_mat, sorter, 'timeseries', to_normalize);
-    trial.iep = sortTrials(iep_mat, sorter, 'timeseries', to_normalize);
-    trial.rt = sortTrials(reach_data_table.(offset_col), sorter, 0, to_normalize); % Response time.
-    trial.react = sortTrials(reach_data_table.(onset_col), sorter, 0, to_normalize); % Reaction time.
-    trial.mt = sortTrials(reach_data_table.(offset_col) - reach_data_table.(onset_col), sorter, 0, to_normalize); % Movement time.
-    trial.mad = sortTrials(reach_data_table.(mad_col), sorter, 0, to_normalize); % Maximum absolute deviation.
-    trial.mad_p = sortTrials(reach_data_table.(mad_p_col), sorter, 0, to_normalize); % Maximally deviating point.
-    trial.com = sortTrials(reach_data_table.(com_col), sorter, 0, to_normalize); % Number of changes of mind.
-    trial.tot_dist = sortTrials(reach_data_table.(tot_dist_col), sorter, 0, to_normalize); % Total distance traveled.
-    trial.auc = sortTrials(reach_data_table.(auc_col), sorter, 0, to_normalize); % Area Under the Curve.
+    trial.trajs  = sortTrials(traj_mat, sorter, 'timeseries', "", to_normalize);
+    trial.time  = sortTrials(time_mat, sorter, 'timeseries', "", 0);
+    trial.head_angle = sortTrials(head_angle_mat, sorter, 'timeseries', "", to_normalize);
+    trial.vel = sortTrials(vel_mat, sorter, 'timeseries', "vel", to_normalize);
+    trial.acc = sortTrials(acc_mat, sorter, 'timeseries', "acc", to_normalize);
+    trial.iep = sortTrials(iep_mat, sorter, 'timeseries', "iep", to_normalize);
+    trial.rt = sortTrials(reach_data_table.(offset_col), sorter, "", "", to_normalize); % Response time.
+    trial.react = sortTrials(reach_data_table.(onset_col), sorter, "", "", to_normalize); % Reaction time.
+    trial.mt = sortTrials(reach_data_table.(offset_col) - reach_data_table.(onset_col), sorter, "", "", to_normalize); % Movement time.
+    trial.mad = sortTrials(reach_data_table.(mad_col), sorter, "", "", to_normalize); % Maximum absolute deviation.
+    trial.mad_p = sortTrials(reach_data_table.(mad_p_col), sorter, "", "", to_normalize); % Maximally deviating point.
+    trial.com = sortTrials(reach_data_table.(com_col), sorter, "", "", to_normalize); % Number of changes of mind.
+    trial.tot_dist = sortTrials(reach_data_table.(tot_dist_col), sorter, "", "", to_normalize); % Total distance traveled.
+    trial.auc = sortTrials(reach_data_table.(auc_col), sorter, "", "", to_normalize); % Area Under the Curve.
     trial.fc_prime.con   = reach_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
     trial.fc_prime.incon = reach_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
     trial.pas.con   = reach_data_table.pas(~bad_timing_or_quit & con);
@@ -115,7 +115,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     left = keyboard_data_table.(ans_left_col); % Sub chose left ans.
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
     % Sort trials.
-    trial.rt = sortTrials(keyboard_data_table.(rt_col), sorter, '', to_normalize); % Response time.
+    trial.rt = sortTrials(keyboard_data_table.(rt_col), sorter, "", "", to_normalize); % Response time.
     trial.fc_prime.con   = keyboard_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
     trial.fc_prime.incon = keyboard_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
     trial.pas.con   = keyboard_data_table.pas(~bad_timing_or_quit & con);
@@ -146,8 +146,9 @@ end
 %   con - is each trial congruent.
 %   left - was answer in each trial "left".
 % data_type - sorting trajs (which have multiple values for each trial) or regular data (single value per trial)?
+% var_name - ""/"vel"/"acc"/"iep". The last three require special care when normalizing.
 % to_normalize - within each sub.
-function [sorted_data] = sortTrials(data, sorter, data_type, to_normalize)
+function [sorted_data] = sortTrials(data, sorter, data_type, var_name, to_normalize)
     bad = sorter.bad;
     pas = sorter.pas;
     con = sorter.con;
@@ -183,6 +184,11 @@ function [sorted_data] = sortTrials(data, sorter, data_type, to_normalize)
 
     % Normalize.
     if to_normalize
+        % Vel, acc, iEP have std=0 at first sample. Results in nan when normalizing, replace 0 with 1.
+        if ismember(var_name, ["vel","acc","iep"])
+            data_std(1) = 1;
+        end
+
         sorted_data.con_left = round((sorted_data.con_left - data_avg), 10) ./ data_std;
         sorted_data.con_right = round((sorted_data.con_right - data_avg), 10) ./ data_std;
         sorted_data.incon_left = round((sorted_data.incon_left - data_avg), 10) ./ data_std;

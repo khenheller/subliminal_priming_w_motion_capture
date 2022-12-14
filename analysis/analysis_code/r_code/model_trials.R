@@ -6,8 +6,10 @@ model_trials <- function(measure, var_names, p){
     df <- readRDS(paste0(p$PROC_DATA_FOLDER,'/sub',iSub,measure,'data.rds'))
     # Mixed model for each dependent var.
     models <- lapply(select(df, var_names), function(x) lmer(x ~ cond + (cond|side), data=df))
+    # Can't 'summary' when fixed effect are 0. Remove those cases.
+    no_summary = unlist(lapply(models, function(m)  all(fixef(m)==0)))
     # Summarize.
-    print(lapply(models, summary))
+    print(lapply(models[-no_summary], summary))
     # Save.
     saveRDS(models, file=paste0(p$PROC_DATA_FOLDER,'/sub',iSub,measure,'models.rds'))
   }
