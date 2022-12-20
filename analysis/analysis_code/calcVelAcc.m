@@ -1,6 +1,7 @@
 % Calc the velocity/accelaration for a participant's trials.
 % target - 'vel' / 'acc'. What are calculating.
 function [traj_table] = calcVelAcc(prenorm_traj_table, traj_table, target, p)
+assert(~p.NORM_TRAJ, "Velocity isnt relevant when trajectory is normalized in space.");
 traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
 if isequal(target, 'vel')
     src_col = 'target_x_to';

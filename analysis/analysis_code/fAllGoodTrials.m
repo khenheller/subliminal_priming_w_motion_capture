@@ -7,8 +7,8 @@ analyze_timeseries = 1;
 trials = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_target_x_to.mat']); 
 r_sorted = trials.r_trial;
 k_sorted = trials.k_trial;
-% Can't touch this! Tuuu Du Du Du, Ta Ta!
-vars = ["react","mt","mad","tot_dist","auc"];
+% Can't touch this! Tuuu Du Du Du, Ta Ta! (All reaching vars you want to include).
+vars = ["react","mt","mad","tot_dist","auc","max_vel"];
 % Num trials.
 n_trials = load([p.PROC_DATA_FOLDER '/num_trials_' p.DAY '_target_x_to_subs_' p.SUBS_STRING '.mat']);
 r_n_trials = n_trials.reach_num_trials(iSub);

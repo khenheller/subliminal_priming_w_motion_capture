@@ -18,7 +18,7 @@ p.DAY = 'day2';
 pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
-p.NORMALIZE_WITHIN_SUB = 1; % Normalize each variable within each sub.
+p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
 p.NORM_TRAJ = 0; % Normalize traj in space.
 p.MIN_SAMP_LEN = 0.3; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
@@ -352,6 +352,17 @@ for iSub = p.SUBS
 end
 timing = num2str(toc);
 disp(['Velocity calc done. ' timing 'Sec']);
+%% Max Velocity
+tic
+for iSub = p.SUBS
+    p = defineParams(p, iSub);
+    reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_data_table = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
+    reach_data_table = calcMaxVel(reach_traj_table, reach_data_table, p);
+    save([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
+end
+timing = num2str(toc);
+disp(['Max Velocity calc done. ' timing 'Sec']);
 %% Acceleration
 tic
 for iSub = p.SUBS
@@ -507,6 +518,7 @@ plt_p.second_practice_color = [0 125 0] / 255;
 plt_p.green_1 = [0.46667 0.85882 0.40392];
 plt_p.green_2 = [0.56471 0.6902 0.37255];
 plt_p.test_color = [240 240 30] / 255;
+plt_p.n_perm_clust_tests = input("How many permutation+clustering tests do you have?");
 
 % Load reach area.
 reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{1}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat']);  reach_area = reach_area.reach_area;
@@ -566,6 +578,10 @@ for iSub = p.SUBS
         reach_avg_each.auc(iTraj).con_right(iSub) = r_avg.auc.con_right;
         reach_avg_each.auc(iTraj).incon_left(iSub)  = r_avg.auc.incon_left;
         reach_avg_each.auc(iTraj).incon_right(iSub) = r_avg.auc.incon_right;
+        reach_avg_each.max_vel(iTraj).con_left(iSub)  = r_avg.max_vel.con_left;
+        reach_avg_each.max_vel(iTraj).con_right(iSub) = r_avg.max_vel.con_right;
+        reach_avg_each.max_vel(iTraj).incon_left(iSub)  = r_avg.max_vel.incon_left;
+        reach_avg_each.max_vel(iTraj).incon_right(iSub) = r_avg.max_vel.incon_right;
         reach_avg_each.x_std(iTraj).con_left(:,iSub)  = r_avg.x_std.con_left;
         reach_avg_each.x_std(iTraj).con_right(:,iSub) = r_avg.x_std.con_right;
         reach_avg_each.x_std(iTraj).incon_left(:,iSub)  = r_avg.x_std.incon_left;
@@ -605,6 +621,8 @@ for iSub = p.SUBS
         reach_avg_each.tot_dist(iTraj).incon(iSub) = r_avg.tot_dist.incon;
         reach_avg_each.auc(iTraj).con(iSub) = r_avg.auc.con;
         reach_avg_each.auc(iTraj).incon(iSub) = r_avg.auc.incon;
+        reach_avg_each.max_vel(iTraj).con(iSub) = r_avg.max_vel.con;
+        reach_avg_each.max_vel(iTraj).incon(iSub) = r_avg.max_vel.incon;
 %         reach_avg_each.x_std(iTraj).con(:, iSub) = reach_avg.x_std.con;
 %         reach_avg_each.x_std(iTraj).incon(:, iSub) = reach_avg.x_std.incon;
         reach_avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
@@ -729,6 +747,13 @@ for iSub = subs_to_present
     plotXVelAcc(iSub, 'vel', traj_names{1}, subplot_p, plt_p, p);
 end
 
+% ------- X Max Velocity -------
+for iSub = subs_to_present
+    figure(sub_f(iSub,1));
+    subplot(2,3,3);
+    plotMaxVel(iSub, traj_names{1}, plt_p, p);
+end
+
 % ------- X Acceleration -------
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
@@ -783,6 +808,11 @@ plotMultiIEP(traj_names, subplot_p, plt_p, p);
 figure(all_sub_f(1));
 subplot_p = [2,3,1; 2,3,4];
 plotMultiVelAcc('vel', traj_names{1}, subplot_p, plt_p, p);
+
+% ------- Max Velocity -------
+figure(all_sub_f(1));
+subplot(2,3,3);
+plotMultiMaxVel(traj_names{1}, plt_p, p);
 
 % ------- Acceleration -------
 figure(all_sub_f(1));

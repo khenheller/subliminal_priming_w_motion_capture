@@ -42,6 +42,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     com_col = ['com'];
     tot_dist_col = ['tot_dist'];
     auc_col = ['auc'];
+    max_vel_col = ['max_vel'];
 
     % -------------------- Sort and avg REACH --------------------
     % Bad trials reasons, Remove reason: "slow_mvmnt", "loop".
@@ -69,6 +70,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     trial.com = sortTrials(reach_data_table.(com_col), sorter, "", "", to_normalize); % Number of changes of mind.
     trial.tot_dist = sortTrials(reach_data_table.(tot_dist_col), sorter, "", "", to_normalize); % Total distance traveled.
     trial.auc = sortTrials(reach_data_table.(auc_col), sorter, "", "", to_normalize); % Area Under the Curve.
+    trial.max_vel = sortTrials(reach_data_table.(max_vel_col), sorter, "", "", to_normalize); % MAximal horizontal velocity.
     trial.fc_prime.con   = reach_data_table.prime_correct(~bad_timing_or_quit & pas & con); % forced choice.
     trial.fc_prime.incon = reach_data_table.prime_correct(~bad_timing_or_quit & pas & ~con);
     trial.pas.con   = reach_data_table.pas(~bad_timing_or_quit & con);
@@ -88,6 +90,7 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     avg.com = sortedAvg(trial.com, '', 0);
     avg.tot_dist = sortedAvg(trial.tot_dist, '', 0);
     avg.auc = sortedAvg(trial.auc, '', 0);
+    avg.max_vel = sortedAvg(trial.max_vel, '', 0);
     avg.fc_prime.con   = nanmean(trial.fc_prime.con);
     avg.fc_prime.incon = nanmean(trial.fc_prime.incon);
     avg.x_std.con_left    = std(trial.trajs.con_left (:,:,1), 0, 2); % std between trials.
