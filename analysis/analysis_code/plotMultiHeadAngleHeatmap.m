@@ -12,7 +12,7 @@ function [] = plotMultiHeadAngleHeatmap(traj_names, subplot_p, p)
 
         for iSub = good_subs
             % load data.
-            single_trials = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);  single_trials = single_trials.reach_single;
+            single_trials = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);  single_trials = single_trials.r_trial;
             % combine left and right.
             angles_con_mat = [single_trials.head_angle.con_left(:,:) single_trials.head_angle.con_right(:,:)];
             angles_incon_mat = [single_trials.head_angle.incon_left(:,:) single_trials.head_angle.incon_right(:,:)];

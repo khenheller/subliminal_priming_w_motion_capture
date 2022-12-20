@@ -779,17 +779,17 @@ end
 %% Multiple subs average plots.
 % Create figures.
 all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
-% figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-% figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-% figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-% figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 % figure(all_sub_f(5)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 % figure(all_sub_f(6)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 % figure(all_sub_f(7)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
@@ -805,17 +805,17 @@ subplot_p = [2,3,3; 2,3,6];
 plotMultiIEP(traj_names, subplot_p, plt_p, p);
 
 % ------- Velocity -------
-figure(all_sub_f(1));
+figure(all_sub_f(2));
 subplot_p = [2,3,1; 2,3,4];
 plotMultiVelAcc('vel', traj_names{1}, subplot_p, plt_p, p);
 
 % ------- Max Velocity -------
 figure(all_sub_f(1));
-subplot(2,3,3);
+subplot(2,3,4);
 plotMultiMaxVel(traj_names{1}, plt_p, p);
 
 % ------- Acceleration -------
-figure(all_sub_f(1));
+figure(all_sub_f(2));
 subplot_p = [2,3,2; 2,3,5];
 plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
 
@@ -824,27 +824,27 @@ plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
 % plotMultiVelProf(p);
 
 % ------- React + Movement + Response Times Reaching -------
-% figure(all_sub_f(1));
-% subplot_p = [2,5,6; 2,5,7];
-% react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
-% p_val = react_mt_rt_p_val.react;
-% save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-% p_val = react_mt_rt_p_val.mt;
-% save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+figure(all_sub_f(1));
+subplot_p = [2,5,6; 2,5,7];
+react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
+p_val = react_mt_rt_p_val.react;
+save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+p_val = react_mt_rt_p_val.mt;
+save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % % ------- MAD -------
 % % Maximum absolute deviation.
-% figure(all_sub_f(1));
-% subplot(1,3,1);
-% p_val = plotMultiMad(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/mad_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], p_val);
+figure(all_sub_f(3));
+subplot(1,3,1);
+p_val = plotMultiMad(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/mad_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
 
 % ------- Reach Area -------
 % Area between avg left traj and avg right traj (in each condition).
-% figure(all_sub_f(1));
-% subplot(2,5,8);
-% p_val = plotMultiReachArea(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+figure(all_sub_f(1));
+subplot(2,5,8);
+p_val = plotMultiReachArea(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- X STD -------
 % figure(all_sub_f(4));
@@ -852,11 +852,11 @@ plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
 % plotMultiXStd(traj_names, subplot_p, plt_p, p);
 
 % ------- Heading angle -------
-% figure(all_sub_f(5));
-% subplot(2,2,1);
-% plotMultiHeadAngle(traj_names, plt_p, p);
-% subplot_p = [2,2,3; 2,2,4];
-% plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
+figure(all_sub_f(4));
+subplot(2,2,1);
+plotMultiHeadAngle(traj_names, plt_p, p);
+subplot_p = [2,2,3; 2,2,4];
+plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 
 % ------- COM -------
 % Number of changes of mind.
@@ -867,17 +867,17 @@ plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
 
 % ------- Total distance traveled -------
 % Total distance traveled.
-% figure(all_sub_f(1));
-% subplot(2,5,9);
-% p_val = plotMultiTotDist(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+figure(all_sub_f(1));
+subplot(2,5,3);
+p_val = plotMultiTotDist(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- AUC -------
 % Area under the curve.
-% figure(all_sub_f(2));
-% subplot(2,5,1);
-% p_val = plotMultiAuc(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+figure(all_sub_f(2));
+subplot(2,3,3);
+p_val = plotMultiAuc(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
 % if any(p.SUBS >=43) % Only for Exp 4.
