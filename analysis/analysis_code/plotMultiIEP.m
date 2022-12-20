@@ -50,7 +50,7 @@ stdshade(avg_each.iep.incon(:,good_subs)' * flip, plt_p.f_alpha*0.9, plt_p.incon
 xline(0, '--', 'color',[0.7,0.7,0.7], 'LineWidth',2);
 
 % Permutation testing.
-clusters = permCluster(avg_each.iep.con(:,good_subs,1), avg_each.iep.incon(:,good_subs,1), plt_p.n_perm);
+clusters = permCluster(avg_each.iep.con(:,good_subs,1), avg_each.iep.incon(:,good_subs,1), plt_p.n_perm, plt_p.n_perm_clust_tests);
 
 % Plot clusters.
 points = [left_axis(clusters.start)'; left_axis(clusters.end)'];

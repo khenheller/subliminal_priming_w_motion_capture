@@ -4,16 +4,18 @@
 % data1 - data condition 1, rows = samples, columns = subjects.
 % data2 - data condition 2.
 % n_perm - number of permutations.
+% n_perm_clust_tests - total number of permutation and clustering analysis you have.
+%               According to which the multiple comparisons correction will be made.
 % clusters - tablewith info about significant clusters:
 %   size - size of each significant cluster. Computed by sum of t-values in cluster
 %   start/end - sample where each cluster starts and ends.
 %   p_val - of each significant cluster.
 %   dz - avg cohen's dz of each significant cluster.
 %   t_star - (cluster size) / sd(permutation cluster sizes). NOT EQUIVALENT TO T-VALUE!!!
-function [clusters] = permCluster(data1, data2, n_perm)
+function [clusters] = permCluster(data1, data2, n_perm, n_perm_clust_tests)
     % Extreme quantile abovewhich clusters will be significant.
     alpha = 0.05;
-    alpha = alpha / 3; % Correction for having 3 clustering analysis (multiple comparisons).
+    alpha = alpha / n_perm_clust_tests; % Correction for having 'n_perm_clust_tests' clustering analysis (multiple comparisons).
     thresh = tinv(1 - alpha/2, size(data1, 2) - 1);
 
     clusters_dist = [];

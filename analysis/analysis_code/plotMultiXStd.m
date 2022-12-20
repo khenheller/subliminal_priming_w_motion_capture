@@ -44,7 +44,7 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         plot([0 1], [0 0], '--', 'linewidth',3, 'color',[0.15 0.15 0.15 plt_p.f_alpha]); % Zero line.
 
         % Permutation testing.
-        clusters = permCluster(avg_each.x_std.con(:,good_subs), avg_each.x_std.incon(:,good_subs), plt_p.n_perm);
+        clusters = permCluster(avg_each.x_std.con(:,good_subs), avg_each.x_std.incon(:,good_subs), plt_p.n_perm, plt_p.n_perm_clust_tests);
 
         % Plot clusters.
         points = [subs_avg.traj.con_right(clusters.start,3)'; subs_avg.traj.con_right(clusters.end,3)'];

@@ -18,7 +18,7 @@ function [] = plotMultiHeadAngle(traj_names, plt_p, p)
         plot([0 1], [0 0], '--', 'linewidth',3, 'color',[0.15 0.15 0.15 plt_p.f_alpha]);
         
         % Permutation testing.
-        clusters = permCluster(avg_each.head_angle.con(:,good_subs), avg_each.head_angle.incon(:,good_subs), plt_p.n_perm);
+        clusters = permCluster(avg_each.head_angle.con(:,good_subs), avg_each.head_angle.incon(:,good_subs), plt_p.n_perm, plt_p.n_perm_clust_tests);
 
         % Plot clusters.
         points = [avg_con_traj(clusters.start)'; avg_con_traj(clusters.end)'];
