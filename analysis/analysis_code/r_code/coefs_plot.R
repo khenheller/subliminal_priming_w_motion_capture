@@ -11,9 +11,10 @@ coefs_plot <- function(p){
   t_stats = data.frame(t_val,means,conf_int_l,conf_int_h, names=names(conf_int_l))
   # Change to long format.
   all_coefs_long <- pivot_longer(all_coefs, cols=everything(),names_to="var_name", values_to="beta_val")
-  # Plot.
+  
+  # If plotting a timeseries.
   if(any(grepl("iep[1-9]", colnames(all_coefs)) | grepl("x[1-9]", colnames(all_coefs)))){
-    # Plot reach timeseries.
+    # Plot reach timeseries coef.
     r_t_stats <- t_stats[grepl("^r", t_stats$names), ]
     p1 <- ggplot(data=r_t_stats, aes(x=as.double(sub('\\D+_\\D+','', names)), y=means, group=1)) +
       geom_line(size=2, colour="green") + geom_ribbon(aes(ymin=conf_int_l, ymax=conf_int_h), alpha=0.2) +
@@ -37,6 +38,7 @@ coefs_plot <- function(p){
                               axis.text=element_text(size=12),
                               plot.title=element_text(size=18))
     print(plot_grid(p1, p2, labels=c('A','B')))
+  
   } else{
     print(ggplot(data=all_coefs_long, aes(x=var_name, y=beta_val)) +
             geom_violin() + geom_jitter() +
@@ -44,5 +46,4 @@ coefs_plot <- function(p){
             geom_point(data=t_stats, aes(x=names, y=means), colour="red") +
             geom_hline(yintercept = 0)) + theme_minimal()
   }
-  # Test if coef are larger then 0.
 }
