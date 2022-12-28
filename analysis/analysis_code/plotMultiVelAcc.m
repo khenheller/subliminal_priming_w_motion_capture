@@ -54,8 +54,10 @@ stdshade(incon', plt_p.f_alpha*0.9, plt_p.incon_col, x_axis, 0, 1, 'se', plt_p.a
 clusters = permCluster(avg_each.(target).con(:,good_subs), avg_each.(target).incon(:,good_subs), plt_p.n_perm, plt_p.n_perm_clust_tests);
 
 % Plot clusters.
-points = [x_axis(clusters.start)'; x_axis(clusters.end)'];
-drawRectangle(points, 'x', y_lim, plt_p);
+if ~isempty(clusters)
+    points = [x_axis(clusters.start)'; x_axis(clusters.end)'];
+    drawRectangle(points, 'x', y_lim, plt_p);
+end
 
 set(gca, 'TickDir','out');
 xlabel(x_label);

@@ -109,18 +109,17 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
                 % Check if mvmnt time is long.
                 success(indx.slow_mvmnt) = ~trials_table.slow_mvmnt(iTrial);
                 % Check if reach distance is too short.
-                success(indx.short_traj) = testReachDist(one_traj_pre_norm, p); % Use pre_norm because I need the traj after I trimmed it to onset and offset.
+%                 success(indx.short_traj) = testReachDist(one_traj_pre_norm, p); % Use pre_norm because I need the traj after I trimmed it to onset and offset.
+                success(indx.short_traj) = 1;
                 % Check if there is a big hole in the data.
                 success(indx.hole_in_data) = testHoleData(one_traj, p);
                 % Check if too much data is missing.
                 success(indx.missing_data) = testAmountData(one_traj, p) &...
                     ~any(too_short_to_filter{:} == iTrial);
                 % Check if num samples is different form defined one.
-                success(indx.diff_len) = testDefinedLength(one_traj_proc, p) &...
-                    ~any(too_short_to_filter{:} == iTrial);
+                success(indx.diff_len) = testDefinedLength(one_traj_proc, p);
                 % Check if there is loop in traj.
-                success(indx.loop) = testLoop(one_traj) &...
-                    ~any(too_short_to_filter{:} == iTrial);
+                success(indx.loop) = testLoop(one_traj);
                 % Check if finger missed target.
                 if contains(traj_name{1}, '_to')
                     success(indx.missed_target) = testMissTarget(one_traj, p);
@@ -148,8 +147,9 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
             bad_trials{iSub}{iTrial,:} = fail * iTrial;
         end
 
-        % Mark if any test failed.
-        bad_trials{iSub}.any = any(bad_trials{iSub}{:,1:end-1} > 0, 2); % OR between columns (reasons).
+        % Mark if any test failed (excluding 'loop').
+        important_tests = ~ismember(screen_reasons, ["loop","any"]);
+        bad_trials{iSub}.any = any(bad_trials{iSub}{:,important_tests} > 0, 2); % OR between columns (reasons).
         % Remove nans to count bad trials.
         bad_trials_mat = bad_trials{iSub}{:,:};
         bad_trials_mat(isnan(bad_trials_mat(:,:))) = 0;

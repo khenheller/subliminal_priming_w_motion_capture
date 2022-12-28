@@ -20,7 +20,7 @@ picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4
 p.SIMULATE = 0; % Simulate less trials.
 p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
 p.NORM_TRAJ = 0; % Normalize traj in space.
-p.MIN_SAMP_LEN = 0.3; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
+p.MIN_SAMP_LEN = 0.15; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
 p = defineParams(p, p.SUBS(1));
 

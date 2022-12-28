@@ -168,9 +168,11 @@ function [sorted_data] = sortTrials(data, sorter, data_type, var_name, to_normal
         data_std = std([sorted_data.con, sorted_data.incon], 0, 2);
         % If traj was normalized in space (z identical for all trials), don't normalize Z.
         all_trials = [sorted_data.con, sorted_data.incon];
-        if all(all_trials(:,1,end) == all_trials(:,:,end), 'all')
-            data_avg(:,1,end) = 0;
-            data_std(:,1,end) = 1;
+        if ~isempty(all_trials)
+            if all(all_trials(:,1,end) == all_trials(:,:,end), 'all')
+                data_avg(:,1,end) = 0;
+                data_std(:,1,end) = 1;
+            end
         end
     else
         sorted_data.con_left = data(~bad & pas & con  & (left==1),:);
