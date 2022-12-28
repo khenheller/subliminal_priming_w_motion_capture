@@ -109,8 +109,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
                 % Check if mvmnt time is long.
                 success(indx.slow_mvmnt) = ~trials_table.slow_mvmnt(iTrial);
                 % Check if reach distance is too short.
-%                 success(indx.short_traj) = testReachDist(one_traj_pre_norm, p); % Use pre_norm because I need the traj after I trimmed it to onset and offset.
-                success(indx.short_traj) = 1;
+                success(indx.short_traj) = testReachDist(one_traj_pre_norm, p); % Use pre_norm because I need the traj after I trimmed it to onset and offset.
                 % Check if there is a big hole in the data.
                 success(indx.hole_in_data) = testHoleData(one_traj, p);
                 % Check if too much data is missing.

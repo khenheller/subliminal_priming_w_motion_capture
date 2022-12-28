@@ -47,17 +47,9 @@ function [trajs_mat, onsets, offsets, onsets_idx, offsets_idx] = trimOnsetOffset
         % Lowpass filter velocity.
         trial_vel = filterVel(trial_vel, p);
         % velocity above threshoold.
-        new_onset = getOnset(trial_vel, thresh) + 15;
-%         new_onset = getOnset(trial_vel, thresh);
-        last_value = find(~isnan(trial_traj(:,1)), 1, 'last');
-        if new_onset > last_value
-            onset = last_value;
-        else
-            onset = new_onset;
-        end
+        onset = getOnset(trial_vel, thresh);
         % velocity below threshoold or reached maximum position.
-        offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3), trial_traj(new_onset-15,3));
-%         offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3), trial_traj(new_onset,3));
+        offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3));
         % remove values before onset.
         trial_traj = circshift(trial_traj, -onset+1, 1);
         trial_vel = circshift(trial_vel, -onset+1, 1);
@@ -105,10 +97,9 @@ function onset = getOnset(velocities, thresh)
     end
 end
 % Return offset index (according to offset criterion).
-function offset = getOffset(velocities, thresh, z_traj, starting_point)
+function offset = getOffset(velocities, thresh, z_traj)
     % Distance from start point.
     dist_start_point = abs(z_traj - z_traj(1));
-    dist_start_point = abs(z_traj - starting_point);
     % all indices that match criterion.
 %     offsets = (velocities < thresh.v) |...
 %             (dist_start_point == max(dist_start_point));
