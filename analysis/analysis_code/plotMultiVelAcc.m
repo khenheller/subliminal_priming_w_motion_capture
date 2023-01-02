@@ -3,7 +3,6 @@
 function [] = plotMultiVel(target, traj_names, subplot_p, plt_p, p)
 good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
 
-assert(~p.NORM_TRAJ, "If traj was normalized in space, velocity and acceleration has no meaning and should not be used");
 % Load data.
 avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{1} '_subs_' p.SUBS_STRING '.mat']);  avg_each = avg_each.reach_avg_each;
 con = avg_each.(target).con(:, good_subs);
@@ -12,20 +11,20 @@ values = [con, incon];
 % Decide between time or Z.
 if plt_p.x_as_func_of == "time"
     % Array with timing of each sample.
-    x_axis = (1 : size(values,1)) * p.SAMPLE_RATE_SEC;
+    x_axis = (1 : size(values,1))' * p.SAMPLE_RATE_SEC;
     x_label = 'time';
 else
-    x_axis = avg_each.trajs.con(:,good_subs(1),3)*100;
+    x_axis = avg_each.traj.con(:,good_subs(1),3)*100;
     assert(p.NORM_TRAJ, "Must use identical Z to all trajs to plot them. Assumes trajs are normalized.")
     x_label = '% Path traveled';
 end
 
 if isequal(target,'vel')
     y_label = 'Velocity(m/s)';
-    y_lim = [-1 1.5];
+    y_lim = [-0.06 0.6];
 else
     y_label = 'Acceleration(m/s^2)';
-    y_lim = [-11 11];
+    y_lim = [-0.06 6];
 end
 
 % Plots each sub's avg.

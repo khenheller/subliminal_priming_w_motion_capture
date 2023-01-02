@@ -36,5 +36,9 @@ function [] = printBeeswarm(beesdata, yLabel, xTickLabel, colors, space, title_n
     set(gca,'FontSize',14);
     xlim([(xTick(1)-space/2), (xTick(end)+space/2)]);
     y_range = max_val - min_val;
-    ylim([min_val-y_range*0.1, max_val+y_range*0.1]);
+    y_lim = [min_val-y_range*0.1, max_val+y_range*0.1];
+    % Skip limiting when there are no values.
+    if ~y_lim(1) == y_lim(2)
+        ylim([min_val-y_range*0.1, max_val+y_range*0.1]);
+    end
 end

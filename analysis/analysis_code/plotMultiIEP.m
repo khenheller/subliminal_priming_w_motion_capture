@@ -20,12 +20,12 @@ if plt_p.x_as_func_of == "time"
     time_series = (1 : size(subs_avg.iep.con_left,1)) * p.SAMPLE_RATE_SEC;
     left_axis = time_series;
     y_label = 'time';
-    xlimit = [-0.15 0.15]; % For plot.
+    xlimit = [-0.03 0.17]; % For plot.
 else
     left_axis = subs_avg.traj.con_left(:,3)*100;
     assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
     y_label = '% Path traveled';
-    xlimit = [-1.105, 1.105];
+    xlimit = [-0.25, 0.1];
 end
 
 % Plot each subs avg.

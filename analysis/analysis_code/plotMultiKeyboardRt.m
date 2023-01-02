@@ -15,7 +15,7 @@ function [p_val_rt] = plotMultiKeyboardRt(traj_names, plt_p, p)
         % Load data and prep params.
         beesdata = {keyboard_avg_each.rt(iTraj).con(good_subs), keyboard_avg_each.rt(iTraj).incon(good_subs)};
         yLabel = ['Time ', units];
-        XTickLabel = [];
+        XTickLabel = ["Con","Incon"];
         colors = {plt_p.con_col, plt_p.incon_col};
         title_char = 'Keyboard RT';
         % Plot.

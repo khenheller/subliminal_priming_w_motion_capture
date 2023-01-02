@@ -18,12 +18,14 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
             time_series = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC;
             left_axis = time_series;
             y_label = 'time';
-            xlimit = [-0.04 0.04]; % For plot.
+            xlimit = [-0.1 0.1]; % For plot.
+            ylimit = [0 p.MIN_SAMP_LEN];
         else
             left_axis = subs_avg.traj.con_left(:,3)*100;
             assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
             y_label = '% Path traveled';
-            xlimit = [-1.105, 1.105];
+            xlimit = [-0.1 0.1];
+            ylimit = [0 100];
         end
 
         % Plot avg with shade.
@@ -44,6 +46,7 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         set(gca, 'TickDir','out');
         xlabel('X');
         xlim(xlimit);
+        ylim(ylimit);
 %         xticks([]);
         ylabel(y_label);
         title('Average trajectory');
