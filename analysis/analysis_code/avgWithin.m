@@ -56,18 +56,18 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     left = reach_data_table.(ans_left_col); % Sub chose left ans.
     sorter = struct("bad",bad, "bad_timing_or_quit",bad_timing_or_quit, "pas",pas, "con",con, "left",left);
     % Sort trials.
-    trial.trajs  = sortTrials(traj_mat, sorter, 'timeseries', "", to_normalize);
+    trial.trajs  = sortTrials(traj_mat, sorter, 'timeseries', "", 0);
     trial.time  = sortTrials(time_mat, sorter, 'timeseries', "", 0);
-    trial.head_angle = sortTrials(head_angle_mat, sorter, 'timeseries', "", to_normalize);
-    trial.vel = sortTrials(vel_mat, sorter, 'timeseries', "vel", to_normalize);
-    trial.acc = sortTrials(acc_mat, sorter, 'timeseries', "acc", to_normalize);
-    trial.iep = sortTrials(iep_mat, sorter, 'timeseries', "iep", to_normalize);
+    trial.head_angle = sortTrials(head_angle_mat, sorter, 'timeseries', "", 0);
+    trial.vel = sortTrials(vel_mat, sorter, 'timeseries', "vel", 0);
+    trial.acc = sortTrials(acc_mat, sorter, 'timeseries', "acc", 0);
+    trial.iep = sortTrials(iep_mat, sorter, 'timeseries', "iep", 0);
     trial.rt = sortTrials(reach_data_table.(offset_col), sorter, "", "", to_normalize); % Response time.
     trial.react = sortTrials(reach_data_table.(onset_col), sorter, "", "", to_normalize); % Reaction time.
     trial.mt = sortTrials(reach_data_table.(offset_col) - reach_data_table.(onset_col), sorter, "", "", to_normalize); % Movement time.
     trial.mad = sortTrials(reach_data_table.(mad_col), sorter, "", "", to_normalize); % Maximum absolute deviation.
     trial.mad_p = sortTrials(reach_data_table.(mad_p_col), sorter, "", "", to_normalize); % Maximally deviating point.
-    trial.com = sortTrials(reach_data_table.(com_col), sorter, "", "", to_normalize); % Number of changes of mind.
+    trial.com = sortTrials(reach_data_table.(com_col), sorter, "", "com", to_normalize); % Number of changes of mind.
     trial.tot_dist = sortTrials(reach_data_table.(tot_dist_col), sorter, "", "", to_normalize); % Total distance traveled.
     trial.auc = sortTrials(reach_data_table.(auc_col), sorter, "", "", to_normalize); % Area Under the Curve.
     trial.max_vel = sortTrials(reach_data_table.(max_vel_col), sorter, "", "", to_normalize); % MAximal horizontal velocity.
@@ -97,6 +97,8 @@ function [r_avg, r_trial, k_avg, k_trial] = avgWithin(iSub, traj_name, reach_bad
     avg.x_std.con_right   = std(trial.trajs.con_right(:,:,1), 0, 2);
     avg.x_std.incon_left  = std(trial.trajs.incon_left (:,:,1), 0, 2);
     avg.x_std.incon_right = std(trial.trajs.incon_right(:,:,1), 0, 2);
+    avg.x_std.con = std(trial.trajs.con(:,:,1), 0, 2);
+    avg.x_std.incon = std(trial.trajs.incon(:,:,1), 0, 2);
     avg.cond_diff.left  = avg.traj.con_left  - avg.traj.incon_left;
     avg.cond_diff.right = avg.traj.con_right - avg.traj.incon_right;
     % Count pas ratings.
@@ -190,7 +192,7 @@ function [sorted_data] = sortTrials(data, sorter, data_type, var_name, to_normal
     % Normalize.
     if to_normalize
         % Vel, acc, iEP have std=0 at first sample. Results in nan when normalizing, replace 0 with 1.
-        if ismember(var_name, ["vel","acc","iep"])
+        if ismember(var_name, ["vel","acc","iep","com"])
             data_std(1) = 1;
         end
 

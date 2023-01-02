@@ -34,4 +34,9 @@ ieps(ieps > boundary) = boundary;
 ieps(ieps < -boundary) = -boundary;
 
 traj_table(:,'iep') = table(reshape(ieps(:,:), trim_len*p.NUM_TRIALS, 1));
+
+% iEP is meaningless when traj is normalized in space.
+if p.NORM_TRAJ
+   traj_table.('iep') = zeros(trim_len * p.NUM_TRIALS, 1);
+end
 end

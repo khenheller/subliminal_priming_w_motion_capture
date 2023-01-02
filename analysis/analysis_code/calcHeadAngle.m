@@ -3,32 +3,40 @@
 % Angle between a line connecting the previous point and the current,
 % and a line perpendicular to the screen.
 % Angle is negative if it points to the side opposite to the final answer.
-function traj_table = calcHeadAngle(traj_table, p)
+function traj_table = calcHeadAngle(traj_table, prenorm_traj_table, p)
     traj_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  traj_len = traj_len.trim_len;
     angles_mat = nan(traj_len, p.NUM_TRIALS);
 
     % Reshape to convinient format.
     trajs = traj_table{:,{'target_x_to', 'target_y_to', 'target_z_to'}};
+    prenorm_trajs = prenorm_traj_table{:,{'target_x_to', 'target_y_to', 'target_z_to'}};
     traj_mat = reshape(trajs, traj_len, p.NUM_TRIALS, 3);
+    prenorm_traj_mat = reshape(prenorm_trajs, p.REACH_MAX_RT_LIMIT, p.NUM_TRIALS, 3);
 
     for iTrial = 1:max(traj_table{:, 'iTrial'})
         traj = squeeze(traj_mat(:, iTrial, :));
+        prenorm_traj = squeeze(prenorm_traj_mat(:, iTrial, :));
         % Calc angle at each point on traj.
-        head_angles = getAngle(traj, traj_len, p);
+        head_angles = getAngle(traj, traj_len);
         % Find sign of angle.
-        signs = getAngleSign(traj, traj_len, p);
+        signs = getAngleSign(traj, prenorm_traj, traj_len, p);
         head_angles = head_angles .* signs;
 
         angles_mat(:, iTrial) = head_angles;
     end
     angles = reshape(angles_mat, traj_len * p.NUM_TRIALS, 1);
     traj_table{:, 'head_angle'} = angles;
+
+    % Angle is meaningless when traj is normalized in space.
+    if p.NORM_TRAJ
+       traj_table.('head_angle') = zeros(traj_len * p.NUM_TRIALS, 1);
+    end
 end
 
 % Computes the angle at each point along the traj with arc tan.
 % Angle of first datapoitn is 0.
 % traj - of a single trial.
-function [angles] = getAngle(traj, traj_len, p)
+function [angles] = getAngle(traj, traj_len)
     angles = zeros(traj_len, 1);
     % Find the opposite and adjacent edges to the angle.
     opposites = traj(2:end, 1) - traj(1:end-1, 1); % X component.
@@ -41,11 +49,12 @@ end
 % Negative if the extension of the tangent meets the screen at
 % the side opposite to the chosen answer.
 % Sign of first data point is 1.
+% Intersection with screen depends on dist from screen. Shoudl depend only on movement to/away from answer.
+% Bypass this by setting very large screen dist (or check finger direction according delta X).
 % traj - matrix of a single traj (traj_len, 3).
 % signs - tells if each point along traj is pos or neg (1 / -1).
-function [signs] = getAngleSign(traj, traj_len, p)
+function [signs] = getAngleSign(traj, prenorm_traj, traj_len, p)
     signs = ones(traj_len, 1);
-    assert((traj(end, 3) > traj(1,3)) || isnan(traj(end, 3)), "Expcects Z axis to go from start point (0) to screen (1)."); % Look at screen points below.
     screen_dist = p.NORM_TRAJ * 100 + ~p.NORM_TRAJ * p.SCREEN_DIST; % Non/normalized diatance from start point.
 
     for iSample = 2:traj_len
@@ -55,10 +64,12 @@ function [signs] = getAngleSign(traj, traj_len, p)
         % Define two points the screen goes through.
         screen_x = [-0.01 0.01];
         screen_z = [screen_dist*-100000000 screen_dist*-100000000];
+        % find intersection.
         [inter_x, ~] = mathIntersect(x,z, screen_x,screen_z);
-        % Find sign.
-        signs(iSample) = ((inter_x < 0 && traj(end, 1) < 0) || ...
-                          (inter_x >= 0 && traj(end, 1) >= 0)) ...
-                            * 2 - 1;
+        % If inter sign is diff than last sample sign, angle is neg.
+        last_sample = find(~isnan(prenorm_traj(:,1)), 1,'last');
+        if (inter_x < 0) ~= (prenorm_traj(last_sample, 1) < 0)
+            signs(iSample) = -1;
+        end
     end
 end

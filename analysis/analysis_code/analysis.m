@@ -19,7 +19,7 @@ pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
 p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
-p.NORM_TRAJ = 0; % Normalize traj in space.
+p.NORM_TRAJ = 0; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
 p.MIN_SAMP_LEN = 0.35; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
 p = defineParams(p, p.SUBS(1));
@@ -281,8 +281,9 @@ for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
         p = defineParams(p, iSub);
         reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+        reach_prenorm_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  reach_prenorm_traj_table = reach_prenorm_traj_table.reach_pre_norm_traj_table;
         reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
-        reach_data_table = calcMAD(reach_traj_table, reach_data_table, traj_names{iTraj}, p);
+        reach_data_table = calcMAD(reach_traj_table, reach_prenorm_traj_table, reach_data_table, traj_names{iTraj}, p);
         save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
     end
 end
@@ -293,7 +294,8 @@ tic
 for iSub = p.SUBS
     p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
-    reach_traj_table = calcHeadAngle(reach_traj_table, p);
+    reach_prenorm_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  reach_prenorm_traj_table = reach_prenorm_traj_table.reach_pre_norm_traj_table;
+    reach_traj_table = calcHeadAngle(reach_traj_table, reach_prenorm_traj_table, p);
     save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat'], 'reach_traj_table');
 end
 timing = num2str(toc);
@@ -335,8 +337,9 @@ tic
 for iSub = p.SUBS
     p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
+    reach_pre_norm_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  reach_pre_norm_traj_table = reach_pre_norm_traj_table.reach_pre_norm_traj_table;
     reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
-    reach_data_table = calcAuc(reach_traj_table, reach_data_table, p);
+    reach_data_table = calcAuc(reach_traj_table, reach_data_table, reach_pre_norm_traj_table, p);
     save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
 end
 timing = num2str(toc);
@@ -503,7 +506,7 @@ plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 3; % between beeswarm graphs.
 plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
-plt_p.x_as_func_of = "time"; % To plot X as a function of "time" or "zaxis".
+plt_p.x_as_func_of = "zaxis"; % To plot X as a function of "time" or "zaxis".
 % Color of plots.
 plt_p.f_alpha = 0.2; % transperacy of shading.
 plt_p.linewidth = 4; % Used for some graphs.
@@ -623,8 +626,8 @@ for iSub = p.SUBS
         reach_avg_each.auc(iTraj).incon(iSub) = r_avg.auc.incon;
         reach_avg_each.max_vel(iTraj).con(iSub) = r_avg.max_vel.con;
         reach_avg_each.max_vel(iTraj).incon(iSub) = r_avg.max_vel.incon;
-%         reach_avg_each.x_std(iTraj).con(:, iSub) = reach_avg.x_std.con;
-%         reach_avg_each.x_std(iTraj).incon(:, iSub) = reach_avg.x_std.incon;
+        reach_avg_each.x_std(iTraj).con(:, iSub) = r_avg.x_std.con;
+        reach_avg_each.x_std(iTraj).incon(:, iSub) = r_avg.x_std.incon;
         reach_avg_each.ra(iTraj).con(iSub) = reach_area.con(iSub);
         reach_avg_each.ra(iTraj).incon(iSub) = reach_area.incon(iSub);
         reach_avg_each.pas(iTraj).con(iSub,:) = r_avg.pas.con;
@@ -782,7 +785,7 @@ all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
@@ -790,7 +793,7 @@ figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All S
 figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-% figure(all_sub_f(5)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(5)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 % figure(all_sub_f(6)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 % figure(all_sub_f(7)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 
@@ -799,29 +802,38 @@ figure(all_sub_f(1));
 subplot(2,5,[1 2]);
 plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
-% ------- Implied Endpoint -------
-figure(all_sub_f(1));
-subplot_p = [2,3,3; 2,3,6];
-plotMultiIEP(traj_names, subplot_p, plt_p, p);
+if ~p.NORM_TRAJ % Vel, acc, angle, iEP are meaningless for normalized traj whose z vals mean nothign in space.
+    % ------- Implied Endpoint -------
+    figure(all_sub_f(1));
+    subplot_p = [2,3,3; 2,3,6];
+    plotMultiIEP(traj_names, subplot_p, plt_p, p);
 
-% ------- Velocity -------
-figure(all_sub_f(2));
-subplot_p = [2,3,1; 2,3,4];
-plotMultiVelAcc('vel', traj_names{1}, subplot_p, plt_p, p);
+    % ------- Heading angle -------
+    figure(all_sub_f(4));
+    subplot(2,2,1);
+    plotMultiHeadAngle(traj_names, plt_p, p);
+    subplot_p = [2,2,3; 2,2,4];
+    plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 
-% ------- Max Velocity -------
-figure(all_sub_f(1));
-subplot(2,3,4);
-plotMultiMaxVel(traj_names{1}, plt_p, p);
-
-% ------- Acceleration -------
-figure(all_sub_f(2));
-subplot_p = [2,3,2; 2,3,5];
-plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
-
-% ------- Velocity Profile -------
-% figure(all_sub_f(1));
-% plotMultiVelProf(p);
+    % ------- Velocity -------
+    figure(all_sub_f(2));
+    subplot_p = [2,3,1; 2,3,4];
+    plotMultiVelAcc('vel', traj_names{1}, subplot_p, plt_p, p);
+    
+    % ------- Max Velocity -------
+    figure(all_sub_f(1));
+    subplot(2,3,4);
+    plotMultiMaxVel(traj_names{1}, plt_p, p);
+    
+    % ------- Acceleration -------
+    figure(all_sub_f(2));
+    subplot_p = [2,3,2; 2,3,5];
+    plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
+    
+    % ------- Velocity Profile -------
+    % figure(all_sub_f(1));
+    % plotMultiVelProf(p);
+end
 
 % ------- React + Movement + Response Times Reaching -------
 figure(all_sub_f(1));
@@ -847,23 +859,16 @@ p_val = plotMultiReachArea(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- X STD -------
-% figure(all_sub_f(4));
-% subplot_p = [2,3,2; 2,3,3; 2,2,3];
-% plotMultiXStd(traj_names, subplot_p, plt_p, p);
-
-% ------- Heading angle -------
-figure(all_sub_f(4));
-subplot(2,2,1);
-plotMultiHeadAngle(traj_names, plt_p, p);
-subplot_p = [2,2,3; 2,2,4];
-plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
+figure(all_sub_f(3));
+subplot_p = [2,3,2; 2,3,3; 2,3,5];
+plotMultiXStd(traj_names, subplot_p, plt_p, p);
 
 % ------- COM -------
 % Number of changes of mind.
-% figure(all_sub_f(1));
-% subplot(2,5,10);
-% p_val = plotMultiCom(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+figure(all_sub_f(3));
+subplot(2,3,6);
+p_val = plotMultiCom(traj_names, plt_p, p);
+save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Total distance traveled -------
 % Total distance traveled.
@@ -880,17 +885,17 @@ p_val = plotMultiAuc(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
-% if any(p.SUBS >=43) % Only for Exp 4.
-%     figure(all_sub_f(1));
-%     subplot(2,5,3);
-%     p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
-%     save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-% end
+if any(p.SUBS >=43) % Only for Exp 4.
+    figure(all_sub_f(2));
+    subplot(2,3,6);
+    p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+end
 
 % % ------- FDA -------
-% figure(all_sub_f(2));
-% subplot(1,3,3);
-% plotMultiFda(traj_names, plt_p, p);
+figure(all_sub_f(5));
+subplot(1,3,3);
+plotMultiFda(traj_names, plt_p, p);
 
 % @@@@@@@@------- Prime Forced choice -------@@@@@@@@
 % figure(all_sub_f(6));
@@ -1109,48 +1114,6 @@ text(mean(ax.XTick(1:2)), max(rt(1:2))+10, ['p = ' num2str(p_value)], 'FontSize'
 close all;
 warning('off','MATLAB:legend:IgnoringExtraEntries');
 miss_data(p, traj_names); clc;
-%% Velocity
-%{
-        % calc velocity.-----------------------------------------------
-        dx = traj_mat(2:end, :, :) - traj_mat(1:end-1, :, :); % distance between 2 samples.
-        vel_per_axis = dx / p.SAMPLE_RATE_SEC;
-        veloc = sqrt(sum(vel_per_axis.^2, 3));
-        veloc = [veloc; veloc(end,:)];
-        vel.con_left = veloc(:, con_trials.left);
-        vel.con_right = veloc(:, con_trials.right);
-        vel.incon_left = veloc(:, incon_trials.left);
-        vel.incon_right = veloc(:, incon_trials.right);
-        avg_vel.con_left = mean(vel.con_left, 2);
-        avg_vel.con_right = mean(vel.con_right, 2);
-        avg_vel.incon_left = mean(vel.incon_left, 2);
-        avg_vel.incon_right = mean(vel.incon_right, 2);
-        
-        figure(vel_f);
-        subplot(2,2,iTraj);
-        hold on;
-        % Con trials left.
-        plot(traj_mat(:, con_trials.left, 3)*flip_traj, vel.con_left, 'Color',[0 0.4470 0.7410 0.3]);
-        % Con trials right.
-        plot(traj_mat(:, con_trials.right, 3)*flip_traj, vel.con_right, 'Color',[0 0.4470 0.7410 0.3]);
-        % incon trials left.
-        plot(traj_mat(:, incon_trials.left, 3)*flip_traj, vel.incon_left, 'Color',[0.6350 0.0780 0.1840 0.3]);
-        % incon trials right.
-        plot(traj_mat(:, incon_trials.right, 3)*flip_traj, vel.incon_right, 'Color',[0.6350 0.0780 0.1840 0.3]);
-        % Averages.
-        plot(avg_traj_table.con_left{:, traj_names{iTraj}{3}}*flip_traj, avg_vel.con_left, 'b', 'LineWidth',4); % X as func of Z.
-        plot(avg_traj_table.con_right{:, traj_names{iTraj}{3}}*flip_traj, avg_vel.con_right, 'b', 'LineWidth',4); % X as func of Z.
-        plot(avg_traj_table.incon_left{:, traj_names{iTraj}{3}}*flip_traj, avg_vel.incon_left, 'r', 'LineWidth',4); % X as func of Z.
-        plot(avg_traj_table.incon_right{:, traj_names{iTraj}{3}}*flip_traj, avg_vel.incon_right, 'r', 'LineWidth',4); % X as func of Z.
-        h(1) = plot(nan,nan,'Color',[0 0.4470 0.7410 0.3]);
-        h(2) = plot(nan,nan,'Color',[0.6350 0.0780 0.1840 0.3]);
-        h(3) = plot(nan,nan,'b');
-        h(4) = plot(nan,nan,'r');
-        legend(h, 'con', 'incon', 'con avg', 'incon avg', 'Location','southeast');
-        xlabel('Z'); xlim([0, 0.4]);
-        ylabel('Velocity'); ylim([0, 1]);
-        title(traj_names{iTraj}{1}, 'Interpreter','none');
-        set(gca, 'FontSize',14);
-%}
 %% Format to R
 % Convert matlab data to a format suitable for R dataframes.
 
