@@ -46,9 +46,9 @@ function [trajs_mat, onsets, offsets, onsets_idx, offsets_idx] = trimOnsetOffset
 
         % Lowpass filter velocity.
         trial_vel = filterVel(trial_vel, p);
-        % velocity above threshoold.
+        % Get Onset: velocity above threshoold.
         onset = getOnset(trial_vel, thresh);
-        % velocity below threshoold or reached maximum position.
+        % Get Offset: velocity below threshoold or reached maximum position.
         offset = getOffset(trial_vel(onset:end), thresh, trial_traj(onset:end, 3));
         % remove values before onset.
         trial_traj = circshift(trial_traj, -onset+1, 1);
