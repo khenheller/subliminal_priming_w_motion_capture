@@ -2,7 +2,6 @@
 preproc_avgs <- function(p){
   cat("---------------------------- Pre Proc ----------------------------\n")
   for(var_name in p$VAR_NAMES){
-    measure <- ifelse(startsWith(var_name, 'k_'), "keyboard", "reach")
     # Get dataframe.
     df <- read.csv(paste0(p$PROC_DATA_FOLDER,'/format_to_r__',var_name,'_',p$DAY,'_',p$EXP,'.csv'))
     df <- type.convert(df) # Convert to categorical.

@@ -5,7 +5,7 @@ test_assump_avgs <- function(p){
     df_file <- paste0(p$PROC_DATA_FOLDER,"/",var_name,'_df.rds')
     m_file <- paste0(p$PROC_DATA_FOLDER,"/",var_name,'_m.rds')
     # Load df and model.
-    temp_df <- readRDS(df_file)
+    temp_df <- data.frame(readRDS(df_file))
     temp_m <- readRDS(m_file)
     
     # Compute residuals.

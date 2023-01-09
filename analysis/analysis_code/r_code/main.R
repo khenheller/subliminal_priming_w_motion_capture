@@ -51,9 +51,9 @@ main <- function(){
   p$NORM_FRAMES <- 200 # Length of normalized trajs.
   p$STNDRD <- 0 # Standardize variables before modeling. Relevant when comparing coef between vars.
   p$RAND_EFF <- "intrcpt+slope" # "intrcpt+slope" / "intrcpt".
-  # Choose which vars to analyze ("rt","react","mt","mad","tot_dist","auc","ra","com","max_vel",paste0("x",1:traj_len),paste0("iep",1:traj_len))
+  # Choose which vars to analyze ("rt","react","mt","mad","tot_dist","auc","ra","com","max_vel",paste0("traj",1:traj_len),paste0("iep",1:traj_len),paste0("vel",1:traj_len))
   # Add "r_ra" to p$VAR_NAMES (but not p$R_VAR_NAMES, since ra is relevant only for avgs analysis) to analyze reach area.
-  p$R_VAR_NAMES <- c(paste0("iep",1:traj_len))
+  p$R_VAR_NAMES <- c("react","mt","tot_dist")
   p$K_VAR_NAMES <- c("rt")
   p$VAR_NAMES <- c(paste0("r_",p$R_VAR_NAMES), "r_ra", paste0("k_",p$K_VAR_NAMES)) # Used to save files. r/k=reach/keyboard. default: "r_react","r_mt",""r_mad",r_tot_dist","r_auc","r_com",,"k_rt"
   
@@ -81,30 +81,30 @@ main <- function(){
   
   cat("Params Defined.\n")
   ##---- Preprocessing -----------------------------------
-  # preproc_avgs(p)
-  preproc_trials('r', p)
-  preproc_trials('k', p)
+  preproc_avgs(p)
+  # preproc_trials('r', p)
+  # preproc_trials('k', p)
   ##---- Descriptive statistics / Data Overview ----------
   # describe_avgs(p)
   ##---- Modeling ----------------------------------------
-  # model_avgs(p)
-  model_trials('r',p$R_VAR_NAMES, p)
-  model_trials('k',p$K_VAR_NAMES, p)
-  coefs_table('r', p$R_VAR_NAMES, p)
-  coefs_table('k', p$K_VAR_NAMES, p)
+  model_avgs(p)
+  # model_trials('r',p$R_VAR_NAMES, p)
+  # model_trials('k',p$K_VAR_NAMES, p)
+  # coefs_table('r', p$R_VAR_NAMES, p)
+  # coefs_table('k', p$K_VAR_NAMES, p)
   ##---- Assumptions testing -----------------------------
-  # test_assump_avgs(p)
-  test_assump_coefs('r', p$R_VAR_NAMES, p)
-  test_assump_coefs('k', p$K_VAR_NAMES, p)
+  test_assump_avgs(p)
+  # test_assump_coefs('r', p$R_VAR_NAMES, p)
+  # test_assump_coefs('k', p$K_VAR_NAMES, p)
   ##---- Permutation T-testing ---------------------------
   # For variables that violated normality.
-  # permute_avgs(p)
+  permute_avgs(p)
   ##---- Effect Size Calc --------------------------------
-  # effect_size_avgs(p)
+  effect_size_avgs(p)
   ##---- Coefficients significance test ------------------
-  coefs_test('k',p$K_VAR_NAMES,p)
-  coefs_test('r',p$R_VAR_NAMES,p)
-  coefs_plot(p)
+  # coefs_test('k',p$K_VAR_NAMES,p)
+  # coefs_test('r',p$R_VAR_NAMES,p)
+  # coefs_plot(p)
   
   #########################################
   #########################################

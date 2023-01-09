@@ -19,8 +19,8 @@ pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
 p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
-p.NORM_TRAJ = 0; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
-p.MIN_SAMP_LEN = 0.35; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
+p.NORM_TRAJ = 1; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
+p.MIN_SAMP_LEN = 0.1; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
 p = defineParams(p, p.SUBS(1));
 
@@ -786,16 +786,16 @@ all_sub_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar',
 all_sub_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(4) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 all_sub_f(5) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(6) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+all_sub_f(7) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(2)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(4)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 figure(all_sub_f(5)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-% figure(all_sub_f(6)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
-% figure(all_sub_f(7)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(6)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+figure(all_sub_f(7)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 
 % ------- Avg traj with shade -------
 figure(all_sub_f(1));
@@ -898,27 +898,27 @@ subplot(1,3,3);
 plotMultiFda(traj_names, plt_p, p);
 
 % @@@@@@@@------- Prime Forced choice -------@@@@@@@@
-% figure(all_sub_f(6));
-% subplot(2,4,1);
-% plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
-% hold on;
-% subplot(2,4,2);
-% plotMultiRecognition(pas_rate, 'reach', 'all_subs', traj_names{1}{1}, plt_p, p);
-% subplot(2,4,3);
-% plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
-% subplot(2,4,4);
-% plotMultiRecognition(pas_rate, 'keyboard', 'all_subs', traj_names{1}{1}, plt_p, p);
+figure(all_sub_f(6));
+subplot(2,4,1);
+plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
+hold on;
+subplot(2,4,2);
+plotMultiRecognition(pas_rate, 'reach', 'all_subs', traj_names{1}{1}, plt_p, p);
+subplot(2,4,3);
+plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
+subplot(2,4,4);
+plotMultiRecognition(pas_rate, 'keyboard', 'all_subs', traj_names{1}{1}, plt_p, p);
 
 % @@@@@@@@------- PAS -------@@@@@@@@
-% figure(all_sub_f(6));
-% subplot(2,4,5);
-% plotMultiPas(traj_names{1}{1}, 'reach', 'good_subs', plt_p, p);
-% subplot(2,4,6);
-% plotMultiPas(traj_names{1}{1}, 'reach', 'all_subs', plt_p, p);
-% subplot(2,4,7);
-% plotMultiPas(traj_names{1}{1}, 'keyboard', 'good_subs', plt_p, p);
-% subplot(2,4,8);
-% plotMultiPas(traj_names{1}{1}, 'keyboard', 'all_subs', plt_p, p);
+figure(all_sub_f(6));
+subplot(2,4,5);
+plotMultiPas(traj_names{1}{1}, 'reach', 'good_subs', plt_p, p);
+subplot(2,4,6);
+plotMultiPas(traj_names{1}{1}, 'reach', 'all_subs', plt_p, p);
+subplot(2,4,7);
+plotMultiPas(traj_names{1}{1}, 'keyboard', 'good_subs', plt_p, p);
+subplot(2,4,8);
+plotMultiPas(traj_names{1}{1}, 'keyboard', 'all_subs', plt_p, p);
 
 % @@@@@@@@------- Condition Diff -------@@@@@@@@
 % Difference between avg traj in each condition.
@@ -928,11 +928,11 @@ plotMultiFda(traj_names, plt_p, p);
 
 % @@@@@@@@------- Number of bad trials -------@@@@@@@@
 % Comparison of bad trials count between Keybaord and reaching.
-% figure(all_sub_f(3));
-% subplot(2,1,1);
-% plotNumBadTrials(traj_names{1}{1}, 'all_subs', plt_p, p);
-% subplot(2,1,2);
-% plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
+figure(all_sub_f(7));
+subplot(2,1,1);
+plotNumBadTrials(traj_names{1}{1}, 'all_subs', plt_p, p);
+subplot(2,1,2);
+plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
 
 % @@@@@@@@------- d' direct vs indirect -------@@@@@@@@
 % Comparison of sensitivity between direct and indirect measures of prime processing.
@@ -1124,45 +1124,48 @@ trim_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  trim_len = trim_len.trim
 save([p.PROC_DATA_FOLDER '/format_to_r__good_subs.mat'], 'good_subs');
 
 tic
-% % ----------- Avg of each Sub -----------
-% % Total traveled distance
-% tot_dist_df = fSingleVal('tot_dist', 'reach', '', [], p);
-% writetable(tot_dist_df, [p.PROC_DATA_FOLDER '/format_to_r__r_tot_dist_' p.DAY '_' p.EXP '.csv']);
-% % AUC
-% auc_df = fSingleVal('auc', 'reach', '', [], p);
-% writetable(auc_df, [p.PROC_DATA_FOLDER '/format_to_r__r_auc_' p.DAY '_' p.EXP '.csv']);
-% % Frequency of COM
-% com_df = fSingleVal('com', 'reach', '', [], p);
-% writetable(com_df, [p.PROC_DATA_FOLDER '/format_to_r__r_com_' p.DAY '_' p.EXP '.csv']);
-% % Reaction time
-% react_df = fSingleVal('react', 'reach', '', [], p);
-% writetable(react_df, [p.PROC_DATA_FOLDER '/format_to_r__r_react_' p.DAY '_' p.EXP '.csv']);
-% % Movment time
-% mt_df = fSingleVal('mt', 'reach', '', [], p);
-% writetable(mt_df, [p.PROC_DATA_FOLDER '/format_to_r__r_mt_' p.DAY '_' p.EXP '.csv']);
-% % Reach Area.
-% ra_df = fReachArea(traj_names{iTraj}{1}, p);
-% writetable(ra_df, [p.PROC_DATA_FOLDER '/format_to_r__r_ra_' p.DAY '_' p.EXP '.csv']);
-% % Keyboard RT
-% rt_df = fSingleVal('rt', 'keyboard', '', [], p);
-% writetable(rt_df, [p.PROC_DATA_FOLDER '/format_to_r__k_rt_' p.DAY '_' p.EXP '.csv']);
-% for iSamp = 1:trim_len
-%     % Deviation from center
-%     traj_df = fSingleVal('traj', 'reach', 'time_series', iSamp, p);
-%     writetable(traj_df, [p.PROC_DATA_FOLDER '/format_to_r__r_traj' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
-%     % Movement variation
-%     x_std_df = fSingleVal('x_std', 'reach', 'time_series', iSamp, p);
-%     writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r__r_x_std' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
-%     % Heading angle
-%     head_angle_df = fSingleVal('head_angle', 'reach', 'time_series', iSamp, p);
-%     writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r__r_head_angle' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
-% end
-% ----------- All good trials of each Sub -----------
-for iSub = good_subs
-    [r_df, k_df] = fAllGoodTrials(iSub, p);
-    writetable(r_df, [p.PROC_DATA_FOLDER '/format_to_r__sub' num2str(iSub) 'rdata.csv'])
-    writetable(k_df, [p.PROC_DATA_FOLDER '/format_to_r__sub' num2str(iSub) 'kdata.csv'])
+% ----------- Avg of each Sub -----------
+% Total traveled distance
+tot_dist_df = fVal('tot_dist', 'reach', '', [], p);
+writetable(tot_dist_df, [p.PROC_DATA_FOLDER '/format_to_r__r_tot_dist_' p.DAY '_' p.EXP '.csv']);
+% AUC
+auc_df = fVal('auc', 'reach', '', [], p);
+writetable(auc_df, [p.PROC_DATA_FOLDER '/format_to_r__r_auc_' p.DAY '_' p.EXP '.csv']);
+% Frequency of COM
+com_df = fVal('com', 'reach', '', [], p);
+writetable(com_df, [p.PROC_DATA_FOLDER '/format_to_r__r_com_' p.DAY '_' p.EXP '.csv']);
+% Reaction time
+react_df = fVal('react', 'reach', '', [], p);
+writetable(react_df, [p.PROC_DATA_FOLDER '/format_to_r__r_react_' p.DAY '_' p.EXP '.csv']);
+% Movment time
+mt_df = fVal('mt', 'reach', '', [], p);
+writetable(mt_df, [p.PROC_DATA_FOLDER '/format_to_r__r_mt_' p.DAY '_' p.EXP '.csv']);
+% Reach Area.
+ra_df = fReachArea(traj_names{iTraj}{1}, p);
+writetable(ra_df, [p.PROC_DATA_FOLDER '/format_to_r__r_ra_' p.DAY '_' p.EXP '.csv']);
+% Keyboard RT
+rt_df = fVal('rt', 'keyboard', '', [], p);
+writetable(rt_df, [p.PROC_DATA_FOLDER '/format_to_r__k_rt_' p.DAY '_' p.EXP '.csv']);
+for iSamp = 1:trim_len
+    % Deviation from center
+    traj_df = fVal('traj', 'reach', 'time_series', iSamp, p);
+    writetable(traj_df, [p.PROC_DATA_FOLDER '/format_to_r__r_traj' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
+    % Movement variation
+    x_std_df = fVal('x_std', 'reach', 'time_series', iSamp, p);
+    writetable(x_std_df, [p.PROC_DATA_FOLDER '/format_to_r__r_x_std' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
+    % Heading angle
+    head_angle_df = fVal('head_angle', 'reach', 'time_series', iSamp, p);
+    writetable(head_angle_df, [p.PROC_DATA_FOLDER '/format_to_r__r_head_angle' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
+    % Horizontal Velocity
+    vel_df = fVal('vel', 'reach', 'time_series', iSamp, p);
+    writetable(vel_df, [p.PROC_DATA_FOLDER '/format_to_r__r_vel' num2str(iSamp) '_' p.DAY '_' p.EXP '.csv']);
 end
+% ----------- All good trials of each Sub -----------
+% for iSub = good_subs
+%     [r_df, k_df] = fAllGoodTrials(iSub, p);
+%     writetable(r_df, [p.PROC_DATA_FOLDER '/format_to_r__sub' num2str(iSub) 'rdata.csv'])
+%     writetable(k_df, [p.PROC_DATA_FOLDER '/format_to_r__sub' num2str(iSub) 'kdata.csv'])
+% end
 
 timing = num2str(toc);
 disp(['Formating to R done. ' timing 'Sec']);
