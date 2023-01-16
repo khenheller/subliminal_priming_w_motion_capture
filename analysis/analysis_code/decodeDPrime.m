@@ -44,7 +44,7 @@ function [d_prime, coef] = decodeDPrime(iSub, measure, selected, save_to_python,
 
     % Save to analyze in python.
     if save_to_python
-        writetable([feats, labels], [p.PROC_DATA_FOLDER '/' measure(1) '_feats_table_sub' num2str(iSub) '.csv']);
+        writetable([feats, labels], [p.PROC_DATA_FOLDER '/' measure(1) '_feats_labels_table_sub' num2str(iSub) '.csv']);
     end
 
     % Compute d prime.
