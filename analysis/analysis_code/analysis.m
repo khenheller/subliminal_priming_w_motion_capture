@@ -19,8 +19,8 @@ pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
 p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
-p.NORM_TRAJ = 1; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
-p.MIN_SAMP_LEN = 0.1; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
+p.NORM_TRAJ = 0; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
+p.MIN_SAMP_LEN = 0.34; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
 p = defineParams(p, p.SUBS(1));
 
@@ -419,7 +419,7 @@ iters = 2;
 r_preds = ["rt","react","mt","mad","tot_dist","auc"];
 k_preds = ["rt"];
 % Save a features and labels table to be used in python.
-save_to_python = 0;
+save_to_python = 1;
 if save_to_python
     iters = 1;
 end
@@ -506,8 +506,9 @@ plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 3; % between beeswarm graphs.
 plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
-plt_p.x_as_func_of = "zaxis"; % To plot X as a function of "time" or "zaxis".
-% Color of plots.
+plt_p.x_as_func_of = "time"; % To plot X as a function of "time" or "zaxis".
+% Plots appearance.
+plt_p.errbar_type = 'se'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
 plt_p.f_alpha = 0.2; % transperacy of shading.
 plt_p.linewidth = 4; % Used for some graphs.
 plt_p.con_col = [0 0.35294 0.7098];%[0 0.4470 0.7410 f_f_alpha];
@@ -521,6 +522,7 @@ plt_p.second_practice_color = [0 125 0] / 255;
 plt_p.green_1 = [0.46667 0.85882 0.40392];
 plt_p.green_2 = [0.56471 0.6902 0.37255];
 plt_p.test_color = [240 240 30] / 255;
+% Statistical params.
 plt_p.n_perm_clust_tests = input("How many permutation+clustering tests do you have?");
 
 % Load reach area.
@@ -666,7 +668,7 @@ save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.
 disp("Done setting plotting params.");
 %% Single Sub plots.
 good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
-subs_to_present = good_subs(1:3);
+subs_to_present = good_subs([1,5,10,26]);
 % Create figure for each sub.
 for iSub = subs_to_present
     sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
@@ -678,12 +680,12 @@ for iSub = subs_to_present
 %     figure(sub_f(iSub,3)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String',['Sub ' num2str(iSub)], 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
 end
 % 
-% % ------- Traj of each trial -------
-% for iSub = subs_to_present
-%     figure(sub_f(iSub,1));
-%     subplot_p = [2,3,1; 2,3,2];
-%     plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
-% end
+% ------- Traj of each trial -------
+for iSub = subs_to_present
+    figure(sub_f(iSub,1));
+    subplot_p = [2,3,1; 2,3,4];
+    plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
+end
 % 
 % % ------- Heading angle of each trial -------
 % for iSub = subs_to_present
@@ -746,23 +748,23 @@ end
 % ------- X Velocity -------
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
-    subplot_p = [2,3,1; 2,3,4]; % Params for 1st and 2nd subplots.
+    subplot_p = [2,3,2; 2,3,5]; % Params for 1st and 2nd subplots.
     plotXVelAcc(iSub, 'vel', traj_names{1}, subplot_p, plt_p, p);
 end
 
 % ------- X Max Velocity -------
-for iSub = subs_to_present
-    figure(sub_f(iSub,1));
-    subplot(2,3,3);
-    plotMaxVel(iSub, traj_names{1}, plt_p, p);
-end
+% for iSub = subs_to_present
+%     figure(sub_f(iSub,1));
+%     subplot(2,3,3);
+%     plotMaxVel(iSub, traj_names{1}, plt_p, p);
+% end
 
 % ------- X Acceleration -------
-for iSub = subs_to_present
-    figure(sub_f(iSub,1));
-    subplot_p = [2,3,2; 2,3,5]; % Params for 1st and 2nd subplots.
-    plotXVelAcc(iSub, 'acc', traj_names{1}, subplot_p, plt_p, p);
-end
+% for iSub = subs_to_present
+%     figure(sub_f(iSub,1));
+%     subplot_p = [2,3,2; 2,3,5]; % Params for 1st and 2nd subplots.
+%     plotXVelAcc(iSub, 'acc', traj_names{1}, subplot_p, plt_p, p);
+% end
 
 % ------- Implied endpoint -------
 for iSub = subs_to_present
@@ -1101,7 +1103,7 @@ yLabel = 'Time (milisec)';
 XTickLabel = ["1_s_t", "2_n_d", "Test"];
 colors = {plt_p.first_practice_color, plt_p.second_practice_color, plt_p.test_color};
 title_char = "RT comparison between practice blocks and also test blocks";
-printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
+printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
 h = [];
 h(1) = bar(NaN,NaN,'FaceColor',plt_p.first_practice_color);
 h(2) = bar(NaN,NaN,'FaceColor',plt_p.second_practice_color);

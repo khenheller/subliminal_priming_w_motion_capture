@@ -6,18 +6,18 @@
 function [] = plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p)
     p = defineParams(p, iSub);
     for iTraj = 1:length(traj_names)
-        reach_single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);  reach_single = reach_single.reach_single;
-        reach_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  reach_avg = reach_avg.reach_avg;
+        r_single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);  r_single = r_single.r_trial;
+        r_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  r_avg = r_avg.r_avg;
 
         % Plot single trial.
         subplot(subplot_p(1,1), subplot_p(1,2), subplot_p(1,3));
         hold on;
-        plot(reach_single.trajs.con_left(:,:,1), reach_single.trajs.con_left(:,:,3), 'Color',[plt_p.con_col plt_p.f_alpha]);
-        plot(reach_single.trajs.con_right(:,:,1), reach_single.trajs.con_right(:,:,3), 'Color',[plt_p.con_col plt_p.f_alpha]);
+        plot(r_single.trajs.con_left(:,:,1), r_single.trajs.con_left(:,:,3), 'Color',[plt_p.con_col plt_p.f_alpha]);
+        plot(r_single.trajs.con_right(:,:,1), r_single.trajs.con_right(:,:,3), 'Color',[plt_p.con_col plt_p.f_alpha]);
 
         % Plot averages.
-        plot(reach_avg.traj.con_left(:,1), reach_avg.traj.con_left(:,3), plt_p.con_avg_col, 'LineWidth',plt_p.avg_plot_width);
-        plot(reach_avg.traj.con_right(:,1), reach_avg.traj.con_right(:,3), plt_p.con_avg_col, 'LineWidth',plt_p.avg_plot_width);
+        plot(r_avg.traj.con_left(:,1), r_avg.traj.con_left(:,3), plt_p.con_avg_col, 'LineWidth',plt_p.avg_plot_width);
+        plot(r_avg.traj.con_right(:,1), r_avg.traj.con_right(:,3), plt_p.con_avg_col, 'LineWidth',plt_p.avg_plot_width);
 
         xlabel('X'); xlim([-0.12, 0.12]);
         ylabel('Z Axis (to screen)');
@@ -27,12 +27,13 @@ function [] = plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p)
 
         % Plot single trial.
         subplot(subplot_p(2,1), subplot_p(2,2), subplot_p(2,3));
-        plot(reach_single.trajs.incon_left(:,:,1), reach_single.trajs.incon_left(:,:,3), 'Color',[plt_p.incon_col plt_p.f_alpha]);
-        plot(reach_single.trajs.incon_right(:,:,1), reach_single.trajs.incon_right(:,:,3), 'Color',[plt_p.incon_col plt_p.f_alpha]);
+        hold on;
+        plot(r_single.trajs.incon_left(:,:,1), r_single.trajs.incon_left(:,:,3), 'Color',[plt_p.incon_col plt_p.f_alpha]);
+        plot(r_single.trajs.incon_right(:,:,1), r_single.trajs.incon_right(:,:,3), 'Color',[plt_p.incon_col plt_p.f_alpha]);
 
         % Plot averages.
-        plot(reach_avg.traj.incon_left(:,1), reach_avg.traj.incon_left(:,3), plt_p.incon_avg_col, 'LineWidth',plt_p.avg_plot_width);
-        plot(reach_avg.traj.incon_right(:,1), reach_avg.traj.incon_right(:,3), plt_p.incon_avg_col, 'LineWidth',plt_p.avg_plot_width);
+        plot(r_avg.traj.incon_left(:,1), r_avg.traj.incon_left(:,3), plt_p.incon_avg_col, 'LineWidth',plt_p.avg_plot_width);
+        plot(r_avg.traj.incon_right(:,1), r_avg.traj.incon_right(:,3), plt_p.incon_avg_col, 'LineWidth',plt_p.avg_plot_width);
 
         xlabel('X'); xlim([-0.12, 0.12]);
         ylabel('Z Axis (to screen)');
