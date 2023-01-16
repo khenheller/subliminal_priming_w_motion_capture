@@ -1114,6 +1114,20 @@ text(mean(ax.XTick(1:2)), max(rt(1:2))+10, ['p = ' num2str(p_value)], 'FontSize'
 close all;
 warning('off','MATLAB:legend:IgnoringExtraEntries');
 miss_data(p, traj_names); clc;
+%% Movement time percentiles.
+% Find value of requested percentiles, in an array of all of the good subs' MTs.
+% Used to determine what length to trim all trajs to when the trajectory isn't space normalized.
+prctiles = [1, 5, 10, 20, 25]; % To look for (0-100).
+good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+all_subs_mt = [];
+for iSub = good_subs
+    single_trials = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{iTraj}{1} '.mat']);  single_trials = single_trials.r_trial;
+    sub_mt = [single_trials.mt.con; single_trials.mt.incon];
+    all_subs_mt = [all_subs_mt; sub_mt];
+end
+mt_prctiles = prctile(all_subs_mt, prctiles);
+disp('-------- MT percentiles --------');
+disp(array2table(round(mt_prctiles * 1000, 2), 'VariableNames',[string(prctiles)]));
 %% Format to R
 % Convert matlab data to a format suitable for R dataframes.
 
