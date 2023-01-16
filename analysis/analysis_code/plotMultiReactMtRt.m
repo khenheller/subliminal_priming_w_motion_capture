@@ -26,14 +26,13 @@ function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
             beesdata = {data.con(good_subs),  data.incon(good_subs)};
             yLabel = ['Time ', units];
             XTickLabel = ["Congruent", "Incongruent"];
-            err_bar_type = 'se';
             colors = {plt_p.con_col, plt_p.incon_col};
             title_char = titles(j);
             % Plot.
             if length(good_subs) > 200 % beeswarm doesn't look good with many subs.
                 makeItRain(beesdata, colors, title_char, yLabel, plt_p);
             else
-                printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
+                printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
                 % Connect each sub's dots with lines.
                 y_data = [data.con(good_subs); data.incon(good_subs)];
                 x_data = reshape(get(gca,'XTick'), 2,[]);

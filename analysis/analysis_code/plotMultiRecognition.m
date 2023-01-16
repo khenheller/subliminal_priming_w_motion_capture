@@ -26,7 +26,7 @@ function [] = plotMultiRecognition(pas_rate, measure, group, traj_name, plt_p, p
     XTickLabel = {'Con', 'Incon'};
     colors = {plt_p.con_col, plt_p.incon_col};
     title_char = ['Prime FC (PAS = ' num2str(pas_rate) ') , ' group ', ' measure];
-    printBeeswarm(beesdata, YLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
+    printBeeswarm(beesdata, YLabel, XTickLabel, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
     % Plot chance level.
     plot([-20 20], [50 50], '--', 'color',[0.3 0.3 0.3 plt_p.f_alpha], 'linewidth',2);
     ylim([0 100]);

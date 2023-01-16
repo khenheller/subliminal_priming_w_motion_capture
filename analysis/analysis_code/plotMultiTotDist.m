@@ -24,14 +24,13 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
         beesdata = {reach_avg_each(iTraj).tot_dist.con(good_subs), reach_avg_each(iTraj).tot_dist.incon(good_subs)};
         yLabel = ['Distance ', units];
         XTickLabels = [];
-        err_bar_type = 'se';
         colors = {plt_p.con_col, plt_p.incon_col};
         title_char = 'Total distance traveled';
         % plot.
         if length(good_subs) > 200 % beeswarm doesn't look good with many subs.
             makeItRain(beesdata, colors, title_char, yLabel, plt_p);
         else
-            printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
+            printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
             % Connect each sub's dots with lines.
             y_data = [beesdata{1}; beesdata{2}];
             x_data = reshape(get(gca,'XTick'), 2,[]);

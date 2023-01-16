@@ -28,12 +28,11 @@ function [] = compareRTFirstSecondDay(traj_names, plt_p, p)
     % Load data and prep params.
     beesdata = {avg_rt.day1,  avg_rt.day2};
     yLabel = 'Time (ms)';
-    err_bar_type = 'se';
     XTickLabel = ["Day1", "Day2"];
     colors = {plt_p.second_practice_color, plt_p.second_practice_color};
     title_char = 'Response time';
     % Plot.
-    printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
+    printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
     
     % Connect each sub's dots with lines.
     y_data = [avg_rt.day1'; avg_rt.day2'];

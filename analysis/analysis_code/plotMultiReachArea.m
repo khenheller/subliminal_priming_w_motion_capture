@@ -11,7 +11,6 @@ function [p_val_ra] = plotMultiReachArea(traj_names, plt_p, p)
         % Load data and set aparms.
         beesdata = {reach_avg_each.ra.con(good_subs) reach_avg_each.ra.incon(good_subs)};
         yLabel = 'Area'; % Since traj is in %path_traveled, reach area has no units.
-        err_bar_type = 'se';
         XTickLabels = ["Congruent","Incongruent"];
         colors = {plt_p.con_col, plt_p.incon_col};
         title_char = 'Reach area';
@@ -19,7 +18,7 @@ function [p_val_ra] = plotMultiReachArea(traj_names, plt_p, p)
         if length(good_subs) > 200 % beeswarm doesn't look good with many subs.
             makeItRain(beesdata, colors, title_char, yLabel, plt_p);
         else
-            printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);    
+            printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);    
             % Connect each sub's dots with lines.
             y_data = [reach_avg_each.ra.con(good_subs); reach_avg_each.ra.incon(good_subs)];
             x_data = reshape(get(gca,'XTick'), 2,[]);

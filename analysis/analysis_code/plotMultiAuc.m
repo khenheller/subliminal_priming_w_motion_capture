@@ -11,11 +11,10 @@ function [p_val] = plotMultiAuc(traj_names, plt_p, p)
         beesdata = {reach_avg_each(iTraj).auc.con(good_subs), reach_avg_each(iTraj).auc.incon(good_subs)};
         yLabel = 'Area';
         XTickLabels = [];
-        err_bar_type = 'se';
         colors = {plt_p.con_col, plt_p.incon_col, plt_p.con_col, plt_p.incon_col};
         title_char = 'AUC';
         % plot.
-        printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
+        printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
 
         % Connect each sub's dots with lines.
         y_data = [beesdata{1}; beesdata{2}];

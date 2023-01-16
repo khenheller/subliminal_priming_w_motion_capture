@@ -8,11 +8,10 @@ hold on;
 beesdata = {avg_each.max_vel.con(good_subs), avg_each.max_vel.incon(good_subs)};
 yLabel = 'Velocity (m/s^2)';
 XTickLabels = [];
-err_bar_type = 'se';
 colors = {plt_p.con_col, plt_p.incon_col};
 title_char = 'Max Velocity';
 % plot.
-printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
+printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
 
 % Connect each sub's dots with lines.
 y_data = [beesdata{1}; beesdata{2}];
@@ -27,7 +26,7 @@ h = [];
 h(1) = plot(nan,nan,'Color',plt_p.con_col, 'linewidth',plt_p.linewidth);
 h(2) = plot(nan,nan,'Color',plt_p.incon_col, 'linewidth',plt_p.linewidth);
 h(3) = plot(nan,nan,'Color','k', 'linewidth',plt_p.linewidth);
-graphs = {'Congruent', 'Incongruent', err_bar_type};
+graphs = {'Congruent', 'Incongruent', plt_p.errbar_type};
 legend(h, graphs, 'Location','southeast');
 legend('boxoff');
 

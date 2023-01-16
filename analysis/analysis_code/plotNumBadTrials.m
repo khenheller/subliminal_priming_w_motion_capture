@@ -32,7 +32,7 @@ function [] = plotNumBadTrials(traj_name, group, plt_p, p)
     title_char = ['Bad trials, Reaching Vs Keyboard, ', group];
     hold on;
     % Plot.
-    printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
+    printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
     % Group graphs.
     ticks = get(gca,'XTick');
     labels = {["",""]; reasons;};

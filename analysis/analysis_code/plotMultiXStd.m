@@ -4,7 +4,6 @@
 % plt_p - struct of plotting params.
 % p - struct of exp params.
 function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
-    err_bar_type = 'se'; % SE(standard error) or CI(confidence interval).
 
     for iTraj = 1:length(traj_names)
         left_right = ["left", "right"];
@@ -55,8 +54,8 @@ function [] = plotMultiXStd(traj_names, subplot_p, plt_p, p)
         subplot(subplot_p(3, 1), subplot_p(3, 2), subplot_p(3, 3));
         hold on;
         % Plot.
-        stdshade(avg_each.x_std.con(:,good_subs)', plt_p.f_alpha, plt_p.con_col, x_axis, 0, 1, err_bar_type, plt_p.alpha_size, plt_p.linewidth);
-        stdshade(avg_each.x_std.incon(:,good_subs)', plt_p.f_alpha, plt_p.incon_col, x_axis, 0, 1, err_bar_type, plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.x_std.con(:,good_subs)', plt_p.f_alpha, plt_p.con_col, x_axis, 0, 1, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
+        stdshade(avg_each.x_std.incon(:,good_subs)', plt_p.f_alpha, plt_p.incon_col, x_axis, 0, 1, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
 
         plot(xlimit, [0 0], '--', 'linewidth',3, 'color',[0.15 0.15 0.15 plt_p.f_alpha]); % Zero line.
 

@@ -22,7 +22,7 @@ function [p_val_rt] = plotMultiKeyboardRt(traj_names, plt_p, p)
         if length(good_subs) > 200 % beeswarm doesn't look good with many subs.
             makeItRain(beesdata, colors, title_char, yLabel, plt_p);
         else
-            printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, 'ci', plt_p.alpha_size);
+            printBeeswarm(beesdata, yLabel, XTickLabel, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
             % Connect each sub's dots with lines.
             rt_data = [keyboard_avg_each.rt(iTraj).con(good_subs); keyboard_avg_each.rt(iTraj).incon(good_subs)];
             y_data = rt_data;

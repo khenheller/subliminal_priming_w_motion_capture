@@ -46,8 +46,8 @@ set(gca, 'FontSize',14);
 subplot(subplot_p(2,1),subplot_p(2,2),subplot_p(2,3));
 yline(0, '--', 'color',[0.7 0.7 0.7]);
 hold on;
-stdshade(con', plt_p.f_alpha*0.9, plt_p.con_col, x_axis, 0, 1, 'se', plt_p.alpha_size, plt_p.linewidth);
-stdshade(incon', plt_p.f_alpha*0.9, plt_p.incon_col, x_axis, 0, 1, 'se', plt_p.alpha_size, plt_p.linewidth);
+stdshade(con', plt_p.f_alpha*0.9, plt_p.con_col, x_axis, 0, 1, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
+stdshade(incon', plt_p.f_alpha*0.9, plt_p.incon_col, x_axis, 0, 1, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
 
 % Permutation testing.
 clusters = permCluster(avg_each.(target).con(:,good_subs), avg_each.(target).incon(:,good_subs), plt_p.n_perm, plt_p.n_perm_clust_tests);

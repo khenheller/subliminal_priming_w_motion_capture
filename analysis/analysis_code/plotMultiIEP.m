@@ -45,8 +45,8 @@ set(gca, 'FontSize',14);
 % Plot avg with shade.
 subplot(subplot_p(2,1), subplot_p(2,2), subplot_p(2,3));
 hold on;
-stdshade(avg_each.iep.con(:,good_subs)' * flip, plt_p.f_alpha*0.9, plt_p.con_col, left_axis, 0, 0, 'se', plt_p.alpha_size, plt_p.linewidth);
-stdshade(avg_each.iep.incon(:,good_subs)' * flip, plt_p.f_alpha*0.9, plt_p.incon_col, left_axis, 0, 0, 'se', plt_p.alpha_size, plt_p.linewidth);
+stdshade(avg_each.iep.con(:,good_subs)' * flip, plt_p.f_alpha*0.9, plt_p.con_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
+stdshade(avg_each.iep.incon(:,good_subs)' * flip, plt_p.f_alpha*0.9, plt_p.incon_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
 xline(0, '--', 'color',[0.7,0.7,0.7], 'LineWidth',2);
 
 % Permutation testing.

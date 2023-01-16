@@ -11,11 +11,10 @@ function [p_val] = plotMultiMad(traj_names, plt_p, p)
         beesdata = {reach_avg_each(iTraj).mad.con_left(good_subs), reach_avg_each(iTraj).mad.incon_left(good_subs), reach_avg_each(iTraj).mad.con_right(good_subs), reach_avg_each(iTraj).mad.incon_right(good_subs)};
         yLabel = 'MAD (meter)';
         XTickLabels = [];
-        err_bar_type = 'se';
         colors = {plt_p.con_col, plt_p.incon_col, plt_p.con_col, plt_p.incon_col};
         title_char = cell2mat(['Maximum Absolute Deviation ' regexp(traj_names{iTraj}{1},'_._(.+)','tokens','once') ' ' regexp(traj_names{iTraj}{1},'(.+)_.+_','tokens','once')]);
         % plot.
-        printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, err_bar_type, plt_p.alpha_size);
+        printBeeswarm(beesdata, yLabel, XTickLabels, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
         % Group graphs.
         ticks = get(gca,'XTick');
         labels = {["",""]; ["Left","Right"]};
@@ -34,7 +33,7 @@ function [p_val] = plotMultiMad(traj_names, plt_p, p)
         h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col);
         h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col);
         h(3) = plot(NaN,NaN,'k','linewidth',14);
-        legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
+        legend(h,'Con','Incon',plt_p.errbar_type, 'Location','northwest');
         
         % T-test On plot
         [~, p_val_mad, ci, ~] = ttest(beesdata{1}, beesdata{2});
