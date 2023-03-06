@@ -14,7 +14,12 @@ events = {'fix_time','mask1_time','mask2_time','prime_time','mask3_time','target
 desired_durations = [1 0.270 0.030 0.030 0.030 0.500];
 
 % To test sub data enter his number.
-sub_num = [26 28 29 31 32 33 34 35 37 38 39 40 42];
+EXP_1_SUBS = [1 2 3 4 5 6 7 8 9 10]; % Participated in experiment version 1.
+EXP_2_SUBS = [11 12 13 14 16 17 18 19 20 21 22 23 24 25]; % Sub 15 didn't finish the experiment (pressed Esc).
+EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 didn't arrive to day 2.
+EXP_4_SUBS = [43 44];
+EXP_4_1_SUBS = [47, 49:85, 87:90];
+sub_num = EXP_4_1_SUBS;
 % To test word list enter its name.
 word_list = 'test_trials20day2.xlsx';
 list_type = 'test'; % 'practice' / 'test' list.
