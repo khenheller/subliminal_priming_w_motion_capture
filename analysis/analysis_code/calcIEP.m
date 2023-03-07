@@ -3,10 +3,10 @@
 % Currently saves only the X value of intersections.
 function [traj_table] = calcIEP(traj_table, traj_name, p)
 trim_len = load([p.PROC_DATA_FOLDER '/trim_len.mat']);  trim_len = trim_len.trim_len;
-screen_dist = p.NORM_TRAJ * 100 + ~p.NORM_TRAJ * p.SCREEN_DIST; % Non/normalized diatance from start point.
+screen_z_pos = p.NORM_TRAJ * 1 + ~p.NORM_TRAJ * (p.LEFT_END_POINT(3) - p.START_POINT(3));
 % Define two points on screen.
 screen_x = [-0.1, 0.1];
-screen_z = [screen_dist, screen_dist];
+screen_z = [screen_z_pos, screen_z_pos];
 
 % Reshape.
 traj_mat = reshape(traj_table{:, traj_name}, trim_len, p.NUM_TRIALS, 3);
@@ -34,9 +34,4 @@ ieps(ieps > boundary) = boundary;
 ieps(ieps < -boundary) = -boundary;
 
 traj_table(:,'iep') = table(reshape(ieps(:,:), trim_len*p.NUM_TRIALS, 1));
-
-% iEP is meaningless when traj is normalized in space.
-if p.NORM_TRAJ
-   traj_table.('iep') = zeros(trim_len * p.NUM_TRIALS, 1);
-end
 end
