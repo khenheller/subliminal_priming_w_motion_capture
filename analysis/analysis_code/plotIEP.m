@@ -1,13 +1,9 @@
 % Plots a sub's implied end point throughout each trial and the average iEP.
 function [] = plotIEP(iSub, traj_names, subplot_p, plt_p, p)
-% Negative part of axes is actually the right side, so we need to flip it.
-% We only flip the right to combine right and left together.
-% -1 = flip, 1 = don't flip.
-flip = -1;
 % Load data.
 trials = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' traj_names{1} '.mat']);  trials = trials.r_trial;
-con = [trials.iep.con_left, trials.iep.con_right * flip];
-incon = [trials.iep.incon_left, trials.iep.incon_right * flip];
+con = [trials.iep.con_left, trials.iep.con_right];
+incon = [trials.iep.incon_left, trials.iep.incon_right];
 ieps = [con, incon];
 % Decide between time or Z.
 if plt_p.x_as_func_of == "time"

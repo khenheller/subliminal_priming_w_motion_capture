@@ -17,14 +17,14 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
             % Array with timing of each sample.
             time_series = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC;
             left_axis = time_series;
-            y_label = 'time';
-            xlimit = [-0.1 0.1]; % For plot.
+            y_label = 'Time (s)';
+            xlimit = [-0.15 0.15]; % For plot.
             ylimit = [0 p.MIN_SAMP_LEN];
         else
             left_axis = subs_avg.traj.con_left(:,3)*100;
             assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
-            y_label = '% Path traveled';
-            xlimit = [-0.1 0.1];
+            y_label = '% Path Traveled';
+            xlimit = [-0.15 0.15];
             ylimit = [0 100];
         end
 
@@ -46,11 +46,14 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         set(gca, 'TickDir','out');
         xlabel('X');
         xlim(xlimit);
+        xticks(plt_p.left_right_ticks);
         ylim(ylimit);
-%         xticks([]);
+        yticks(plt_p.time_ticks);
         ylabel(y_label);
-        title('Average trajectory');
-        set(gca, 'FontSize',14);
+        title('Average Trajectory');
+        set(gca, 'FontSize',plt_p.font_size);
+        set(gca, 'FontName',plt_p.font_name);
+        set(gca,'linewidth',plt_p.axes_line_thickness);
         % Legend.
         h = [];
         h(1) = plot(nan,nan,'Color',plt_p.con_col, 'linewidth',plt_p.linewidth);

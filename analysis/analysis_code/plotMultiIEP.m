@@ -1,10 +1,8 @@
 % Plots the average Implied endpoint.
+% plot_each_sub - Add another plot with each sub's avg.
 % plt_p - struct of plotting params.
 % p - struct of exp params.
-function [] = plotMultiIEP(traj_names, subplot_p, plt_p, p)
-% Negative part of axes is actually the right side, so we need to flip it.
-% -1 = flip, 1 = don't flip.
-flip = -1;
+function [] = plotMultiIEP(traj_names, subplot_p, plot_each_sub, plt_p, p)
 
 good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
 
@@ -19,35 +17,41 @@ if plt_p.x_as_func_of == "time"
     % Array with timing of each sample.
     time_series = (1 : size(subs_avg.iep.con_left,1)) * p.SAMPLE_RATE_SEC;
     left_axis = time_series;
-    y_label = 'time';
-    xlimit = [-0.03 0.17]; % For plot.
+    y_label = 'Time (s)';
+    xlimit = [-0.15 0.15]; % For plot.
+    ylimit = [0 p.MIN_SAMP_LEN];
 else
     left_axis = subs_avg.traj.con_left(:,3)*100;
     assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
-    y_label = '% Path traveled';
+    y_label = '% Path Traveled';
     xlimit = [-0.25, 0.1];
+    ylimit = [0 1];
 end
 
 % Plot each subs avg.
-subplot(subplot_p(1,1), subplot_p(1,2), subplot_p(1,3));
-hold on;
-plot(avg_each.iep.con(:,good_subs) * flip, left_axis, 'color',[plt_p.con_col, plt_p.f_alpha]);
-plot(avg_each.iep.incon(:,good_subs) * flip, left_axis, 'color',[plt_p.incon_col, plt_p.f_alpha]);
-xline(0, '--', 'color',[0.7,0.7,0.7], 'LineWidth',2);
-
-set(gca, 'TickDir','out');
-xlabel('Implied Endpoint');
-xlim(xlimit);
-ylabel(y_label);
-title('iEP, each sub avg');
-set(gca, 'FontSize',14);
+if plot_each_sub
+    subplot(subplot_p(1,1), subplot_p(1,2), subplot_p(1,3));
+    hold on;
+    plot(avg_each.iep.con(:,good_subs), left_axis, 'color',[plt_p.con_col, plt_p.f_alpha]);
+    plot(avg_each.iep.incon(:,good_subs), left_axis, 'color',[plt_p.incon_col, plt_p.f_alpha]);
+    xline(0, '--', 'color',[0.7,0.7,0.7], 'LineWidth',2);
+    
+    set(gca, 'TickDir','out');
+    xlabel('Implied Endpoint');
+    xlim(xlimit);
+    ylabel(y_label);
+    title('iEP, each sub avg');
+    set(gca, 'FontSize',14);
+end
 
 % Plot avg with shade.
 subplot(subplot_p(2,1), subplot_p(2,2), subplot_p(2,3));
 hold on;
-stdshade(avg_each.iep.con(:,good_subs)' * flip, plt_p.f_alpha*0.9, plt_p.con_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
-stdshade(avg_each.iep.incon(:,good_subs)' * flip, plt_p.f_alpha*0.9, plt_p.incon_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
-xline(0, '--', 'color',[0.7,0.7,0.7], 'LineWidth',2);
+stdshade(avg_each.iep.con_left(:,good_subs)', plt_p.f_alpha*0.9, plt_p.con_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
+stdshade(avg_each.iep.con_right(:,good_subs)', plt_p.f_alpha*0.9, plt_p.con_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
+stdshade(avg_each.iep.incon_left(:,good_subs)', plt_p.f_alpha*0.9, plt_p.incon_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
+stdshade(avg_each.iep.incon_right(:,good_subs)', plt_p.f_alpha*0.9, plt_p.incon_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
+% xline(0, '--', 'color',[0.7,0.7,0.7], 'LineWidth',2);
 
 % Permutation testing.
 clusters = permCluster(avg_each.iep.con(:,good_subs,1), avg_each.iep.incon(:,good_subs,1), plt_p.n_perm, plt_p.n_perm_clust_tests);
@@ -57,11 +61,16 @@ points = [left_axis(clusters.start)'; left_axis(clusters.end)'];
 drawRectangle(points, 'y', xlimit, plt_p);
 
 set(gca, 'TickDir','out');
+xticks(plt_p.left_right_ticks);
 xlabel('Implied Endpoint');
 xlim(xlimit);
+yticks(plt_p.time_ticks);
 ylabel(y_label);
-title('iEP avg over subs');
-set(gca, 'FontSize',14);
+ylim(ylimit);
+title('Implied End Point');
+set(gca, 'FontSize',plt_p.font_size);
+set(gca, 'FontName',plt_p.font_name);
+set(gca,'linewidth',plt_p.axes_line_thickness);
 % Legend.
 h = [];
 h(1) = plot(nan,nan,'Color',plt_p.con_col, 'linewidth',plt_p.linewidth);
@@ -71,8 +80,8 @@ graphs = {'Congruent', 'Incongruent'};
 %             h(3) = plot(nan,nan,'Color',[1, 1, 1, plt_p.f_alpha/2], 'linewidth',plt_p.linewidth);
 %             graphs{3} = 'Significant';
 %         end
-legend(h, graphs, 'Location','southeast');
-legend('boxoff');
+% legend(h, graphs, 'Location','southeast');
+% legend('boxoff');
 
 % Print stats to terminal.
 printTsStats('---- iEP --------', clusters);

@@ -522,6 +522,11 @@ plt_p.second_practice_color = [0 125 0] / 255;
 plt_p.green_1 = [0.46667 0.85882 0.40392];
 plt_p.green_2 = [0.56471 0.6902 0.37255];
 plt_p.test_color = [240 240 30] / 255;
+plt_p.axes_line_thickness = 3;
+plt_p.time_ticks = 0.05 : 0.05 : p.MIN_SAMP_LEN; % Ticks for the time axis in plots.
+plt_p.left_right_ticks = -0.1 : 0.05 : 0.1; % Ticks for the left/right axis in plots.
+plt_p.font_name = 'Calibri';
+plt_p.font_size = 14;
 % Statistical params.
 plt_p.n_perm_clust_tests = input("How many permutation+clustering tests do you have?");
 
@@ -941,9 +946,93 @@ plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
 % figure(all_sub_f(6));
 % subplot_p = [2,3,1; 2,3,2];
 % plotMultiDPrime(traj_names{1}{1}, subplot_p, plt_p, p);
+%% Plots for paper
+% Create figures.
+all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% Add title.
+figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+
+% ------- Avg traj with shade -------
+figure(all_sub_f(1));
+subplot(2,3,1);
+plotMultiAvgTrajWithShade(traj_names, plt_p, p);
+
+if ~p.NORM_TRAJ % Vel, acc, angle, iEP are meaningless for normalized traj whose z vals mean nothign in space.
+    % ------- Implied Endpoint -------
+    figure(all_sub_f(1));
+    subplot_p = [0,0,0; 2,3,2];
+    plotMultiIEP(traj_names, subplot_p, 0, plt_p, p);
+
+    % ------- Velocity -------
+    figure(all_sub_f(1));
+    subplot_p = [0,0,0; 2,3,4];
+    plotMultiVelAcc('vel', traj_names{1}, subplot_p, 0, plt_p, p);
+end
+
+% ------- React + Movement + Response Times Reaching -------
+% figure(all_sub_f(1));
+% subplot_p = [2,5,6; 2,5,7];
+% react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
+% p_val = react_mt_rt_p_val.react;
+% save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% p_val = react_mt_rt_p_val.mt;
+% save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+% % ------- MAD -------
+% % Maximum absolute deviation.
+% figure(all_sub_f(3));
+% subplot(1,3,1);
+% p_val = plotMultiMad(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/mad_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
+
+% ------- Reach Area -------
+% Area between avg left traj and avg right traj (in each condition).
+% figure(all_sub_f(1));
+% subplot(2,5,8);
+% p_val = plotMultiReachArea(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+% ------- X STD -------
+% figure(all_sub_f(3));
+% subplot_p = [2,3,2; 2,3,3; 2,3,5];
+% plotMultiXStd(traj_names, subplot_p, plt_p, p);
+
+% ------- COM -------
+% Number of changes of mind.
+% figure(all_sub_f(3));
+% subplot(2,3,6);
+% p_val = plotMultiCom(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+% ------- Total distance traveled -------
+% Total distance traveled.
+% figure(all_sub_f(1));
+% subplot(2,5,3);
+% p_val = plotMultiTotDist(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+% ------- AUC -------
+% Area under the curve.
+% figure(all_sub_f(2));
+% subplot(2,3,3);
+% p_val = plotMultiAuc(traj_names, plt_p, p);
+% save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+% ------- Response Times Keyboard -------
+% if any(p.SUBS >=43) % Only for Exp 4.
+%     figure(all_sub_f(2));
+%     subplot(2,3,6);
+%     p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
+%     save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+% end
+
+% % ------- FDA -------
+% figure(all_sub_f(5));
+% subplot(1,3,3);
+% plotMultiFda(traj_names, plt_p, p);
 %% Add labels to subplots.
 subplots = all_sub_f(1).Children;
-subplots = [subplots(7); subplots(1); subplots(5); subplots(4); subplots(3); subplots(2)];
+subplots = [subplots(4); subplots(2); subplots(1)];
 labels = 'a':'z';
 for iSubplot = 1:length(subplots)
     y_lim = subplots(iSubplot).YLim;
