@@ -173,14 +173,6 @@ pre_norm = h.pre_norm_traj_table{h.pre_norm_traj_table.iTrial==selected_trial, t
 proc = h.proc_traj_table{h.proc_traj_table.iTrial==selected_trial, traj_col : traj_col+2};
 % Set first sample of 'real' as it's axis origin.
 real = real - real(1,:);
-% is normaliztion realy across z or across time? it seems it is across time because it takes points equally spaced in tiem not in space.
-% had they been equally spaced in space there wouldn't be many of them that relate to the first points in the traj.
-%@@@@@@@@@ comment above needs to be taken care of @@@@@@@@@@@@@@@@
-%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 % Flip
 real(:,3) = real(:,3) * -1;
@@ -196,7 +188,7 @@ plot(pre_norm(:,1),pre_norm(:,3), pre_norm_color, 'LineWidth',1);
 % Plot proc
 hold on;
 yyaxis left;
-plot(proc(:,1),proc(:,3), 'Color', proc_color, 'LineWidth',2);
+plot(proc(:,1),proc(:,3)*100, 'Color', proc_color, 'LineWidth',2);
 
 % Draw Nan area.
 while ~isempty(real)
