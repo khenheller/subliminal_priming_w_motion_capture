@@ -38,7 +38,7 @@ function [] = printBeeswarm(beesdata, yLabel, xTickLabel, colors, space, title_n
     y_range = max_val - min_val;
     y_lim = [min_val-y_range*0.1, max_val+y_range*0.1];
     % Skip limiting when there are no values.
-    if ~y_lim(1) == y_lim(2)
+    if ~(y_lim(1) == y_lim(2))
         ylim([min_val-y_range*0.1, max_val+y_range*0.1]);
     end
 end
