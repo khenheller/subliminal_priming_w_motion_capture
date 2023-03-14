@@ -15,7 +15,6 @@
 function [clusters] = permCluster(data1, data2, n_perm, n_perm_clust_tests)
     % Extreme quantile abovewhich clusters will be significant.
     alpha = 0.05;
-    alpha = alpha / n_perm_clust_tests; % Correction for having 'n_perm_clust_tests' clustering analysis (multiple comparisons).
     thresh = tinv(1 - alpha/2, size(data1, 2) - 1);
 
     clusters_dist = [];
@@ -55,6 +54,7 @@ function [clusters] = permCluster(data1, data2, n_perm, n_perm_clust_tests)
         'VariableNames',{'size','start','end','p_val','dz','t_star'});
 
     % Remove non-significant clusters.
+    alpha = alpha / n_perm_clust_tests; % Correction for having 'n_perm_clust_tests' clustering analysis (multiple comparisons).
     clusters(clusters.p_val > alpha, :) = [];
 end
 
