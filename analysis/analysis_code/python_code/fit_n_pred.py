@@ -32,7 +32,7 @@ good_subs = sio.loadmat(os.path.join(p['PROC_DATA_FOLDER'], f"good_subs_{p['DAY'
 # print("Number of mislabeled points out of a total %d points : %d")
 
 # Ensemble learning ------------------------------
-iters = 50
+iters = 1
 avg_r_d_prime = np.full(iters, np.NaN)
 avg_k_d_prime = np.full(iters, np.NaN)
 # Run many classifications.
