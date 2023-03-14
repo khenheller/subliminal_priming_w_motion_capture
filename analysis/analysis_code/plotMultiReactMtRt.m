@@ -16,7 +16,7 @@ function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
     for iTraj = 1:length(traj_names)
         reach_avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  reach_avg_each = reach_avg_each.reach_avg_each;
         vars = ["react", "mt"];
-        titles = ["Reaction time", "Movement duration"];
+        titles = ["Reaching Onset", "Reaching Duration"];
         
         for j = 1:length(vars)
             data = reach_avg_each.(vars(j));
@@ -38,10 +38,14 @@ function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
                 x_data = reshape(get(gca,'XTick'), 2,[]);
                 x_data = repelem(x_data,1,length(good_subs));
                 connect_dots(x_data, y_data);
+                ylim([100 630]);
             end
             
             set(gca, 'TickDir','out');
             xticks([]);
+            set(gca, 'FontSize',plt_p.font_size);
+            set(gca, 'FontName',plt_p.font_name);
+            set(gca, 'linewidth',plt_p.axes_line_thickness);
             % Legend.
 %             h = [];
 %             h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col, 'ShowBaseLine','off');

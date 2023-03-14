@@ -28,11 +28,14 @@ function [p_val] = plotMultiCom(traj_names, plt_p, p)
 
         set(gca, 'TickDir','out');
         xticks([]);
+        set(gca, 'FontSize',plt_p.font_size);
+        set(gca, 'FontName',plt_p.font_name);
+        set(gca, 'linewidth',plt_p.axes_line_thickness);
         % Legend.
         h = [];
-        h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col, 'ShowBaseLine','off');
-        h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col, 'ShowBaseLine','off');
-        h(3) = plot(NaN,NaN,'k','linewidth',14);
+%         h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col, 'ShowBaseLine','off');
+%         h(2) = bar(NaN,NaN,'FaceColor',plt_p.incon_col, 'ShowBaseLine','off');
+%         h(3) = plot(NaN,NaN,'k','linewidth',14);
 %         legend(h,'Con','Incon',err_bar_type, 'Location','northwest');
         
         % T-test On plot

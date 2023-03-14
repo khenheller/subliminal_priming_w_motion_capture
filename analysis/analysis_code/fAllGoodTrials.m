@@ -1,4 +1,5 @@
-% Creates 2 dataframes (tables), columns are vars, rows are trials. Holds all the sub's good trials.
+% Creates 2 dataframes (tables, one for keyboard one for reaching),
+% columns are vars, rows are trials. Holds all the sub's good trials.
 % Adds 2 extra columns to indicate trial type (con/incon and left/right).
 function [r_table, k_table] = fAllGoodTrials(iSub, p)
 % Choose whether or not to analyze timeseries vars.

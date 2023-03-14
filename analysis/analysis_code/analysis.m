@@ -505,7 +505,7 @@ close all;
 plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 3; % between beeswarm graphs.
-plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
+plt_p.n_perm = 5000; % Number of permutations for permutation and clustering procedure.
 plt_p.x_as_func_of = "time"; % To plot X as a function of "time" or "zaxis".
 % Plots appearance.
 plt_p.errbar_type = 'se'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
@@ -523,10 +523,11 @@ plt_p.green_1 = [0.46667 0.85882 0.40392];
 plt_p.green_2 = [0.56471 0.6902 0.37255];
 plt_p.test_color = [240 240 30] / 255;
 plt_p.axes_line_thickness = 3;
-plt_p.time_ticks = 0.05 : 0.05 : p.MIN_SAMP_LEN; % Ticks for the time axis in plots.
+plt_p.time_ticks = [0.05 : 0.05 : p.MIN_SAMP_LEN] * 1000; % Ticks for the time axis in plots.
+plt_p.percent_path_ticks = 10 : 20 : 100; % Ticks for the %path_traveled axis in plots.
 plt_p.left_right_ticks = -0.1 : 0.05 : 0.1; % Ticks for the left/right axis in plots.
 plt_p.font_name = 'Calibri';
-plt_p.font_size = 14;
+plt_p.font_size = 20;
 % Statistical params.
 plt_p.n_perm_clust_tests = input("How many permutation+clustering tests do you have?");
 
@@ -673,7 +674,7 @@ save([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.
 disp("Done setting plotting params.");
 %% Single Sub plots.
 good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
-subs_to_present = good_subs([1,5,10,26]);
+subs_to_present = good_subs([5,10]);
 % Create figure for each sub.
 for iSub = subs_to_present
     sub_f(iSub,1) = figure('Name',['Sub ' num2str(iSub)], 'WindowState','maximized', 'MenuBar','figure');
@@ -688,7 +689,7 @@ end
 % ------- Traj of each trial -------
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
-    subplot_p = [2,3,1; 2,3,4];
+    subplot_p = [2,4,2; 2,4,3];
     plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
 end
 % 
@@ -751,11 +752,11 @@ end
 % end
 
 % ------- X Velocity -------
-for iSub = subs_to_present
-    figure(sub_f(iSub,1));
-    subplot_p = [2,3,2; 2,3,5]; % Params for 1st and 2nd subplots.
-    plotXVelAcc(iSub, 'vel', traj_names{1}, subplot_p, plt_p, p);
-end
+% for iSub = subs_to_present
+%     figure(sub_f(iSub,1));
+%     subplot_p = [2,3,2; 2,3,5]; % Params for 1st and 2nd subplots.
+%     plotXVelAcc(iSub, 'vel', traj_names{1}, subplot_p, plt_p, p);
+% end
 
 % ------- X Max Velocity -------
 % for iSub = subs_to_present
@@ -947,103 +948,102 @@ plotNumBadTrials(traj_names{1}{1}, 'good_subs', plt_p, p);
 % subplot_p = [2,3,1; 2,3,2];
 % plotMultiDPrime(traj_names{1}{1}, subplot_p, plt_p, p);
 %% Plots for paper
-% Create figures.
-all_sub_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
-% Add title.
-figure(all_sub_f(1)); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
+good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
+% Present single trial data of which subs?
+subs_to_present = good_subs([5,10]);
 
-% ------- Avg traj with shade -------
-figure(all_sub_f(1));
-subplot(2,3,1);
-plotMultiAvgTrajWithShade(traj_names, plt_p, p);
+if ~p.NORM_TRAJ
+    paper_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+    % ------- Avg traj with shade -------
+    figure(paper_f(1));
+    subplot(2,3,1);
+    plotMultiAvgTrajWithShade(traj_names, plt_p, p);
 
-if ~p.NORM_TRAJ % Vel, acc, angle, iEP are meaningless for normalized traj whose z vals mean nothign in space.
     % ------- Implied Endpoint -------
-    figure(all_sub_f(1));
+    figure(paper_f(1));
     subplot_p = [0,0,0; 2,3,2];
     plotMultiIEP(traj_names, subplot_p, 0, plt_p, p);
 
     % ------- Velocity -------
-    figure(all_sub_f(1));
+    figure(paper_f(1));
     subplot_p = [0,0,0; 2,3,4];
     plotMultiVelAcc('vel', traj_names{1}, subplot_p, 0, plt_p, p);
+else
+    
+    paper_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+    % ------- Avg traj with shade -------
+    figure(paper_f(2));
+    subplot(2,5,[1 2]);
+    plotMultiAvgTrajWithShade(traj_names, plt_p, p);
+    
+    % ------- Reach Area -------
+    % Area between avg left traj and avg right traj (in each condition).
+    figure(paper_f(2));
+    subplot(2,5,3);
+    p_val = plotMultiReachArea(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+    
+    % ------- COM -------
+    % Number of changes of mind.
+    figure(paper_f(2));
+    subplot(2,5,4);
+    p_val = plotMultiCom(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+    
+    % ------- React + Movement + Response Times Reaching -------
+    figure(paper_f(2));
+    subplot_p = [2,5,6; 2,5,7];
+    react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
+    p_val = react_mt_rt_p_val.react;
+    save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+    p_val = react_mt_rt_p_val.mt;
+    save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+    
+    % ------- Response Times Keyboard -------
+    figure(paper_f(2));
+    subplot(2,5,8);
+    p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+    
+    % ------- Total distance traveled -------
+    figure(paper_f(2));
+    subplot(2,5,9);
+    p_val = plotMultiTotDist(traj_names, plt_p, p);
+    save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
+
+    paper_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+    % ------- Traj of each trial -------
+    j = 1;
+    for iSub = subs_to_present
+        figure(paper_f(3));
+        subplot_p = [2,3,j; 2,3,3+j];
+        plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
+        j = j + 1;
+    end
+end
+%% Add labels to subplots.
+if p.NORM_TRAJ
+%     figure(paper_f(2));
+%     subplots = paper_f(2).Children;
+%     subplots = [subplots(8); subplots(6); subplots(5); subplots(4); subplots(3); subplots(2); subplots(1)];
+    figure(paper_f(3));
+    subplots = paper_f(3).Children;
+    subplots = [subplots(5); subplots(3); subplots(4); subplots(1)];
+else
+    figure(paper_f(1));
+    subplots = paper_f(1).Children;
+    subplots = [subplots(4); subplots(2); subplots(1);];
 end
 
-% ------- React + Movement + Response Times Reaching -------
-% figure(all_sub_f(1));
-% subplot_p = [2,5,6; 2,5,7];
-% react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
-% p_val = react_mt_rt_p_val.react;
-% save([p.PROC_DATA_FOLDER '/react_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-% p_val = react_mt_rt_p_val.mt;
-% save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-
-% % ------- MAD -------
-% % Maximum absolute deviation.
-% figure(all_sub_f(3));
-% subplot(1,3,1);
-% p_val = plotMultiMad(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/mad_p_val_' p.DAY '_subs_' p.SUBS_STRING '.mat'], 'p_val');
-
-% ------- Reach Area -------
-% Area between avg left traj and avg right traj (in each condition).
-% figure(all_sub_f(1));
-% subplot(2,5,8);
-% p_val = plotMultiReachArea(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-
-% ------- X STD -------
-% figure(all_sub_f(3));
-% subplot_p = [2,3,2; 2,3,3; 2,3,5];
-% plotMultiXStd(traj_names, subplot_p, plt_p, p);
-
-% ------- COM -------
-% Number of changes of mind.
-% figure(all_sub_f(3));
-% subplot(2,3,6);
-% p_val = plotMultiCom(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-
-% ------- Total distance traveled -------
-% Total distance traveled.
-% figure(all_sub_f(1));
-% subplot(2,5,3);
-% p_val = plotMultiTotDist(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-
-% ------- AUC -------
-% Area under the curve.
-% figure(all_sub_f(2));
-% subplot(2,3,3);
-% p_val = plotMultiAuc(traj_names, plt_p, p);
-% save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-
-% ------- Response Times Keyboard -------
-% if any(p.SUBS >=43) % Only for Exp 4.
-%     figure(all_sub_f(2));
-%     subplot(2,3,6);
-%     p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
-%     save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
-% end
-
-% % ------- FDA -------
-% figure(all_sub_f(5));
-% subplot(1,3,3);
-% plotMultiFda(traj_names, plt_p, p);
-%% Add labels to subplots.
-subplots = all_sub_f(1).Children;
-subplots = [subplots(4); subplots(2); subplots(1)];
 labels = 'a':'z';
 for iSubplot = 1:length(subplots)
     y_lim = subplots(iSubplot).YLim;
     x_lim = subplots(iSubplot).XLim;
-    y_location = y_lim(2) + (y_lim(2) - y_lim(1))*0.11;
+    y_location = y_lim(2) + (y_lim(2) - y_lim(1))*0.15;
     x_location = x_lim(1) - (x_lim(2) - x_lim(1))*0.11;
-    text(subplots(iSubplot), x_location, y_location, ['(', labels(iSubplot), ')'], 'FontSize',14, 'FontWeight','bold');
+    text(subplots(iSubplot), x_location, y_location, ['(', labels(iSubplot), ')'], 'FontSize',plt_p.font_size, 'FontWeight','bold');
     pause(0.1);
 end
-%% Tree-BH Correction
-plotTreeBH(plt_p, p);
 %% Number of bad trials, Exp 2 vs 3
 num_bad_trials_comp_f = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
@@ -1274,3 +1274,5 @@ end
 
 timing = num2str(toc);
 disp(['Formating to R done. ' timing 'Sec']);
+%% Tree-BH Correction
+plotTreeBH(plt_p, p);

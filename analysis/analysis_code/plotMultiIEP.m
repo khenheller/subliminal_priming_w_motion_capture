@@ -15,11 +15,11 @@ avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{1}{1} '_su
 if plt_p.x_as_func_of == "time"
     assert(~p.NORM_TRAJ, "When traj is normalized in space, time isn't releveant and shouldnt be used");
     % Array with timing of each sample.
-    time_series = (1 : size(subs_avg.iep.con_left,1)) * p.SAMPLE_RATE_SEC;
+    time_series = (1 : size(subs_avg.iep.con_left,1)) * p.SAMPLE_RATE_SEC * 1000;
     left_axis = time_series;
-    y_label = 'Time (s)';
+    y_label = 'Time (ms)';
     xlimit = [-0.15 0.15]; % For plot.
-    ylimit = [0 p.MIN_SAMP_LEN];
+    ylimit = [0 p.MIN_SAMP_LEN] * 1000;
 else
     left_axis = subs_avg.traj.con_left(:,3)*100;
     assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")

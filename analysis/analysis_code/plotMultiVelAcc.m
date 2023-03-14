@@ -12,9 +12,9 @@ values = [con, incon];
 % Decide between time or Z.
 if plt_p.x_as_func_of == "time"
     % Array with timing of each sample.
-    x_axis = (1 : size(values,1))' * p.SAMPLE_RATE_SEC;
-    x_label = 'Time (s)';
-    xlimit = [0 p.MIN_SAMP_LEN];
+    x_axis = (1 : size(values,1))' * p.SAMPLE_RATE_SEC * 1000;
+    x_label = 'Time (ms)';
+    xlimit = [0 p.MIN_SAMP_LEN] * 1000;
 else
     x_axis = avg_each.traj.con(:,good_subs(1),3)*100;
     assert(p.NORM_TRAJ, "Must use identical Z to all trajs to plot them. Assumes trajs are normalized.")

@@ -29,12 +29,15 @@ function [p_val_rt] = plotMultiKeyboardRt(traj_names, plt_p, p)
             x_data = reshape(get(gca,'XTick'), 2,[]);
             x_data = repelem(x_data,1,length(good_subs));
             connect_dots(x_data, y_data);
-%             ylim([440 650]);
+            ylim([100 630]);
         end
         
         set(gca, 'TickDir','out');
         xticks([]);
         box off;
+        set(gca, 'FontSize',plt_p.font_size);
+        set(gca, 'FontName',plt_p.font_name);
+        set(gca, 'linewidth',plt_p.axes_line_thickness);
         % Legend.
 %         h = [];
 %         h(1) = bar(NaN,NaN,'FaceColor',plt_p.con_col);

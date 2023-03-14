@@ -15,17 +15,19 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         if plt_p.x_as_func_of == "time"
             assert(~p.NORM_TRAJ, "When traj is normalized in space, time isn't releveant and shouldnt be used");
             % Array with timing of each sample.
-            time_series = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC;
+            time_series = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC * 1000;
             left_axis = time_series;
-            y_label = 'Time (s)';
+            y_label = 'Time (ms)';
             xlimit = [-0.15 0.15]; % For plot.
-            ylimit = [0 p.MIN_SAMP_LEN];
+            ylimit = [0 p.MIN_SAMP_LEN] * 1000;
+            y_ticks = plt_p.time_ticks;
         else
             left_axis = subs_avg.traj.con_left(:,3)*100;
             assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
             y_label = '% Path Traveled';
             xlimit = [-0.15 0.15];
             ylimit = [0 100];
+            y_ticks = plt_p.percent_path_ticks;
         end
 
         % Plot avg with shade.
@@ -34,13 +36,16 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         stdshade(avg_each.traj(iTraj).incon_left(:,good_subs,1)', plt_p.f_alpha*0.9, plt_p.incon_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
         stdshade(avg_each.traj(iTraj).incon_right(:,good_subs,1)', plt_p.f_alpha*0.9, plt_p.incon_col, left_axis, 0, 0, plt_p.errbar_type, plt_p.alpha_size, plt_p.linewidth);
         
-        % Permutation testing.
-        clusters = permCluster(avg_each.traj.con(:,good_subs,1), avg_each.traj.incon(:,good_subs,1), plt_p.n_perm, plt_p.n_perm_clust_tests);
-
-        % Plot clusters.
-        points = [left_axis(clusters.start)'; left_axis(clusters.end)'];
-        if ~isempty(points)
-            drawRectangle(points, 'y', xlimit, plt_p);
+        % In the paper we talk about the onset/offset of the effect only when examining the trajs as a func of time.
+        if ~p.NORM_TRAJ
+            % Permutation testing.
+            clusters = permCluster(avg_each.traj.con(:,good_subs,1), avg_each.traj.incon(:,good_subs,1), plt_p.n_perm, plt_p.n_perm_clust_tests);
+    
+            % Plot clusters.
+            points = [left_axis(clusters.start)'; left_axis(clusters.end)'];
+            if ~isempty(points)
+                drawRectangle(points, 'y', xlimit, plt_p);
+            end
         end
 
         set(gca, 'TickDir','out');
@@ -48,7 +53,7 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         xlim(xlimit);
         xticks(plt_p.left_right_ticks);
         ylim(ylimit);
-        yticks(plt_p.time_ticks);
+        yticks(y_ticks);
         ylabel(y_label);
         title('Average Trajectory');
         set(gca, 'FontSize',plt_p.font_size);
@@ -66,7 +71,9 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         legend(h, graphs, 'Location','southeast');
         legend('boxoff');
 
-        % Print stats to terminal.
-        printTsStats('----Deviation From center--------', clusters);
+        if ~p.NORM_TRAJ
+            % Print stats to terminal.
+            printTsStats('----Deviation From center--------', clusters);
+        end
     end
 end
