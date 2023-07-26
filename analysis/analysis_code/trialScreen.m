@@ -7,7 +7,8 @@
 %   Finger missed target.
 %   Stim duration was false.
 %   Late response.
-%   Slow movement time.
+%   Slow movement time (slower than 420 ms).
+%   Very slow movement (3STD slower than average MT across valid trials)
 %   Early start (predictive mvmnt instead of response to target).
 %   Quit (sub quit exp before this trial).
 %   Incorrect (e.g. sub reached left but correct ans was right).
@@ -106,7 +107,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
 
             % Reaching screening.
             if is_reach
-                % Check if mvmnt time is long.
+                % Check if mvmnt time is long (slower than 420 ms).
                 success(indx.slow_mvmnt) = ~trials_table.slow_mvmnt(iTrial);
                 % Check if reach distance is too short.
                 success(indx.short_traj) = testReachDist(one_traj_pre_norm, p); % Use pre_norm because I need the traj after I trimmed it to onset and offset.
@@ -128,12 +129,12 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
             successes(iTrial, :) = success;
         end
 
-        % Check "very slow mvmnt", considering previous screen results.
+        % Check "very slow mvmnt".
         for iTrial = 1:p.NUM_TRIALS
             success = successes(iTrial, :);
             
             if is_reach
-                % Check if mvmnt time is TOO long.
+                % Check if mvmnt time is TOO long (3STD slower than average MT across valid trials).
                 success(indx.very_slow_mvmnt) = testVerySlowMvmnt(trials_table, successes, indx, iTrial);
             end
             

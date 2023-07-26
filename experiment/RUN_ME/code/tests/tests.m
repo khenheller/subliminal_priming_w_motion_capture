@@ -106,9 +106,6 @@ function [pass_test, test_res] = tests (trials, trials_traj, test_type, events, 
     pass_test.block_count = pass_count.block_count;
     pass_test.trial_count = pass_count.trial_count;
     
-    % Test all trial lists apear equally (between subs).
-    disp('------------------------------- Trial Lists -------------------------------');
-    disp('------------------------------------------------------------------------------------------------');
     disp('------------------------------- Test results (0=didnt pass test) -------------------------------');
     disp('------------------------------------------------------------------------------------------------');
     disp(pass_test);

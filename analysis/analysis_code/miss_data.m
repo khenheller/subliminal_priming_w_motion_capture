@@ -103,8 +103,8 @@ end
 function Load_miss_data_Callback(hObject, eventdata, h)
 % Get sub data.
 real_traj_table = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_reach_traj.mat']);  real_traj_table = real_traj_table.reach_traj_table;
-proc_traj_table = load(['../processed_data/sub' h.sub.String{:} h.p.DAY 'reach_traj_proc.mat']);  proc_traj_table = proc_traj_table.reach_traj_table;
-data_table = load(['../processed_data/sub' h.sub.String{:} h.p.DAY 'reach_data_proc.mat']);  data_table = data_table.reach_data_table;
+proc_traj_table = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_reach_traj_proc.mat']);  proc_traj_table = proc_traj_table.reach_traj_table;
+data_table = load(['../processed_data/sub' h.sub.String{:} h.p.DAY '_reach_data_proc.mat']);  data_table = data_table.reach_data_table;
 % Remove practice
 real_traj_table(real_traj_table.practice > 0, :) = [];
 proc_traj_table(proc_traj_table.practice > 0, :) = [];
@@ -114,7 +114,7 @@ h.proc_traj_table = proc_traj_table;
 h.data_table = data_table;
 % Get missing data trials.
 var_names = real_traj_table.Properties.VariableNames;
-miss_data = load([h.p.TESTS_FOLDER '/sub' h.sub.String{:} h.p.DAY '.mat']);  miss_data = miss_data.test_res.miss_data;
+miss_data = load([h.p.TESTS_FOLDER '/sub' h.sub.String{:} h.p.DAY '.mat']);  miss_data = miss_data.reach_test_res.miss_data;
 % Keep only trajectories.
 miss_data = miss_data(:, contains(var_names, ["_x_" "_y_" "_z_"]));
 % Select one traj, according to selected var.
