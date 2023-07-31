@@ -24,13 +24,13 @@ if plt_p.x_as_func_of == "time"
     time_series = (1 : size(subs_avg.iep.con_left,1)) * p.SAMPLE_RATE_SEC * 1000;
     left_axis = time_series;
     y_label = 'Time (ms)';
-    xlimit = [-0.15 0.15]; % For plot.
+    xlimit = [-15 15]; % For plot.
     ylimit = [0 p.MIN_SAMP_LEN] * 1000;
 else
     left_axis = subs_avg.traj.con_left(:,3)*100;
     assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
     y_label = 'Path Traveled (%)';
-    xlimit = [-0.25, 0.1];
+    xlimit = [-25, 10];
     ylimit = [0 1];
 end
 
@@ -43,7 +43,7 @@ if plot_each_sub
     xline(0, '--', 'color',[0.7,0.7,0.7], 'LineWidth',2);
     
     set(gca, 'TickDir','out');
-    xlabel('Implied Endpoint');
+    xlabel('X (cm)');
     xlim(xlimit);
     ylabel(y_label);
     title('iEP, each sub avg');

@@ -25,7 +25,7 @@ function [] = plotMultiRecognition(pas_rate, measure, group, traj_name, plt_p, p
     YLabel = "Performance (%)";
     XTickLabel = {};
     colors = {plt_p.con_col, plt_p.incon_col};
-    title_char = ['Forced Choice, ' upper(measure(1)), measure(2:end)];
+    title_char = [upper(measure(1)), measure(2:end) ' Session'];
     printBeeswarm(beesdata, YLabel, XTickLabel, colors, plt_p.space, title_char, plt_p.errbar_type, plt_p.alpha_size);
     % Plot chance level.
     plot([-20 20], [50 50], '--', 'color',[0.3 0.3 0.3 plt_p.f_alpha], 'linewidth',2);

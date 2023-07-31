@@ -515,7 +515,7 @@ close all;
 plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 3; % between beeswarm graphs.
-plt_p.n_perm = 10; % Number of permutations for permutation and clustering procedure.
+plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
 plt_p.x_as_func_of = "time"; % To plot X as a function of "time" or "zaxis".
 % Plots appearance.
 plt_p.errbar_type = 'ci'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
@@ -535,9 +535,10 @@ plt_p.test_color = [240 240 30] / 255;
 plt_p.axes_line_thickness = 3;
 plt_p.time_ticks = [0.05 : 0.05 : p.MIN_SAMP_LEN] * 1000; % Ticks for the time axis in plots.
 plt_p.percent_path_ticks = 10 : 20 : 100; % Ticks for the %path_traveled axis in plots.
-plt_p.left_right_ticks = -0.1 : 0.05 : 0.1; % Ticks for the left/right axis in plots.
+plt_p.left_right_ticks = -10 : 5 : 10; % Ticks for the left/right axis in plots.
 plt_p.font_name = 'Calibri';
-plt_p.font_size = 20;
+plt_p.font_size = 17;
+plt_p.labels_font_size = 14;
 % Statistical params.
 plt_p.n_perm_clust_tests = input("How many permutation+clustering tests do you have?");
 
@@ -699,7 +700,7 @@ end
 % ------- Traj of each trial -------
 for iSub = subs_to_present
     figure(sub_f(iSub,1));
-    subplot_p = [2,4,2; 2,4,3];
+    subplot_p = [2,3,1; 2,3,4];
     plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
 end
 % 
@@ -973,35 +974,30 @@ if ~p.NORM_TRAJ
     figure(paper_f(1));
     subplot_p = [0,0,0; 2,3,2];
     plotMultiIEP(traj_names, subplot_p, 0, plt_p, p);
-
-    % ------- Velocity -------
-    figure(paper_f(1));
-    subplot_p = [0,0,0; 2,3,4];
-    plotMultiVelAcc('vel', traj_names{1}, subplot_p, 0, plt_p, p);
 else
     
-    paper_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+    paper_f(1) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
     % ------- Avg traj with shade -------
-    figure(paper_f(2));
+    figure(paper_f(1));
     subplot(2,5,[1 2]);
     plotMultiAvgTrajWithShade(traj_names, plt_p, p);
     
     % ------- Reach Area -------
     % Area between avg left traj and avg right traj (in each condition).
-    figure(paper_f(2));
+    figure(paper_f(1));
     subplot(2,5,3);
     p_val = plotMultiReachArea(traj_names, plt_p, p);
     save([p.PROC_DATA_FOLDER '/ra_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
     
     % ------- COM -------
     % Number of changes of mind.
-    figure(paper_f(2));
+    figure(paper_f(1));
     subplot(2,5,4);
     p_val = plotMultiCom(traj_names, plt_p, p);
     save([p.PROC_DATA_FOLDER '/com_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
     
     % ------- React + Movement + Response Times Reaching -------
-    figure(paper_f(2));
+    figure(paper_f(1));
     subplot_p = [2,5,6; 2,5,7];
     react_mt_rt_p_val = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p);
     p_val = react_mt_rt_p_val.react;
@@ -1010,49 +1006,67 @@ else
     save([p.PROC_DATA_FOLDER '/mt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
     
     % ------- Response Times Keyboard -------
-    figure(paper_f(2));
+    figure(paper_f(1));
     subplot(2,5,8);
     p_val = plotMultiKeyboardRt(traj_names, plt_p, p);
     save([p.PROC_DATA_FOLDER '/keyboard_rt_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
     
     % ------- Total distance traveled -------
-    figure(paper_f(2));
+    figure(paper_f(1));
     subplot(2,5,9);
     p_val = plotMultiTotDist(traj_names, plt_p, p);
     save([p.PROC_DATA_FOLDER '/tot_dist_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
-    paper_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+    paper_f(2) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
     % ------- Traj of each trial -------
     j = 1;
     for iSub = subs_to_present
-        figure(paper_f(3));
-        subplot_p = [2,3,j; 2,3,3+j];
+        figure(paper_f(2));
+        subplot_p = [2,5,2*j-1; 2,5,4+2*j];
         plotAllTrajs(iSub, traj_names, subplot_p, plt_p, p);
         j = j + 1;
     end
 end
+
+paper_f(3) = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
+% ------- Prime Forced choice -------
+figure(paper_f(3));
+subplot(2,3,1);
+plotMultiRecognition(pas_rate, 'reach', 'good_subs', traj_names{1}{1}, plt_p, p);
+subplot(2,3,2);
+plotMultiRecognition(pas_rate, 'keyboard', 'good_subs', traj_names{1}{1}, plt_p, p);
 %% Add labels to subplots.
+subplots = [];
+% Define order of subplots for each configuration.
 if p.NORM_TRAJ
-%     figure(paper_f(2));
-%     subplots = paper_f(2).Children;
-%     subplots = [subplots(8); subplots(6); subplots(5); subplots(4); subplots(3); subplots(2); subplots(1)];
-    figure(paper_f(3));
-    subplots = paper_f(3).Children;
-    subplots = [subplots(5); subplots(3); subplots(4); subplots(1)];
+    figure(paper_f(1));
+    all_plots = paper_f(1).Children;
+    subplots{1} = [all_plots(8); all_plots(6); all_plots(5); all_plots(4); all_plots(3); all_plots(2); all_plots(1)];
+    figure(paper_f(2));
+    all_plots = paper_f(2).Children;
+    subplots{2} = [all_plots(6); all_plots(3)];
 else
     figure(paper_f(1));
-    subplots = paper_f(1).Children;
-    subplots = [subplots(4); subplots(2); subplots(1);];
+    all_plots = paper_f(1).Children;
+    subplots{1} = [all_plots(3); all_plots(1)];
 end
 
-labels = 'a':'z';
-for iSubplot = 1:length(subplots)
-    y_lim = subplots(iSubplot).YLim;
-    x_lim = subplots(iSubplot).XLim;
-    y_location = y_lim(2) + (y_lim(2) - y_lim(1))*0.15;
-    x_location = x_lim(1) - (x_lim(2) - x_lim(1))*0.11;
-    text(subplots(iSubplot), x_location, y_location, ['(', labels(iSubplot), ')'], 'FontSize',plt_p.font_size, 'FontWeight','bold');
-    pause(0.1);
+figure(paper_f(3));
+all_plots = paper_f(3).Children;
+subplots{end+1} = [all_plots(4); all_plots(2)];
+
+% Iterate over figures.
+for iFigure = 1:length(subplots)
+    labels = 'a':'z';
+    % Label each subplot.
+    for iSubplot = 1:length(subplots{iFigure})
+        y_lim = subplots{iFigure}(iSubplot).YLim;
+        x_lim = subplots{iFigure}(iSubplot).XLim;
+        y_location = y_lim(2) + (y_lim(2) - y_lim(1))*0.075;
+        x_location = x_lim(1) - (x_lim(2) - x_lim(1))*0.19;
+        text(subplots{iFigure}(iSubplot), x_location, y_location, ['(', labels(iSubplot), ')'], 'FontSize',plt_p.labels_font_size, 'FontWeight','bold');
+        pause(0.1);
+    end
 end
 %% Number of bad trials, Exp 2 vs 3
 % To run this section you must first run the analysis on the subs of exp 2 and 3 (seperatly).
