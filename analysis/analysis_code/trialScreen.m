@@ -148,7 +148,7 @@ function [bad_trials, n_bad_trials, bad_trials_i] = trialScreen(traj_name, task_
         end
 
         % Mark if any test failed (excluding 'loop').
-        important_tests = ~ismember(screen_reasons, ["loop","any"]);
+        important_tests = ~ismember(screen_reasons, ["slow_mvmnt","loop","any"]);
         bad_trials{iSub}.any = any(bad_trials{iSub}{:,important_tests} > 0, 2); % OR between columns (reasons).
         % Remove nans to count bad trials.
         bad_trials_mat = bad_trials{iSub}{:,:};
