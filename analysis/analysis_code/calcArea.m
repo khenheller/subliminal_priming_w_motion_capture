@@ -24,7 +24,9 @@ function area = calcArea(a, b)
     % Area changes sign after intersection, but we want it positive all the way.
     % So we split graphs in intersections, calc area for each segment seperatly.
     % Find intersections:
-    [~, ~, i_a, i_b] = intersections(a(:,1),a(:,2), b(:,1),b(:,2));
+    [xi,yi, ii] = polyxpoly(a(:,1),a(:,2),b(:,1),b(:,2));
+    i_a = ii(:,1);
+    i_b = ii(:,2);
     [i_a, idx] = sort(i_a);
     i_b = i_b(idx);
     % Segment according to intersections, get start and end of each segment.

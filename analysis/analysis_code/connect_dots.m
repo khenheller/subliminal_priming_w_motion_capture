@@ -16,6 +16,6 @@ function [] = connect_dots(x_data, y_data)
         if y_data(2,j) > y_data(1,j)
             line_style = pos_slope;
         end
-        plot(x_data(:,j), y_data(:,j), 'LineStyle',line_style, 'Color',[0.1 0.1 0.1 f_alpha*1.5], 'LineWidth',linewidth);
+        plot(x_data(:,j), y_data(:,j), 'LineStyle',line_style, 'Color',[0.1 0.1 0.1 f_alpha*1.1], 'LineWidth',linewidth);
     end
 end

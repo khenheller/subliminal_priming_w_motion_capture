@@ -2,8 +2,12 @@ analysis/processed_data/
 experiment/RUN_ME/code/tests/test_results/*
 raw_data
 development/data
+analysis/analysis_code/python_code/venv/*
+*~*
 *.asv
 *.ini
+*.RData
+*.Rhistory
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/38.1.psd
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/39.1.psd
 development/inbal_experiment/UnconsciousScenesObjects/stimuli/scrambled.congruent.noscene/PSD/Untitled-2.psd
@@ -3901,3 +3905,4 @@ development/motion_capture/transform4.m
 *.ini
 development/stimuli/desktop.ini
 experiment/RUN_ME/stimuli/desktop.ini
+paper/Paper/Paper 0 Journal format rules.docx

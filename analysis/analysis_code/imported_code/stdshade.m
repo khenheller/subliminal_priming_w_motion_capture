@@ -34,7 +34,7 @@ switch type
         astd = astd / sqrt(size(amatrix,1));
     case 'ci'
         df = size(amatrix,1) - 1;
-        t_val = tinv(a_val, df);
+        t_val = tinv(a_val/2, df);
         astd =  t_val * astd / sqrt(size(amatrix,1));
     otherwise
         error('Wrong input, has to be: std/se/ci');

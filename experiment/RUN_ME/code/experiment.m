@@ -9,7 +9,7 @@ addpath('.\NatNetSDK');
 
 % Parameter definition.
 p.SUB_NUM = 999;
-p.DAY = 'day1';
+p.DAY = 'day2';
 
 p.FULLSCREEN = 1;
 p.DEBUG = 0;

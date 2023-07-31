@@ -12,8 +12,9 @@ function [p_val, corr_p, t, stats] = runFDA(trajs_name, p)
     
     % GROUPING THE DATA
     for iSub = good_subs
-        single = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'sorted_trials_' trajs_name{1} '.mat']);  single = single.single;
-        trajs = single.trajs; % Sub's trajss (sorted).
+        p = defineParams(p, iSub);
+        trial = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_sorted_trials_' trajs_name{1} '.mat']);  trial = trial.r_trial;
+        trajs = trial.trajs; % Sub's trajss (sorted).
         % Concatenate all the sub's trials.
         fdaMat.x = [fdaMat.x; trajs.con_left(:,:,1)'; trajs.con_right(:,:,1)'; trajs.incon_left(:,:,1)'; trajs.incon_right(:,:,1)'];
         fdaMat.y = [fdaMat.y; trajs.con_left(:,:,2)'; trajs.con_right(:,:,2)'; trajs.incon_left(:,:,2)'; trajs.incon_right(:,:,2)'];
@@ -37,7 +38,7 @@ function [p_val, corr_p, t, stats] = runFDA(trajs_name, p)
     [mean.z, mean_group.z] = getRMMeans(fdaMat.z, group);
     
     % RUN FDA
-    random_fact = [3]; % left/right and subnum are random factors.
+    random_fact = [3]; % subnum is a random factors.
     [p_val.x, corr_p.x, t.x, stats.x] = fanovan(mean.x, mean_group.x, 'model','full', 'random',random_fact, 'varnames',{'con_incon' 'left_right' 'sub'});
     [p_val.y, corr_p.y, t.y, stats.y] = fanovan(mean.y, mean_group.y, 'model','full', 'random',random_fact, 'varnames',{'con_incon' 'left_right' 'sub'});
     [p_val.z, corr_p.z, t.z, stats.z] = fanovan(mean.z, mean_group.z, 'model','full', 'random',random_fact, 'varnames',{'con_incon' 'left_right' 'sub'});

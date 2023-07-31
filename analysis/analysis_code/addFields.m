@@ -38,7 +38,7 @@ function [trials_table] = addFields(trials_table, trajs_table, p)
             react_time = mvmnt_end;
             mvmnt_time = 0;
         end
-        % Check react and mvmnt times.
+        % Update late res, slow mvmnt and early response.
         trials_table{j, 'late_res'} = react_time > p.REACT_TIME_SAMPLES;
         trials_table{j, 'slow_mvmnt'} = mvmnt_time >= p.MOVE_TIME_SAMPLES;
         trials_table{j, 'early_res'} = react_time <= p.MIN_REACT_TIME_SAMPLES;

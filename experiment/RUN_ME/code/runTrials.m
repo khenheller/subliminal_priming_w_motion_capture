@@ -68,7 +68,7 @@ function [p] = runTrials(trials, is_reach, p)
             sub_answered_intime = ~(target_ans.late_res | target_ans.slow_mvmnt | target_ans.early_res);
             % Alert of wrong answer.
             if sub_answered_intime
-                if ~trials.target_correct(1)
+                if trials.target_correct(1) == 0
                     showTexture(p.WRONG_ANS_SCREEN, p);
                     WaitSecs(p.MSG_DURATION);
                 end
@@ -90,10 +90,10 @@ function [p] = runTrials(trials, is_reach, p)
             % Assigns collected data to trials.
             trials = assignToTrials(trials, times, target_ans, prime_ans, pas, pas_time);
             
-            % Pause until sub is ready (in training only).
+            % Short pause for sub to prepare (in training only).
             if trials.practice(1) > 0
-                showTexture(p.PRESS_SPACE_TO_CONTINUE, p);
-                getInput('instruction', p);
+                [~,pause_start] = Screen('Flip', p.w, 0, 0);
+                [~,~] = Screen('Flip', p.w, pause_start + p.PAUSE_DURATION, 0);
             end
             
             % Save trial to file and removes it from list.

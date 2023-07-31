@@ -2,13 +2,18 @@
 % ax - axes to draw on.
 % ticks - x ticks in axes.
 % labels - cell matrix with labels. Each row is a level of heirarchy.
-%           exmp: {'a','b','c'; 'one','two'} would be:
+%           exmp: {["a","b","c"]; ["one","two"]} would be:
 %                   a  b  c  a  b  c 
 %                     one      two
-% y_pos - double vec. dist of each lvl from x axis.
+% dist - double vec. dist of each lvl from x axis.
 % font_size - double vec. Of each level.
-% line_length - Seperating line's legnth.
-function ax = groupTick(ticks, labels, dist, font_size)
+% draw_edges - draw lines on both sides of each group.
+function ax = groupTick(ticks, labels, dist, font_size, draw_edges)
+    % Default value for draw_edges.
+    if nargin < 5
+        draw_edges = 1;
+    end
+
     set(gca,'XTickLabel',[], 'Clipping','off');
     y_lim = get(gca,'YLim');
     % Iterate over lvls.
@@ -24,7 +29,7 @@ function ax = groupTick(ticks, labels, dist, font_size)
         x_pos = ticks(1:end-1) + spaces/2;
         line([x_pos; x_pos], [min(y_lim)*ones(1,length(spaces)); y_pos(1:end-1)], 'color','k', 'LineWidth',2);
         % draw edge lines.
-        if i==size(labels,1)
+        if i==size(labels,1) && draw_edges
             x_pos = [ticks(1) - spaces(1)/2, ticks(end) + spaces(end)/2];
             line([x_pos; x_pos], [min(y_lim) min(y_lim); y_pos(1:2)], 'color','k', 'LineWidth',2);
         end

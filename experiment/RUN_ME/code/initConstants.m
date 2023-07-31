@@ -46,14 +46,14 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
         p.MOVE_TIME_SAMPLES = p.MOVE_TIME * p.REF_RATE_HZ;
         % Reponse time constraints of keyboard.
-        p.KEYBOARD_MIN_RT_LIMIT_SEC = 0.250; % In seconds.
+        p.KEYBOARD_MIN_RT_LIMIT_SEC = 0.100; % In seconds.
         p.KEYBOARD_RECOG_RT_LIMIT_SEC = 7; % RT limit for recognition task.
-        p.KEYBOARD_CATEGOR_RT_LIMIT_SEC = 4; % RT limit for categorization task.
+        p.KEYBOARD_CATEGOR_RT_LIMIT_SEC = 0.740; % RT limit for categorization task.
         
         % Response keys.
         KbName('UnifyKeyNames');
-        p.RIGHT_KEY      =  KbName('J');
-        p.LEFT_KEY       =  KbName('F');
+        p.RIGHT_KEY      =  KbName('Y');
+        p.LEFT_KEY       =  KbName('E');
         p.ABORT_KEY1     =  KbName('ESCAPE'); % ESC + q aborts experiment
         p.ABORT_KEY2     =  KbName('Q'); % ESC + q aborts experiment
         p.ONE           =  KbName('1!');  % I did not see the phrase
@@ -110,6 +110,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
         p.PRESS_SPACE_TO_CONTINUE = 'press_space_to_continue_screen.jpg';
         p.REACH_RESPONSE_EXPLANATION = 'reach_response_explanation_screen.jpg';
         p.KEYBOARD_RESPONSE_EXPLANATION = 'keyboard_response_explanation_screen.jpg';
+        p.TIMING_SCREEN = 'timing_screen.jpg';
         
         % Text
         Screen('TextFont',p.w, char(p.FONT_TYPE));
@@ -120,14 +121,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
     p.NUMBER_OF_ERRORS_PROMPT = 3;
     p.TIME_SHOW_PROMPT = 1; % seconds
     
-    switch p.DAY
-        case 'day1'
-            p.NUM_BLOCKS = 6;
-        case 'day2'
-            p.NUM_BLOCKS = 6;
-        otherwise
-            error(['p.DAY has wrong value: ' p.DAY]);
-    end
+    p.NUM_BLOCKS = 6;
     if isequal(list_type, 'practice') % The is relevant when generating a practice block.
         p.NUM_BLOCKS = 1;
     end
@@ -146,6 +140,7 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
     p.TARGET_DURATION = 0.5;
     p.TARGET_DURATION_SAMPLES = p.TARGET_DURATION * p.REF_RATE_HZ;
     p.MSG_DURATION = 0.7;
+    p.PAUSE_DURATION = 0.5;
     
     % data structure.
     p.CODE_OUTPUT_EXPLANATION = readtable('Code_Output_Explanation.xlsx');
@@ -178,10 +173,10 @@ function [p] = initConstants(psychtoolbox_active, list_type, p)
     %% Analysis params.
     % Missing data restrictions.
     p.MIN_SAMP_LEN = 0.1; % in sec.
-    p.MAX_MISSIN_DATA = 0.1; % in sec.
+    p.MAX_MISSING_DATA = 0.1; % in sec.
     p.MIN_GOOD_TRIALS = 60; % Total, across conditions.
     p.MAX_BAD_TRIALS = p.NUM_TRIALS - p.MIN_GOOD_TRIALS; % sub with more bad trials is disqualified.
-    p.MIN_AMNT_TRIALS_IN_COND = 30; % sub with less good trials in each condition is disqualified.
+    p.MIN_AMNT_TRIALS_IN_COND = 25; % sub with less good trials in each condition is disqualified.
     p.SIG_PVAL = 0.05; % Significance threshold for P-values (smaller p-vals are significant).
     
     % Cameras

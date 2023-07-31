@@ -20,7 +20,7 @@ j = 1;
 while j < rec_len
     tic
     % Samples a trial.
-    markers = p.NATNETCLIENT.getFrame.LabeledMarker;
+    markers = p.NATNETCLIENT.getFrame.LabeledMarkers;
     traj(j, 4) = ~isempty(markers(1));
     traj(j, 5) = ~isempty(markers(2));
     if traj(j, 4)
@@ -48,7 +48,7 @@ while j < rec_len
     % Sync to screen.
     Screen('Flip',p.w,0,0)
     % Samples a trial.
-    markers = p.NATNETCLIENT.getFrame.LabeledMarker;
+    markers = p.NATNETCLIENT.getFrame.LabeledMarkers;
     traj(j, 4) = ~isempty(markers(1));
     traj(j, 5) = ~isempty(markers(2));
     if traj(j, 4)

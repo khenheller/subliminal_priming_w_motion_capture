@@ -2451,7 +2451,7 @@ end % classdef quaternion
 % Scalar rotation conversion functions
 function eout = AngAxis2e( angle, axis )
 % function eout = AngAxis2e( angle, axis )
-% p.ONE Angle-Axis -> one quaternion
+% One Angle-Axis -> one quaternion
 s   = sin( 0.5 * angle );
 v   = axis(:);
 vn  = norm( v );
@@ -2474,7 +2474,7 @@ end % AngAxis2e
 
 function qout = EulerAng2q( axes, angles )
 % function qout = EulerAng2q( axes, angles )
-% p.ONE triplet Euler Angles -> one quaternion
+% One triplet Euler Angles -> one quaternion
 na   = length( axes );
 axis = zeros( 3, na );
 for i0 = 1 : na
@@ -2502,7 +2502,7 @@ end % EulerAng2q
 
 function eout = RotMat2e( R )
 % function eout = RotMat2e( R )
-% p.ONE Rotation Matrix -> one quaternion
+% One Rotation Matrix -> one quaternion
 eout    = zeros( 4, 1 );
 if ~all( all( R == 0 ))
     eout(1) = 0.5 * sqrt( max( 0, R(1,1) + R(2,2) + R(3,3) + 1 ));
@@ -2523,7 +2523,7 @@ end % RotMat2e
 
 function qout = UV2q( u, v )
 % function qout = UV2q( u, v )
-% p.ONE pair vectors U, V -> one quaternion
+% One pair vectors U, V -> one quaternion
 w       = cross( u, v );    % construct vector w perpendicular to u and v
 magw    = norm( w );
 dotuv   = dot( u, v );

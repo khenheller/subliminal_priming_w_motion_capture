@@ -29,11 +29,7 @@ function [] = saveToFile(trial, is_reach, p)
     end
     
     % on first trial there isn't a file yet. So we add headers.
-    if p.DAY == 'day1'
-        file_doesnt_exist = trial.iTrial==1;
-    else
-        file_doesnt_exist = trial.iTrial==1 & trial.practice==1;
-    end
+    file_doesnt_exist = trial.iTrial==1 & trial.practice==1;
     
     % saves to temporary file.
     writetable(trial_data, temp_data_file, 'WriteVariableNames', file_doesnt_exist);

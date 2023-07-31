@@ -26,7 +26,7 @@ function [traj, timecourse, categor_time, late_res, early_res, slow_mvmnt] = get
         [~,timecourse(frame_i)] = Screen('Flip',p.w,0,to_screen); % when retracting, clear screen.
         
         % samples location.
-        markers = p.NATNETCLIENT.getFrame.LabeledMarker;
+        markers = p.NATNETCLIENT.getFrame.LabeledMarkers;
         
         % checks if there is a marker.
         if ~isempty(markers(1))
