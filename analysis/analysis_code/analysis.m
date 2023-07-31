@@ -21,7 +21,9 @@ picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4
 p.SIMULATE = 0; % Simulate less trials.
 p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
 p.NORM_TRAJ = 0; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
-p.MIN_SAMP_LEN = 0.34; % In sec. Shorter trajs are excluded. (recommended 0.1 sec). When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
+p.MIN_SAMP_LEN = 0.34; % In sec. Shorter trajs are excluded. (for NORM_TRAJ=0 use 0.34, otherwise 0.1).
+                        % When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
+                        % Used "Movement Time Percentiles" section to determine the desired value.
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
 p = defineParams(p, p.SUBS(1));
 
@@ -31,6 +33,9 @@ traj_names = {{'target_x_to' 'target_y_to' 'target_z_to'},...
     {'prime_x_to' 'prime_y_to' 'prime_z_to'},...
     {'prime_x_from' 'prime_y_from' 'prime_z_from'}};
 traj_names_mat = reshape(string([traj_names{:}]),3,[])';
+if ~exist('../processed_data/')
+    mkdir('../processed_data/');
+end
 writematrix(traj_names_mat, [p.PROC_DATA_FOLDER '/traj_names.csv']);
 traj_names = traj_names(picked_trajs);
 % name of normalized traj column in output data.
@@ -92,7 +97,7 @@ if p.SIMULATE
     disp("Done Simulating less trials.");
 end
 %% Create proc data file
-% Copy the real data to a new file, to keep the original data safe.
+% Copy the original data to a new file, to keep the data safe.
 tic
 disp('Creating processing data files for sub:');
 for iSub = p.SUBS
@@ -182,8 +187,8 @@ end
 timing = num2str(toc);
 disp(['Done adding missing trials. ' timing 'Sec'])
 %% Preprocessing & Normalization
-% Trials too short to filter.
 tic
+% Trials too short to filter.
 too_short_to_filter = table('Size', [max(p.SUBS) length(traj_types)],...
     'VariableTypes', repmat({'cell'}, length(traj_types), 1),...
     'VariableNames', traj_types);
@@ -477,7 +482,7 @@ for iTraj = 1:length(traj_names)
 end
 timing = num2str(toc);
 disp(['FDA calc done. ' timing 'Sec']);
-%% Count trials
+%% Count trials for each condition
 tic
 for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
@@ -510,7 +515,7 @@ close all;
 plt_p.avg_plot_width = 4;
 plt_p.alpha_size = 0.05; % For confidence interval.
 plt_p.space = 3; % between beeswarm graphs.
-plt_p.n_perm = 5000; % Number of permutations for permutation and clustering procedure.
+plt_p.n_perm = 10; % Number of permutations for permutation and clustering procedure.
 plt_p.x_as_func_of = "time"; % To plot X as a function of "time" or "zaxis".
 % Plots appearance.
 plt_p.errbar_type = 'ci'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
@@ -777,12 +782,12 @@ end
 %     plotXVelAcc(iSub, 'acc', traj_names{1}, subplot_p, plt_p, p);
 % end
 
-% ------- Implied endpoint -------
-for iSub = subs_to_present
-    figure(sub_f(iSub,1));
-    subplot_p = [2,3,3; 2,3,6]; % Params for 1st and 2nd subplots.
-    plotIEP(iSub, traj_names{1}, subplot_p, plt_p, p);
-end
+% % ------- Implied endpoint -------
+% for iSub = subs_to_present
+%     figure(sub_f(iSub,1));
+%     subplot_p = [2,3,3; 2,3,6]; % Params for 1st and 2nd subplots.
+%     plotIEP(iSub, traj_names{1}, subplot_p, plt_p, p);
+% end
 % 
 % % ------- Keyboard Response Times -------
 % if any(p.ORIG_SUBS >=43) % Only for Exp 4.
@@ -819,19 +824,19 @@ if ~p.NORM_TRAJ % Vel, acc, angle, iEP are meaningless for normalized traj whose
     % ------- Implied Endpoint -------
     figure(all_sub_f(1));
     subplot_p = [2,3,3; 2,3,6];
-    plotMultiIEP(traj_names, subplot_p, plt_p, p);
+    plotMultiIEP(traj_names, subplot_p, 1, plt_p, p);
 
     % ------- Heading angle -------
     figure(all_sub_f(4));
     subplot(2,2,1);
     plotMultiHeadAngle(traj_names, plt_p, p);
     subplot_p = [2,2,3; 2,2,4];
-    plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
+%     plotMultiHeadAngleHeatmap(traj_names, subplot_p, p);
 
     % ------- Velocity -------
     figure(all_sub_f(2));
     subplot_p = [2,3,1; 2,3,4];
-    plotMultiVelAcc('vel', traj_names{1}, subplot_p, plt_p, p);
+    plotMultiVelAcc('vel', traj_names{1}, subplot_p, 0, plt_p, p);
     
     % ------- Max Velocity -------
     figure(all_sub_f(1));
@@ -841,7 +846,7 @@ if ~p.NORM_TRAJ % Vel, acc, angle, iEP are meaningless for normalized traj whose
     % ------- Acceleration -------
     figure(all_sub_f(2));
     subplot_p = [2,3,2; 2,3,5];
-    plotMultiVelAcc('acc', traj_names{1}, subplot_p, plt_p, p);
+    plotMultiVelAcc('acc', traj_names{1}, subplot_p, 0, plt_p, p);
     
     % ------- Velocity Profile -------
     % figure(all_sub_f(1));
@@ -1050,6 +1055,7 @@ for iSubplot = 1:length(subplots)
     pause(0.1);
 end
 %% Number of bad trials, Exp 2 vs 3
+% To run this section you must first run the analysis on the subs of exp 2 and 3 (seperatly).
 num_bad_trials_comp_f = figure('Name',['All Subs'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(num_bad_trials_comp_f); annotation('textbox',[0.45 0.915 0.1 0.1], 'String','All Subs', 'FontSize',30, 'LineStyle','none', 'FitBoxToText','on');
@@ -1058,6 +1064,7 @@ figure(num_bad_trials_comp_f); annotation('textbox',[0.45 0.915 0.1 0.1], 'Strin
 % subplot(2,1,2);
 plotNumBadTrialsExp2Exp3(traj_names{1}{1}, 'good_subs', plt_p, p);
 %% Effect size comparison to previous papers.
+% To run this section you must first run the analysis on the subs of exp 2 and 3 (seperatly).
 % Prev exp data.
 xiao_auc = struct('N',28,...% Xiao, K., Yamauchi, T., & Bowman, C. (2015)
     'mean1',3628.43,...
@@ -1158,12 +1165,14 @@ sim_exp = isequal(p.SUBS-200, p.EXP_1_SUBS) * 1 + isequal(p.SUBS-200, p.EXP_2_SU
 effects_table.exp_name = ["exp2"; "exp3"; string(['exp' num2str(sim_exp) ' sim ' num2str(p.NUM_TRIALS) ' trials'])];
 writetable(effects_table, [p.PROC_DATA_FOLDER 'effects_table.csv'], 'WriteMode','append');
 %% Compare RT between 1st and 2nd day of experiment 3.
+% To run this section you must first run the analysis on the subs of exp 3.
 rt_comp_day1_day2 = figure('Name',['RT comp day1 day2'], 'WindowState','maximized', 'MenuBar','figure');
 % Add title.
 figure(all_sub_f(1));
 subplot(2,5,3);
 compareRTFirstSecondDay(traj_names, plt_p, p);
 %% RT comparison between 1st and 2nd practice blocks.
+% Relevant only for Exp 3's data.
 % Compares n trials from the end of each practice block.
 n_comp_trials = 10;
 % Reation, movement, response times.
@@ -1279,5 +1288,5 @@ end
 
 timing = num2str(toc);
 disp(['Formating to R done. ' timing 'Sec']);
-%% Tree-BH Correction
+%% Tree-BH Correction. RUN ONLY AFTER R SCRIPTS.
 plotTreeBH(plt_p, p);

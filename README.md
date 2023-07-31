@@ -10,12 +10,13 @@ If the comments in the code aren't clear enough, look for answers in the followi
     - Explanation about the files containing the stimuli
     - More information about some of the functions
     - Problems I encountered and their solutions
+1. **How to Run the analysis:** see '/analysis/analysis_log.docx'.
 2. experiment/running_protocols/**SOP -** Protocol for running the experiment.
 3. **Presentations/ -** Might find useful graphical explanations of the measures/results/version of the experiment here. Specifically look at:
     - exp birds eye veiw.pptx
     - design figure.pptx
     - 2022_05_15_TreeBH method.pptx
+1. Experiment slides - can be found in 'RUN_ME/stimuli/instructions presentation.pptx'.
 4. /Paper/paper/**prev work.xlsx -** contains a short summary of previous articles that used motion tracking to probe unconscious processing.
-5. /analysis/**analysis_log.docx -** How to run the analysis.
 
 

@@ -3,7 +3,7 @@ function  [normalizedReach, newTimes] = normalizeFDA(data,toNormalize,normalizeF
 %data = cell array where each cell holds the x,y,z (as columns) position
 %data for each IR (or tracked marker)
 
-%toNormalize = a list of IRs that you want to normalize - this refers to
+%toNormalize = a list of IRs (Motive motion tracking markers) that you want to normalize - this refers to
 %the indexes of the data cell array
 
 %normalizeFrames = number of frames you want for your normalized

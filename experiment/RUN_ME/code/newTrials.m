@@ -1,4 +1,16 @@
-% Generates trials list.
+% Creates a list of trials and their associated stimuli while keeping the following constraints:
+% 1. All targets apear the same number of times.
+% 2. A target doesn't appear twice in the same block (otherwise experiment conditions would be transperent to the participant).
+% 3. The target is equally frequenct in the congruent and incongruent condition.
+% 4. Target doesn't share letters in common locations with its prime.
+% 5. Prime doesn't share letters in common locations with its distractor.
+% 6. Half of the targets are natural and half artificial.
+% N_words_to_use – How many words should we use from our word_freq_list?
+% 			There are 2 conditions (congruent/incongruent) and two categories (artificial/natural), 
+%           Therefor we divide the number of trials by 4. This gives us “X”, the number of words in a 	single category+condition combination.
+%           The words can’t repeat in a single block, and in every block we have both categories of words, therefor we need a quotient of X that is larger the half a block size.
+
+% Input:
 % practice: 0 for test, 1 for practice trials.
 %           practice lists' length is one block.
 % draw_stats: 1=yes, 0=nope.
