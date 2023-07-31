@@ -3,6 +3,7 @@ clear all;
 addpath(genpath('./imported_code'));
 % -----------------------------------
 % Counts trials with correct ans and trails with good RT in each day.
+% Used to asses whether a participant should be invited ot the second day of the experiment.
 % -----------------------------------
 SUBS = [26 27 28 29 30 31 32 33 34 35 36 37 38 41 42];
 load('../../experiment/RUN_ME/code/p.mat');

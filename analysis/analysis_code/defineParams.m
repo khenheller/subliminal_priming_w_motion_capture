@@ -16,6 +16,7 @@ function p = defineParams(p, iSub)
     EXP_4_SUBS = p.EXP_4_SUBS;
     EXP_4_1_SUBS = p.EXP_4_1_SUBS;
     SUBS = p.SUBS;
+    ORIG_SUBS = p.ORIG_SUBS;
     DAY = p.DAY;
 
     p = load([p.DATA_FOLDER '/sub' num2str(iSub) DAY '_' 'p.mat']); p = p.p;
@@ -41,6 +42,7 @@ function p = defineParams(p, iSub)
     p.EXP_4_SUBS = EXP_4_SUBS;
     p.EXP_4_1_SUBS = EXP_4_1_SUBS;
     p.SUBS = SUBS;
+    p.ORIG_SUBS = ORIG_SUBS;
     p.SUBS_STRING = regexprep(num2str(p.SUBS), '\s+', '_'); % Concatenate sub's numbers with '_' between them.
     p.DAY = DAY;
     p.N_SUBS = length(p.SUBS);
@@ -57,15 +59,15 @@ function p = defineParams(p, iSub)
     % Recog cap length: Subs 1-10 = 5sec, Subs 10-25 = 7sec.
     % Categor cap length: Subs 1-10 = 1.5sec, Subs 10-25 = 0.75sec.
     % Subs 10-25 have 1 day, Subs 26 onword have 2 days of experiment.
-    if all(p.SUBS <= 10)
+    if all(p.ORIG_SUBS <= 10)
         p.SCREEN_DIST = 0.4;
         p.RECOG_CAP_LENGTH_SEC = 5;
         p.CATEGOR_CAP_LENGTH_SEC = 1.5;
-    elseif all(p.SUBS > 10) & all(p.SUBS <= 25)
+    elseif all(p.ORIG_SUBS > 10) & all(p.ORIG_SUBS <= 25)
         p.SCREEN_DIST = 0.35;
         p.RECOG_CAP_LENGTH_SEC = 7;
         p.CATEGOR_CAP_LENGTH_SEC = 0.75;
-    elseif all(p.SUBS > 25)
+    elseif all(p.ORIG_SUBS > 25)
         p.SCREEN_DIST = 0.35;
         p.RECOG_CAP_LENGTH_SEC = 7;
         p.CATEGOR_CAP_LENGTH_SEC = 0.74;
@@ -84,13 +86,14 @@ function p = defineParams(p, iSub)
     
     % RT lmitations.
     % React_time, Move_time doesn't exist in subs 1-10.
-    if all(p.SUBS <= 10)
+    if all(p.ORIG_SUBS <= 10)
         p.REACT_TIME = 1.5;
         p.MOVE_TIME = 1.5;
         p.MIN_REACT_TIME = 0;
-    % Minimal react time doesn't exist in subs 11-25.
-    elseif all(p.SUBS > 10 & p.SUBS <= 25)
+    % Minimal react time doesn't exist in subs 11-25. Neither does max reaction time.
+    elseif all(p.ORIG_SUBS > 10 & p.ORIG_SUBS <= 25)
         p.MIN_REACT_TIME = 0;
+        p.REACH_MAX_RT_LIMIT = max(p.REACH_RECOG_RT_LIMIT, p.REACH_CATEGOR_RT_LIMIT);
     end
     p.MIN_REACT_TIME_SAMPLES = p.MIN_REACT_TIME * p.REF_RATE_HZ;
     p.REACT_TIME_SAMPLES = p.REACT_TIME * p.REF_RATE_HZ;
@@ -113,15 +116,15 @@ function p = defineParams(p, iSub)
     p.SIG_PVAL = 0.05;
 
     % Which exp is run.
-    if isequal(p.SUBS, p.EXP_1_SUBS)
+    if isequal(p.ORIG_SUBS, p.EXP_1_SUBS)
         p.EXP = 'exp1';
-    elseif isequal(p.SUBS, p.EXP_2_SUBS)
+    elseif isequal(p.ORIG_SUBS, p.EXP_2_SUBS)
         p.EXP = 'exp2';
-    elseif isequal(p.SUBS, p.EXP_3_SUBS)
+    elseif isequal(p.ORIG_SUBS, p.EXP_3_SUBS)
         p.EXP = 'exp3';
-    elseif isequal(p.SUBS, p.EXP_4_SUBS)
+    elseif isequal(p.ORIG_SUBS, p.EXP_4_SUBS)
         p.EXP = 'exp4';
-    elseif isequal(p.SUBS, p.EXP_4_1_SUBS)
+    elseif isequal(p.ORIG_SUBS, p.EXP_4_1_SUBS)
         p.EXP = 'exp4_1';
     else
         error('Please analyze subs of each experiment seperatly.');

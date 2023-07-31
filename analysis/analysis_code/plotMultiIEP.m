@@ -58,7 +58,9 @@ clusters = permCluster(avg_each.iep.con(:,good_subs,1), avg_each.iep.incon(:,goo
 
 % Plot clusters.
 points = [left_axis(clusters.start)'; left_axis(clusters.end)'];
-drawRectangle(points, 'y', xlimit, plt_p);
+if ~isempty(points)
+    drawRectangle(points, 'y', xlimit, plt_p);
+end
 
 set(gca, 'TickDir','out');
 xticks(plt_p.left_right_ticks);

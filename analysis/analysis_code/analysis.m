@@ -14,6 +14,7 @@ p.EXP_3_SUBS = [26 28 29 31 32 33 34 35 37 38 39 40 42]; % Sub 27, 30, 36, 41 di
 p.EXP_4_SUBS = [43 44];
 p.EXP_4_1_SUBS = [47, 49:85, 87:90];
 p.SUBS = p.EXP_4_1_SUBS; % to analyze.
+p.ORIG_SUBS = p.SUBS; % When simulating less trials, I add 200 to sub nums, so I use this variable to store nums without the addition.
 p.DAY = 'day2';
 pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
@@ -68,18 +69,19 @@ if p.SIMULATE
         for iSub = p.SUBS
             p = defineParams(p, iSub);
             % Delete file if already exists.
-            delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'traj.csv']);
-            delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'data.csv']);
+            delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_reach_traj.csv']);
+            delete([p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_reach_data.csv']);
             % Reduces num of trials for each sub and saves it as a new sub.
-            reach_traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'traj.csv']);
-            reach_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'data.csv']);
+            reach_traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.csv']);
+            reach_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.csv']);
             reach_traj_table = reach_traj_table(1:min(new_traj_table_size, height(reach_traj_table)), :);
             reach_data_table = reach_data_table(1:min(new_data_table_size, height(reach_data_table)), :);
-            writetable(reach_traj_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'traj.csv']);
-            writetable(reach_data_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'data.csv']);
-            % Copy p.mat and start_end_point to new sub.
+            writetable(reach_traj_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_reach_traj.csv']);
+            writetable(reach_data_table, [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_reach_data.csv']);
+            % Copy p.mat, start_end_point, and test results to new sub.
             copyfile([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'start_end_points.mat'], [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'start_end_points.mat'], 'f');
             copyfile([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_' 'p.mat'], [p.DATA_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '_' 'p.mat'], 'f');
+            copyfile([p.TESTS_FOLDER '/sub' num2str(iSub) p.DAY '.mat'], [p.TESTS_FOLDER '/sub' num2str(iSub+idx_shift) p.DAY '.mat'], 'f');
             disp(num2str(iSub));
         end
         timing = num2str(toc);
@@ -98,7 +100,7 @@ for iSub = p.SUBS
     reach_traj_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_traj.csv']);
     reach_data_table = readtable([p.DATA_FOLDER '/sub' num2str(iSub) p.DAY '_reach_data.csv']);
     % Fake keybaord data for Exp1,2,3.
-    if any(p.SUBS < 43)
+    if any(p.ORIG_SUBS < 43)
         keyboard_data_table = readtable([p.DATA_FOLDER '/sub49' p.DAY '_keyboard_data.csv']);
         keyboard_data_table.sub_num = p.SUB_NUM * ones(size(keyboard_data_table.sub_num));
     else
@@ -244,7 +246,7 @@ tic
 for iTraj = 1:length(traj_names)
     [reach_bad_trials, reach_n_bad_trials, reach_bad_trials_i] = trialScreen(traj_names{iTraj}, 'reach', p);
     % Exp 1,2,3 has no keybaord session.
-    if any(p.SUBS < 43)
+    if any(p.ORIG_SUBS < 43)
         keyboard_n_bad_trials = array2table(zeros(size(reach_n_bad_trials)), 'VariableNames',reach_n_bad_trials.Properties.VariableNames);
         keyboard_bad_trials_i = table('size',size(reach_bad_trials_i), 'variableNames',reach_bad_trials_i.Properties.VariableNames, 'VariableTypes',repmat("cell", [1, width(reach_bad_trials_i)]));
         keyboard_bad_trials = {};
@@ -264,7 +266,7 @@ for iTraj = 1:length(traj_names')
     [reach_bad_subs, reach_valid_trials] = subScreening(traj_names{iTraj}, pas_rate, 'reach', p);
     [keyboard_bad_subs, keyboard_valid_trials] = subScreening(traj_names{iTraj}, pas_rate, 'keyboard', p);
     % Exp 1,2,3 had no keyboard task.
-    if any(p.SUBS < 43)
+    if any(p.ORIG_SUBS < 43)
         keyboard_bad_subs(:,:) = array2table(zeros(size(keyboard_bad_subs)));
     end
     bad_subs = array2table(reach_bad_subs{:,:} | keyboard_bad_subs{:,:}, 'VariableNames',reach_bad_subs.Properties.VariableNames);
@@ -279,11 +281,14 @@ disp(['Sub screening done. ' timing 'Sec']);
 tic
 for iTraj = 1:length(traj_names)
     for iSub = p.SUBS
+        % Load.
         p = defineParams(p, iSub);
         reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
         reach_prenorm_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  reach_prenorm_traj_table = reach_prenorm_traj_table.reach_pre_norm_traj_table;
         reach_data_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat']);  reach_data_table = reach_data_table.reach_data_table;
+        % Compute.
         reach_data_table = calcMAD(reach_traj_table, reach_prenorm_traj_table, reach_data_table, traj_names{iTraj}, p);
+        % Save.
         save([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_data_proc.mat'], 'reach_data_table');
     end
 end
@@ -292,6 +297,7 @@ disp(['MAD calc done. ' timing 'Sec']);
 %% Heading angle
 tic
 for iSub = p.SUBS
+    % Load.
     p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_prenorm_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_pre_norm_traj.mat']);  reach_prenorm_traj_table = reach_prenorm_traj_table.reach_pre_norm_traj_table;
@@ -303,6 +309,7 @@ disp(['Heading angle calc done. ' timing 'Sec']);
 %% Implied endpoint.
 tic
 for iSub = p.SUBS
+    % Load.
     p = defineParams(p, iSub);
     reach_traj_table = load([p.PROC_DATA_FOLDER 'sub' num2str(iSub) p.DAY '_reach_traj_proc.mat']);  reach_traj_table = reach_traj_table.reach_traj_table;
     reach_traj_table = calcIEP(reach_traj_table, traj_names{1}, p);
@@ -398,9 +405,7 @@ tic
 for iTraj = 1:length(traj_names)
     reach_area.con = NaN(1,p.MAX_SUB);
     reach_area.incon = NaN(1,p.MAX_SUB);
-    
     good_subs = load([p.PROC_DATA_FOLDER '/good_subs_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  good_subs = good_subs.good_subs;
-    
     for iSub = good_subs
         p = defineParams(p, iSub);
         r_avg = load([p.PROC_DATA_FOLDER '/sub' num2str(iSub) p.DAY '_avg_' traj_names{iTraj}{1} '.mat']);  r_avg = r_avg.r_avg;
@@ -508,7 +513,7 @@ plt_p.space = 3; % between beeswarm graphs.
 plt_p.n_perm = 5000; % Number of permutations for permutation and clustering procedure.
 plt_p.x_as_func_of = "time"; % To plot X as a function of "time" or "zaxis".
 % Plots appearance.
-plt_p.errbar_type = 'se'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
+plt_p.errbar_type = 'ci'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
 plt_p.f_alpha = 0.2; % transperacy of shading.
 plt_p.linewidth = 4; % Used for some graphs.
 plt_p.con_col = [0 0.35294 0.7098];%[0 0.4470 0.7410 f_f_alpha];
@@ -780,7 +785,7 @@ for iSub = subs_to_present
 end
 % 
 % % ------- Keyboard Response Times -------
-% if any(p.SUBS >=43) % Only for Exp 4.
+% if any(p.ORIG_SUBS >=43) % Only for Exp 4.
 %     for iSub = p.SUBS
 %         figure(sub_f(iSub,3));
 %         subplot(2,1,2);
@@ -893,7 +898,7 @@ p_val = plotMultiAuc(traj_names, plt_p, p);
 save([p.PROC_DATA_FOLDER '/auc_p_val_' p.DAY '_' p.EXP '.mat'], 'p_val');
 
 % ------- Response Times Keyboard -------
-if any(p.SUBS >=43) % Only for Exp 4.
+if any(p.ORIG_SUBS >=43) % Only for Exp 4.
     figure(all_sub_f(2));
     subplot(2,3,6);
     p_val = plotMultiKeyboardRt(traj_names, plt_p, p);

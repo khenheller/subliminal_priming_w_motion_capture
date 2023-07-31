@@ -53,7 +53,7 @@ main <- function(){
   p$RAND_EFF <- "intrcpt+slope" # "intrcpt+slope" / "intrcpt".
   # Choose which vars to analyze ("rt","react","mt","mad","tot_dist","auc","ra","com","max_vel",paste0("traj",1:traj_len),paste0("iep",1:traj_len),paste0("vel",1:traj_len))
   # Add "r_ra" to p$VAR_NAMES (but not p$R_VAR_NAMES, since ra is relevant only for avgs analysis) to analyze reach area.
-  p$R_VAR_NAMES <- c("react","mt","tot_dist", "com")
+  p$R_VAR_NAMES <- c("react","mt","tot_dist", "com", "auc")
   p$K_VAR_NAMES <- c("rt")
   p$VAR_NAMES <- c(paste0("r_",p$R_VAR_NAMES), "r_ra", paste0("k_",p$K_VAR_NAMES)) # Used to save files. r/k=reach/keyboard. default: "r_react","r_mt",""r_mad",r_tot_dist","r_auc","r_com",,"k_rt"
   
