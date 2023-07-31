@@ -38,7 +38,7 @@ function [p_val, corr_p, t, stats] = runFDA(trajs_name, p)
     [mean.z, mean_group.z] = getRMMeans(fdaMat.z, group);
     
     % RUN FDA
-    random_fact = [3]; % left/right and subnum are random factors.
+    random_fact = [3]; % subnum is a random factors.
     [p_val.x, corr_p.x, t.x, stats.x] = fanovan(mean.x, mean_group.x, 'model','full', 'random',random_fact, 'varnames',{'con_incon' 'left_right' 'sub'});
     [p_val.y, corr_p.y, t.y, stats.y] = fanovan(mean.y, mean_group.y, 'model','full', 'random',random_fact, 'varnames',{'con_incon' 'left_right' 'sub'});
     [p_val.z, corr_p.z, t.z, stats.z] = fanovan(mean.z, mean_group.z, 'model','full', 'random',random_fact, 'varnames',{'con_incon' 'left_right' 'sub'});

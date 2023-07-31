@@ -1,12 +1,12 @@
 % Recieves a subject's trajectories.
 % Trims each trial to start at the movement onset and end at movemnt offset, fills the end of recording with NaNs.
 % Onset criterion: the first out of 4 consequetive frames where each velocity towards screen was greater
-%                   than threshold and total acceleration was over a threshold.
-% Offset criterion: first frame where velocity dropped below threshold or
+%                   than threshold, and total acceleration was over a threshold.
+% Offset criterion: first frame where [velocity dropped below threshold - not implemented] or
 %                   position reached max.
 % Receives: trajs_mat - a subject's trajectory, of 1 type (categot_to / categor_from / recog_to / recog_from).
 %               3 Dim matrix of doubles, row = sample, column = trial, 3rd dim = axis (x,y,z).
-%               Each trial has MAX_CAP_LENGTH samples.
+%               Each trial has REACH_MAX_RT_LIMIT samples.
 %           time_mat - a sub's timestamps mat. matching trajs_mat.
 %                   row = sample, column = trial.
 % Output: onsets_idx/offsets_idx - index of sample of movement initiation and finish.

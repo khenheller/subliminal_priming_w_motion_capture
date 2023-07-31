@@ -1,7 +1,8 @@
 % Marks bad subjects who:
 % - Don't have enough trials.
 % - Don't have enough trials in each condition.
-%  - Categorization performance is at chance lvl.
+% - Categorization performance is at chance lvl.
+% - Are aware of prime.
 % Input:
 %   pas_rate - double, only trials with this pas rating will be averaged.
 %   task_type - 'reach' / 'keyboard'

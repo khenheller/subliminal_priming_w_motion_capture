@@ -27,9 +27,9 @@ p['PROC_DATA_FOLDER'] = os.path.abspath('../../processed_data/')
 good_subs = sio.loadmat(os.path.join(p['PROC_DATA_FOLDER'], f"good_subs_{p['DAY']}_target_x_to_subs_{p['SUBS_STRING']}.mat"))['good_subs'][0]
 
 # Naive bayes classifier ------------------------------
-# gnb = GaussianNB()
-# y_pred = gnb.fit(X_train, y_train).predict(X_test)
-# print("Number of mislabeled points out of a total %d points : %d")
+gnb = GaussianNB()
+y_pred = gnb.fit(X_train, y_train).predict(X_test)
+print("Number of mislabeled points out of a total %d points : %d")
 
 # Ensemble learning ------------------------------
 iters = 1
@@ -56,20 +56,22 @@ df = pd.DataFrame({"d_prime":d_prime, "measure":measure})
 sns.stripplot(x="measure", y="d_prime", data=df, color='tab:orange')
 sns.pointplot(x="measure", y="d_prime", data=df, estimator="nanmean", errorbar="se", join=False).set(title=f'd prime after {iters} iters')
 plt.show()
-# # Define hyperparameters to be twiked.
-# PARAM_GRID = {'max_depth':[2],
-#               'learning_rate':[0.1, 0.2, 0.6],
-#               'n_estimators':[100, 200, 500]
-#              }
 
-# # Create grid search object. We will feed it data and it will find the params that best predict that data.
-# boost_searcher = GradientBoostingClassifier(random_state=0,
-#                                             verbose=1, # Print progress.
-#                                             max_features='sqrt' # Use sqrt(n_features) when assesing each split.
-#                                             )
-# # Run CV for each paramteres combination and find the one that yields the best accuracy.
-# boost_searcher.fit(ft_train, labels_train)
-# boost_estimator = boost_searcher.best_estimator_
+# Gradient Boosting ------------------------------
+# Define hyperparameters to be twiked.
+PARAM_GRID = {'max_depth':[2],
+              'learning_rate':[0.1, 0.2, 0.6],
+              'n_estimators':[100, 200, 500]
+             }
 
-# print("Best parameters are: ", boost_searcher.best_params_)
-# print("ROC AUC on the test set is: ", boost_searcher.score(ft_test, groups_test))#@@@@@ F score @@@@
+# Create grid search object. We will feed it data and it will find the params that best predict that data.
+boost_searcher = GradientBoostingClassifier(random_state=0,
+                                            verbose=1, # Print progress.
+                                            max_features='sqrt' # Use sqrt(n_features) when assesing each split.
+                                            )
+# Run CV for each paramteres combination and find the one that yields the best accuracy.
+boost_searcher.fit(ft_train, labels_train)
+boost_estimator = boost_searcher.best_estimator_
+
+print("Best parameters are: ", boost_searcher.best_params_)
+print("ROC AUC on the test set is: ", boost_searcher.score(ft_test, groups_test))#@@@@@ F score @@@@
