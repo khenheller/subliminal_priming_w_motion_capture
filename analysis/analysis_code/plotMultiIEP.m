@@ -11,6 +11,12 @@ subs_avg = load([p.PROC_DATA_FOLDER '/subs_avg_' p.DAY '_' traj_names{1}{1} '_su
 % Load avg of each sub.
 avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{1}{1} '_subs_' p.SUBS_STRING '.mat']);  avg_each = avg_each.reach_avg_each;
 
+% Convert to cm.
+avg_each.iep.con_left(:,good_subs) = avg_each.iep.con_left(:,good_subs) * 100;
+avg_each.iep.con_right(:,good_subs) = avg_each.iep.con_right(:,good_subs) * 100;
+avg_each.iep.incon_left(:,good_subs) = avg_each.iep.incon_left(:,good_subs) * 100;
+avg_each.iep.incon_right(:,good_subs) = avg_each.iep.incon_right(:,good_subs) * 100;
+
 % Plot time instead of Z axis.
 if plt_p.x_as_func_of == "time"
     assert(~p.NORM_TRAJ, "When traj is normalized in space, time isn't releveant and shouldnt be used");
@@ -23,7 +29,7 @@ if plt_p.x_as_func_of == "time"
 else
     left_axis = subs_avg.traj.con_left(:,3)*100;
     assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
-    y_label = '% Path Traveled';
+    y_label = 'Path Traveled (%)';
     xlimit = [-0.25, 0.1];
     ylimit = [0 1];
 end

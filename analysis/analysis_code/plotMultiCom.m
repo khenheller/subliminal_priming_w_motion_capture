@@ -9,7 +9,7 @@ function [p_val] = plotMultiCom(traj_names, plt_p, p)
 
         % Load data and set parameters.
         beesdata = {reach_avg_each(iTraj).com.con(good_subs), reach_avg_each(iTraj).com.incon(good_subs)};
-        yLabel = 'Frequency';
+        yLabel = 'COM per Trial';
         XTickLabels = [];
         colors = {plt_p.con_col, plt_p.incon_col};
         title_char = 'COM';
@@ -23,7 +23,8 @@ function [p_val] = plotMultiCom(traj_names, plt_p, p)
             x_data = reshape(get(gca,'XTick'), 2,[]);
             x_data = repelem(x_data,1,length(good_subs));
             connect_dots(x_data, y_data);
-%             ylim([-0.05 0.8]);
+            ylim([0.5 4]);
+            yticks(0.5 : 0.5 : 3.5);
         end
 
         set(gca, 'TickDir','out');

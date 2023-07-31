@@ -24,8 +24,8 @@ function [p_val_ra] = plotMultiReachArea(traj_names, plt_p, p)
             x_data = reshape(get(gca,'XTick'), 2,[]);
             x_data = repelem(x_data,1,length(good_subs));
             connect_dots(x_data, y_data);
-%             y_limit = [0 4];
-%             ylim(y_limit);
+            ylim([0.85 4]);
+            yticks(0.5 : 0.5 : 3.5);
         end
         
         ticks = get(gca,'XTick');

@@ -38,7 +38,8 @@ function [p_vals] = plotMultiReactMtRt(traj_names, subplot_p, plt_p, p)
                 x_data = reshape(get(gca,'XTick'), 2,[]);
                 x_data = repelem(x_data,1,length(good_subs));
                 connect_dots(x_data, y_data);
-                ylim([100 630]);
+                ylim([100 750]);
+                yticks(100 : 200 : 700);
             end
             
             set(gca, 'TickDir','out');

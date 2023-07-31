@@ -36,7 +36,8 @@ function [p_val] = plotMultiTotDist(traj_names, plt_p, p)
             x_data = reshape(get(gca,'XTick'), 2,[]);
             x_data = repelem(x_data,1,length(good_subs));
             connect_dots(x_data, y_data);
-%             ylim([34 46]);
+            ylim([34 46]);
+            yticks(35 : 2 : 45);
         end
 
         set(gca, 'TickDir','out');

@@ -11,6 +11,12 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         % Load avg of each sub.
         avg_each = load([p.PROC_DATA_FOLDER '/avg_each_' p.DAY '_' traj_names{iTraj}{1} '_subs_' p.SUBS_STRING '.mat']);  avg_each = avg_each.reach_avg_each;
 
+        % Convert to cm.
+        avg_each.traj(iTraj).con_left(:,good_subs,:) = avg_each.traj(iTraj).con_left(:,good_subs,:) * 100;
+        avg_each.traj(iTraj).con_right(:,good_subs,:) = avg_each.traj(iTraj).con_right(:,good_subs,:) * 100;
+        avg_each.traj(iTraj).incon_left(:,good_subs,:) = avg_each.traj(iTraj).incon_left(:,good_subs,:) * 100;
+        avg_each.traj(iTraj).incon_right(:,good_subs,:) = avg_each.traj(iTraj).incon_right(:,good_subs,:) * 100;
+
         % Plot time instead of Z axis.
         if plt_p.x_as_func_of == "time"
             assert(~p.NORM_TRAJ, "When traj is normalized in space, time isn't releveant and shouldnt be used");
@@ -18,14 +24,14 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
             time_series = (1 : size(subs_avg.traj.con_left,1)) * p.SAMPLE_RATE_SEC * 1000;
             left_axis = time_series;
             y_label = 'Time (ms)';
-            xlimit = [-0.15 0.15]; % For plot.
+            xlimit = [-15 15]; % For plot.
             ylimit = [0 p.MIN_SAMP_LEN] * 1000;
             y_ticks = plt_p.time_ticks;
         else
             left_axis = subs_avg.traj.con_left(:,3)*100;
             assert(p.NORM_TRAJ, "Uses identical Z to all trajs, assumes trajs are normalized.")
-            y_label = '% Path Traveled';
-            xlimit = [-0.15 0.15];
+            y_label = 'Path Traveled (%)';
+            xlimit = [-15 15];
             ylimit = [0 100];
             y_ticks = plt_p.percent_path_ticks;
         end
@@ -49,7 +55,7 @@ function [] = plotMultiAvgTrajWithShade(traj_names, plt_p, p)
         end
 
         set(gca, 'TickDir','out');
-        xlabel('X');
+        xlabel('X (cm)');
         xlim(xlimit);
         xticks(plt_p.left_right_ticks);
         ylim(ylimit);
