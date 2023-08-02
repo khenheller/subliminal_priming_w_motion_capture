@@ -48,7 +48,7 @@ function [] = plotMultiRecognition(pas_rate, measure, group, traj_name, plt_p, p
     % T-test on plot.
     [~, fc_p_val(1) , ~, ~] = ttest(avg_each.fc_prime.con(subs), 50);
     [~, fc_p_val(2) , fc_ci, fc_stats] = ttest(avg_each.fc_prime.incon(subs), 50);
-    fc_p_val = round(fc_p_val, 2);
+    fc_p_val = round(fc_p_val, 3);
 %     text(get(gca, 'xTick'),[10 10], {['p = ' num2str(fc_p_val(1))], ['p = ' num2str(fc_p_val(2))]}, 'FontSize',14, 'HorizontalAlignment','center');
 
     % Print stats to terminal.
