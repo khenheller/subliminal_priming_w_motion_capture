@@ -20,8 +20,8 @@ pas_rate = 1; % to analyze.
 picked_trajs = [1]; % traj to analyze (1=to_target, 2=from_target, 3=to_prime, 4=from_prime).
 p.SIMULATE = 0; % Simulate less trials.
 p.NORMALIZE_WITHIN_SUB = 0; % Normalize each variable within each sub.
-p.NORM_TRAJ = 0; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
-p.MIN_SAMP_LEN = 0.34; % In sec. Shorter trajs are excluded. (for NORM_TRAJ=0 use 0.34, otherwise 0.1).
+p.NORM_TRAJ = 1; % Normalize traj in space. ATTENTION: When NORM_TRAJ=0, change MIN_SAMP_LEN from 0.1 to min length you want trajs to be trimmed to.
+p.MIN_SAMP_LEN = 0.1; % In sec. Shorter trajs are excluded. (for NORM_TRAJ=0 use 0.34, otherwise 0.1).
                         % When NORM_TRAJ=0, this is the len all trajs will be trimmed to.
                         % Used "Movement Time Percentiles" section to determine the desired value.
 p.MIN_TRIM_FRAMES = p.MIN_SAMP_LEN * p.REF_RATE_HZ; % Minimal length (in samples, also called frames) to trim traj to (instead of normalization).
@@ -512,13 +512,16 @@ disp(['Counting trials in each condition done. ' timing 'Sec']);
 disp("Started setting plotting params.");
 close all;
 
-plt_p.avg_plot_width = 4;
+% Params to be defined by user.
 plt_p.alpha_size = 0.05; % For confidence interval.
-plt_p.space = 3; % between beeswarm graphs.
 plt_p.n_perm = 1000; % Number of permutations for permutation and clustering procedure.
-plt_p.x_as_func_of = "time"; % To plot X as a function of "time" or "zaxis".
-% Plots appearance.
+plt_p.x_as_func_of = "zaxis"; % To plot X as a function of "time" or "zaxis".
 plt_p.errbar_type = 'ci'; % Shade and error bar type: 'se', 'ci'. ci is only relevant when var distributes normally.
+% Statistical params.
+plt_p.n_perm_clust_tests = input("How many permutation+clustering tests do you have?");
+% Plots appearance.
+plt_p.avg_plot_width = 4;
+plt_p.space = 3; % between beeswarm graphs.
 plt_p.f_alpha = 0.2; % transperacy of shading.
 plt_p.linewidth = 4; % Used for some graphs.
 plt_p.con_col = [0 0.35294 0.7098];%[0 0.4470 0.7410 f_f_alpha];
@@ -539,8 +542,6 @@ plt_p.left_right_ticks = -10 : 5 : 10; % Ticks for the left/right axis in plots.
 plt_p.font_name = 'Calibri';
 plt_p.font_size = 17;
 plt_p.labels_font_size = 14;
-% Statistical params.
-plt_p.n_perm_clust_tests = input("How many permutation+clustering tests do you have?");
 
 % Load reach area.
 reach_area = load([p.PROC_DATA_FOLDER 'reach_area_' traj_names{1}{1} '_' p.DAY '_subs_' p.SUBS_STRING '.mat']);  reach_area = reach_area.reach_area;
