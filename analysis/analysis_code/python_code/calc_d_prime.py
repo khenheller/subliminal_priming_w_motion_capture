@@ -1,5 +1,3 @@
-from sklearn.linear_model import LogisticRegression
-from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import os as os
@@ -8,13 +6,17 @@ import numpy as np
 from scipy.special import ndtri
 
 
-def calc_d_prime(iSub: int, measure: str, p: dict):
+def calc_d_prime(iSub: int, measure: str, weights: list, models: list, models_names: list, p: dict):
     """Classifies indirect measure results to con/incon with machine learning.
     Computes classification accuracy (d')
 
     Args:
         iSub (int): subject number
         measure (str): 'reach'/'keyboard'
+        weights (list of floats): weights scheme for the models in the ensemble
+        models (list of objects): list of models to use in the ensemble. Models should include their parameter,
+                                e.g. [LogisticRegression(), XGBClassifier(max_depth=2)]
+        models_names (list of strings): names in same order as in 'models'
     Returns:
         d prime.
     """
@@ -32,14 +34,15 @@ def calc_d_prime(iSub: int, measure: str, p: dict):
     x_train_stn = scaler.fit_transform(x_train)
     x_test_stn = scaler.transform(x_test)
     # Train N predict
-    models = [LogisticRegression(), XGBClassifier(max_depth=2)]
-    con_prob = pd.DataFrame(columns=['LogisticRegression','XGBClassifier']) # Probability that class is 'congruent'.
+    con_prob = pd.DataFrame(columns=models_names) # Probability that class is 'congruent'.
     for i, m in enumerate(models):
         m.fit(x_train_stn, y_train),
         con_prob.iloc[:, i] = m.predict_proba(x_test_stn)[:, 1]
     # Avg predictions.
-    weights = [1, 0.3]
-    con_prob["weighted_pred"] = (con_prob * weights).sum(axis=1) / sum(weights)
+    if len(weights) > 1:
+        con_prob["weighted_pred"] = (con_prob * weights).sum(axis=1) / sum(weights)
+    else:
+        con_prob["weighted_pred"] = con_prob
     pred = con_prob["weighted_pred"] > 0.5  # 1=con, 0=incon
     # Conv to hit/fa.
     hits = pred & (y_test == 1)
@@ -57,4 +60,4 @@ def calc_d_prime(iSub: int, measure: str, p: dict):
     hit_rate = (n_hits + portion_signal) / (n_signal + 2 * portion_signal)
     fa_rate = (n_fas + portion_noise) / (n_noise + 2 * portion_noise)
     # Calc d prime.
-    return (ndtri(hit_rate) - ndtri(fa_rate))
+    return abs((ndtri(hit_rate) - ndtri(fa_rate)))

@@ -7,6 +7,8 @@ import pandas as pd
 from sklearn.naive_bayes import GaussianNB
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.linear_model import LogisticRegression
+from xgboost import XGBClassifier
 
 # Ignore warnings ----------------------------
 import warnings
@@ -26,13 +28,14 @@ p['PROC_DATA_FOLDER'] = os.path.abspath('../../processed_data/')
 # Load data.------------------------------
 good_subs = sio.loadmat(os.path.join(p['PROC_DATA_FOLDER'], f"good_subs_{p['DAY']}_target_x_to_subs_{p['SUBS_STRING']}.mat"))['good_subs'][0]
 
-# Naive bayes classifier ------------------------------
-gnb = GaussianNB()
-y_pred = gnb.fit(X_train, y_train).predict(X_test)
-print("Number of mislabeled points out of a total %d points : %d")
-
 # Ensemble learning ------------------------------
-iters = 1
+# Desired models: e.g. LogisticRegression(), XGBClassifier(max_depth=2), GaussianNB().
+models = [LogisticRegression(), XGBClassifier(max_depth=2)]
+# Models names: e.g. 'LogisticRegression', 'XGBClassifier'
+models_names = ['LogisticRegression', 'XGBClassifier']
+# Weights for each of the models in the ensemble.
+weights = [1, 0.3]
+iters = 100
 avg_r_d_prime = np.full(iters, np.NaN)
 avg_k_d_prime = np.full(iters, np.NaN)
 # Run many classifications.
@@ -42,9 +45,8 @@ for i_iter in range(iters):
     r_d_prime = np.full(max(p['SUBS'])+1, np.NaN)
     k_d_prime = np.full(max(p['SUBS'])+1, np.NaN)
     for iSub in good_subs:
-        r_d_prime[iSub] = calc_d_prime(iSub, 'reach', p)
-        k_d_prime[iSub] = calc_d_prime(iSub, 'keyboard', p)
-    
+        r_d_prime[iSub] = calc_d_prime(iSub, 'reach', weights, models, models_names, p)
+        k_d_prime[iSub] = calc_d_prime(iSub, 'keyboard', weights, models, models_names, p)
     avg_r_d_prime[i_iter] = np.nanmean(r_d_prime[:])
     avg_k_d_prime[i_iter] = np.nanmean(k_d_prime[:])
     print(f'Done iter {i_iter}. took {time.time() - class_time} sec')
@@ -57,21 +59,21 @@ sns.stripplot(x="measure", y="d_prime", data=df, color='tab:orange')
 sns.pointplot(x="measure", y="d_prime", data=df, estimator="nanmean", errorbar="se", join=False).set(title=f'd prime after {iters} iters')
 plt.show()
 
-# Gradient Boosting ------------------------------
-# Define hyperparameters to be twiked.
-PARAM_GRID = {'max_depth':[2],
-              'learning_rate':[0.1, 0.2, 0.6],
-              'n_estimators':[100, 200, 500]
-             }
+# # Gradient Boosting ------------------------------
+# # Define hyperparameters to be twiked.
+# PARAM_GRID = {'max_depth':[2],
+#               'learning_rate':[0.1, 0.2, 0.6],
+#               'n_estimators':[100, 200, 500]
+#              }
 
-# Create grid search object. We will feed it data and it will find the params that best predict that data.
-boost_searcher = GradientBoostingClassifier(random_state=0,
-                                            verbose=1, # Print progress.
-                                            max_features='sqrt' # Use sqrt(n_features) when assesing each split.
-                                            )
-# Run CV for each paramteres combination and find the one that yields the best accuracy.
-boost_searcher.fit(ft_train, labels_train)
-boost_estimator = boost_searcher.best_estimator_
+# # Create grid search object. We will feed it data and it will find the params that best predict that data.
+# boost_searcher = GradientBoostingClassifier(random_state=0,
+#                                             verbose=1, # Print progress.
+#                                             max_features='sqrt' # Use sqrt(n_features) when assesing each split.
+#                                             )
+# # Run CV for each paramteres combination and find the one that yields the best accuracy.
+# boost_searcher.fit(ft_train, labels_train)
+# boost_estimator = boost_searcher.best_estimator_
 
-print("Best parameters are: ", boost_searcher.best_params_)
-print("ROC AUC on the test set is: ", boost_searcher.score(ft_test, groups_test))#@@@@@ F score @@@@
+# print("Best parameters are: ", boost_searcher.best_params_)
+# print("ROC AUC on the test set is: ", boost_searcher.score(ft_test, groups_test))#@@@@@ F score @@@@
