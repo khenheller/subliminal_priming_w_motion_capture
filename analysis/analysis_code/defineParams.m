@@ -15,6 +15,7 @@ function p = defineParams(p, iSub)
     EXP_3_SUBS = p.EXP_3_SUBS;
     EXP_4_SUBS = p.EXP_4_SUBS;
     EXP_4_1_SUBS = p.EXP_4_1_SUBS;
+    SIM_SUBS = p.SIM_SUBS;
     SUBS = p.SUBS;
     ORIG_SUBS = p.ORIG_SUBS;
     DAY = p.DAY;
@@ -41,6 +42,7 @@ function p = defineParams(p, iSub)
     p.EXP_3_SUBS = EXP_3_SUBS;
     p.EXP_4_SUBS = EXP_4_SUBS;
     p.EXP_4_1_SUBS = EXP_4_1_SUBS;
+    p.SIM_SUBS = SIM_SUBS;
     p.SUBS = SUBS;
     p.ORIG_SUBS = ORIG_SUBS;
     p.SUBS_STRING = regexprep(num2str(p.SUBS), '\s+', '_'); % Concatenate sub's numbers with '_' between them.
@@ -126,6 +128,8 @@ function p = defineParams(p, iSub)
         p.EXP = 'exp4';
     elseif isequal(p.ORIG_SUBS, p.EXP_4_1_SUBS)
         p.EXP = 'exp4_1';
+    elseif isequal(p.ORIG_SUBS, p.SIM_SUBS)
+        p.EXP = 'exp_sim';
     else
         error('Please analyze subs of each experiment seperatly.');
     end
