@@ -3,6 +3,7 @@ experiment/RUN_ME/code/tests/test_results/*
 raw_data
 development/data
 analysis/analysis_code/python_code/venv/*
+analysis/analysis_code/imported_code/verification_code/venv/*
 *~*
 *.asv
 *.ini

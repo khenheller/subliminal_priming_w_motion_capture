@@ -1,7 +1,6 @@
 # Calculates descriptive statistics and plots the data.
 # df - dataframe with sub num, condition, side and variable value.
 # var_name - Name of variable we want to plot, as it apears in its dataframe.
-library(gridExtra)
 describe_stats_single_val <- function(df, var_name){
   # Calc statistics.
   stats <- df %>%

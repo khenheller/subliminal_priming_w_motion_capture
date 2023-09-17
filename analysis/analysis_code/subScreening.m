@@ -51,8 +51,8 @@ function [bad_subs, valid_trials] = subScreening(traj_name, pas_rate, task_type,
         perf_trials = ~any(bad_trials{iSub}{:, perf_reasons}, 2); % No timing/data issues.
         perf_trials_categorcorr = perf_trials & (bad_trials{iSub}.incorrect == 0); % And target categorization is correct.
         perf_is_low = sum(perf_trials_categorcorr) / sum(perf_trials) < 0.7;
-        perf_is_significantly_low = myBinomTest(sum(perf_trials_categorcorr), sum(perf_trials), 0.7, 'One') < p.SIG_PVAL;
-        bad_subs{iSub, 'bad_performance'} =  perf_is_low & perf_is_significantly_low;
+        perf_diff_from_threshold = myBinomTest(sum(perf_trials_categorcorr), sum(perf_trials), 0.7, 'One') < p.SIG_PVAL;
+        bad_subs{iSub, 'bad_performance'} =  perf_is_low & perf_diff_from_threshold;
         % Sub seen prime (prime recog isn't at chance). Looks also in "bad" trials.
         oktiming = ~bad_trials{iSub}{:, 'bad_stim_dur'}; % All trials with good stimulus duration.
         oktiming_pas = oktiming & ismember(data_table.pas, pas_rate);

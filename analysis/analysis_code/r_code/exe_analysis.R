@@ -1,2 +1,15 @@
+# R version: 4.0.3 (2020-10-10)
+# Required libraries:
+library(rmatio)
+library(dplyr)
+library(lme4)
+library(R.matlab)
+library(gridExtra)
+library(ggplot2)
+library(qqplotr)
+library(performance)
+library(MKinfer)
+library(effectsize)
+# Main code:
 debugSource('main.R')
 main()
